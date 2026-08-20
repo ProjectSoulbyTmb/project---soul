@@ -30,8 +30,9 @@ export class JsonStore {
     state.updatedAt = new Date().toISOString();
     const tmp = `${this.filePath}.${process.pid}.tmp`;
     fs.writeFileSync(tmp, JSON.stringify(state, null, 2), { encoding: 'utf8', mode: 0o600 });
-    try { fs.renameSync(tmp, this.filePath); }
-    catch { try { fs.rmSync(this.filePath, { force: true }); } catch {} fs.renameSync(tmp, this.filePath); }
+    const previous = `${this.filePath}.previous`;
+    try { if (fs.existsSync(this.filePath)) fs.copyFileSync(this.filePath, previous); fs.renameSync(tmp, this.filePath); }
+    catch (err) { try { fs.rmSync(this.filePath, { force: true }); fs.renameSync(tmp, this.filePath); } catch (inner) { if (fs.existsSync(previous)) fs.copyFileSync(previous, this.filePath); throw inner; } }
   }
   reset() { const state = defaultProfile(this.profileId); this.save(state); return state; }
   createBackup(state) {

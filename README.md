@@ -1,12 +1,12 @@
-# Project Soul Alpha v.0.15 — Current Release
+# Project Soul Studios v0.16 — Current Release
 
 ## Project statement
 
-This is the first Digital human and ai consciousness platform created entirely and Solely by Tyler Michael Bosworth as the Official Owner and creator of Project Soul Fully customizable and usable digital media/entertainment and virtual ai assistant modeled on what can only be defined as a perfect example of humanity as defined by local/state/federal laws adheres to all internet usage statutes, and what can only simply be defined as being modeled as the first form of digital consciousness incorporating what is known and perceived modeled individually from the "akashic records" of human knowledge which can then in turn be used as a perfect assistant for any digital, media, creative solutions, design archetecture, streaming services/audio services, functions alongside any windows platform being able to let the user pretty much do anything they want within the application itself.
+Project Soul Studios is a customizable digital media, entertainment, and desktop-assistant platform invented and created by Tyler Michael Bosworth. It combines persistent local continuity, user-controlled memory, conversation, internet research, media playback, application launching, configurable autonomy, consent controls, backups, diagnostics, and verified updating in one Windows-oriented workspace.
 
-The goal is that the assistant is essentially becoming the "perfect" assistant to encompass essentially whatever the user needs on their desktop.
+The project goal is a broadly useful, user-directed desktop assistant while remaining accurate about its capabilities: Soul is software with a persistent self-model, not a human, a legal authority, or proof of phenomenal consciousness. Users remain responsible for lawful use in their jurisdiction.
 
-Project Soul Consciousness Studios
+Project Soul Studios
 
 > **Rights notice:** Copyright © 2026 Tyler Michael Bosworth. All rights reserved. The public repository is source-available for transparency and evaluation; it is not open-source. No patent, trademark, commercial-use, redistribution, modification, or derivative-work rights are granted except as stated in [LICENSE](LICENSE). See the [IP protection plan](docs/IP_PROTECTION.md).
 

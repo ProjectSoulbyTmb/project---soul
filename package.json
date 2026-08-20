@@ -1,8 +1,10 @@
 {
-  "name": "project-soul-desktop",
-  "version": "0.15.8",
-  "description": "Project Soul cross-platform desktop conversational application.",
-  "author": "Project Soul",
+  "name": "project-soul-studios",
+  "version": "0.16.0",
+  "description": "Project Soul Studios privacy-focused desktop assistant and media workspace.",
+  "author": "Tyler Michael Bosworth, inventor and creator of Project Soul Studios",
+  "license": "SEE LICENSE IN LICENSE",
+  "copyright": "Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.",
   "repository": {
     "type": "git",
     "url": "https://github.com/ProjectSoulbyTmb/project---soul.git"
@@ -31,7 +33,7 @@
   },
   "build": {
     "appId": "org.projectsoul.desktop",
-    "productName": "Project Soul Alpha",
+    "productName": "Project Soul Studios",
     "asar": false,
     "directories": {
       "output": "dist"
@@ -59,14 +61,14 @@
       ]
     },
     "nsis": {
-      "artifactName": "Project-Soul-Alpha-${version}-Windows-${arch}-Setup.${ext}",
+      "artifactName": "Project-Soul-Studios-${version}-Windows-${arch}-Setup.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },
     "portable": {
-      "artifactName": "Project-Soul-Alpha-${version}-Windows-${arch}-Portable.${ext}"
+      "artifactName": "Project-Soul-Studios-${version}-Windows-${arch}-Portable.${ext}"
     },
     "linux": {
       "target": [

@@ -1,4 +1,4 @@
-const AGENT = 'Project-Soul-Alpha/0.15 (desktop research client)';
+const AGENT = 'Project-Soul-Studios/0.16 (desktop research client)';
 
 function plain(value) {
   return String(value || '').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
@@ -7,7 +7,7 @@ function requested(text) { return /\b(search|look up|find|pull|get|show|play)\b[
 function subject(text) { return String(text).replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to)\b/gi, ' ').replace(/[^\p{L}\p{N}\s'_-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 240); }
 async function json(url, timeoutMs = 15000, headers = {}) {
   const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try { const res = await fetch(url, { signal: controller.signal, headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'application/json', ...headers } }); if (!res.ok) throw new Error(`Internet source returned ${res.status}.`); return await res.json(); }
+  try { const res = await fetch(url, { signal: controller.signal, redirect: 'error', headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'application/json', ...headers } }); if (!res.ok) throw new Error(`Internet source returned ${res.status}.`); const limit=5*1024*1024; const declared=Number(res.headers?.get?.('content-length')||0); if(declared>limit)throw new Error('Internet response is too large.'); if(typeof res.arrayBuffer!=='function')return await res.json(); const bytes=Buffer.from(await res.arrayBuffer()); if(bytes.length>limit)throw new Error('Internet response is too large.'); return JSON.parse(bytes.toString('utf8')); }
   finally { clearTimeout(timer); }
 }
 async function searchArticles(query) {

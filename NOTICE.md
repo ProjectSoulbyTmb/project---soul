@@ -1,6 +1,6 @@
 # Ownership and provenance notice
 
-Project Soul is identified by its owner as an original project created and owned by Tyler Michael Bosworth under Project Soul Consciousness Studios.
+Project Soul Studios is identified by its owner as an original product invented and created by Tyler Michael Bosworth. This is the owner's inventorship assertion; formal patent inventorship must be verified for the subject matter of any filed claims.
 
 Copyright © 2026 Tyler Michael Bosworth. All rights reserved.
 

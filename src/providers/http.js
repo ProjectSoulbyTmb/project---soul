@@ -15,10 +15,11 @@ export async function callCompatibleProvider({ endpoint, apiKey, model, messages
   try {
     const res = await fetch(`${validatedEndpoint(endpoint)}/chat/completions`, {
       method: 'POST', signal: controller.signal,
+      redirect: 'error',
       headers: { 'Content-Type': 'application/json', ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}) },
       body: JSON.stringify({ model, messages, temperature: 0.75 })
     });
-    const body = await res.json().catch(() => ({}));
+    const body = await boundedJson(res);
     if (!res.ok) throw new Error(body?.error?.message || `Model request failed (${res.status}).`);
     const text = body?.choices?.[0]?.message?.content;
     if (!text) throw new Error('The model returned no message content.');
@@ -33,13 +34,16 @@ export async function callLocalProvider({ endpoint = 'http://127.0.0.1:11434', m
   try {
     const res = await fetch(`${validatedEndpoint(endpoint, { localOnly: true })}/api/chat`, {
       method: 'POST', signal: controller.signal,
+      redirect: 'error',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model, messages, stream: false })
     });
-    const body = await res.json().catch(() => ({}));
+    const body = await boundedJson(res);
     if (!res.ok) throw new Error(body?.error || `Local model request failed (${res.status}).`);
     const text = body?.message?.content;
     if (!text) throw new Error('The local model returned no message content.');
     return String(text).trim();
   } finally { clearTimeout(timer); }
 }
+
+async function boundedJson(res, maxBytes = 5 * 1024 * 1024) { const declared = Number(res.headers.get('content-length') || 0); if (declared > maxBytes) throw new Error('Provider response is too large.'); const bytes = Buffer.from(await res.arrayBuffer()); if (bytes.length > maxBytes) throw new Error('Provider response is too large.'); try { return JSON.parse(bytes.toString('utf8')); } catch { return {}; } }

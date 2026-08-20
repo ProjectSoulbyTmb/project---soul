@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
@@ -20,7 +21,8 @@ function loadConfig() {
   configPath = path.join(app.getPath('userData'), 'settings.json');
   try { config = { ...config, ...JSON.parse(fs.readFileSync(configPath, 'utf8')) }; } catch {}
 }
-function saveConfig() { fs.mkdirSync(path.dirname(configPath), { recursive: true }); const tmp = `${configPath}.${process.pid}.tmp`; fs.writeFileSync(tmp, JSON.stringify(config, null, 2), { mode: 0o600 }); fs.renameSync(tmp, configPath); }
+function atomicReplace(target, content) { fs.mkdirSync(path.dirname(target), { recursive: true }); const tmp = `${target}.${process.pid}.tmp`; const previous = `${target}.previous`; fs.writeFileSync(tmp, content, { mode: 0o600 }); try { if (fs.existsSync(target)) fs.copyFileSync(target, previous); fs.renameSync(tmp, target); } catch (err) { try { fs.rmSync(target, { force: true }); fs.renameSync(tmp, target); } catch (inner) { if (fs.existsSync(previous)) fs.copyFileSync(previous, target); throw inner; } } }
+function saveConfig() { atomicReplace(configPath, JSON.stringify(config, null, 2)); }
 function getApiKey() { if (!config.encryptedApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedApiKey, 'base64')) : ''; } catch { return ''; } }
 function getSearchApiKey() { if (!config.encryptedSearchApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedSearchApiKey, 'base64')) : ''; } catch { return ''; } }
 function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
@@ -34,8 +36,9 @@ function createWindow() {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
     engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default' }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Project Soul Alpha v.0.15', backgroundColor: '#0b1020', show: false,
-      webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true } });
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Project Soul Studios v0.16', backgroundColor: '#0b1020', show: false,
+      webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
+    mainWindow.webContents.session.setPermissionRequestHandler((_wc, _permission, callback) => callback(false));
     mainWindow.once('ready-to-show', () => mainWindow.show());
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
@@ -99,4 +102,4 @@ ipcMain.handle('soul:addApplication', async () => { const chosen = await dialog.
 ipcMain.handle('soul:launchApplication', async (_e, id) => { const entry = (config.apps || []).find(x => x.id === String(id)); if (!entry || !fs.existsSync(entry.path)) throw new Error('Application is unavailable or has moved.'); const error = await shell.openPath(entry.path); if (error) throw new Error(error); return true; });
 ipcMain.handle('soul:removeApplication', (_e, id) => { config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
 
-function cryptoId(value) { return Buffer.from(String(value).toLowerCase()).toString('base64url').slice(0, 48); }
+function cryptoId(value) { return crypto.createHash('sha256').update(String(value).toLowerCase()).digest('base64url'); }

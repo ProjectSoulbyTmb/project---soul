@@ -33,14 +33,14 @@ jobs:
         run: |
           New-Item -ItemType Directory -Force -Path dist | Out-Null
           $version = '${{ github.ref_name }}'.TrimStart('v')
-          Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath "dist/Project-Soul-Alpha-$version-Windows-x64-Ready.zip" -CompressionLevel Optimal
+          Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath "dist/Project-Soul-Studios-$version-Windows-x64-Ready.zip" -CompressionLevel Optimal
       - run: pnpm run release:manifest
       - run: pnpm run release:evidence
       - name: Sign build provenance
         uses: actions/attest-build-provenance@v4.1.1
         with:
           subject-path: |
-            dist/Project-Soul-Alpha-*-Windows-x64-Ready.zip
+            dist/Project-Soul-Studios-*-Windows-x64-Ready.zip
             dist/update.json
             dist/SHA256SUMS.txt
             dist/SBOM.spdx.json
@@ -52,10 +52,10 @@ jobs:
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Project Soul Alpha ${{ github.ref_name }}
+          name: Project Soul Studios ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            dist/Project-Soul-Alpha-*-Windows-x64-Ready.zip
+            dist/Project-Soul-Studios-*-Windows-x64-Ready.zip
             dist/update.json
             dist/SHA256SUMS.txt
             dist/SBOM.spdx.json
