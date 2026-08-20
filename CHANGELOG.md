@@ -1,0 +1,22 @@
+# Project Soul Alpha v.0.15
+
+- Released the online Windows Alpha build from the verified v0.14.0 baseline.
+- Added installer, portable, and ready-to-run folder distributions for Windows x64.
+- Added explicit-request internet research with cited information, image previews, and video playback from allowlisted public sources.
+- Added optional credential-protected broad web and image search while retaining no-key fallback sources.
+- Added pre-provider lawful-use enforcement and local safety incident auditing while preserving gated lawful consensual adult content.
+- Added a persistent audio/video media dock with queues, transport controls, seeking, volume, fullscreen video, and automatic advancement.
+- Added DJ favorites, similar-track discovery, continuous queues, and Spotify/YouTube handoff controls.
+
+## v0.14.0
+
+- Rebuilt the application around a conversation-first desktop GUI.
+- Added persistent multi-conversation history and migration from the v0.13 profile shape.
+- Added offline fallback plus generic local and compatible HTTPS provider adapters without product-specific dependencies.
+- Provider failures now fall back locally without crashing or losing the conversation turn.
+- Added provider settings UI and OS-protected API-key storage through Electron safeStorage when available.
+- Hardened renderer isolation, sandboxing, CSP, navigation blocking, input size validation, crash logging, atomic profile writes, and corrupt-profile recovery.
+- Preserved persistent memory, protected identity, adaptive personality, relationship initiative, criticism processing, growth reflection, boundaries, Adult Soul gating, scoped consent, and immediate consent revocation.
+- Added end-user Windows, macOS, and Linux bootstrap packages that do not require Node.js or npm.
+- Added validated, timestamped profile backup creation, listing, and restore controls.
+- Reconciled all product surfaces and build metadata to v0.14.0.

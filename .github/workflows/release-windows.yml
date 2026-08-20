@@ -1,0 +1,31 @@
+name: Release Windows
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm run check
+      - run: pnpm run smoke
+      - run: pnpm run release:configure -- $env:GITHUB_REPOSITORY
+      - run: pnpm run dist:win
+      - run: pnpm run release:manifest -- $env:GITHUB_REPOSITORY
+      - name: Publish GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create $env:GITHUB_REF_NAME dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe dist/update.json --generate-notes --title "Project Soul Alpha $env:GITHUB_REF_NAME"

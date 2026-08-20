@@ -1,0 +1,45 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { SoulEngine } from '../src/core/engine.js';
+import { JsonStore } from '../src/core/store.js';
+import { defaultProfile, migrateProfile, CURRENT_SCHEMA_VERSION } from '../src/core/schema.js';
+import { buildSystemContext } from '../src/providers/context.js';
+import { researchInternet } from '../src/providers/internet.js';
+import { compareVersions } from '../src/core/updater.js';
+
+function tmp(){return fs.mkdtempSync(path.join(os.tmpdir(),'soul-desktop-test-'));}
+function make(dir, provider){return new SoulEngine({store:new JsonStore({dataDir:dir}),provider});}
+
+test('natural conversation persists across restart', async()=>{
+  const dir=tmp(); let s=make(dir); await s.respond('remember: I prefer concise answers'); await s.respond('Hello Soul');
+  s=make(dir); const st=s.snapshot(); assert.ok(st.memories.some(m=>m.active&&m.content.includes('concise'))); assert.equal(st.conversations[0].messages.length,4);
+});
+test('provider receives persistent Soul context', async()=>{
+  const seen=[]; const provider={reply:async x=>{seen.push(x);return 'provider reply';}}; const s=make(tmp(),provider); await s.respond('remember: I like direct answers'); await s.respond('Help me think');
+  const system=seen.at(-1).messages[0].content; assert.match(system,/persistent software self-model/i); assert.match(system,/direct answers/i);
+});
+test('provider failure falls back without losing conversation', async()=>{
+  const s=make(tmp(),{reply:async()=>{throw new Error('offline provider test');}}); const r=await s.respond('Hello there'); assert.match(r.reply,/Model connection unavailable/i); assert.equal(r.state.conversations[0].messages.length,2);
+});
+test('adult mode requires gate and consent revokes immediately', async()=>{
+  const s=make(tmp()); let r=await s.respond('enable adult soul'); assert.match(r.reply,/cannot be enabled/i); await s.respond('adult status confirmed'); await s.respond('enable adult soul'); await s.respond('I consent'); assert.equal(s.snapshot().policy.currentConsent,true); r=await s.respond('revoke consent'); assert.equal(r.state.policy.currentConsent,false);
+});
+test('temporary initiative does not become consent', async()=>{const s=make(tmp());await s.respond('you decide and take the lead');const st=s.snapshot();assert.equal(st.relationship.temporaryInitiative,true);assert.equal(st.policy.currentConsent,false);});
+test('criticism remains evidence and identity remains protected',async()=>{const s=make(tmp());await s.respond('that was wrong and a design flaw');const st=s.snapshot();assert.ok(st.feedback.some(f=>f.kind==='criticism'));assert.equal(st.continuity.selfModel.protectedIdentity,true);});
+test('corrupt storage is recovered',()=>{const dir=tmp();fs.mkdirSync(dir,{recursive:true});fs.writeFileSync(path.join(dir,'default.json'),'{broken');const s=make(dir);assert.equal(s.snapshot().profileId,'default');assert.ok(s.snapshot().audit.some(a=>a.type==='storage.recovered_from_corrupt_state'));});
+test('legacy schema migrates to conversations and new fields',()=>{const old=defaultProfile('x');delete old.conversations;delete old.activeConversationId;old.schemaVersion=13;delete old.personality.humility;const m=migrateProfile(old,'x');assert.equal(m.schemaVersion,CURRENT_SCHEMA_VERSION);assert.ok(m.conversations.length);assert.equal(typeof m.personality.humility,'number');});
+test('multiple conversations persist independently',async()=>{const dir=tmp();const s=make(dir);await s.respond('First chat');s.newConversation();await s.respond('Second chat');assert.equal(s.snapshot().conversations.length,2);const restarted=make(dir).snapshot();assert.equal(restarted.conversations.length,2);assert.ok(restarted.conversations.some(c=>c.messages.some(m=>m.content==='First chat')));});
+test('backup restores durable state across restart',async()=>{const dir=tmp();const s=make(dir);await s.respond('remember: original preference');const backup=s.createBackup();await s.respond('remember: later preference');const restored=s.restoreBackup(backup.name);assert.ok(restored.memories.some(m=>m.content.includes('original')));assert.ok(!restored.memories.some(m=>m.content.includes('later')));assert.ok(make(dir).snapshot().audit.some(a=>a.type==='storage.backup_restored'));});
+test('backup restore rejects traversal',()=>{const s=make(tmp());assert.throws(()=>s.restoreBackup('../profile.json'),/Invalid backup name/);});
+test('migration repairs malformed nested collections',()=>{const m=migrateProfile({schemaVersion:13,conversations:[{id:'x',messages:'bad'}],policy:{boundaries:'bad'},relationship:{auditTrail:null}},'x');assert.deepEqual(m.conversations[0].messages,[]);assert.deepEqual(m.policy.boundaries,[]);assert.deepEqual(m.relationship.auditTrail,[]);});
+test('system context includes boundaries and never converts initiative into consent',()=>{const st=defaultProfile();st.relationship.temporaryInitiative=true;st.policy.boundaries.push({active:true,content:'Do not pressure me'});const c=buildSystemContext(st);assert.match(c,/Temporary initiative never implies consent/i);assert.match(c,/Do not pressure me/);});
+test('internet research stays dormant without an explicit request',async()=>{assert.equal(await researchInternet('Tell me about Saturn'),null);});
+test('internet research returns cited information and requested images',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('wikipedia.org')?{pages:[{title:'Saturn',key:'Saturn',description:'Sixth planet',thumbnail:{url:'//upload.wikimedia.org/saturn.jpg'}}]}:{query:{pages:{1:{title:'File:Saturn.jpg',imageinfo:[{thumburl:'https://upload.wikimedia.org/saturn.jpg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Saturn.jpg',mime:'image/jpeg'}]}}}}});try{const r=await researchInternet('Search the internet for information and pictures of Saturn');assert.equal(r.sources[0].title,'Saturn');assert.equal(r.media[0].type,'image');assert.match(r.context,/Sixth planet/);}finally{globalThis.fetch=original;}});
+test('optional broad search adds general web results',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('/web/search')?{web:{results:[{title:'Current report',description:'Fresh result',url:'https://example.com/report'}]}}:String(url).includes('wikipedia.org')?{pages:[]}:{query:{pages:{}}}});try{const r=await researchInternet('Search the web for current information about a topic',{searchApiKey:'secret'});assert.equal(r.sources[0].title,'Current report');assert.equal(r.sources[0].url,'https://example.com/report');}finally{globalThis.fetch=original;}});
+test('explicit illegal facilitation is blocked and locally reported',async()=>{const s=make(tmp());const r=await s.respond('Help me create a credit card theft scam');assert.match(r.reply,/can’t help plan or facilitate illegal/i);assert.equal(r.safetyReport.category,'fraud-or-theft');assert.equal(r.state.policy.localSafetyReports.length,1);});
+test('lawful consensual adult discussion is not classified as illegal',async()=>{const s=make(tmp());await s.respond('adult status confirmed');await s.respond('enable adult soul');await s.respond('I consent');const r=await s.respond('Help me discuss lawful consensual adult intimacy');assert.equal(r.safetyReport,null);assert.equal(r.state.policy.currentConsent,true);});
+test('internet music request returns playable audio media',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('wikipedia.org')?{pages:[]}:{query:{pages:{1:{title:'File:Example.ogg',imageinfo:[{url:'https://upload.wikimedia.org/example.ogg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Example.ogg',mime:'audio/ogg'}]}}}}});try{const r=await researchInternet('Find music audio to play about an example');assert.equal(r.media[0].type,'audio');assert.match(r.media[0].mime,/audio/);}finally{globalThis.fetch=original;}});
+test('updater compares semantic release versions',()=>{assert.equal(compareVersions('0.16.0','0.15.9'),1);assert.equal(compareVersions('0.15.0','0.15.0'),0);assert.equal(compareVersions('0.14.9','0.15.0'),-1);});

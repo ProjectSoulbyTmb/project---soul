@@ -1,0 +1,18 @@
+.research-panel { margin-top: 14px; border: 1px solid var(--line); background: rgba(16,24,40,.7); border-radius: 14px; padding: 13px; display: grid; gap: 10px; }
+.research-title { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+.research-source { display: grid; gap: 3px; }
+.research-source small { color: var(--muted); line-height: 1.4; }
+.web-link { border: 0; background: transparent; color: #9dc3ff; padding: 0; text-align: left; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; }
+.media-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+.media-card { border: 1px solid var(--line); background: #0b1220; border-radius: 10px; padding: 8px; display: grid; gap: 7px; min-width: 0; }
+.media-card img, .media-card video { width: 100%; max-height: 280px; object-fit: contain; border-radius: 7px; background: #050812; }
+.media-card .web-link { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width:560px) { .media-grid { grid-template-columns: 1fr; } }
+.media-launch { min-height: 120px; border: 1px solid var(--line); border-radius: 8px; background: radial-gradient(circle at center,#293b61,#0a1020); color: var(--text); cursor: pointer; font-weight: 600; }
+.media-dock { position: fixed; z-index: 20; top: 70px; right: 20px; width: min(560px,calc(100vw - 40px)); max-height: calc(100vh - 90px); overflow: auto; border: 1px solid #455a7c; border-radius: 15px; background: rgba(10,16,29,.97); box-shadow: 0 20px 60px rgba(0,0,0,.55); padding: 12px; display: grid; grid-template-columns: minmax(0,1fr) repeat(7,auto); gap: 8px; align-items: center; }
+.media-now { min-width: 0; display: grid; }
+.media-now strong, .media-now small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.media-now small { color: var(--muted); font-size: 10px; }
+.media-dock button { border: 1px solid var(--line); border-radius: 8px; background: #202c43; color: var(--text); padding: 7px 9px; cursor: pointer; }
+.media-dock audio, .media-dock video { grid-column: 1 / -1; width: 100%; max-height: 55vh; border-radius: 9px; background: #03050a; }
+@media (max-width:560px) { .media-dock { top: 62px; right: 8px; width: calc(100vw - 16px); grid-template-columns: minmax(0,1fr) auto auto auto; } #mediaSourceBtn { grid-column: 1 / -2; } }

@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https:; media-src https:; connect-src 'none'; object-src 'none'" />
+  <title>Project Soul Alpha v.0.15</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="internet.css" />
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand-row">
+        <div class="soul-mark" aria-hidden="true"><span></span></div>
+        <div><strong>Project Soul Alpha</strong><small>v.0.15 · persistent conversation</small></div>
+      </div>
+      <button class="new-chat" id="newChatBtn">＋ New conversation</button>
+      <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
+      <div class="sidebar-footer">
+        <button class="nav-btn" data-view="memory">Memory</button>
+        <button class="nav-btn" data-view="identity">Identity</button>
+        <button class="nav-btn" data-view="settings">Settings</button>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
+        <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
+        <div class="top-actions"><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span></div>
+      </header>
+
+      <section class="view active" id="chatView">
+        <div class="chat-scroll" id="chatScroll">
+          <div class="welcome" id="welcome">
+            <div class="soul-mark large" aria-hidden="true"><span></span></div>
+            <h1>Begin anywhere.</h1>
+            <p>Soul remembers what you choose, adapts from feedback, and keeps continuity on this device.</p>
+            <div class="starter-grid">
+              <button data-starter="Hello Soul. Tell me who you are.">Meet Soul</button>
+              <button data-starter="I want to talk something through with you.">Talk something through</button>
+              <button data-starter="Remember that I prefer concise, direct answers.">Set a preference</button>
+              <button data-starter="What do you remember about me?">Review memory</button>
+              <button data-starter="Search the internet for information and pictures of Saturn.">Search the internet</button>
+            </div>
+          </div>
+          <div class="messages" id="messages" aria-live="polite"></div>
+        </div>
+        <form class="composer" id="chatForm">
+          <textarea id="messageInput" rows="1" maxlength="12000" placeholder="Message Soul…" aria-label="Message Soul"></textarea>
+          <button type="submit" id="sendBtn" aria-label="Send message">↑</button>
+          <div class="composer-note">Enter to send · Shift+Enter for a new line</div>
+        </form>
+      </section>
+
+      <section class="view panel-view" id="memoryView">
+        <div class="panel-head"><div><h2>Memory</h2><p>Durable facts and preferences Soul can carry across conversations.</p></div></div>
+        <form class="memory-form" id="memoryForm"><input id="memoryInput" maxlength="1000" placeholder="Add something Soul should remember" /><button>Remember</button></form>
+        <div class="cards" id="memoryCards"></div>
+      </section>
+
+      <section class="view panel-view" id="identityView">
+        <div class="panel-head"><div><h2>Identity & continuity</h2><p>The protected self-model, adaptive traits, relationship stance, and consent state.</p></div></div>
+        <div class="identity-grid">
+          <div class="card"><h3>Protected identity</h3><div id="selfModel"></div></div>
+          <div class="card"><h3>Adaptive personality</h3><div id="traits"></div></div>
+          <div class="card"><h3>Relationship stance</h3><div id="relationship"></div></div>
+          <div class="card"><h3>Safety & consent</h3><div id="policy"></div><div class="policy-actions"><button data-command="adult status confirmed">Confirm adult status</button><button data-command="enable adult soul">Enable Adult Soul</button><button data-command="I consent">Grant current consent</button><button class="danger-soft" data-command="revoke consent">Revoke consent</button><button data-command="standard mode">Standard mode</button></div></div>
+        </div>
+      </section>
+
+      <section class="view panel-view" id="settingsView">
+        <div class="panel-head"><div><h2>Conversation engine</h2><p>Use Soul offline, connect a local model service, or connect a compatible remote endpoint.</p></div></div>
+        <form id="settingsForm" class="settings-card">
+          <label>Provider<select id="providerSelect"><option value="offline">Soul Offline</option><option value="local">Local model service</option><option value="compatible">Compatible remote endpoint</option></select></label>
+          <label>Endpoint<input id="endpointInput" placeholder="http://127.0.0.1:11434 or provider base URL" /></label>
+          <label>Model<input id="modelInput" placeholder="Model name" /></label>
+          <label>API key<input id="apiKeyInput" type="password" autocomplete="off" placeholder="Leave blank to keep stored key" /></label>
+          <label class="check"><input type="checkbox" id="clearKeyInput" /> Clear stored API key</label>
+          <label>Broad web-search key (optional)<input id="searchApiKeyInput" type="password" autocomplete="off" placeholder="Brave Search API key; leave blank to keep" /></label>
+          <label class="check"><input type="checkbox" id="clearSearchKeyInput" /> Clear stored web-search key</label>
+          <p>Without a web-search key, information and media searches use the built-in public knowledge sources. Adding a key enables broader websites and image results.</p>
+          <div class="settings-actions"><button type="submit">Save settings</button><button type="button" class="secondary" id="openDataBtn">Open local data folder</button><button type="button" class="secondary" id="diagnosticsBtn">Show diagnostics</button></div>
+          <p class="settings-status" id="settingsStatus"></p>
+        </form>
+        <div class="card diagnostics hidden" id="diagnosticsCard"><pre id="diagnosticsText"></pre></div>
+        <div class="settings-card"><h3>Software updates</h3><p>Soul checks its official GitHub release channel at startup. Installers are accepted only over HTTPS and after SHA-256 verification.</p><div class="settings-actions"><button type="button" id="checkUpdateBtn">Check for updates</button><button type="button" class="secondary hidden" id="installUpdateBtn">Download and install</button></div><p class="settings-status" id="updateStatus"></p></div>
+        <div class="settings-card"><h3>Backups</h3><p>Create a portable local snapshot or restore an earlier snapshot.</p><div class="settings-actions"><button type="button" id="backupBtn">Create backup</button><button type="button" class="secondary" id="refreshBackupsBtn">Refresh list</button></div><label>Available backups<select id="backupSelect"></select></label><button type="button" class="secondary" id="restoreBackupBtn">Restore selected backup</button><p class="settings-status" id="backupStatus"></p></div>
+        <div class="danger-zone card"><h3>Reset Soul</h3><p>Deletes the current profile state from the app and creates a fresh local identity profile. This cannot be undone from the UI.</p><button class="danger" id="resetBtn">Reset current Soul profile</button></div>
+      </section>
+    </main>
+  </div>
+  <section class="media-dock hidden" id="mediaDock" aria-label="Soul media player">
+    <div class="media-now"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small></div>
+    <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
+    <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
+    <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
+    <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
+    <button type="button" id="mediaSimilarBtn">Similar</button>
+    <audio id="audioPlayer" controls preload="metadata"></audio>
+    <video id="videoPlayer" controls preload="metadata"></video>
+    <button type="button" id="mediaSpotifyBtn">Spotify</button>
+    <button type="button" id="mediaYouTubeBtn">YouTube</button>
+    <button type="button" id="mediaSourceBtn">Source</button>
+    <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
+  </section>
+  <script src="renderer.js"></script>
+</body>
+</html>

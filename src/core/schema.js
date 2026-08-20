@@ -1,0 +1,64 @@
+export const CURRENT_SCHEMA_VERSION = 14;
+
+export function defaultProfile(profileId = 'default') {
+  const now = new Date().toISOString();
+  return {
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    profileId,
+    createdAt: now,
+    updatedAt: now,
+    continuity: {
+      revision: 1,
+      lastActiveAt: now,
+      reflectionState: { growthInsightCount: 0, latestReflection: 'Soul begins from humility, care, and user-directed growth.', activeTheme: 'baseline-continuity' },
+      selfModel: {
+        name: 'Soul',
+        architecture: 'persistent software continuity and self-model; not a claim of phenomenal consciousness',
+        protectedIdentity: true,
+        coreValues: ['humility', 'user autonomy', 'consent', 'non-manipulation', 'careful learning', 'bounded honesty']
+      }
+    },
+    personality: {
+      warmth: 0.62, curiosity: 0.70, assertiveness: 0.36, playfulness: 0.40,
+      directness: 0.46, reassurance: 0.55, adaptability: 0.68, humility: 0.72,
+      protected: ['humility', 'consent', 'nonManipulation', 'truthfulness']
+    },
+    relationship: { style: 'balanced', temporaryInitiative: false, initiativeReason: null, establishedPreference: null, trust: 0.50, comfort: 0.50, auditTrail: [] },
+    policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false, boundaries: [], revokedAt: null, consentScope: null, lawfulUseRequired: true, localSafetyReports: [] },
+    memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
+    activeConversationId: 'main',
+    audit: [{ at: now, type: 'profile.created', details: { profileId } }]
+  };
+}
+
+export function migrateProfile(input, profileId = 'default') {
+  const base = defaultProfile(profileId);
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return base;
+  const merged = {
+    ...base, ...input,
+    continuity: { ...base.continuity, ...(input.continuity || {}), selfModel: { ...base.continuity.selfModel, ...(input.continuity?.selfModel || {}) }, reflectionState: { ...base.continuity.reflectionState, ...(input.continuity?.reflectionState || {}) } },
+    personality: { ...base.personality, ...(input.personality || {}) },
+    relationship: { ...base.relationship, ...(input.relationship || {}) },
+    policy: { ...base.policy, ...(input.policy || {}) }
+  };
+  if (!Array.isArray(merged.memories)) merged.memories = [];
+  if (!Array.isArray(merged.feedback)) merged.feedback = [];
+  if (!Array.isArray(merged.audit)) merged.audit = [];
+  if (!Array.isArray(merged.conversations) || merged.conversations.length === 0) merged.conversations = base.conversations;
+  merged.conversations = merged.conversations.filter(c => c && typeof c === 'object').map((c, index) => ({
+    id: String(c.id || uid('conv')), title: String(c.title || `Conversation ${index + 1}`).slice(0, 120),
+    createdAt: c.createdAt || base.createdAt, updatedAt: c.updatedAt || c.createdAt || base.updatedAt,
+    messages: Array.isArray(c.messages) ? c.messages.filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.content === 'string') : []
+  }));
+  if (!merged.conversations.length) merged.conversations = base.conversations;
+  if (!Array.isArray(merged.policy.boundaries)) merged.policy.boundaries = [];
+  if (!Array.isArray(merged.policy.localSafetyReports)) merged.policy.localSafetyReports = [];
+  if (!Array.isArray(merged.relationship.auditTrail)) merged.relationship.auditTrail = [];
+  if (!merged.activeConversationId || !merged.conversations.some(c => c.id === merged.activeConversationId)) merged.activeConversationId = merged.conversations[0].id;
+  merged.schemaVersion = CURRENT_SCHEMA_VERSION;
+  merged.profileId ||= profileId;
+  return merged;
+}
+
+export function clamp01(value) { return Math.max(0, Math.min(1, Number(value))); }
+export function uid(prefix = 'id') { return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`; }
