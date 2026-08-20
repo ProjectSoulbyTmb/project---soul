@@ -28,6 +28,6 @@ jobs:
       - name: Reject private key material
         shell: pwsh
         run: |
-          $matches = git grep -n -I -E 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|BEGIN PKCS12' -- ':!pnpm-lock.yaml'
+          $matches = git grep -n -I -E 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|BEGIN PKCS12' -- ':!pnpm-lock.yaml' ':!.github/workflows/security.yml'
           if ($LASTEXITCODE -eq 0) { $matches; throw 'Private key material found in tracked files.' }
           if ($LASTEXITCODE -ne 1) { throw 'Secret scan failed.' }
