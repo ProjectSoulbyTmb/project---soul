@@ -1,5 +1,10 @@
 # Project Soul Alpha v.0.15
 
+## v0.15.8
+
+- Rebuilt the complete current Project Soul source as a conventional Windows setup application and portable executable.
+- Retained the reproducible ready-folder release as the online fallback for systems where an unsigned installer is blocked.
+
 ## v0.15.7
 
 - Added configurable user-led, balanced, and proactive assistant autonomy with persistent reflection and initiative controls.
