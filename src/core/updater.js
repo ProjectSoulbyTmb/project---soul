@@ -13,7 +13,7 @@ async function response(url, options = {}) { const res = await fetch(secureUrl(u
 
 export async function checkForUpdate({ manifestUrl, currentVersion }) {
   if (!manifestUrl) return { configured: false, available: false, currentVersion };
-  const res = await response(manifestUrl, { headers: { Accept: 'application/json', 'User-Agent': `Project-Soul-Studios/${currentVersion}` } });
+  const res = await response(manifestUrl, { headers: { Accept: 'application/json', 'User-Agent': `Eidovara/${currentVersion}` } });
   const manifest = await res.json();
   const version = String(manifest?.version || ''); const downloadUrl = secureUrl(manifest?.url).toString(); const sha256 = String(manifest?.sha256 || '').toUpperCase();
   if (!/^\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(version)) throw new Error('Update manifest has an invalid version.');

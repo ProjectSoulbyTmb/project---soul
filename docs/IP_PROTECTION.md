@@ -1,4 +1,4 @@
-# Project Soul intellectual-property protection plan
+# Eidovara intellectual-property protection plan
 
 This operational checklist is not legal advice.
 
@@ -25,7 +25,7 @@ This operational checklist is not legal advice.
 
 ## Other protection
 
-- Evaluate federal trademark registration for Project Soul and Project Soul Consciousness Studios.
+- Evaluate federal trademark registration for Eidovara and Soul Consciousness Studios.
 - Evaluate U.S. Copyright Office registration for qualifying source-code versions and visual assets.
 - Use written confidentiality and invention-assignment agreements before sharing unpublished development with contractors or collaborators.
 - Obtain a commercial code-signing certificate through a verified legal person or business; never publish its private key.

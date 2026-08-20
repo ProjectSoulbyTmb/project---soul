@@ -1,4 +1,4 @@
-# Project Soul GitHub release setup
+# Eidovara GitHub release setup
 
 Repository: `https://github.com/ProjectSoulbyTmb/project---soul`
 
@@ -16,7 +16,7 @@ git init
 git branch -M main
 git remote add origin https://github.com/ProjectSoulbyTmb/project---soul.git
 git add .
-git commit -m "Publish Project Soul Alpha"
+git commit -m "Publish Eidovara"
 git push -u origin main
 git tag v0.15.0
 git push origin v0.15.0

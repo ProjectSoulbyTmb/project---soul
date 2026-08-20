@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https:; media-src https:; connect-src 'none'; object-src 'none'" />
-  <title>Project Soul Studios v0.16</title>
+  <title>Eidovara v0.17</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="internet.css" />
 </head>
@@ -13,7 +13,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand-row">
         <div class="soul-mark" aria-hidden="true"><span></span></div>
-        <div><strong>Project Soul Studios</strong><small>v0.16 · invented and created by Tyler Michael Bosworth</small></div>
+        <div><strong>Eidovara</strong><small>v0.17 · Soul Consciousness Studios · solely owned and created by Tyler Michael Bosworth</small></div>
       </div>
       <button class="new-chat" id="newChatBtn">＋ New conversation</button>
       <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
@@ -30,7 +30,7 @@
       <header class="topbar">
         <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
         <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
-        <div class="top-actions"><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span></div>
+        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul companion; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span></div>
       </header>
 
       <section class="view active" id="chatView">
@@ -51,7 +51,7 @@
         </div>
         <form class="composer" id="chatForm">
           <textarea id="messageInput" rows="1" maxlength="12000" placeholder="Message Soul…" aria-label="Message Soul"></textarea>
-          <button type="submit" id="sendBtn" aria-label="Send message">↑</button>
+          <button type="button" id="voiceInputBtn" class="voice-input hidden" aria-label="Dictate message" title="Dictate message">🎙</button><button type="submit" id="sendBtn" aria-label="Send message">↑</button>
           <div class="composer-note">Enter to send · Shift+Enter for a new line</div>
         </form>
       </section>
@@ -63,7 +63,7 @@
         <div class="gaming-toolbar card"><div><strong>Gaming mode</strong><p>Reduces Soul's animated lighting and transparency while you play.</p></div><label class="switch-label"><input type="checkbox" id="gamingModeInput" /> Low-overhead mode</label></div>
         <div class="apps-grid" id="appsGrid"></div>
         <p class="settings-status" id="appsStatus"></p>
-        <div class="card"><h3>Graphics & media engine</h3><p>Project Soul Studios uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
+        <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
       <section class="view panel-view" id="memoryView">
@@ -96,12 +96,13 @@
           <div class="appearance-fields"><label>Background color<input id="themeBackground" type="color" value="#080c16" /></label><label>Panel color<input id="themePanel" type="color" value="#101828" /></label><label>Accent color<input id="themeAccent" type="color" value="#8f7cff" /></label></div>
           <label>Window surface opacity <span id="themeTransparencyValue">96%</span><input id="themeTransparency" type="range" min="65" max="100" value="96" /></label>
           <label class="check"><input type="checkbox" id="themeRgb" /> Animated RGB lighting effects</label>
+          <fieldset class="companion-settings"><legend>Soul companion</legend><p>A lightweight companion that does not inject into games or require a third-party avatar engine.</p><div class="appearance-fields"><label>Avatar<select id="avatarMode"><option value="3d">3D-styled orb</option><option value="2d">2D character</option><option value="hidden">Hidden</option></select></label><label>Motion<select id="avatarMotion"><option value="gentle">Gentle</option><option value="full">Lively</option><option value="reduced">Reduced</option></select></label><label>System voice<select id="voiceSelect"><option value="">Windows default</option></select></label></div><label class="check"><input type="checkbox" id="voiceEnabled" /> Read new Soul replies aloud</label><div class="appearance-fields"><label>Voice speed<input id="voiceRate" type="range" min="0.5" max="2" step="0.1" value="1" /></label><label>Voice pitch<input id="voicePitch" type="range" min="0.5" max="2" step="0.1" value="1" /></label><button type="button" class="secondary" id="voicePreviewBtn">Preview voice</button></div><small id="voiceSupportStatus">Uses voices installed on this Windows device. Voice input is optional and requires microphone access.</small></fieldset>
           <div class="settings-actions"><button type="submit">Save settings</button><button type="button" class="secondary" id="openDataBtn">Open local data folder</button><button type="button" class="secondary" id="diagnosticsBtn">Show diagnostics</button></div>
           <p class="settings-status" id="settingsStatus"></p>
         </form>
         <div class="card diagnostics hidden" id="diagnosticsCard"><pre id="diagnosticsText"></pre></div>
         <div class="settings-card"><h3>Software updates</h3><p>Soul checks its official GitHub release channel at startup. Installers are accepted only over HTTPS and after SHA-256 verification.</p><div class="settings-actions"><button type="button" id="checkUpdateBtn">Check for updates</button><button type="button" class="secondary hidden" id="installUpdateBtn">Download and install</button></div><p class="settings-status" id="updateStatus"></p></div>
-        <div class="settings-card" id="editionCard"><h3 id="editionTitle">Soul Free</h3><p id="editionDescription">A complete core assistant with offline/local models, memory, media, backups, updates, and up to three linked apps.</p><button type="button" class="hidden" id="upgradeBtn">View Soul Premium</button></div>
+        <div class="settings-card" id="editionCard"><h3 id="editionTitle">Eidovara Free</h3><p id="editionDescription">A complete core assistant with offline/local models, memory, media, backups, updates, and up to three linked apps.</p><button type="button" class="hidden" id="upgradeBtn">View Eidovara Premium</button></div>
         <div class="settings-card"><h3>Assistant setup</h3><p>Change what you want Soul to help with, including gaming, editing, studying, personal use, and streaming.</p><button type="button" id="openSetupBtn">Configure assistant</button></div>
         <form class="settings-card" id="assistantBehaviorForm"><h3>Soul behavior & autonomy</h3><p>Tailor how Soul communicates and which capabilities it may offer. Application launching always requires user confirmation.</p><label>Autonomy<select id="assistantAutonomy"><option value="user-led">User-led</option><option value="balanced">Balanced</option><option value="proactive">Proactive within the current goal</option></select></label><div class="appearance-fields"><label>Response length<select id="responseLength"><option value="concise">Concise</option><option value="balanced">Balanced</option><option value="detailed">Detailed</option></select></label><label>Tone<select id="responseTone"><option value="natural">Natural</option><option value="direct">Direct</option><option value="warm">Warm</option><option value="professional">Professional</option><option value="playful">Playful</option></select></label><label>Focus mode<select id="focusMode"><option value="general">General</option><option value="gaming">Gaming</option><option value="streaming">Streaming</option><option value="studying">Studying</option><option value="creative">Creative</option><option value="productivity">Productivity</option></select></label></div><label>Accessibility or interaction needs<input id="assistantAccessibility" maxlength="500" placeholder="Reading level, reduced motion, keyboard-first, pacing, or other needs" /></label><label>Web research<select id="webResearchPolicy"><option value="ask">Only on explicit request</option><option value="enabled">May suggest research</option><option value="disabled">Disabled</option></select></label><label>Media playback<select id="mediaPlaybackPolicy"><option value="confirm">Confirm first</option><option value="enabled">Enabled</option><option value="disabled">Disabled</option></select></label><label class="check"><input type="checkbox" id="memoryLearning" /> Allow durable preference learning</label><label class="check"><input type="checkbox" id="assistantInitiative" /> Allow suggestions and reversible local initiative</label><label class="check"><input type="checkbox" id="assistantReflection" /> Allow continuity reflection and learning from feedback</label><button type="submit">Save behavior</button><p class="settings-status" id="assistantBehaviorStatus"></p></form>
         <div class="settings-card"><h3>Backups</h3><p>Create a portable local snapshot or restore an earlier snapshot.</p><div class="settings-actions"><button type="button" id="backupBtn">Create backup</button><button type="button" class="secondary" id="refreshBackupsBtn">Refresh list</button></div><label>Available backups<select id="backupSelect"></select></label><button type="button" class="secondary" id="restoreBackupBtn">Restore selected backup</button><p class="settings-status" id="backupStatus"></p></div>
@@ -149,10 +150,10 @@
     </form>
     <form class="setup-dialog admin-dialog hidden" id="adminPanelForm">
       <div><h1>Platform administration</h1><p>Edition testing and commerce configuration stay private to this local admin session.</p></div>
-      <div class="dashboard-grid"><div class="dashboard-card"><small>Soul Free</small><strong>Core assistant, memory, media, backups, updates, and 3 apps</strong></div><div class="dashboard-card"><small>Soul Premium</small><strong>Everything, remote providers, broad search, and unlimited apps</strong></div></div>
-      <label class="setup-field">Active edition<select id="adminEdition"><option value="free">Soul Free</option><option value="premium">Soul Premium</option></select></label>
+      <div class="dashboard-grid"><div class="dashboard-card"><small>Eidovara Free</small><strong>Core assistant, memory, media, backups, updates, and 3 apps</strong></div><div class="dashboard-card"><small>Eidovara Premium</small><strong>Everything, remote providers, broad search, and unlimited apps</strong></div></div>
+      <label class="setup-field">Active edition<select id="adminEdition"><option value="free">Eidovara Free</option><option value="premium">Eidovara Premium</option></select></label>
       <label class="setup-field">Secure store / payment page<input id="adminStoreUrl" type="url" maxlength="1000" placeholder="https://your-store.example/upgrade" /></label>
-      <label class="setup-field">Soul HTTPS service<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://project-soul-studios-api.example.workers.dev" /></label>
+      <label class="setup-field">Soul HTTPS service<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" /></label>
       <p>Checkout must be hosted by an HTTPS payment provider. Soul never collects card numbers, security codes, or payment certificates.</p>
       <p class="settings-status" id="adminPanelStatus"></p>
       <div class="setup-actions"><button type="button" class="secondary" id="adminStoreBtn">Open store</button><button type="button" class="secondary" id="adminServiceBtn">Test service</button><button type="button" class="secondary" id="adminLockBtn">Lock</button><button type="submit">Save</button></div>

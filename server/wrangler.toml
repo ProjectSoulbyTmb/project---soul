@@ -1,4 +1,4 @@
-name = "project-soul-studios-api"
+name = "eidovara-api"
 main = "worker.js"
 compatibility_date = "2026-08-20"
 

@@ -1,4 +1,16 @@
-# Project Soul Studios
+# Eidovara
+
+## v0.17.0
+
+- Renamed the application to the preliminarily screened coined mark Eidovara™ and identified Soul Consciousness Studios™ as Tyler Michael Bosworth's intended business name.
+- Preserved Soul as the assistant personality while separating its identity from the product and publisher names.
+- Hardened provider context against persistent-memory prompt injection and stopped local OBS endpoints from entering remote model context.
+- Added a hideable 2D/3D-styled Soul companion, reduced-motion controls, installed Windows voice selection, optional reply narration, speech preview, and gracefully detected dictation.
+- Clarified that OBS is an optional stream helper, not a core application dependency.
+- Added a license-screened companion/voice adapter roadmap, Dependabot coverage, recurring Windows security checks, private-key scanning, and stricter public-repository exclusions.
+- Added Electron permission-check and webview-attachment denial alongside existing sandbox, isolation, navigation, and permission-request controls.
+- Added restrictive website content-security policies, responsible disclosure metadata, company-formation guidance, and clearer pre-formation IP ownership language.
+- Updated package identifiers, artifacts, release evidence, website, updater, documentation, and platform names for Eidovara.
 
 ## v0.16.1
 
@@ -11,7 +23,7 @@
 
 ## v0.16.0
 
-- Renamed the product to Project Soul Studios and added creator, licensing, trademark, contribution, and provenance controls.
+- Renamed the product to Eidovara and added creator, licensing, trademark, contribution, and provenance controls.
 - Hardened renderer permissions, provider/network response limits, redirect handling, atomic recovery, and application identifiers.
 - Added a responsive tailored dashboard with role, focus, style, memory, app, and privacy summaries plus quick workflows.
 - Added persistent response length, tone, focus, accessibility, web research, media playback, memory learning, reflection, and autonomy controls.

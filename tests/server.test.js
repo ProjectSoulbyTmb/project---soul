@@ -14,3 +14,12 @@ test('server fails closed for writes and unknown paths', async () => {
   assert.equal((await worker.fetch(new Request('https://api.test/health', { method: 'POST' }), {})).status, 405);
   assert.equal((await worker.fetch(new Request('https://api.test/private'), {})).status, 404);
 });
+
+test('server health is stateless and sends hardened headers', async () => {
+  const res = await worker.fetch(new Request('https://api.test/health'));
+  const body = await res.json();
+  assert.equal(body.status, 'ok');
+  assert.equal(res.headers.get('x-frame-options'), 'DENY');
+  assert.match(res.headers.get('strict-transport-security'), /max-age=/);
+  assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
+});

@@ -12,9 +12,9 @@ import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow, engine, logPath, configPath;
-let config = { provider: 'offline', endpoint: '', model: '', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false } };
+let config = { provider: 'offline', endpoint: '', model: '', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1 } };
 let pendingUpdate = null;
-const ADMIN_SALT = 'project-soul-studios-admin-v1';
+const ADMIN_SALT = 'eidovara-admin-v1';
 const ADMIN_PASSWORD_HASH = '095c7f5e5913f03b51b86d6d1280099679062338e663bbc64c8488fcdafd1f49';
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -30,7 +30,7 @@ function saveConfig() { atomicReplace(configPath, JSON.stringify(config, null, 2
 function getApiKey() { if (!config.encryptedApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedApiKey, 'base64')) : ''; } catch { return ''; } }
 function getSearchApiKey() { if (!config.encryptedSearchApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedSearchApiKey, 'base64')) : ''; } catch { return ''; } }
 function entitlement() { return config.edition === 'premium' ? 'premium' : 'free'; }
-function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
@@ -43,21 +43,23 @@ function createWindow() {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
     engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default' }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Project Soul Studios v0.16', backgroundColor: '#0b1020', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17', backgroundColor: '#0b1020', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
-    mainWindow.webContents.session.setPermissionRequestHandler((_wc, _permission, callback) => callback(false));
+    mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
+    mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
     mainWindow.once('ready-to-show', () => mainWindow.show());
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
-    mainWindow.webContents.on('did-fail-load', (_e, code, desc, url) => fatal('Project Soul failed to load', new Error(`${code}: ${desc} (${url})`)));
-    mainWindow.webContents.on('render-process-gone', (_e, details) => fatal('Project Soul renderer stopped', new Error(JSON.stringify(details))));
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html')).catch(err => fatal('Project Soul interface error', err));
-  } catch (err) { fatal('Project Soul startup error', err); }
+    mainWindow.webContents.on('will-attach-webview', e => e.preventDefault());
+    mainWindow.webContents.on('did-fail-load', (_e, code, desc, url) => fatal('Eidovara failed to load', new Error(`${code}: ${desc} (${url})`)));
+    mainWindow.webContents.on('render-process-gone', (_e, details) => fatal('Eidovara renderer stopped', new Error(JSON.stringify(details))));
+    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html')).catch(err => fatal('Eidovara interface error', err));
+  } catch (err) { fatal('Eidovara startup error', err); }
 }
 
-process.on('uncaughtException', err => fatal('Project Soul startup error', err));
-process.on('unhandledRejection', err => fatal('Project Soul promise error', err));
-app.whenReady().then(createWindow).catch(err => fatal('Project Soul initialization error', err));
+process.on('uncaughtException', err => fatal('Eidovara startup error', err));
+process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
+app.whenReady().then(createWindow).catch(err => fatal('Eidovara initialization error', err));
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
@@ -100,11 +102,12 @@ ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; }
 ipcMain.handle('soul:checkService', async () => { const base = publicConfig().serviceUrl; if (!base) return { configured: false }; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 5000); try { const res = await fetch(`${base}/health`, { signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }); if (!res.ok) throw new Error(`Service returned HTTP ${res.status}.`); const raw = await res.text(); if (Buffer.byteLength(raw) > 32_768) throw new Error('Service response is too large.'); const body = JSON.parse(raw); return { configured: true, online: body?.status === 'ok', service: String(body?.service || '').slice(0, 100), version: String(body?.version || '').slice(0, 40) }; } finally { clearTimeout(timer); } });
 ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   const provider = ['offline','local','compatible'].includes(incoming?.provider) ? incoming.provider : 'offline';
-  if (entitlement() === 'free' && provider === 'compatible') throw new Error('Remote model endpoints are a Premium feature. Soul Free supports offline and local models.');
+  if (entitlement() === 'free' && provider === 'compatible') throw new Error('Remote model endpoints are a Premium feature. Eidovara Free supports offline and local models.');
   config.provider = provider;
   config.endpoint = String(incoming?.endpoint || '').slice(0, 500);
   config.model = String(incoming?.model || '').slice(0, 200);
   if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#080c16'), panel: color(incoming.theme.panel, '#101828'), accent: color(incoming.theme.accent, '#8f7cff'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
+  if (incoming?.companion && typeof incoming.companion === 'object') config.companion = { avatarMode: ['hidden','2d','3d'].includes(incoming.companion.avatarMode) ? incoming.companion.avatarMode : '3d', motion: ['full','gentle','reduced'].includes(incoming.companion.motion) ? incoming.companion.motion : 'gentle', voiceEnabled: Boolean(incoming.companion.voiceEnabled), voiceName: String(incoming.companion.voiceName || '').slice(0, 200), rate: Math.max(0.5, Math.min(2, Number(incoming.companion.rate) || 1)), pitch: Math.max(0.5, Math.min(2, Number(incoming.companion.pitch) || 1)) };
   if (typeof incoming?.apiKey === 'string' && incoming.apiKey) {
     if (!safeStorage.isEncryptionAvailable()) throw new Error('Secure credential storage is unavailable on this system.');
     config.encryptedApiKey = safeStorage.encryptString(incoming.apiKey).toString('base64');
@@ -130,12 +133,12 @@ ipcMain.handle('soul:checkForUpdates', async () => { pendingUpdate = await check
 ipcMain.handle('soul:installUpdate', async () => {
   if (!pendingUpdate?.available) pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() });
   if (!pendingUpdate.available) throw new Error('No update is available.');
-  const answer = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: ['Download and open', 'Cancel'], defaultId: 0, cancelId: 1, title: 'Install Project Soul update', message: `Install Project Soul ${pendingUpdate.version}?`, detail: pendingUpdate.packageType === 'ready-folder-zip' ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction.' : 'The installer will be downloaded over HTTPS, verified with SHA-256, and opened.' });
+  const answer = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: ['Download and open', 'Cancel'], defaultId: 0, cancelId: 1, title: 'Install Eidovara update', message: `Install Eidovara ${pendingUpdate.version}?`, detail: pendingUpdate.packageType === 'ready-folder-zip' ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction.' : 'The installer will be downloaded over HTTPS, verified with SHA-256, and opened.' });
   if (answer.response !== 0) return { cancelled: true };
   const downloaded = await downloadUpdate(pendingUpdate, path.join(app.getPath('userData'), 'updates'));
   const error = await shell.openPath(downloaded.path); if (error) throw new Error(error); return { ...downloaded, launched: true };
 });
-ipcMain.handle('soul:addApplication', async () => { if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Soul Free supports up to three linked applications. Premium removes this limit.'); const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Soul', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
+ipcMain.handle('soul:addApplication', async () => { if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.'); const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Eidovara', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
 ipcMain.handle('soul:launchApplication', async (_e, id) => { const entry = (config.apps || []).find(x => x.id === String(id)); if (!entry || !fs.existsSync(entry.path)) throw new Error('Application is unavailable or has moved.'); const error = await shell.openPath(entry.path); if (error) throw new Error(error); return true; });
 ipcMain.handle('soul:removeApplication', (_e, id) => { config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
 

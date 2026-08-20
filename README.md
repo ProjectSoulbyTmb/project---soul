@@ -1,20 +1,20 @@
-# Project Soul Studios v0.16 — Current Release
+# Eidovara v0.17 — Current Release
 
 ## Project statement
 
-Project Soul Studios is a customizable digital media, entertainment, and desktop-assistant platform invented and created by Tyler Michael Bosworth. It combines persistent local continuity, user-controlled memory, conversation, internet research, media playback, application launching, configurable autonomy, consent controls, backups, diagnostics, and verified updating in one Windows-oriented workspace.
+Eidovara™ is a customizable digital media, entertainment, and desktop-assistant platform solely owned and created by Tyler Michael Bosworth and published under his intended business name, Soul Consciousness Studios™. It combines persistent local continuity, user-controlled memory, conversation, internet research, media playback, application launching, configurable autonomy, consent controls, backups, diagnostics, and verified updating in one Windows-oriented workspace.
 
 The project goal is a broadly useful, user-directed desktop assistant while remaining accurate about its capabilities: Soul is software with a persistent self-model, not a human, a legal authority, or proof of phenomenal consciousness. Users remain responsible for lawful use in their jurisdiction.
 
-Project Soul Studios
+Eidovara by Soul Consciousness Studios
 
 > **Rights notice:** Copyright © 2026 Tyler Michael Bosworth. All rights reserved. The public repository is source-available for transparency and evaluation; it is not open-source. No patent, trademark, commercial-use, redistribution, modification, or derivative-work rights are granted except as stated in [LICENSE](LICENSE). See the [IP protection plan](docs/IP_PROTECTION.md).
 
-Tyler Michael Bosworth is identified in the project record as the sole creator and original author of Project Soul Studios' first-party material. Third-party components and services remain the property of their respective owners; see [AUTHORS.md](AUTHORS.md), [LICENSE](LICENSE), and [TRADEMARKS.md](TRADEMARKS.md).
+Tyler Michael Bosworth is identified in the project record as the sole creator and original author of Eidovara's first-party material. Third-party components and services remain the property of their respective owners; see [AUTHORS.md](AUTHORS.md), [LICENSE](LICENSE), and [TRADEMARKS.md](TRADEMARKS.md).
 
 ## Free and Premium editions
 
-Soul Free is a complete everyday release with unlimited conversations, offline and local-model assistance, core memory, built-in public research, media playback, backups, updates, personalization, and up to three linked Windows applications. Soul Premium includes everything and enables compatible remote model endpoints, broad keyed web search, unlimited linked applications, and premium appearance modules.
+Eidovara Free is a complete everyday release with unlimited conversations, offline and local-model assistance, core memory, built-in public research, media playback, backups, updates, personalization, and up to three linked Windows applications. Eidovara Premium includes everything and enables compatible remote model endpoints, broad keyed web search, unlimited linked applications, and premium appearance modules.
 
 The private local administration panel opens with Ctrl+A. Edition and store configuration are verified in the privileged process, sessions expire after 15 minutes, repeated password failures are rate-limited, and the password is not present in renderer files or logs. A configured store link must use HTTPS and opens in the system browser; Soul does not collect payment-card data.
 
@@ -32,7 +32,11 @@ DJ controls can remember the current track as a durable favorite, ask Soul to fi
 
 Production builds published by the included GitHub Actions workflow automatically use that repository's Releases feed. Soul checks the channel at startup and on demand, downloads only HTTPS installers declared by `update.json`, verifies the full SHA-256 digest, and asks before launching the installer. See `docs/GITHUB_RELEASES.md` for the one-time repository setup.
 
-On first launch, Soul asks which assistance roles the user wants: gaming/editing, stream helper, studying, personal use, creative work, or work/productivity, plus custom needs. Stream-helper setup records local OBS WebSocket connection details and streaming goals. The same wizard remains available from Settings, and its selections become part of Soul's persistent conversational context.
+On first launch, Soul asks which assistance roles the user wants: gaming/editing, studying, personal use, creative work, work/productivity, or the optional stream helper, plus custom needs. When selected, the stream helper records local OBS WebSocket connection details and streaming goals; OBS is not a core dependency. The same wizard remains available from Settings, and its selections become part of Soul's persistent conversational context.
+
+The local companion can be hidden or displayed as a lightweight 2D character or 3D-styled animated orb. Users can reduce motion, select an installed Windows speech voice, tune rate and pitch, preview speech, optionally read replies aloud, and use dictation when the installed Chromium/Windows speech service supports it. Speech playback is off by default, and the avatar does not inject into games or require an external avatar engine.
+
+Third-party neural voices and avatar runtimes are not silently bundled. The screened adapter roadmap and consent/license requirements are documented in [docs/COMPANION_MODELS.md](docs/COMPANION_MODELS.md). Public-repository privacy boundaries are documented in [docs/PUBLIC_REPOSITORY_POLICY.md](docs/PUBLIC_REPOSITORY_POLICY.md).
 
 The Apps & Gaming Hub lets each user select trusted Windows executables or shortcuts, keep a local application shelf, and launch games, OBS, editors, and media tools. Appearance controls persist custom background, panel, accent, opacity, and optional RGB effects. Low-overhead gaming mode disables decorative animation and blur while playing, and Diagnostics reports the active Chromium/GPU/media capabilities. Soul coordinates applications without injecting into or embedding third-party processes.
 
@@ -51,7 +55,7 @@ Profiles, memory, conversation history, relationship state, consent state, perso
 
 Settings can create and restore timestamped local profile backups. Restores are migrated and validated before replacing active state.
 
-“Consciousness” in Project Soul means persistent software continuity and a self-model. It is not a claim of phenomenal consciousness or human sentience.
+“Consciousness” in Eidovara means persistent software continuity and a self-model. It is not a claim of phenomenal consciousness or human sentience.
 
 ## Build targets
 
@@ -77,4 +81,4 @@ npm start
 
 The renderer has no Node.js access. Electron context isolation and sandboxing are enabled. The preload API exposes only narrow IPC operations. Model calls occur in the main process. Navigation and pop-up creation are blocked. Adult Soul state is structurally gated by adult-status confirmation, explicit enablement, and current scoped consent; relationship initiative is never treated as consent.
 
-Lawful consensual adult content remains controlled by the adult-status, enablement, and current-consent gates. Explicit requests to facilitate clearly illegal abuse, exploitation, violence, theft, fraud, trafficking, or unauthorized access are blocked and recorded in a local safety audit. Project Soul does not silently transmit conversations or accusations to third parties. Applicable law varies by location, and the software is not a substitute for qualified local legal advice or emergency services.
+Lawful consensual adult content remains controlled by the adult-status, enablement, and current-consent gates. Explicit requests to facilitate clearly illegal abuse, exploitation, violence, theft, fraud, trafficking, or unauthorized access are blocked and recorded in a local safety audit. Eidovara does not silently transmit conversations or accusations to third parties. Applicable law varies by location, and the software is not a substitute for qualified local legal advice or emergency services.

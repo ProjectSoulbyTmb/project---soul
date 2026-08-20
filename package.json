@@ -1,8 +1,8 @@
 {
-  "name": "project-soul-studios",
-  "version": "0.16.1",
-  "description": "Project Soul Studios privacy-focused desktop assistant and media workspace.",
-  "author": "Tyler Michael Bosworth, inventor and creator of Project Soul Studios",
+  "name": "eidovara",
+  "version": "0.17.0",
+  "description": "Eidovara privacy-focused desktop assistant and media workspace.",
+  "author": "Tyler Michael Bosworth, sole owner and creator; published by Soul Consciousness Studios",
   "license": "SEE LICENSE IN LICENSE",
   "copyright": "Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.",
   "repository": {
@@ -22,8 +22,8 @@
     "dist:win": "electron-builder --win nsis portable --x64",
     "dist": "npm run dist:win",
     "dist:linux": "electron-builder --linux AppImage deb --x64",
-    "dist:mac:x64": "electron-packager . 'Project Soul' --platform=darwin --arch=x64 --out=dist-mac --overwrite --asar --prune=true",
-    "dist:mac:arm64": "electron-packager . 'Project Soul' --platform=darwin --arch=arm64 --out=dist-mac --overwrite --asar --prune=true",
+    "dist:mac:x64": "electron-packager . 'Eidovara' --platform=darwin --arch=x64 --out=dist-mac --overwrite --asar --prune=true",
+    "dist:mac:arm64": "electron-packager . 'Eidovara' --platform=darwin --arch=arm64 --out=dist-mac --overwrite --asar --prune=true",
     "dist:dir": "electron-builder --dir"
   },
   "devDependencies": {
@@ -32,8 +32,8 @@
     "@electron/packager": "18.3.6"
   },
   "build": {
-    "appId": "org.projectsoul.desktop",
-    "productName": "Project Soul Studios",
+    "appId": "com.soulconsciousnessstudios.eidovara",
+    "productName": "Eidovara",
     "asar": true,
     "directories": {
       "output": "dist"
@@ -41,7 +41,14 @@
     "files": [
       "src/**/*",
       "package.json",
-      "README.md"
+      "README.md",
+      "LICENSE",
+      "NOTICE.md",
+      "PRIVACY.md",
+      "SECURITY.md",
+      "THIRD_PARTY_NOTICES.md",
+      "AUTHORS.md",
+      "TRADEMARKS.md"
     ],
     "win": {
       "signAndEditExecutable": false,
@@ -61,14 +68,14 @@
       ]
     },
     "nsis": {
-      "artifactName": "Project-Soul-Studios-${version}-Windows-${arch}-Setup.${ext}",
+      "artifactName": "Eidovara-${version}-Windows-${arch}-Setup.${ext}",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },
     "portable": {
-      "artifactName": "Project-Soul-Studios-${version}-Windows-${arch}-Portable.${ext}"
+      "artifactName": "Eidovara-${version}-Windows-${arch}-Portable.${ext}"
     },
     "linux": {
       "target": [
@@ -86,7 +93,7 @@
         }
       ],
       "category": "Utility",
-      "artifactName": "Project-Soul-${version}-Linux-${arch}.${ext}"
+      "artifactName": "Eidovara-${version}-Linux-${arch}.${ext}"
     }
   },
   "engines": {

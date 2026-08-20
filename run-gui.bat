@@ -1,10 +1,10 @@
 @echo off
 setlocal
 cd /d "%~dp0"
-title Project Soul Launcher
+title Eidovara Launcher
 
 echo ========================================
-echo        Project Soul Alpha v.0.15
+echo             Eidovara v0.17
 echo ========================================
 echo.
 where node >nul 2>nul
@@ -31,19 +31,19 @@ npm --version
 echo.
 
 if not exist node_modules\electron\dist\electron.exe (
-  echo Installing Project Soul dependencies...
+  echo Installing Eidovara dependencies...
   call npm install
   if errorlevel 1 goto :fail
 )
 
-echo Starting Project Soul...
+echo Starting Eidovara...
 call npm start
 if errorlevel 1 goto :fail
 exit /b 0
 
 :fail
 echo.
-echo Project Soul did not start successfully.
+echo Eidovara did not start successfully.
 echo The error above is important. Please copy it or send a screenshot.
 echo A runtime log may also exist under:
 echo %%APPDATA%%\project-soul-js-gui\project-soul.log

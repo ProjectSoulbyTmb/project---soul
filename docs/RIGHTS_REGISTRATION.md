@@ -1,6 +1,6 @@
 # Rights registration checklist
 
-This project record identifies Tyler Michael Bosworth as the sole creator and original author of Project Soul Studios' first-party material. It does not replace a registration, clearance search, assignment, or attorney opinion.
+This project record identifies Tyler Michael Bosworth as the sole creator and original author of Eidovara's first-party material. It does not replace a registration, clearance search, assignment, or attorney opinion.
 
 ## Copyright
 
@@ -10,7 +10,7 @@ This project record identifies Tyler Michael Bosworth as the sole creator and or
 
 ## Trademark and personal name
 
-- Use Project Soul Studios™ consistently while the mark is unregistered. Do not use ® without a registration covering the relevant goods or services.
+- Use Eidovara™ consistently while the mark is unregistered. Do not use ® without a registration covering the relevant goods or services.
 - Conduct a professional clearance search before investing heavily in the name.
 - Consider a federal trademark application for the product mark and relevant software/services. If an application includes a living person's name or likeness, follow USPTO consent requirements.
 

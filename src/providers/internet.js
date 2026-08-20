@@ -1,4 +1,4 @@
-const AGENT = 'Project-Soul-Studios/0.16 (desktop research client)';
+const AGENT = 'Eidovara/0.17 (desktop research client)';
 
 function plain(value) {
   return String(value || '').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();

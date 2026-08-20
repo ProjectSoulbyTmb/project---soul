@@ -14,7 +14,7 @@ Use a provider-hosted checkout so Soul never receives payment-card data:
 
 Complete the provider's identity, business, payout, tax, refund, and dispute configuration yourself. Test the provider's sandbox or test mode before accepting real payments. Do not paste secret/API keys into the website, app store URL, Worker variables, issues, or commits.
 
-Open Soul's private administrator panel with Ctrl+A, enter the local administrator password, paste the provider's public `https://` checkout URL into **Secure store / payment page**, and save. Free users then see **View Soul Premium** in Settings. The link opens in their system browser.
+Open Eidovara's private administrator panel with Ctrl+A, enter the local administrator password, paste the provider's public `https://` checkout URL into **Secure store / payment page**, and save. Free users then see **View Eidovara Premium** in Settings. The link opens in their system browser.
 
 ## HTTPS service
 
