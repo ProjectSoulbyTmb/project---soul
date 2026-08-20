@@ -14,6 +14,8 @@ Production builds published by the included GitHub Actions workflow automaticall
 
 On first launch, Soul asks which assistance roles the user wants: gaming/editing, stream helper, studying, personal use, creative work, or work/productivity, plus custom needs. Stream-helper setup records local OBS WebSocket connection details and streaming goals. The same wizard remains available from Settings, and its selections become part of Soul's persistent conversational context.
 
+The Apps & Gaming Hub lets each user select trusted Windows executables or shortcuts, keep a local application shelf, and launch games, OBS, editors, and media tools. Appearance controls persist custom background, panel, accent, opacity, and optional RGB effects. Low-overhead gaming mode disables decorative animation and blur while playing, and Diagnostics reports the active Chromium/GPU/media capabilities. Soul coordinates applications without injecting into or embedding third-party processes.
+
 ## Start using Soul
 
 Open the application and type into the conversation box. No setup is required for **Soul Offline** mode. Offline mode is intentionally lightweight; for richer free-form conversation, Settings can connect either:

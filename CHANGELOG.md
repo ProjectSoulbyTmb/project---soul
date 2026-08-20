@@ -1,5 +1,12 @@
 # Project Soul Alpha v.0.15
 
+## v0.15.6
+
+- Added a customizable Apps & Gaming Hub for safely selecting, organizing, launching, and removing trusted Windows executables and shortcuts.
+- Added persistent background, panel, accent, surface-opacity, and animated RGB appearance controls.
+- Added a low-overhead gaming mode that disables decorative animation and backdrop effects while playing.
+- Added GPU, Chromium, hardware-acceleration, and media-engine details to local diagnostics.
+
 ## v0.15.1
 
 - Added the GitHub Releases online updater and corrected automated release-channel injection.

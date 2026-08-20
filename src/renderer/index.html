@@ -18,6 +18,7 @@
       <button class="new-chat" id="newChatBtn">＋ New conversation</button>
       <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
       <div class="sidebar-footer">
+        <button class="nav-btn" data-view="apps">Apps & Gaming</button>
         <button class="nav-btn" data-view="memory">Memory</button>
         <button class="nav-btn" data-view="identity">Identity</button>
         <button class="nav-btn" data-view="settings">Settings</button>
@@ -54,6 +55,14 @@
         </form>
       </section>
 
+      <section class="view panel-view" id="appsView">
+        <div class="panel-head"><div><h2>Apps & Gaming Hub</h2><p>Organize and launch Windows games, OBS, editors, media tools, and other trusted applications.</p></div><button type="button" id="addAppBtn">＋ Add application</button></div>
+        <div class="gaming-toolbar card"><div><strong>Gaming mode</strong><p>Reduces Soul's animated lighting and transparency while you play.</p></div><label class="switch-label"><input type="checkbox" id="gamingModeInput" /> Low-overhead mode</label></div>
+        <div class="apps-grid" id="appsGrid"></div>
+        <p class="settings-status" id="appsStatus"></p>
+        <div class="card"><h3>Graphics & media engine</h3><p>Project Soul uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
+      </section>
+
       <section class="view panel-view" id="memoryView">
         <div class="panel-head"><div><h2>Memory</h2><p>Durable facts and preferences Soul can carry across conversations.</p></div></div>
         <form class="memory-form" id="memoryForm"><input id="memoryInput" maxlength="1000" placeholder="Add something Soul should remember" /><button>Remember</button></form>
@@ -81,6 +90,9 @@
           <label>Broad web-search key (optional)<input id="searchApiKeyInput" type="password" autocomplete="off" placeholder="Brave Search API key; leave blank to keep" /></label>
           <label class="check"><input type="checkbox" id="clearSearchKeyInput" /> Clear stored web-search key</label>
           <p>Without a web-search key, information and media searches use the built-in public knowledge sources. Adding a key enables broader websites and image results.</p>
+          <div class="appearance-fields"><label>Background color<input id="themeBackground" type="color" value="#080c16" /></label><label>Panel color<input id="themePanel" type="color" value="#101828" /></label><label>Accent color<input id="themeAccent" type="color" value="#8f7cff" /></label></div>
+          <label>Window surface opacity <span id="themeTransparencyValue">96%</span><input id="themeTransparency" type="range" min="65" max="100" value="96" /></label>
+          <label class="check"><input type="checkbox" id="themeRgb" /> Animated RGB lighting effects</label>
           <div class="settings-actions"><button type="submit">Save settings</button><button type="button" class="secondary" id="openDataBtn">Open local data folder</button><button type="button" class="secondary" id="diagnosticsBtn">Show diagnostics</button></div>
           <p class="settings-status" id="settingsStatus"></p>
         </form>
