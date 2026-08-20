@@ -1,5 +1,11 @@
 # Eidovara
 
+## v0.17.1
+
+- Refined the consumer presentation around working capabilities and removed speculative product claims.
+- Added the official responsive website and in-app privacy, security, and licensing links.
+- Added hardened repository/server operations and release verification.
+
 ## v0.17.0
 
 - Renamed the application to the preliminarily screened coined mark Eidovara™ and identified Soul Consciousness Studios™ as Tyler Michael Bosworth's intended business name.
@@ -8,6 +14,7 @@
 - Added a hideable 2D/3D-styled Soul companion, reduced-motion controls, installed Windows voice selection, optional reply narration, speech preview, and gracefully detected dictation.
 - Clarified that OBS is an optional stream helper, not a core application dependency.
 - Added a license-screened companion/voice adapter roadmap, Dependabot coverage, recurring Windows security checks, private-key scanning, and stricter public-repository exclusions.
+- Rebuilt the official website as a responsive product and trust center, with dedicated security and licensing pages linked directly from application Settings.
 - Added Electron permission-check and webview-attachment denial alongside existing sandbox, isolation, navigation, and permission-request controls.
 - Added restrictive website content-security policies, responsible disclosure metadata, company-formation guidance, and clearer pre-formation IP ownership language.
 - Updated package identifiers, artifacts, release evidence, website, updater, documentation, and platform names for Eidovara.
