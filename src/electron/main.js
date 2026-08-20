@@ -30,7 +30,7 @@ function saveConfig() { atomicReplace(configPath, JSON.stringify(config, null, 2
 function getApiKey() { if (!config.encryptedApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedApiKey, 'base64')) : ''; } catch { return ''; } }
 function getSearchApiKey() { if (!config.encryptedSearchApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedSearchApiKey, 'base64')) : ''; } catch { return ''; } }
 function entitlement() { return config.edition === 'premium' ? 'premium' : 'free'; }
-function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
@@ -83,18 +83,21 @@ ipcMain.handle('soul:adminLogin', (_e, password) => {
   }
   failedAdminAttempts = 0; adminLockedUntil = 0; adminSessionUntil = now + ADMIN_SESSION_MS;
   log('Local administrator session opened.');
-  return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl };
+  return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
-ipcMain.handle('soul:adminStatus', () => ({ authorized: adminAuthorized(), expiresAt: adminAuthorized() ? new Date(adminSessionUntil).toISOString() : null, edition: entitlement(), storeUrl: publicConfig().storeUrl }));
+ipcMain.handle('soul:adminStatus', () => ({ authorized: adminAuthorized(), expiresAt: adminAuthorized() ? new Date(adminSessionUntil).toISOString() : null, edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl }));
 ipcMain.handle('soul:adminSave', (_e, incoming) => {
   requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';
   if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }
   const storeUrl = String(incoming?.storeUrl || '').trim().slice(0, 1000);
   if (storeUrl && new URL(storeUrl).protocol !== 'https:') throw new Error('The store link must use HTTPS.');
-  config.storeUrl = storeUrl; saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
-  return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl };
+  const serviceUrl = String(incoming?.serviceUrl || '').trim().replace(/\/+$/, '').slice(0, 1000);
+  if (serviceUrl && new URL(serviceUrl).protocol !== 'https:') throw new Error('The service URL must use HTTPS.');
+  config.storeUrl = storeUrl; config.serviceUrl = serviceUrl; saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
+  return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
+ipcMain.handle('soul:checkService', async () => { const base = publicConfig().serviceUrl; if (!base) return { configured: false }; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 5000); try { const res = await fetch(`${base}/health`, { signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }); if (!res.ok) throw new Error(`Service returned HTTP ${res.status}.`); const raw = await res.text(); if (Buffer.byteLength(raw) > 32_768) throw new Error('Service response is too large.'); const body = JSON.parse(raw); return { configured: true, online: body?.status === 'ok', service: String(body?.service || '').slice(0, 100), version: String(body?.version || '').slice(0, 40) }; } finally { clearTimeout(timer); } });
 ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   const provider = ['offline','local','compatible'].includes(incoming?.provider) ? incoming.provider : 'offline';
   if (entitlement() === 'free' && provider === 'compatible') throw new Error('Remote model endpoints are a Premium feature. Soul Free supports offline and local models.');
@@ -115,7 +118,7 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   if (incoming?.clearSearchApiKey) config.encryptedSearchApiKey = '';
   saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: getSearchApiKey() }); return publicConfig();
 });
-ipcMain.handle('soul:diagnostics', async () => ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpu: await app.getGPUInfo('basic').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: engine.snapshot().policy.localSafetyReports?.length || 0 }));
+ipcMain.handle('soul:diagnostics', async () => ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: engine.snapshot().policy.localSafetyReports?.length || 0 }));
 ipcMain.handle('soul:openDataFolder', () => shell.openPath(app.getPath('userData')));
 ipcMain.handle('soul:createBackup', () => engine.createBackup());
 ipcMain.handle('soul:listBackups', () => engine.listBackups());

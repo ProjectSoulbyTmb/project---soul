@@ -1,0 +1,9 @@
+name = "project-soul-studios-api"
+main = "worker.js"
+compatibility_date = "2026-08-20"
+
+[vars]
+WEBSITE_URL = "https://projectsoulbytmb.github.io/project---soul/"
+STRIPE_PAYMENT_URL = ""
+PAYPAL_PAYMENT_URL = ""
+GUMROAD_PRODUCT_URL = ""

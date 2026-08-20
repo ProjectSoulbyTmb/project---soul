@@ -1,5 +1,14 @@
 # Project Soul Studios
 
+## v0.16.1
+
+- Added a dependency-free Cloudflare Worker template for HTTPS health and hosted-checkout configuration.
+- Added private service URL management and bounded service health checks to the administrator panel.
+- Added Stripe, PayPal, and Gumroad hosted-checkout guidance without collecting card data in Soul.
+- Added payment/site operations, responsible security reporting, and static-host security-header templates.
+- Expanded Windows GPU feature and Web Audio diagnostics without unsafe driver injection.
+- Added fail-closed server tests and retained ASAR integrity packaging.
+
 ## v0.16.0
 
 - Renamed the product to Project Soul Studios and added creator, licensing, trademark, contribution, and provenance controls.
