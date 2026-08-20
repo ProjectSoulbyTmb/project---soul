@@ -11,7 +11,8 @@ permissions:
 
 jobs:
   release:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
+    container: electronuserland/builder:wine
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     steps:
@@ -45,6 +46,18 @@ jobs:
             dist/SECURITY.md
             dist/NETWORK-USAGE.md
       - name: Publish GitHub Release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: gh release create $env:GITHUB_REF_NAME dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe dist/update.json dist/SHA256SUMS.txt dist/SBOM.spdx.json dist/CODE-SIGNING-STATUS.txt dist/PRIVACY-DECLARATION.json dist/PRIVACY.md dist/SECURITY.md dist/NETWORK-USAGE.md --generate-notes --title "Project Soul Alpha $env:GITHUB_REF_NAME"
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Project Soul Alpha ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe
+            dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe
+            dist/update.json
+            dist/SHA256SUMS.txt
+            dist/SBOM.spdx.json
+            dist/CODE-SIGNING-STATUS.txt
+            dist/PRIVACY-DECLARATION.json
+            dist/PRIVACY.md
+            dist/SECURITY.md
+            dist/NETWORK-USAGE.md

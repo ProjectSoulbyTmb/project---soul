@@ -17,6 +17,10 @@
 
 - Disabled unavailable Authenticode identity discovery on clean CI runners while retaining signed GitHub/Sigstore release provenance.
 
+## v0.15.5
+
+- Moved automated Windows packaging to a reproducible Wine build container to avoid unavailable hosted-runner signing helpers.
+
 - Released the online Windows Alpha build from the verified v0.14.0 baseline.
 - Added installer, portable, and ready-to-run folder distributions for Windows x64.
 - Added explicit-request internet research with cited information, image previews, and video playback from allowlisted public sources.
