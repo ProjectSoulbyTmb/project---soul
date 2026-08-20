@@ -18,7 +18,8 @@ export async function checkForUpdate({ manifestUrl, currentVersion }) {
   const version = String(manifest?.version || ''); const downloadUrl = secureUrl(manifest?.url).toString(); const sha256 = String(manifest?.sha256 || '').toUpperCase();
   if (!/^\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(version)) throw new Error('Update manifest has an invalid version.');
   if (!/^[A-F0-9]{64}$/.test(sha256)) throw new Error('Update manifest must contain a SHA-256 hash.');
-  return { configured: true, available: compareVersions(version, currentVersion) > 0, currentVersion, version, downloadUrl, sha256, notes: String(manifest.notes || '').slice(0, 4000) };
+  const extension = path.extname(new URL(downloadUrl).pathname).toLowerCase(); if (!['.exe', '.zip'].includes(extension)) throw new Error('Update package type is not allowed.');
+  return { configured: true, available: compareVersions(version, currentVersion) > 0, currentVersion, version, downloadUrl, sha256, packageType: extension === '.zip' ? 'ready-folder-zip' : 'installer', notes: String(manifest.notes || '').slice(0, 4000) };
 }
 
 export async function downloadUpdate(update, directory, maxBytes = 400 * 1024 * 1024) {
@@ -27,6 +28,7 @@ export async function downloadUpdate(update, directory, maxBytes = 400 * 1024 * 
   const declared = Number(res.headers.get('content-length') || 0); if (declared > maxBytes) throw new Error('Update download is too large.');
   const bytes = Buffer.from(await res.arrayBuffer()); if (bytes.length > maxBytes) throw new Error('Update download is too large.');
   const actual = crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase(); if (actual !== update.sha256) throw new Error('Update integrity verification failed.');
-  fs.mkdirSync(directory, { recursive: true }); const target = path.join(directory, `Project-Soul-Update-${update.version}.exe`); const tmp = `${target}.${process.pid}.tmp`;
+  const extension = path.extname(new URL(update.downloadUrl).pathname).toLowerCase(); if (!['.exe', '.zip'].includes(extension)) throw new Error('Update package type is not allowed.');
+  fs.mkdirSync(directory, { recursive: true }); const target = path.join(directory, `Project-Soul-Update-${update.version}${extension}`); const tmp = `${target}.${process.pid}.tmp`;
   fs.writeFileSync(tmp, bytes, { mode: 0o600 }); fs.renameSync(tmp, target); return { path: target, bytes: bytes.length, sha256: actual, version: update.version };
 }

@@ -1,5 +1,12 @@
 # Project Soul Alpha v.0.15
 
+## v0.15.7
+
+- Added configurable user-led, balanced, and proactive assistant autonomy with persistent reflection and initiative controls.
+- Clarified Soul's continuity as a persistent software self-model rather than a claim of sentience.
+- Added explicit lawfulness, safety, consent, privacy, honesty, fairness, and user-autonomy reasoning guidance.
+- Replaced fragile hosted Wine/installer packaging with a reproducible Windows ready-folder ZIP release and added SHA-256-verified ZIP updater support.
+
 ## v0.15.6
 
 - Added a customizable Apps & Gaming Hub for safely selecting, organizing, launching, and removing trusted Windows executables and shortcuts.

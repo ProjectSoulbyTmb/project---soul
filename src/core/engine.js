@@ -33,6 +33,11 @@ export class SoulEngine {
     this.state.setup = { completed: true, completedAt: new Date().toISOString(), categories, customNeeds: String(input.customNeeds || '').trim().slice(0, 2000), stream: { enabled: categories.includes('stream-helper'), obsWebSocketUrl, goals: String(input.streamGoals || '').trim().slice(0, 1000) } };
     this.state.audit.push({ at: this.state.setup.completedAt, type: 'setup.configured', details: { categories } }); this.store.save(this.state); return this.snapshot();
   }
+  configureAssistant(input = {}) {
+    const autonomy = ['user-led', 'balanced', 'proactive'].includes(input.autonomy) ? input.autonomy : 'balanced';
+    this.state.assistant = { ...this.state.assistant, autonomy, initiativeEnabled: Boolean(input.initiativeEnabled), reflectionEnabled: Boolean(input.reflectionEnabled) };
+    const at = new Date().toISOString(); this.state.audit.push({ at, type: 'assistant.configured', details: { autonomy, initiativeEnabled: this.state.assistant.initiativeEnabled } }); this.store.save(this.state); return this.snapshot();
+  }
   activeConversation() { return this.state.conversations.find(c => c.id === this.state.activeConversationId) || this.state.conversations[0]; }
   newConversation() {
     const now = new Date().toISOString();

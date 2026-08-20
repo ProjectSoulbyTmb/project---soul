@@ -3,8 +3,8 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-const names = fs.readdirSync('dist').filter(name => /\.(?:exe|json)$/i.test(name) && (name.startsWith('Project-Soul-Alpha-') || name === 'update.json')).sort();
-if (!names.some(name => /Setup\.exe$/i.test(name)) || !names.some(name => /Portable\.exe$/i.test(name))) throw new Error('Release executables are missing.');
+const names = fs.readdirSync('dist').filter(name => /\.(?:exe|zip|json)$/i.test(name) && (name.startsWith('Project-Soul-Alpha-') || name === 'update.json')).sort();
+if (!names.some(name => /(?:Setup\.exe|Ready\.zip)$/i.test(name))) throw new Error('A release installer or ready-folder package is missing.');
 const files = names.map(name => { const data = fs.readFileSync(path.join('dist', name)); return { name, bytes: data.length, sha256: crypto.createHash('sha256').update(data).digest('hex').toUpperCase() }; });
 fs.writeFileSync(path.join('dist', 'SHA256SUMS.txt'), `${files.map(f => `${f.sha256}  ${f.name}`).join('\n')}\n`, 'utf8');
 const namespace = `https://github.com/${process.env.GITHUB_REPOSITORY || 'ProjectSoulbyTmb/project---soul'}/releases/tag/v${pkg.version}`;

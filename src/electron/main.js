@@ -84,12 +84,13 @@ ipcMain.handle('soul:createBackup', () => engine.createBackup());
 ipcMain.handle('soul:listBackups', () => engine.listBackups());
 ipcMain.handle('soul:restoreBackup', (_e, name) => engine.restoreBackup(String(name || '')));
 ipcMain.handle('soul:configureSetup', (_e, input) => engine.configureSetup(input));
+ipcMain.handle('soul:configureAssistant', (_e, input) => engine.configureAssistant(input));
 ipcMain.handle('soul:openExternal', (_e, value) => { const url = new URL(String(value || '')); if (url.protocol !== 'https:') throw new Error('Only secure web links can be opened.'); return shell.openExternal(url.toString()); });
 ipcMain.handle('soul:checkForUpdates', async () => { pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
 ipcMain.handle('soul:installUpdate', async () => {
   if (!pendingUpdate?.available) pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() });
   if (!pendingUpdate.available) throw new Error('No update is available.');
-  const answer = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: ['Download and launch', 'Cancel'], defaultId: 0, cancelId: 1, title: 'Install Project Soul update', message: `Install Project Soul ${pendingUpdate.version}?`, detail: 'The installer will be downloaded over HTTPS and verified with the release SHA-256 hash before it is opened.' });
+  const answer = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: ['Download and open', 'Cancel'], defaultId: 0, cancelId: 1, title: 'Install Project Soul update', message: `Install Project Soul ${pendingUpdate.version}?`, detail: pendingUpdate.packageType === 'ready-folder-zip' ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction.' : 'The installer will be downloaded over HTTPS, verified with SHA-256, and opened.' });
   if (answer.response !== 0) return { cancelled: true };
   const downloaded = await downloadUpdate(pendingUpdate, path.join(app.getPath('userData'), 'updates'));
   const error = await shell.openPath(downloaded.path); if (error) throw new Error(error); return { ...downloaded, launched: true };

@@ -11,8 +11,7 @@ permissions:
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    container: electronuserland/builder:wine
+    runs-on: windows-latest
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
     steps:
@@ -28,15 +27,20 @@ jobs:
       - run: pnpm run check
       - run: pnpm run smoke
       - run: pnpm run release:configure
-      - run: pnpm run dist:win
+      - run: pnpm run dist:dir
+      - name: Create ready-to-run Windows package
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path dist | Out-Null
+          $version = '${{ github.ref_name }}'.TrimStart('v')
+          Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath "dist/Project-Soul-Alpha-$version-Windows-x64-Ready.zip" -CompressionLevel Optimal
       - run: pnpm run release:manifest
       - run: pnpm run release:evidence
       - name: Sign build provenance
         uses: actions/attest-build-provenance@v4.1.1
         with:
           subject-path: |
-            dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe
-            dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe
+            dist/Project-Soul-Alpha-*-Windows-x64-Ready.zip
             dist/update.json
             dist/SHA256SUMS.txt
             dist/SBOM.spdx.json
@@ -51,8 +55,7 @@ jobs:
           name: Project Soul Alpha ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe
-            dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe
+            dist/Project-Soul-Alpha-*-Windows-x64-Ready.zip
             dist/update.json
             dist/SHA256SUMS.txt
             dist/SBOM.spdx.json
