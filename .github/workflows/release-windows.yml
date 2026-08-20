@@ -22,9 +22,9 @@ jobs:
       - run: pnpm test
       - run: pnpm run check
       - run: pnpm run smoke
-      - run: pnpm run release:configure -- $env:GITHUB_REPOSITORY
+      - run: pnpm run release:configure
       - run: pnpm run dist:win
-      - run: pnpm run release:manifest -- $env:GITHUB_REPOSITORY
+      - run: pnpm run release:manifest
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
