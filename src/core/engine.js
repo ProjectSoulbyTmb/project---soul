@@ -25,6 +25,14 @@ export class SoulEngine {
   createBackup() { return this.store.createBackup(this.state); }
   listBackups() { return this.store.listBackups(); }
   restoreBackup(name) { this.state = this.store.restoreBackup(name); return this.snapshot(); }
+  configureSetup(input = {}) {
+    const allowed = ['gaming-editing', 'stream-helper', 'studying', 'personal', 'creative', 'work-productivity', 'accessibility'];
+    const categories = Array.isArray(input.categories) ? [...new Set(input.categories.filter(x => allowed.includes(x)))] : [];
+    const obsWebSocketUrl = String(input.obsWebSocketUrl || 'ws://127.0.0.1:4455').trim().slice(0, 300);
+    if (categories.includes('stream-helper')) { const url = new URL(obsWebSocketUrl); if (!['ws:', 'wss:'].includes(url.protocol)) throw new Error('OBS WebSocket must use ws:// or wss://.'); }
+    this.state.setup = { completed: true, completedAt: new Date().toISOString(), categories, customNeeds: String(input.customNeeds || '').trim().slice(0, 2000), stream: { enabled: categories.includes('stream-helper'), obsWebSocketUrl, goals: String(input.streamGoals || '').trim().slice(0, 1000) } };
+    this.state.audit.push({ at: this.state.setup.completedAt, type: 'setup.configured', details: { categories } }); this.store.save(this.state); return this.snapshot();
+  }
   activeConversation() { return this.state.conversations.find(c => c.id === this.state.activeConversationId) || this.state.conversations[0]; }
   newConversation() {
     const now = new Date().toISOString();

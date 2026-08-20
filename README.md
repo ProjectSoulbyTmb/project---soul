@@ -12,6 +12,8 @@ DJ controls can remember the current track as a durable favorite, ask Soul to fi
 
 Production builds published by the included GitHub Actions workflow automatically use that repository's Releases feed. Soul checks the channel at startup and on demand, downloads only HTTPS installers declared by `update.json`, verifies the full SHA-256 digest, and asks before launching the installer. See `docs/GITHUB_RELEASES.md` for the one-time repository setup.
 
+On first launch, Soul asks which assistance roles the user wants: gaming/editing, stream helper, studying, personal use, creative work, or work/productivity, plus custom needs. Stream-helper setup records local OBS WebSocket connection details and streaming goals. The same wizard remains available from Settings, and its selections become part of Soul's persistent conversational context.
+
 ## Start using Soul
 
 Open the application and type into the conversation box. No setup is required for **Soul Offline** mode. Offline mode is intentionally lightweight; for richer free-form conversation, Settings can connect either:

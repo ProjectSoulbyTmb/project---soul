@@ -25,6 +25,7 @@ export function defaultProfile(profileId = 'default') {
     },
     relationship: { style: 'balanced', temporaryInitiative: false, initiativeReason: null, establishedPreference: null, trust: 0.50, comfort: 0.50, auditTrail: [] },
     policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false, boundaries: [], revokedAt: null, consentScope: null, lawfulUseRequired: true, localSafetyReports: [] },
+    setup: { completed: false, completedAt: null, categories: [], customNeeds: '', stream: { enabled: false, obsWebSocketUrl: 'ws://127.0.0.1:4455', goals: '' } },
     memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
     activeConversationId: 'main',
     audit: [{ at: now, type: 'profile.created', details: { profileId } }]
@@ -39,7 +40,8 @@ export function migrateProfile(input, profileId = 'default') {
     continuity: { ...base.continuity, ...(input.continuity || {}), selfModel: { ...base.continuity.selfModel, ...(input.continuity?.selfModel || {}) }, reflectionState: { ...base.continuity.reflectionState, ...(input.continuity?.reflectionState || {}) } },
     personality: { ...base.personality, ...(input.personality || {}) },
     relationship: { ...base.relationship, ...(input.relationship || {}) },
-    policy: { ...base.policy, ...(input.policy || {}) }
+    policy: { ...base.policy, ...(input.policy || {}) },
+    setup: { ...base.setup, ...(input.setup || {}), stream: { ...base.setup.stream, ...(input.setup?.stream || {}) } }
   };
   if (!Array.isArray(merged.memories)) merged.memories = [];
   if (!Array.isArray(merged.feedback)) merged.feedback = [];
@@ -53,6 +55,7 @@ export function migrateProfile(input, profileId = 'default') {
   if (!merged.conversations.length) merged.conversations = base.conversations;
   if (!Array.isArray(merged.policy.boundaries)) merged.policy.boundaries = [];
   if (!Array.isArray(merged.policy.localSafetyReports)) merged.policy.localSafetyReports = [];
+  if (!Array.isArray(merged.setup.categories)) merged.setup.categories = [];
   if (!Array.isArray(merged.relationship.auditTrail)) merged.relationship.auditTrail = [];
   if (!merged.activeConversationId || !merged.conversations.some(c => c.id === merged.activeConversationId)) merged.activeConversationId = merged.conversations[0].id;
   merged.schemaVersion = CURRENT_SCHEMA_VERSION;

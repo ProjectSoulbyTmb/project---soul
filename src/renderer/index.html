@@ -86,10 +86,28 @@
         </form>
         <div class="card diagnostics hidden" id="diagnosticsCard"><pre id="diagnosticsText"></pre></div>
         <div class="settings-card"><h3>Software updates</h3><p>Soul checks its official GitHub release channel at startup. Installers are accepted only over HTTPS and after SHA-256 verification.</p><div class="settings-actions"><button type="button" id="checkUpdateBtn">Check for updates</button><button type="button" class="secondary hidden" id="installUpdateBtn">Download and install</button></div><p class="settings-status" id="updateStatus"></p></div>
+        <div class="settings-card"><h3>Assistant setup</h3><p>Change what you want Soul to help with, including gaming, editing, studying, personal use, and streaming.</p><button type="button" id="openSetupBtn">Configure assistant</button></div>
         <div class="settings-card"><h3>Backups</h3><p>Create a portable local snapshot or restore an earlier snapshot.</p><div class="settings-actions"><button type="button" id="backupBtn">Create backup</button><button type="button" class="secondary" id="refreshBackupsBtn">Refresh list</button></div><label>Available backups<select id="backupSelect"></select></label><button type="button" class="secondary" id="restoreBackupBtn">Restore selected backup</button><p class="settings-status" id="backupStatus"></p></div>
         <div class="danger-zone card"><h3>Reset Soul</h3><p>Deletes the current profile state from the app and creates a fresh local identity profile. This cannot be undone from the UI.</p><button class="danger" id="resetBtn">Reset current Soul profile</button></div>
       </section>
     </main>
+  </div>
+  <div class="setup-overlay hidden" id="setupOverlay" role="dialog" aria-modal="true" aria-labelledby="setupTitle">
+    <form class="setup-dialog" id="setupForm">
+      <div><h1 id="setupTitle">What do you need Soul for?</h1><p>Choose any roles that fit. You can change this later in Settings.</p></div>
+      <div class="setup-options">
+        <label><input type="checkbox" name="setupCategory" value="gaming-editing" /> <span><strong>Gaming & editing assistant</strong><small>Game planning, clips, creative editing, and workflows.</small></span></label>
+        <label><input type="checkbox" name="setupCategory" value="stream-helper" /> <span><strong>Stream helper</strong><small>Streaming goals, OBS preparation, scenes, inputs, and checklists.</small></span></label>
+        <label><input type="checkbox" name="setupCategory" value="studying" /> <span><strong>Studying assistant</strong><small>Explanations, review plans, research, and practice.</small></span></label>
+        <label><input type="checkbox" name="setupCategory" value="personal" /> <span><strong>Personal usage</strong><small>Conversation, planning, memory, and everyday assistance.</small></span></label>
+        <label><input type="checkbox" name="setupCategory" value="creative" /> <span><strong>Creative projects</strong><small>Writing, ideas, music discovery, and media.</small></span></label>
+        <label><input type="checkbox" name="setupCategory" value="work-productivity" /> <span><strong>Work & productivity</strong><small>Organization, drafting, decisions, and task support.</small></span></label>
+      </div>
+      <label class="setup-field">Anything else Soul should understand?<textarea id="setupCustomNeeds" maxlength="2000" rows="3" placeholder="Your goals, preferences, accessibility needs, or working style"></textarea></label>
+      <div class="setup-stream hidden" id="setupStreamFields"><label>OBS WebSocket address<input id="setupObsUrl" maxlength="300" value="ws://127.0.0.1:4455" /></label><label>Streaming goals<textarea id="setupStreamGoals" maxlength="1000" rows="2" placeholder="Platforms, content, scenes, inputs, schedule, or audience goals"></textarea></label><small>Connection details are stored locally. OBS control will require its WebSocket authentication in a future integration.</small></div>
+      <p class="settings-status" id="setupStatus"></p>
+      <div class="setup-actions"><button type="button" class="secondary hidden" id="cancelSetupBtn">Cancel</button><button type="submit">Save and continue</button></div>
+    </form>
   </div>
   <section class="media-dock hidden" id="mediaDock" aria-label="Soul media player">
     <div class="media-now"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small></div>

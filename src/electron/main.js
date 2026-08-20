@@ -82,6 +82,7 @@ ipcMain.handle('soul:openDataFolder', () => shell.openPath(app.getPath('userData
 ipcMain.handle('soul:createBackup', () => engine.createBackup());
 ipcMain.handle('soul:listBackups', () => engine.listBackups());
 ipcMain.handle('soul:restoreBackup', (_e, name) => engine.restoreBackup(String(name || '')));
+ipcMain.handle('soul:configureSetup', (_e, input) => engine.configureSetup(input));
 ipcMain.handle('soul:openExternal', (_e, value) => { const url = new URL(String(value || '')); if (url.protocol !== 'https:') throw new Error('Only secure web links can be opened.'); return shell.openExternal(url.toString()); });
 ipcMain.handle('soul:checkForUpdates', async () => { pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
 ipcMain.handle('soul:installUpdate', async () => {

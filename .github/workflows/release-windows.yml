@@ -35,7 +35,14 @@ jobs:
             dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe
             dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe
             dist/update.json
+            dist/SHA256SUMS.txt
+            dist/SBOM.spdx.json
+            dist/CODE-SIGNING-STATUS.txt
+            dist/PRIVACY-DECLARATION.json
+            dist/PRIVACY.md
+            dist/SECURITY.md
+            dist/NETWORK-USAGE.md
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create $env:GITHUB_REF_NAME dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe dist/update.json dist/SHA256SUMS.txt dist/SBOM.spdx.json dist/CODE-SIGNING-STATUS.txt --generate-notes --title "Project Soul Alpha $env:GITHUB_REF_NAME"
+        run: gh release create $env:GITHUB_REF_NAME dist/Project-Soul-Alpha-*-Windows-x64-Setup.exe dist/Project-Soul-Alpha-*-Windows-x64-Portable.exe dist/update.json dist/SHA256SUMS.txt dist/SBOM.spdx.json dist/CODE-SIGNING-STATUS.txt dist/PRIVACY-DECLARATION.json dist/PRIVACY.md dist/SECURITY.md dist/NETWORK-USAGE.md --generate-notes --title "Project Soul Alpha $env:GITHUB_REF_NAME"

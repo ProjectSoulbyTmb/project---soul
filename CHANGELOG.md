@@ -8,6 +8,11 @@
 
 - Added GitHub/Sigstore build-provenance certificates, SHA-256 checksum publication, SPDX SBOM generation, and explicit Authenticode status disclosure.
 
+## v0.15.3
+
+- Added build-attested privacy and network-usage declarations and removed the clean-runner ASAR signing-helper dependency.
+- Added a first-launch and reusable assistant setup wizard with gaming/editing, streaming/OBS, studying, personal, creative, productivity, and custom-needs profiles.
+
 - Released the online Windows Alpha build from the verified v0.14.0 baseline.
 - Added installer, portable, and ready-to-run folder distributions for Windows x64.
 - Added explicit-request internet research with cited information, image previews, and video playback from allowlisted public sources.
