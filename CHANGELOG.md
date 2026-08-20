@@ -4,6 +4,10 @@
 
 - Added the GitHub Releases online updater and corrected automated release-channel injection.
 
+## v0.15.2
+
+- Added GitHub/Sigstore build-provenance certificates, SHA-256 checksum publication, SPDX SBOM generation, and explicit Authenticode status disclosure.
+
 - Released the online Windows Alpha build from the verified v0.14.0 baseline.
 - Added installer, portable, and ready-to-run folder distributions for Windows x64.
 - Added explicit-request internet research with cited information, image previews, and video playback from allowlisted public sources.

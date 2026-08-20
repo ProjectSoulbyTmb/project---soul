@@ -1,6 +1,6 @@
 {
   "name": "project-soul-desktop",
-  "version": "0.15.1",
+  "version": "0.15.2",
   "description": "Project Soul cross-platform desktop conversational application.",
   "author": "Project Soul",
   "repository": {
@@ -16,6 +16,7 @@
     "smoke": "node scripts/smoke.js",
     "release:configure": "node scripts/configure-release-channel.js",
     "release:manifest": "node scripts/create-update-manifest.js",
+    "release:evidence": "node scripts/create-release-evidence.js",
     "dist:win": "electron-builder --win nsis portable --x64",
     "dist": "npm run dist:win",
     "dist:linux": "electron-builder --linux AppImage deb --x64",
