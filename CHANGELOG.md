@@ -1,4 +1,12 @@
-# Project Soul Alpha v.0.15
+# Project Soul Studios
+
+## v0.16.0
+
+- Renamed the product to Project Soul Studios and added creator, licensing, trademark, contribution, and provenance controls.
+- Hardened renderer permissions, provider/network response limits, redirect handling, atomic recovery, and application identifiers.
+- Added a responsive tailored dashboard with role, focus, style, memory, app, and privacy summaries plus quick workflows.
+- Added persistent response length, tone, focus, accessibility, web research, media playback, memory learning, reflection, and autonomy controls.
+- Kept application launching confirmation-only and enforced disabled research and learning policies in the core engine.
 
 ## v0.15.8
 

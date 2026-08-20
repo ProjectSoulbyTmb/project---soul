@@ -1,4 +1,4 @@
-# Network Usage Certificate
+# Network usage statement
 
 This self-declared network inventory is included in signed release provenance.
 

@@ -14,6 +14,10 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow, engine, logPath, configPath;
 let config = { provider: 'offline', endpoint: '', model: '', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false } };
 let pendingUpdate = null;
+const ADMIN_SALT = 'project-soul-studios-admin-v1';
+const ADMIN_PASSWORD_HASH = '095c7f5e5913f03b51b86d6d1280099679062338e663bbc64c8488fcdafd1f49';
+const ADMIN_SESSION_MS = 15 * 60 * 1000;
+let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
 
 function log(message, error) { try { if (!logPath) logPath = path.join(app.getPath('userData'), 'project-soul.log'); fs.mkdirSync(path.dirname(logPath), { recursive: true }); fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${message}${error ? `\n${error?.stack || error}` : ''}\n`); } catch {} }
 function fatal(title, error) { log(title, error); try { dialog.showErrorBox(title, `${error?.stack || error}\n\nLog: ${logPath}`); } catch {} }
@@ -25,10 +29,13 @@ function atomicReplace(target, content) { fs.mkdirSync(path.dirname(target), { r
 function saveConfig() { atomicReplace(configPath, JSON.stringify(config, null, 2)); }
 function getApiKey() { if (!config.encryptedApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedApiKey, 'base64')) : ''; } catch { return ''; } }
 function getSearchApiKey() { if (!config.encryptedSearchApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedSearchApiKey, 'base64')) : ''; } catch { return ''; } }
-function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function entitlement() { return config.edition === 'premium' ? 'premium' : 'free'; }
+function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function adminAuthorized() { return Date.now() < adminSessionUntil; }
+function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
   if (config.provider === 'local') return { reply: ({ messages }) => callLocalProvider({ endpoint: config.endpoint || 'http://127.0.0.1:11434', model: config.model, messages }) };
-  if (config.provider === 'compatible') return { reply: ({ messages }) => callCompatibleProvider({ endpoint: config.endpoint, apiKey: getApiKey(), model: config.model, messages }) };
+  if (config.provider === 'compatible' && entitlement() === 'premium') return { reply: ({ messages }) => callCompatibleProvider({ endpoint: config.endpoint, apiKey: getApiKey(), model: config.model, messages }) };
   return new OfflineProvider();
 }
 function createWindow() {
@@ -63,18 +70,45 @@ ipcMain.handle('soul:newConversation', () => engine.newConversation());
 ipcMain.handle('soul:selectConversation', (_e, id) => engine.selectConversation(String(id)));
 ipcMain.handle('soul:deleteConversation', (_e, id) => engine.deleteConversation(String(id)));
 ipcMain.handle('soul:getSettings', () => publicConfig());
+ipcMain.handle('soul:adminLogin', (_e, password) => {
+  const now = Date.now();
+  if (now < adminLockedUntil) throw new Error(`Too many attempts. Try again in ${Math.ceil((adminLockedUntil - now) / 1000)} seconds.`);
+  const actual = crypto.scryptSync(String(password || ''), ADMIN_SALT, 32);
+  const expected = Buffer.from(ADMIN_PASSWORD_HASH, 'hex');
+  if (actual.length !== expected.length || !crypto.timingSafeEqual(actual, expected)) {
+    failedAdminAttempts += 1;
+    if (failedAdminAttempts >= 5) { adminLockedUntil = now + 60_000; failedAdminAttempts = 0; }
+    log('Rejected local administrator authentication attempt.');
+    throw new Error('Incorrect administrator password.');
+  }
+  failedAdminAttempts = 0; adminLockedUntil = 0; adminSessionUntil = now + ADMIN_SESSION_MS;
+  log('Local administrator session opened.');
+  return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl };
+});
+ipcMain.handle('soul:adminStatus', () => ({ authorized: adminAuthorized(), expiresAt: adminAuthorized() ? new Date(adminSessionUntil).toISOString() : null, edition: entitlement(), storeUrl: publicConfig().storeUrl }));
+ipcMain.handle('soul:adminSave', (_e, incoming) => {
+  requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';
+  if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }
+  const storeUrl = String(incoming?.storeUrl || '').trim().slice(0, 1000);
+  if (storeUrl && new URL(storeUrl).protocol !== 'https:') throw new Error('The store link must use HTTPS.');
+  config.storeUrl = storeUrl; saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
+  return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl };
+});
+ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
 ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   const provider = ['offline','local','compatible'].includes(incoming?.provider) ? incoming.provider : 'offline';
+  if (entitlement() === 'free' && provider === 'compatible') throw new Error('Remote model endpoints are a Premium feature. Soul Free supports offline and local models.');
   config.provider = provider;
   config.endpoint = String(incoming?.endpoint || '').slice(0, 500);
   config.model = String(incoming?.model || '').slice(0, 200);
-  if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#080c16'), panel: color(incoming.theme.panel, '#101828'), accent: color(incoming.theme.accent, '#8f7cff'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
+  if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#080c16'), panel: color(incoming.theme.panel, '#101828'), accent: color(incoming.theme.accent, '#8f7cff'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
   if (typeof incoming?.apiKey === 'string' && incoming.apiKey) {
     if (!safeStorage.isEncryptionAvailable()) throw new Error('Secure credential storage is unavailable on this system.');
     config.encryptedApiKey = safeStorage.encryptString(incoming.apiKey).toString('base64');
   }
   if (incoming?.clearApiKey) config.encryptedApiKey = '';
   if (typeof incoming?.searchApiKey === 'string' && incoming.searchApiKey) {
+    if (entitlement() === 'free') throw new Error('Broad keyed web search is a Premium feature. Built-in public sources remain available.');
     if (!safeStorage.isEncryptionAvailable()) throw new Error('Secure credential storage is unavailable on this system.');
     config.encryptedSearchApiKey = safeStorage.encryptString(incoming.searchApiKey).toString('base64');
   }
@@ -98,7 +132,7 @@ ipcMain.handle('soul:installUpdate', async () => {
   const downloaded = await downloadUpdate(pendingUpdate, path.join(app.getPath('userData'), 'updates'));
   const error = await shell.openPath(downloaded.path); if (error) throw new Error(error); return { ...downloaded, launched: true };
 });
-ipcMain.handle('soul:addApplication', async () => { const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Soul', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
+ipcMain.handle('soul:addApplication', async () => { if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Soul Free supports up to three linked applications. Premium removes this limit.'); const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Soul', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
 ipcMain.handle('soul:launchApplication', async (_e, id) => { const entry = (config.apps || []).find(x => x.id === String(id)); if (!entry || !fs.existsSync(entry.path)) throw new Error('Application is unavailable or has moved.'); const error = await shell.openPath(entry.path); if (error) throw new Error(error); return true; });
 ipcMain.handle('soul:removeApplication', (_e, id) => { config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
 

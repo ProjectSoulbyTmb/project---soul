@@ -35,7 +35,8 @@ export class SoulEngine {
   }
   configureAssistant(input = {}) {
     const autonomy = ['user-led', 'balanced', 'proactive'].includes(input.autonomy) ? input.autonomy : 'balanced';
-    this.state.assistant = { ...this.state.assistant, autonomy, initiativeEnabled: Boolean(input.initiativeEnabled), reflectionEnabled: Boolean(input.reflectionEnabled) };
+    const choice=(value,allowed,fallback)=>allowed.includes(value)?value:fallback;
+    this.state.assistant = { ...this.state.assistant, autonomy, initiativeEnabled: Boolean(input.initiativeEnabled), reflectionEnabled: Boolean(input.reflectionEnabled), preferences: { responseLength: choice(input.responseLength,['concise','balanced','detailed'],'balanced'), tone: choice(input.tone,['natural','direct','warm','professional','playful'],'natural'), focusMode: choice(input.focusMode,['general','gaming','streaming','studying','creative','productivity'],'general'), accessibility: String(input.accessibility||'').trim().slice(0,500) }, capabilities: { webResearch: choice(input.webResearch,['disabled','ask','enabled'],'ask'), appLaunch: 'confirm', mediaPlayback: choice(input.mediaPlayback,['disabled','confirm','enabled'],'confirm'), memoryLearning: choice(input.memoryLearning,['disabled','enabled'],'enabled') } };
     const at = new Date().toISOString(); this.state.audit.push({ at, type: 'assistant.configured', details: { autonomy, initiativeEnabled: this.state.assistant.initiativeEnabled } }); this.store.save(this.state); return this.snapshot();
   }
   activeConversation() { return this.state.conversations.find(c => c.id === this.state.activeConversationId) || this.state.conversations[0]; }
@@ -60,9 +61,9 @@ export class SoulEngine {
     this.state.continuity.lastActiveAt = now;
     const policyEvents = applyPolicyCommand(this.state, text);
     const safetyReport = assessRequestSafety(this.state, text);
-    const learning = processLearning(this.state, text);
+    const learning = this.state.assistant?.capabilities?.memoryLearning === 'disabled' ? [] : processLearning(this.state, text);
     const relationship = updateRelationship(this.state, text);
-    reflectOnGrowth(this.state, text);
+    if (this.state.assistant?.reflectionEnabled !== false) reflectOnGrowth(this.state, text);
 
     if (/^remember:/i.test(text)) addMemory(this.state, text.replace(/^remember:/i, '').trim(), { kind: 'preference', confidence: 0.85, tags: ['preference'] });
     if (/^forget:/i.test(text)) forgetMemory(this.state, text.replace(/^forget:/i, '').trim());
@@ -81,7 +82,7 @@ export class SoulEngine {
     let internetError = null;
     let webResearch = null;
     if (!reply) {
-      try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); }
+      if (this.state.assistant?.capabilities?.webResearch !== 'disabled') { try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); } }
       const history = conv.messages.slice(-24).map(m => ({ role: m.role, content: m.content }));
       try {
         const researchContext = webResearch ? `\n\nCurrent internet research (cite the numbered source links and do not invent missing facts):\n${webResearch.context}` : '';

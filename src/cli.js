@@ -14,7 +14,7 @@ if (args.includes('--snapshot')) {
   process.exit(0);
 }
 
-console.log('Project Soul Alpha v.0.15 CLI. Type /exit to quit, /reset to reset profile.');
+console.log('Project Soul Studios v0.16 CLI. Type /exit to quit, /reset to reset profile.');
 const rl = readline.createInterface({ input, output });
 while (true) {
   const line = await rl.question('you> ');

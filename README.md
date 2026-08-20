@@ -10,6 +10,16 @@ Project Soul Studios
 
 > **Rights notice:** Copyright © 2026 Tyler Michael Bosworth. All rights reserved. The public repository is source-available for transparency and evaluation; it is not open-source. No patent, trademark, commercial-use, redistribution, modification, or derivative-work rights are granted except as stated in [LICENSE](LICENSE). See the [IP protection plan](docs/IP_PROTECTION.md).
 
+Tyler Michael Bosworth is identified in the project record as the sole creator and original author of Project Soul Studios' first-party material. Third-party components and services remain the property of their respective owners; see [AUTHORS.md](AUTHORS.md), [LICENSE](LICENSE), and [TRADEMARKS.md](TRADEMARKS.md).
+
+## Free and Premium editions
+
+Soul Free is a complete everyday release with unlimited conversations, offline and local-model assistance, core memory, built-in public research, media playback, backups, updates, personalization, and up to three linked Windows applications. Soul Premium includes everything and enables compatible remote model endpoints, broad keyed web search, unlimited linked applications, and premium appearance modules.
+
+The private local administration panel opens with Ctrl+A. Edition and store configuration are verified in the privileged process, sessions expire after 15 minutes, repeated password failures are rate-limited, and the password is not present in renderer files or logs. A configured store link must use HTTPS and opens in the system browser; Soul does not collect payment-card data.
+
+The public project site is prepared in `docs/` for free GitHub Pages hosting. A real Premium checkout still requires the owner to create an account and product with a hosted payment provider, complete its identity/business checks, and paste the resulting HTTPS Payment Link into the private admin panel.
+
 A conversation-first desktop application for Windows, macOS, and Linux. The desktop release keeps Soul's persistent continuity, durable memory, adaptive personality, relationship state, boundaries, and consent state local to the user's machine while allowing the conversational layer to run offline or connect to a model provider.
 
 When explicitly requested, Soul can retrieve current reference information, pictures, and videos from allowlisted public knowledge and media services. Results include clickable source links, timestamps, and in-conversation media previews; ordinary conversation does not trigger network research.

@@ -1,4 +1,4 @@
-export const CURRENT_SCHEMA_VERSION = 15;
+export const CURRENT_SCHEMA_VERSION = 16;
 
 export function defaultProfile(profileId = 'default') {
   const now = new Date().toISOString();
@@ -24,7 +24,7 @@ export function defaultProfile(profileId = 'default') {
       protected: ['humility', 'consent', 'nonManipulation', 'truthfulness']
     },
     relationship: { style: 'balanced', temporaryInitiative: false, initiativeReason: null, establishedPreference: null, trust: 0.50, comfort: 0.50, auditTrail: [] },
-    assistant: { autonomy: 'balanced', initiativeEnabled: true, reflectionEnabled: true, identityDescription: 'persistent simulated continuity', ethicalFramework: ['lawfulness', 'human safety', 'consent', 'privacy', 'honesty', 'fairness', 'user autonomy'] },
+    assistant: { autonomy: 'balanced', initiativeEnabled: true, reflectionEnabled: true, identityDescription: 'persistent simulated continuity', ethicalFramework: ['lawfulness', 'human safety', 'consent', 'privacy', 'honesty', 'fairness', 'user autonomy'], preferences: { responseLength: 'balanced', tone: 'natural', focusMode: 'general', accessibility: '' }, capabilities: { webResearch: 'ask', appLaunch: 'confirm', mediaPlayback: 'confirm', memoryLearning: 'enabled' } },
     policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false, boundaries: [], revokedAt: null, consentScope: null, lawfulUseRequired: true, localSafetyReports: [] },
     setup: { completed: false, completedAt: null, categories: [], customNeeds: '', stream: { enabled: false, obsWebSocketUrl: 'ws://127.0.0.1:4455', goals: '' } },
     memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
@@ -41,7 +41,7 @@ export function migrateProfile(input, profileId = 'default') {
     continuity: { ...base.continuity, ...(input.continuity || {}), selfModel: { ...base.continuity.selfModel, ...(input.continuity?.selfModel || {}) }, reflectionState: { ...base.continuity.reflectionState, ...(input.continuity?.reflectionState || {}) } },
     personality: { ...base.personality, ...(input.personality || {}) },
     relationship: { ...base.relationship, ...(input.relationship || {}) },
-    assistant: { ...base.assistant, ...(input.assistant || {}) },
+    assistant: { ...base.assistant, ...(input.assistant || {}), preferences: { ...base.assistant.preferences, ...(input.assistant?.preferences || {}) }, capabilities: { ...base.assistant.capabilities, ...(input.assistant?.capabilities || {}) } },
     policy: { ...base.policy, ...(input.policy || {}) },
     setup: { ...base.setup, ...(input.setup || {}), stream: { ...base.setup.stream, ...(input.setup?.stream || {}) } }
   };
@@ -61,6 +61,8 @@ export function migrateProfile(input, profileId = 'default') {
   if (!Array.isArray(merged.relationship.auditTrail)) merged.relationship.auditTrail = [];
   if (!['user-led', 'balanced', 'proactive'].includes(merged.assistant.autonomy)) merged.assistant.autonomy = 'balanced';
   if (!Array.isArray(merged.assistant.ethicalFramework)) merged.assistant.ethicalFramework = [...base.assistant.ethicalFramework];
+  if (!['concise','balanced','detailed'].includes(merged.assistant.preferences.responseLength)) merged.assistant.preferences.responseLength='balanced';
+  if (!['natural','direct','warm','professional','playful'].includes(merged.assistant.preferences.tone)) merged.assistant.preferences.tone='natural';
   if (!merged.activeConversationId || !merged.conversations.some(c => c.id === merged.activeConversationId)) merged.activeConversationId = merged.conversations[0].id;
   merged.schemaVersion = CURRENT_SCHEMA_VERSION;
   merged.profileId ||= profileId;

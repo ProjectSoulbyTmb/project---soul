@@ -34,7 +34,7 @@
   "build": {
     "appId": "org.projectsoul.desktop",
     "productName": "Project Soul Studios",
-    "asar": false,
+    "asar": true,
     "directories": {
       "output": "dist"
     },
