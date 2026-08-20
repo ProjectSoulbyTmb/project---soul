@@ -1,6 +1,8 @@
 node_modules/
 .pnpm-store/
 dist/
+private-patent/
+ip-evidence-private/
 release/
 project-soul-diagnostics.txt
 *.tmp
