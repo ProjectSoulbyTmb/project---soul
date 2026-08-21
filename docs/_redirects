@@ -1,0 +1,4 @@
+# Cloudflare Pages only. GitHub Pages ignores this file.
+# Retired marketing shortcut skipped the 18+ Download gate. Send it to download.html.
+/download/windows    /download.html    302
+/download/windows/   /download.html    302
