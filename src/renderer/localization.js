@@ -57,7 +57,16 @@
       cheatsheetTitle: 'Keyboard cheatsheet', cheatsheetLead: 'Eidovara shortcuts. This overlay is in-app only — it does not inject into games or other processes.', cheatsheetOpen: 'Shortcuts',
       focusQuiet: 'Focus session', focusQuietNote: 'Local timer. Other apps are not closed or injected into.', focusStart: 'Start 25 minutes', focusStop: 'Stop',
       scratchTitle: 'Scratchpad', scratchHint: 'Stays on this PC', scratchPlaceholder: 'Quick capture. Stays on this device.', scratchCapture: 'Capture to Memory',
-      pinWidget: 'Pin a tile', unpinWidget: 'Unpin'
+      pinWidget: 'Pin a tile', unpinWidget: 'Unpin',
+      welcomeTitle: 'You\'re in. Start on the Dashboard.', welcomeLead: 'Eidovara is this Windows workspace. Soul (right side) is the local assistant — a software self-model, not a mind. Assist is an optional Worker helper and stays off until you turn it on. They are not the same thing.',
+      welcomeDashboard: 'Open Dashboard', settingsTitle: 'Settings', settingsLead: 'Grouped by what you change. Soul stays on this PC. Assist stays off unless you turn it on. No live payments.',
+      startPathTitle: 'Start here', startPathLead: 'One path after you confirm 18+. You can hide this card anytime.',
+      startPathStep1: 'This Dashboard is home. Cards below open the real surfaces.',
+      startPathStep2: 'Soul (right dock) is the local software self-model. Ask it here. It is not a person and not the website helper.',
+      startPathStep3: 'Assist is an optional Worker helper. It stays off unless you enable it in Settings. Assist is not Soul.',
+      startTalk: 'Talk with Soul', startApps: 'Add a trusted app', startSettings: 'Open Settings', startDismiss: 'Hide this guide',
+      companionPanelTitle: 'Workspace companion'
+
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -114,7 +123,16 @@
       cheatsheetTitle: 'Atajos de teclado', cheatsheetLead: 'Atajos de Eidovara. Esta capa es solo dentro de la app; no se inyecta en juegos ni otros procesos.', cheatsheetOpen: 'Atajos',
       focusQuiet: 'Sesión de enfoque', focusQuietNote: 'Temporizador local. No se cierran ni inyectan otras apps.', focusStart: 'Empezar 25 minutos', focusStop: 'Parar',
       scratchTitle: 'Bloc', scratchHint: 'Se queda en este PC', scratchPlaceholder: 'Captura rápida. Se queda en este dispositivo.', scratchCapture: 'Capturar a Memoria',
-      pinWidget: 'Fijar un mosaico', unpinWidget: 'Quitar'
+      pinWidget: 'Fijar un mosaico', unpinWidget: 'Quitar',
+      welcomeTitle: 'Ya estás dentro. Empieza en el Panel.', welcomeLead: 'Eidovara es este espacio de Windows. Soul (derecha) es el asistente local: un modelo de software, no una mente. Assist es un ayudante opcional y permanece apagado hasta que lo actives.',
+      welcomeDashboard: 'Abrir Panel', settingsTitle: 'Configuración', settingsLead: 'Agrupado por lo que cambias. Soul se queda en este PC. Assist permanece apagado salvo que lo actives. No hay pagos en vivo.',
+      startPathTitle: 'Empieza aquí', startPathLead: 'Un camino claro después de confirmar 18+. Puedes ocultar esta tarjeta.',
+      startPathStep1: 'Este Panel es el inicio. Las tarjetas abren las superficies reales.',
+      startPathStep2: 'Soul (el muelle derecho) es el modelo de software local. Pregúntale aquí. No es una persona ni el ayudante del sitio.',
+      startPathStep3: 'Assist es un ayudante opcional del Worker. Permanece apagado salvo que lo actives en Configuración. Assist no es Soul.',
+      startTalk: 'Hablar con Soul', startApps: 'Añadir app de confianza', startSettings: 'Abrir Configuración', startDismiss: 'Ocultar esta guía',
+      companionPanelTitle: 'Compañero del espacio'
+
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -171,7 +189,16 @@
       cheatsheetTitle: 'Raccourcis clavier', cheatsheetLead: 'Raccourcis Eidovara. Ce calque reste dans l’app — pas d’injection dans les jeux ou d’autres processus.', cheatsheetOpen: 'Raccourcis',
       focusQuiet: 'Session concentrée', focusQuietNote: 'Minuteur local. Les autres apps ne sont ni fermées ni injectées.', focusStart: 'Démarrer 25 minutes', focusStop: 'Arrêter',
       scratchTitle: 'Brouillon', scratchHint: 'Reste sur cet appareil', scratchPlaceholder: 'Capture rapide. Reste sur cet appareil.', scratchCapture: 'Capturer dans Mémoire',
-      pinWidget: 'Épingler une tuile', unpinWidget: 'Retirer'
+      pinWidget: 'Épingler une tuile', unpinWidget: 'Retirer',
+      welcomeTitle: 'Vous y êtes. Commencez par le tableau de bord.', welcomeLead: 'Eidovara est cet espace Windows. Soul (à droite) est l’assistant local — un modèle logiciel, pas un esprit. Assist est facultatif et reste désactivé tant que vous ne l’activez pas.',
+      welcomeDashboard: 'Ouvrir le tableau de bord', settingsTitle: 'Paramètres', settingsLead: 'Groupés par ce que vous changez. Soul reste sur cet appareil. Assist reste désactivé tant que vous ne l’activez pas. Pas de paiement en direct.',
+      startPathTitle: 'Commencez ici', startPathLead: 'Un chemin unique après la confirmation 18+. Vous pouvez masquer cette carte.',
+      startPathStep1: 'Ce tableau de bord est l’accueil. Les cartes ouvrent les vrais écrans.',
+      startPathStep2: 'Soul (panneau droit) est le modèle logiciel local. Demandez-lui ici. Ce n’est pas une personne ni l’aide du site.',
+      startPathStep3: 'Assist est une aide Worker facultative. Elle reste désactivée tant que vous ne l’activez pas dans Paramètres. Assist n’est pas Soul.',
+      startTalk: 'Parler à Soul', startApps: 'Ajouter une app de confiance', startSettings: 'Ouvrir Paramètres', startDismiss: 'Masquer ce guide',
+      companionPanelTitle: 'Compagnon de l’espace'
+
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -228,7 +255,16 @@
       cheatsheetTitle: 'Tastaturübersicht', cheatsheetLead: 'Eidovara-Tastenkürzel. Diese Überlagerung bleibt in der App — keine Injektion in Spiele oder andere Prozesse.', cheatsheetOpen: 'Kürzel',
       focusQuiet: 'Fokus-Sitzung', focusQuietNote: 'Lokaler Timer. Andere Apps werden nicht geschlossen oder injiziert.', focusStart: '25 Minuten starten', focusStop: 'Stopp',
       scratchTitle: 'Notizblock', scratchHint: 'Bleibt auf diesem PC', scratchPlaceholder: 'Schnellerfassung. Bleibt auf diesem Gerät.', scratchCapture: 'In Speicher übernehmen',
-      pinWidget: 'Kachel anheften', unpinWidget: 'Lösen'
+      pinWidget: 'Kachel anheften', unpinWidget: 'Lösen',
+      welcomeTitle: 'Sie sind drin. Starten Sie in der Übersicht.', welcomeLead: 'Eidovara ist dieser Windows-Arbeitsbereich. Soul (rechts) ist der lokale Assistent — ein Software-Selbstmodell, kein Geist. Assist ist optional und bleibt aus, bis Sie ihn einschalten.',
+      welcomeDashboard: 'Übersicht öffnen', settingsTitle: 'Einstellungen', settingsLead: 'Gruppiert nach dem, was Sie ändern. Soul bleibt auf diesem PC. Assist bleibt aus, bis Sie ihn einschalten. Keine Live-Zahlungen.',
+      startPathTitle: 'Hier starten', startPathLead: 'Ein klarer Weg nach der 18+-Bestätigung. Diese Karte können Sie ausblenden.',
+      startPathStep1: 'Diese Übersicht ist die Startseite. Die Karten öffnen die echten Flächen.',
+      startPathStep2: 'Soul (rechtes Dock) ist das lokale Software-Selbstmodell. Fragen Sie hier. Keine Person und nicht der Website-Helfer.',
+      startPathStep3: 'Assist ist ein optionaler Worker-Helfer. Er bleibt aus, bis Sie ihn in den Einstellungen einschalten. Assist ist nicht Soul.',
+      startTalk: 'Mit Soul sprechen', startApps: 'Vertrauenswürdige App hinzufügen', startSettings: 'Einstellungen öffnen', startDismiss: 'Diese Anleitung ausblenden',
+      companionPanelTitle: 'Arbeitsbereich-Begleiter'
+
     }
   };
   let locale = 'en';

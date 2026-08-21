@@ -479,8 +479,10 @@
     paletteTimer = setTimeout(() => queryPalette(value), reducedMotion() ? 0 : 80);
   });
   $('#paletteOpenBtn')?.addEventListener('click', () => openPalette());
+  $('#paletteBtn')?.addEventListener('click', () => openPalette());
   $('#paletteHintBtn')?.addEventListener('click', () => openPalette());
   $('#cheatsheetOpenBtn')?.addEventListener('click', () => openCheatsheet());
+  $('#shortcutBtn')?.addEventListener('click', () => openCheatsheet());
   $('#cheatsheetHintBtn')?.addEventListener('click', () => openCheatsheet());
   $('#cheatsheetCloseBtn')?.addEventListener('click', () => $('#cheatsheetOverlay')?.classList.add('hidden'));
   $('#focusQuietStop')?.addEventListener('click', () => stopFocus());
