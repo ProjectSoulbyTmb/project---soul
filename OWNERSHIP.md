@@ -8,7 +8,7 @@ This file is a **project record**, not a court judgment, signed assignment, gove
 
 Tyler Michael Bosworth claims copyright in **qualifying original first-party expression** in Eidovara (source, documentation, first-party UI assets, and release materials he authored). Soul Consciousness Studios™ is his **intended publisher name**. Until a formed legal entity exists **and** he executes a written assignment to it, that name does not own this IP. See [docs/COMPANY_FORMATION.md](docs/COMPANY_FORMATION.md) and the unsigned [docs/ENTITY_IP_ASSIGNMENT.md](docs/ENTITY_IP_ASSIGNMENT.md) template.
 
-Eidovara is **source-available, not OSI open source**, and restricted to users **18 or older**. The Eidovara Source-Available Evaluation License is not MIT, Apache, or GPL. No copyleft license is applied to first-party code.
+Eidovara is **source-available, not OSI open source**, and restricted to users **18 or older**. The Eidovara Source-Available Evaluation License (`LicenseRef-Eidovara-Source-Available-1.0`) is not MIT, Apache, or GPL. No copyleft license is applied to first-party code. Viewing or forking the repository does not permit relicensing first-party material as open source.
 
 Eidovara™ and Soul Consciousness Studios™ are claimed **unregistered** marks (`™` only). This repository does **not** claim ®, a USPTO registration number, a U.S. Copyright Office registration, or any patent / “patent pending.” Enhancement of trademark or copyright protection requires qualified counsel and actual filings. See [TRADEMARKS.md](TRADEMARKS.md) and [docs/TRADEMARK_CLEARANCE_LOG.md](docs/TRADEMARK_CLEARANCE_LOG.md).
 

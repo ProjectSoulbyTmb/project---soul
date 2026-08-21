@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';

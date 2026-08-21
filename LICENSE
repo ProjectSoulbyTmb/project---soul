@@ -1,3 +1,6 @@
+SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+
 Eidovara Source-Available Evaluation License 1.0
 
 Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
@@ -6,7 +9,9 @@ Third-party material remains third-party.
 
 Soul Consciousness Studios is Tyler Michael Bosworth's intended publisher
 name. This license does not form a company, transfer rights to an entity,
-register a copyright or trademark, or grant a patent.
+register a copyright or trademark, or grant a patent. The SPDX identifier
+LicenseRef-Eidovara-Source-Available-1.0 names this file only. It is not an
+OSI-approved, MIT, Apache, GPL, BSD, ISC, or Creative Commons license.
 
 1. Ownership and reservation of rights
 
@@ -41,13 +46,23 @@ Without prior written permission from Tyler Michael Bosworth, you may not:
 
 - copy, modify, adapt, translate, redistribute, sublicense, sell, lease, host,
   or commercially exploit the source code or a derivative work;
+- relicense, dual-license, or sublicense first-party material under MIT,
+  Apache, GPL, BSD, ISC, CC, or any OSI-approved or "open source" license,
+  or describe a copy, fork, or derivative of first-party material as open
+  source;
+- treat a GitHub fork, clone, or mirror as a grant of rights beyond this
+  license and the hosting service's own terms;
 - use the source code or non-public project materials to create, train, or
   improve a competing product or service;
-- remove or alter ownership, copyright, provenance, security, or attribution
-  notices;
+- remove or alter ownership, copyright, provenance, security, SPDX, or
+  attribution notices;
 - use the Eidovara or Soul Consciousness Studios names, marks, or
   branding in a way that suggests endorsement, affiliation, or ownership; or
 - use the software for unlawful activity or in violation of third-party rights.
+
+A GitHub fork remains subject to this license. The platform fork button does
+not convert first-party material into OSI open source and does not grant a
+right to relicense it.
 
 4. Contributions
 
@@ -58,6 +73,12 @@ will be incorporated only after Tyler Michael Bosworth and the contributor execu
 a separate written assignment or other agreement appropriate to that material.
 Unsolicited material may be declined or closed without incorporation. Platform
 terms governing material posted to a hosting service remain independently applicable.
+
+A submission does not make the submitter a joint author, co-owner, licensee of
+the marks, or trademark owner of Eidovara, Soul Consciousness Studios, or
+other first-party names. Those marks remain claimed by Tyler Michael Bosworth
+unless a privately executed assignment says otherwise. docs/CONTRIBUTOR_ASSIGNMENT.md
+and docs/ENTITY_IP_ASSIGNMENT.md are unsigned templates only.
 
 5. Third-party material
 

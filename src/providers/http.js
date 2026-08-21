@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 function trimSlash(s) { return String(s || '').replace(/\/+$/, ''); }
 
 export const LOCAL_PROVIDER_DEFAULT_ENDPOINT = 'http://127.0.0.1:11434';

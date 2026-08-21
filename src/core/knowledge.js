@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /** Desktop product knowledge for the in-app Soul kernel (v0.18.2). Not the website helper. */
 
 export const DESKTOP_KNOWLEDGE_VERSION = '0.18.2';
@@ -67,7 +69,7 @@ const ENTRIES = {
   },
   legal: {
     title: 'Legal pointers',
-    reply: 'This is not legal advice. Eidovara is 18+, source-available not open source, and Authenticode-unsigned. Do not use it for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, anti-cheat, or authentication. Full TERMS, PRIVACY, AGE, and LICENSE ship with this installation and are also in the in-app legal overlay.',
+    reply: 'This is not legal advice. Eidovara is 18+, source-available not open source, and Authenticode-unsigned. Copyright in qualifying original first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is the intended publisher only. Do not use it for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, anti-cheat, or authentication. Full TERMS, PRIVACY, AGE, and LICENSE ship with this installation and are also in the in-app legal overlay. GitHub pull requests do not transfer ownership.',
     actions: [{ type: 'open-legal', legal: 'terms', label: 'Terms' }, { type: 'open-legal', legal: 'privacy', label: 'Privacy' }]
   },
   privacy: {

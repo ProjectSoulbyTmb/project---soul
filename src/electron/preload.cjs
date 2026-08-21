@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('soul', {
   send: m => ipcRenderer.invoke('soul:send', m), snapshot: () => ipcRenderer.invoke('soul:snapshot'), reset: () => ipcRenderer.invoke('soul:reset'),
