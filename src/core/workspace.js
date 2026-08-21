@@ -1,12 +1,15 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+import { classifyAdultSoulIntent, classifyAdultMediaIntent } from './adult-intents.js';
+
 const LOCAL_WORKSPACE_INTENTS = new Set([
   'identity', 'hello', 'memory', 'remember', 'forget', 'focus', 'gaming', 'study', 'create',
   'mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise', 'entertainment',
   'talk', 'reassure', 'growth', 'thanks', 'apps', 'settings', 'help', 'accessibility',
   'presence', 'identity-panel', 'palette', 'search', 'scratch', 'cheatsheet', 'widgets',
   'dashboard', 'conversation', 'backups', 'updates', 'service', 'setup', 'here', 'theme',
-  'local-media', 'legal', 'overlay-chat', 'overlay-browse', 'overlay-discord', 'overlays'
+  'local-media', 'legal', 'overlay-chat', 'overlay-browse', 'overlay-discord', 'overlays',
+  'adult-soul', 'adult-session', 'adult-media', 'adult-media-blocked'
 ]);
 
 export { LOCAL_WORKSPACE_INTENTS };
@@ -40,6 +43,10 @@ export function isMediaDiscoveryRequest(input) {
 
 export function classifyWorkspaceIntent(input) {
   const t = String(input || '').toLowerCase();
+  const adultSoul = classifyAdultSoulIntent(t);
+  if (adultSoul) return adultSoul;
+  const adultMedia = classifyAdultMediaIntent(t);
+  if (adultMedia) return adultMedia;
   if (/\b(who are you|what are you|tell me who you are)\b/.test(t)) return 'identity';
   if (/^(hi|hello|hey)\b/.test(t)) return 'hello';
   if (/\bwhat can (?:you|i|we) do here\b/.test(t) || /\b(?:help|commands) (?:in|for) this (?:view|page|panel|screen|workspace)\b/.test(t)) return 'here';

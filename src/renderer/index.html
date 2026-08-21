@@ -15,6 +15,8 @@
   <link rel="stylesheet" href="companion.css" />
   <link rel="stylesheet" href="layers.css" />
   <link rel="stylesheet" href="now-playing.css" />
+  <link rel="stylesheet" href="adult-soul.css" />
+  <link rel="stylesheet" href="adult-media.css" />
 </head>
 <body>
   <div class="app">
@@ -30,6 +32,7 @@
         <button class="nav-btn" data-view="research" data-i18n="researchNav">Research</button>
         <button class="nav-btn" data-view="apps" data-i18n="apps">Apps & Gaming</button>
         <button class="nav-btn" data-view="entertainment" data-i18n="entertainment">Entertainment</button>
+        <button class="nav-btn adult-soul-nav" data-view="adultSoul">Adult Soul</button>
         <button class="nav-btn" data-view="memory" data-i18n="memory">Memory</button>
         <button class="nav-btn" data-view="identity" data-i18n="identity">Identity</button>
         <button class="nav-btn" data-view="settings" data-i18n="settings">Settings</button>
@@ -223,7 +226,29 @@
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
-      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, queue helpers, and lawful platform handoff — Spotify, YouTube, and Internet Archive stay official HTTPS searches.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div></section>
+      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, queue helpers, and lawful platform handoff — Spotify, YouTube, and Internet Archive stay official HTTPS searches.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div>
+        <div class="card adult-media-desk hidden" id="adultMediaDesk">
+          <h3>Adult Media</h3>
+          <p class="settings-help" id="adultMediaHonesty">Local rails plus official HTTPS searches. Guest overlays stay closed in Adult Mode. Not an in-app tube player.</p>
+          <form class="adult-media-search" id="adultMediaSearchForm">
+            <input id="adultMediaQuery" maxlength="160" placeholder="Search local titles or build an official tube search" aria-label="Adult Media search" />
+            <button type="submit">Search</button>
+          </form>
+          <div class="adult-handoff-row" id="adultMediaHandoffs"></div>
+          <div id="adultMediaRails"></div>
+          <div class="identity-grid">
+            <div>
+              <h4>Folders</h4>
+              <div id="adultMediaFolders"></div>
+            </div>
+            <div>
+              <h4>Wellness</h4>
+              <div id="adultMediaWellness"></div>
+            </div>
+          </div>
+          <div id="adultMediaCreators"></div>
+        </div>
+      </section>
 
       <section class="view panel-view" id="memoryView">
         <div class="panel-head"><div><h2>Memory</h2><p>Durable facts and preferences Soul can carry across conversations.</p></div></div>
@@ -237,7 +262,93 @@
           <div class="card"><h3>Protected identity</h3><div id="selfModel"></div></div>
           <div class="card"><h3>Adaptive personality</h3><div id="traits"></div></div>
           <div class="card"><h3>Relationship stance</h3><div id="relationship"></div></div>
-          <div class="card"><h3>Safety & consent</h3><div id="policy"></div><div class="policy-actions"><button data-command="adult status confirmed" data-i18n="adultConfirm">Confirm legal-adult status</button><button data-command="enable adult soul" data-i18n="adultEnable">Enable Adult Soul</button><button data-command="I consent">Grant current consent</button><button class="danger-soft" data-command="revoke consent">Revoke consent</button><button data-command="standard mode">Standard mode</button></div></div>
+          <div class="card"><h3>Safety & consent</h3><div id="policy"></div><p class="settings-help" id="adultAdminHint">Until a later release, Adult Mode enablement lives in Ctrl+A Private administration. Revoke consent and Standard mode stay here.</p><div class="policy-actions"><button class="adult-enable-action" data-command="adult status confirmed" data-i18n="adultConfirm">Confirm legal-adult status</button><button class="adult-enable-action" data-command="enable adult soul" data-i18n="adultEnable">Enable Adult Soul</button><button class="adult-enable-action" data-command="I consent">Grant current consent</button><button class="danger-soft" data-command="revoke consent">Revoke consent</button><button data-command="standard mode">Standard mode</button></div><div class="empty-actions adult-admin-open"><button type="button" class="secondary" id="openAdultSoulFromIdentity">Open Adult Soul studio</button><button type="button" class="secondary" id="openAdultMediaFromIdentity">Open Adult Media desk</button></div></div>
+        </div>
+      </section>
+
+      <section class="view panel-view" id="adultSoulView">
+        <div class="panel-head">
+          <div>
+            <h2>Adult Soul</h2>
+            <p>Separate 21+ studio: first-party figure, OS/local audio, Feel Sync pad, guided sessions. Software, not a person. Backtick blanks the stage.</p>
+          </div>
+        </div>
+        <div class="card adult-soul-locked" id="adultSoulLocked">
+          <h3>Locked</h3>
+          <p data-lock-reason>Until a later release, enable Adult Mode from the private administrator panel (Ctrl+A). Then confirm, enable, and grant consent.</p>
+          <button type="button" id="adultUnlockIdentityBtn">Open administrator panel</button>
+        </div>
+        <div class="adult-soul-studio hidden" id="adultSoulStudio">
+          <div class="adult-figure-stage" id="adultFigureStage">
+            <canvas id="adultFigureCanvas" width="640" height="560" aria-label="Adult Soul figure"></canvas>
+            <div class="adult-figure-meta"><span id="adultFigureMeta">First-party mesh</span><span id="adultSoulCue"></span></div>
+          </div>
+          <div class="adult-soul-controls">
+            <div class="card">
+              <h3>Look</h3>
+              <label>Name <input id="adultSoulName" maxlength="48" /></label>
+              <label>Presentation <select id="adultSoulPresentation"></select></label>
+              <label>Hair <select id="adultHairStyle"></select></label>
+              <label>Clothing <select id="adultClothing"></select></label>
+              <label>Quality <select id="adultRenderQuality"></select></label>
+              <label>Lighting <select id="adultLighting"></select></label>
+              <label>Heat <input id="adultHeat" type="range" min="0" max="100" /></label>
+              <div id="adultSliderGrid" class="adult-slider-grid"></div>
+            </div>
+            <div class="card" id="adultFeelCard">
+              <h3>Feel Sync</h3>
+              <p class="settings-help" id="adultFeelHonesty">On-screen patterns inspired by Vibease/VibeMate. No toy pairing, no screen recording.</p>
+              <div class="adult-xy" id="adultFeelPad" role="slider" aria-label="Feel intensity and speed"></div>
+              <label>Intensity <input id="adultFeelIntensity" type="range" min="0" max="100" /></label>
+              <label>Speed <input id="adultFeelSpeed" type="range" min="0" max="100" /></label>
+              <label>Sensitivity <input id="adultFeelSensitivity" type="range" min="0" max="100" /></label>
+              <label>Pattern <select id="adultFeelPattern"></select></label>
+              <label>Sync <select id="adultFeelSync"></select></label>
+              <label class="check"><input type="checkbox" id="adultFeelLoop" /> Loop pattern</label>
+              <label class="check"><input type="checkbox" id="adultFeelFloat" /> Float (constant hold)</label>
+              <p id="adultFeelLevel" class="settings-help">Level 0</p>
+            </div>
+            <div class="card">
+              <h3>Privacy</h3>
+              <p class="settings-help">VibeMate-style discreet lock. 4–8 digit PIN stored as a salted hash on this PC.</p>
+              <label>PIN <input id="adultPinInput" type="password" inputmode="numeric" maxlength="8" autocomplete="off" /></label>
+              <label>Confirm <input id="adultPinConfirm" type="password" inputmode="numeric" maxlength="8" autocomplete="off" /></label>
+              <div class="empty-actions">
+                <button type="button" id="adultPinSetBtn">Set PIN</button>
+                <button type="button" class="secondary" id="adultPinLockBtn">Lock now</button>
+              </div>
+              <label>Auto-blank <select id="adultAutoBlank">
+                <option value="0">Off</option>
+                <option value="15000">15 seconds</option>
+                <option value="30000">30 seconds</option>
+                <option value="60000">1 minute</option>
+                <option value="120000">2 minutes</option>
+              </select></label>
+              <label class="check"><input type="checkbox" id="adultHideRecents" /> Hide adult recents on the dashboard</label>
+              <label class="check"><input type="checkbox" id="adultAutoClear" /> Don’t keep adult play history</label>
+            </div>
+            <div class="card adult-soul-locked hidden" id="adultStealthLock">
+              <h3>Adult surfaces locked</h3>
+              <p>Enter your PIN to unblank Adult Soul and Adult Media.</p>
+              <label>PIN <input id="adultPinUnlock" type="password" inputmode="numeric" maxlength="8" autocomplete="off" /></label>
+              <button type="button" id="adultPinUnlockBtn">Unlock</button>
+            </div>
+            <div class="card">
+              <h3>Voice</h3>
+              <p class="settings-help" id="adultVoiceHonesty"></p>
+              <label>Preset <select id="adultVoicePreset"></select></label>
+              <div id="adultVoiceList"></div>
+              <div class="empty-actions">
+                <button type="button" class="secondary" id="adultPreviewVoiceBtn">Preview</button>
+                <button type="button" class="secondary" id="adultImportSoundBtn">Import local audio</button>
+              </div>
+            </div>
+            <div class="card">
+              <h3>Sessions</h3>
+              <div id="adultSessionGrid" class="adult-session-grid"></div>
+              <button type="button" class="danger-soft" id="adultStopSessionBtn">Stop session</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -427,13 +538,29 @@
       <div class="setup-actions"><button type="button" class="secondary" id="adminCancelBtn">Cancel</button><button type="submit" id="adminLoginButton">Unlock</button></div>
     </form>
     <form class="setup-dialog admin-dialog hidden" id="adminPanelForm">
-      <div><h1>Platform administration</h1><p>Edition testing and commerce configuration stay private to this local admin session.</p></div>
+      <div><h1>Platform administration</h1><p>Edition testing, service configuration, and Adult Mode stay private to this local admin session.</p></div>
       <div class="dashboard-grid"><div class="dashboard-card"><small>Eidovara Free</small><strong>Core assistant, memory, media, backups, updates, and 3 apps</strong></div><div class="dashboard-card"><small>Eidovara Premium</small><strong>Everything, remote providers, broad search, and unlimited apps</strong></div></div>
       <label class="setup-field">Local test edition override<select id="adminEdition"><option value="free">Eidovara Free</option><option value="premium">Eidovara Premium</option></select></label>
       <small>This local control is for owner testing and does not verify a purchase or subscription. Production entitlements require a signed server response.</small>
       <label class="setup-field">Secure store / payment page<input id="adminStoreUrl" type="url" maxlength="1000" placeholder="https://your-store.example/upgrade" /></label>
       <label class="setup-field">Soul HTTPS service<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://api.eidovara.org" /></label>
       <p>Checkout must be hosted by an HTTPS payment provider. Soul never collects card numbers, security codes, or payment certificates.</p>
+      <section class="admin-adult-panel" id="adminAdultPanel">
+        <h2>Adult Mode</h2>
+        <p>Until a later release, Adult Soul and Adult Media open only from this panel after you unlock administration. Triple gate still applies. Revoke and Standard mode also stay on Identity.</p>
+        <p class="settings-status" id="adminAdultStatus">Adult Mode is off.</p>
+        <div class="policy-actions">
+          <button type="button" id="adminAdultConfirmBtn">Confirm legal-adult status</button>
+          <button type="button" id="adminAdultEnableBtn">Enable Adult Soul</button>
+          <button type="button" id="adminAdultConsentBtn">Grant current consent</button>
+          <button type="button" class="danger-soft" id="adminAdultRevokeBtn">Revoke consent</button>
+          <button type="button" class="secondary" id="adminAdultStandardBtn">Standard mode</button>
+        </div>
+        <div class="empty-actions">
+          <button type="button" class="secondary" id="adminOpenAdultSoulBtn">Open Adult Soul studio</button>
+          <button type="button" class="secondary" id="adminOpenAdultMediaBtn">Open Adult Media desk</button>
+        </div>
+      </section>
       <p class="settings-status" id="adminPanelStatus"></p>
       <div class="setup-actions"><button type="button" class="secondary" id="adminStoreBtn">Open store</button><button type="button" class="secondary" id="adminServiceBtn">Test service</button><button type="button" class="secondary" id="adminLockBtn">Lock</button><button type="submit">Save</button></div>
     </form>
@@ -455,7 +582,7 @@
       </div>
       <div class="legal-panel hidden" id="legalTermsPanel">
         <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify/Archive chips open official HTTPS searches and do not rip streams or inject into other players.</p>
-        <p>Adult Mode stays off unless age-of-majority confirmation, enablement, and current revocable consent are all active. User-supplied media and apps remain your responsibility. Full terms ship as TERMS.md with the release.</p>
+        <p>Adult Mode stays off unless age-of-majority confirmation, enablement, and current revocable consent are all active. Until a later release, enablement is only in the private administrator panel (Ctrl+A, away from text fields). User-supplied media and apps remain your responsibility. Full terms ship as TERMS.md with the release.</p>
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
         <p>Local-first: conversations, memories, settings, safety records, linked-app shortcuts, Adult Mode state, and the 18+ flag stay on this device. No owner-operated accounts, telemetry, or analytics.</p>
@@ -514,5 +641,7 @@
   <script src="companion.js"></script>
   <script src="workspace-layers.js"></script>
   <script src="desktop-chrome.js"></script>
+  <script type="module" src="adult-soul-app.js"></script>
+  <script type="module" src="adult-media-app.js"></script>
 </body>
 </html>

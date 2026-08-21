@@ -395,7 +395,9 @@ app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) creat
 ipcMain.handle('soul:send', async (_e, m, opts) => {
   requireAgeGate();
   applyInternetOptions();
-  const result = await ensureEngine().respond(m, opts && typeof opts === 'object' ? opts : {});
+  const incoming = opts && typeof opts === 'object' ? { ...opts } : {};
+  incoming.adminAuthorized = adminAuthorized();
+  const result = await ensureEngine().respond(m, incoming);
   if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); }
   if (result.adultAllowed) overlayManager?.closeGuests?.();
   overlayManager?.hideIfGated?.();
@@ -659,6 +661,30 @@ ipcMain.handle('soul:launchApplication', async (_e, id) => {
   return { launched: true };
 });
 ipcMain.handle('soul:evalCalc', (_e, query) => { requireAgeGate(); return evaluatePaletteCalc(String(query || '').slice(0, 200)); });
+ipcMain.handle('soul:adultSoulStatus', () => { requireAgeGate(); return ensureEngine().adultSoulStatus(); });
+ipcMain.handle('soul:configureAdultSoul', (_e, input) => { requireAgeGate(); requireAdmin(); return ensureEngine().configureAdultSoul(input || {}); });
+ipcMain.handle('soul:startAdultSession', (_e, input) => { requireAgeGate(); requireAdmin(); return ensureEngine().startAdultSession(input || {}); });
+ipcMain.handle('soul:stopAdultSession', () => { requireAgeGate(); return ensureEngine().stopAdultSession(); });
+ipcMain.handle('soul:tickAdultSession', (_e, atMs) => { requireAgeGate(); return ensureEngine().tickAdultSession(atMs); });
+ipcMain.handle('soul:adultSoulCommand', (_e, command) => { requireAgeGate(); requireAdmin(); return ensureEngine().adultSoulCommand(String(command || '')); });
+ipcMain.handle('soul:adultMediaDesk', (_e, input) => { requireAgeGate(); requireAdmin(); return ensureEngine().adultMediaDesk(input || {}); });
+ipcMain.handle('soul:configureAdultMedia', (_e, input) => { requireAgeGate(); requireAdmin(); return ensureEngine().configureAdultMedia(input || {}); });
+ipcMain.handle('soul:setAdultPin', (_e, pin, confirm) => { requireAgeGate(); requireAdmin(); return ensureEngine().setAdultPin(pin, confirm); });
+ipcMain.handle('soul:unlockAdultStealth', (_e, pin) => { requireAgeGate(); requireAdmin(); return ensureEngine().unlockAdultStealth(pin); });
+ipcMain.handle('soul:lockAdultStealth', () => { requireAgeGate(); return ensureEngine().lockAdultStealth(); });
+ipcMain.handle('soul:applyFeelLevel', (_e, level, atMs) => { requireAgeGate(); requireAdmin(); return ensureEngine().applyFeelLevel(level, atMs); });
+ipcMain.handle('soul:addAdultFolderBookmark', (_e, folderId, item) => { requireAgeGate(); requireAdmin(); return ensureEngine().addAdultFolderBookmark(folderId, item); });
+ipcMain.handle('soul:selectAdultSound', async () => {
+  requireAgeGate();
+  requireAdmin();
+  const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add a local Adult Soul sound', properties: ['openFile'], filters: [{ name: 'Audio', extensions: ['mp3', 'm4a', 'aac', 'wav', 'flac', 'ogg', 'opus'] }] });
+  if (chosen.canceled || !chosen.filePaths[0]) return ensureEngine().adultSoulStatus();
+  const filePath = path.resolve(chosen.filePaths[0]);
+  if (!fs.existsSync(filePath)) throw new Error('The selected audio file is unavailable.');
+  const item = registerSessionMedia(filePath, { type: 'audio', title: path.basename(filePath).slice(0, 200) });
+  applyInternetOptions();
+  return ensureEngine().addAdultClip({ title: item.title, url: item.url, id: item.url.replace(/\W/g, '').slice(-32) });
+});
 ipcMain.handle('soul:removeApplication', (_e, id) => { requireAgeGate(); config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
 
 function cryptoId(value) { return crypto.createHash('sha256').update(String(value).toLowerCase()).digest('base64url'); }

@@ -608,7 +608,7 @@ button.dashboard-card {
 }
 .quick-grid button:hover { opacity: 0.88; }
 
-.admin-dialog { max-width: 680px; }
+.admin-dialog { max-width: 720px; }
 .admin-dialog > p { color: var(--muted); line-height: 1.45; }
 .admin-dialog input, .admin-dialog select {
   width: 100%;
@@ -619,3 +619,7 @@ button.dashboard-card {
   padding: 10px;
 }
 .admin-dialog .dashboard-grid { margin: 4px 0; }
+#adminPanelForm {
+  max-height: min(88vh, 920px);
+  overflow: auto;
+}

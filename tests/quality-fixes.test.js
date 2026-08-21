@@ -21,7 +21,7 @@ test('age gate inert-blocks the app and refreshes backups after accept', () => {
   const renderer = read('src/renderer/renderer.js');
   assert.match(renderer, /toggleAttribute\('inert'/);
   assert.match(renderer, /function setAgeGated/);
-  assert.match(renderer, /acceptAgeGate\(true\);state=await window\.soul\.snapshot\(\);setAgeGated\(false\);await refreshBackups/);
+  assert.match(renderer, /acceptAgeGate\(true\);state=await window\.soul\.snapshot\(\);setAgeGated\(false\);await refreshAdminSession\(\)\.catch\(\(\)=>\{\}\);await refreshBackups/);
 });
 
 test('settings save normalizes local and Premium endpoints', () => {

@@ -182,6 +182,22 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
         action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
         action('pick-local-media', { label: 'Open local media' })
       ];
+    case 'adult-soul':
+    case 'adult-session':
+      return [
+        action('open-view', { view: 'adultSoul', label: 'Open Adult Soul', auto: true }),
+        action('open-view', { view: 'identity', label: 'Identity & consent' })
+      ];
+    case 'adult-media':
+      return [
+        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Open Adult Media', auto: true }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
+    case 'adult-media-blocked':
+      return [
+        action('open-view', { view: 'identity', label: 'Identity & consent', auto: true }),
+        action('open-legal', { legal: 'age', label: 'Age 18+ notice' })
+      ];
     case 'memory':
     case 'remember':
     case 'forget':
@@ -331,6 +347,8 @@ export function suggestionsForView(view, overlay = {}) {
       return [
         action('pick-local-media', { label: 'Open local media' }),
         action('open-now-playing', { label: 'Now playing' }),
+        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Adult Media desk' }),
+        action('open-view', { view: 'adultSoul', label: 'Adult Soul' }),
         action('open-view', { view: 'apps', label: 'Play desk' }),
         action('open-view', { view: 'chat', label: 'Conversation' })
       ];
@@ -344,7 +362,14 @@ export function suggestionsForView(view, overlay = {}) {
       return [
         action('open-view', { view: 'identity', label: 'Identity & Adult Mode' }),
         soulStep(overlay),
+        action('open-view', { view: 'adultSoul', label: 'Adult Soul studio' }),
         action('open-legal', { legal: 'age', label: 'Age 18+ notice' })
+      ];
+    case 'adultSoul':
+      return [
+        action('open-view', { view: 'adultSoul', label: 'Stay on Adult Soul' }),
+        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Adult Media desk' }),
+        action('open-view', { view: 'identity', label: 'Identity & consent' })
       ];
     case 'settings':
       return [

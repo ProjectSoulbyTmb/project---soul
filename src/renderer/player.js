@@ -40,13 +40,13 @@
   function mediaHref(value) {
     const raw = String(value || '');
     if (!raw) return '';
-    if (/youtube\.com\/embed|youtube-nocookie|spotify\.com\/embed|sdk\.scdn\.co/i.test(raw)) return '';
+    if (/youtube\.com\/embed|youtube-nocookie|spotify\.com\/embed|sdk\.scdn\.co|pornhub\.com\/embed|xvideos\.com\/embedframe|xhamster\.com\/xembed|redgifs\.com\/ifr|spankbang\.com\/embed|chaturbate\.com\/embed/i.test(raw)) return '';
     try {
       const url = new URL(raw);
       if (url.protocol === LOCAL) return url.href;
       if (url.protocol !== 'https:') return '';
       const host = url.hostname.toLowerCase();
-      if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)spotify\.com$/.test(host)) return '';
+      if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)spotify\.com$|(^|\.)pornhub\.com$|(^|\.)xvideos\.com$|(^|\.)xhamster\.com$|(^|\.)spankbang\.com$|(^|\.)redgifs\.com$|(^|\.)chaturbate\.com$|(^|\.)onlyfans\.com$|(^|\.)fansly\.com$/.test(host)) return '';
       return url.href;
     } catch {
       return '';
@@ -162,6 +162,36 @@
       if ($('#mediaTime')) $('#mediaTime').textContent = `${clock(player.currentTime)} / ${clock(player.duration)}`;
     }
   }
+  let feelCtx = null;
+  let feelAnalyser = null;
+  let feelRaf = 0;
+  function attachFeel(player) {
+    if (!adultMode() || !player) return;
+    try {
+      feelCtx = feelCtx || new AudioContext();
+      if (feelCtx.state === 'suspended') feelCtx.resume?.();
+      feelAnalyser = feelAnalyser || feelCtx.createAnalyser();
+      feelAnalyser.fftSize = 256;
+      if (!player._eidovaraFeel) {
+        const source = feelCtx.createMediaElementSource(player);
+        source.connect(feelAnalyser);
+        feelAnalyser.connect(feelCtx.destination);
+        player._eidovaraFeel = true;
+      }
+      cancelAnimationFrame(feelRaf);
+      const tick = () => {
+        if (!feelAnalyser || !adultMode()) return;
+        const data = new Uint8Array(feelAnalyser.frequencyBinCount);
+        feelAnalyser.getByteTimeDomainData(data);
+        let sum = 0;
+        for (let i = 0; i < data.length; i += 1) sum += Math.abs(data[i] - 128);
+        const level = Math.min(1, (sum / data.length) / 36);
+        window.dispatchEvent(new CustomEvent('eidovara-feel-level', { detail: { level } }));
+        feelRaf = requestAnimationFrame(tick);
+      };
+      feelRaf = requestAnimationFrame(tick);
+    } catch {}
+  }
   function loadMedia(nextIndex, autoplay = true) {
     if (!queue.length) return;
     const previous = currentItem();
@@ -203,6 +233,7 @@
     bindMediaSession(item);
     paint();
     if (autoplay) player.play().catch(() => {});
+    attachFeel(player);
     if (poppedOut && !hideFloat()) {
       window.soul.popOutPlayer?.({ kind: item.type, item, rate, adultMode: adultMode(), ageGated: ageGated() });
     } else if (hideFloat()) {

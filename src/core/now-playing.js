@@ -11,15 +11,21 @@ export const SLEEP_MINUTES = [0, 15, 30, 45, 60, 90];
 
 const BLOCKED_HOST_SUFFIXES = [
   '.youtube.com', '.youtu.be', '.youtube-nocookie.com', '.googlevideo.com',
-  '.spotify.com', '.spotifycdn.com', '.scdn.co'
+  '.spotify.com', '.spotifycdn.com', '.scdn.co',
+  '.pornhub.com', '.xvideos.com', '.xhamster.com', '.spankbang.com', '.redgifs.com',
+  '.xnxx.com', '.chaturbate.com', '.stripchat.com', '.onlyfans.com', '.fansly.com',
+  '.youporn.com'
 ];
 const BLOCKED_HOSTS = new Set([
   'youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be',
   'youtube-nocookie.com', 'www.youtube-nocookie.com', 'googlevideo.com',
   'open.spotify.com', 'embed.spotify.com', 'play.spotify.com', 'api.spotify.com',
-  'accounts.spotify.com', 'spotify.com', 'www.spotify.com', 'spotifycdn.com', 'sdk.scdn.co'
+  'accounts.spotify.com', 'spotify.com', 'www.spotify.com', 'spotifycdn.com', 'sdk.scdn.co',
+  'pornhub.com', 'www.pornhub.com', 'xvideos.com', 'www.xvideos.com',
+  'xhamster.com', 'spankbang.com', 'redgifs.com', 'www.redgifs.com',
+  'xnxx.com', 'chaturbate.com', 'onlyfans.com', 'fansly.com'
 ]);
-const BLOCKED_EMBED = /youtube\.com\/embed|youtube-nocookie|\/\/youtu\.be\/|spotify\.com\/embed|open\.spotify\.com\/embed|sdk\.scdn\.co|spotify-web-playback|iframe_api|www\.youtube\.com\/iframe_api/i;
+const BLOCKED_EMBED = /youtube\.com\/embed|youtube-nocookie|\/\/youtu\.be\/|spotify\.com\/embed|open\.spotify\.com\/embed|sdk\.scdn\.co|spotify-web-playback|iframe_api|www\.youtube\.com\/iframe_api|pornhub\.com\/embed|xvideos\.com\/embedframe|xhamster\.com\/xembed|redgifs\.com\/ifr|spankbang\.com\/embed|chaturbate\.com\/embed|xnxx\.com\/embedframe/i;
 
 function hostnameOf(value) {
   try { return new URL(String(value || '')).hostname.toLowerCase(); } catch { return ''; }

@@ -58,7 +58,7 @@ const catalog = [
     id: 'workspace-media',
     title: 'Entertainment',
     summary: 'Local taste, queue helpers, and lawful Spotify/YouTube HTTPS handoff.',
-    intents: ['entertainment', 'mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise', 'local-media'],
+    intents: ['entertainment', 'mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise', 'local-media', 'adult-media', 'adult-media-blocked'],
     commands: ['mood mix', 'surprise me', 'open entertainment', 'open local media'],
     workspace: 'entertainment',
     ui: { view: 'entertainment' }
@@ -210,11 +210,20 @@ const catalog = [
   {
     id: 'identity-consent',
     title: 'Identity & consent',
-    summary: 'Self-model, Adult Mode triple gate, and revocable consent.',
+    summary: 'Self-model, Adult Mode (admin panel until a later release), and revocable consent.',
     intents: ['identity-panel'],
     commands: ['open identity', 'adult mode'],
     workspace: 'identity',
     ui: { view: 'identity' }
+  },
+  {
+    id: 'adult-soul-studio',
+    title: 'Adult Soul studio',
+    summary: 'Separate 21+ figure, Feel Sync pad, and guided sessions. Enablement is admin-panel only until a later release. Not a person.',
+    intents: ['adult-soul', 'adult-session'],
+    commands: ['open adult soul', 'feel pad', 'jerk off'],
+    workspace: 'adultSoul',
+    ui: { view: 'adultSoul' }
   },
   {
     id: 'quick-actions',

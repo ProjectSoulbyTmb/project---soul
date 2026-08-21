@@ -5,7 +5,7 @@ const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
 let state = null, settings = null, sending = false, backupCount = 0;
 let mediaQueue = [], mediaIndex = -1, sessionLibrary = [];
-const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), settings: $('#settingsView') };
+const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), adultSoul: $('#adultSoulView'), settings: $('#settingsView') };
 const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 const assistantPayload = (extra = {}) => {
   const p = state?.assistant?.preferences || {}, c = state?.assistant?.capabilities || {};
@@ -16,15 +16,54 @@ function activeConversation(){ return state?.conversations?.find(c=>c.id===state
 function fmt(ts){ try{return new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date(ts));}catch{return '';} }
 function currentView(){ return Object.keys(views).find(name=>views[name]?.classList.contains('active')) || 'dashboard'; }
 function reducedMotion(){ return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches); }
+function adminSessionActive(){ return document.body.classList.contains('admin-session'); }
+function fillAdminAdultStatus(){
+  const node=$('#adminAdultStatus');
+  if(!node) return;
+  const p=state?.policy||{};
+  const on=p.mode==='adult'&&p.adultSoulEnabled===true&&p.adultStatusConfirmed===true&&p.currentConsent===true;
+  node.textContent=on
+    ? 'Adult Mode triple gate is on. Studio and Adult Media stay in this admin session until a later release.'
+    : 'Adult Mode is off. Enable it here. Identity still has Revoke and Standard mode.';
+}
+function applyAdminSession(authorized){
+  document.body.classList.toggle('admin-session', Boolean(authorized));
+  fillAdminAdultStatus();
+  if(!authorized && currentView()==='adultSoul'){
+    const identity=views.identity;
+    if(identity){
+      Object.values(views).forEach(v=>v.classList.remove('active'));
+      identity.classList.add('active');
+      $('#viewTitle').textContent='Identity & continuity';
+      $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view==='identity'));
+    }
+  }
+}
+async function refreshAdminSession(){
+  try{
+    const status=await window.soul.adminStatus();
+    applyAdminSession(status?.authorized===true);
+    return status;
+  }catch{
+    applyAdminSession(false);
+    return {authorized:false};
+  }
+}
 function setView(name){
+  if(name==='adultSoul' && !adminSessionActive()){
+    openAdmin().catch(()=>{});
+    name='identity';
+  }
   if(!views[name])return;
   Object.values(views).forEach(v=>v.classList.remove('active'));
   views[name].classList.add('active');
-  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]);
+  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',adultSoul:'Adult Soul',settings:'Settings'}[name]);
   $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
   if(innerWidth<861) $('#sidebar').classList.remove('open');
   window.eidovaraCompanion?.renderFollowups?.(name);
   if(name==='research') renderResearchView();
+  if(name==='adultSoul') window.eidovaraAdultSoul?.onShow?.();
+  if(name==='entertainment') window.eidovaraAdultMedia?.onShow?.();
   window.eidovaraChrome?.recordView?.(name);
 }
 function el(tag, cls, text){ const n=document.createElement(tag); if(cls)n.className=cls; if(text!==undefined)n.textContent=text; return n; }
@@ -67,6 +106,10 @@ function appendKernelActions(target, actions){
 function runKernelAction(action){
   if(!action||!action.type)return;
   const smooth=reducedMotion()?'auto':'smooth';
+  if((action.view==='adultSoul' || action.panel==='adultMediaDesk') && !adminSessionActive()){
+    openAdmin().catch(()=>{});
+    return;
+  }
   if(action.type==='open-view'&&action.view){
     setView(action.view);
     if(action.panel){
@@ -111,7 +154,7 @@ window.eidovaraRunAction=runKernelAction;
 function setupCategories(){return $$('input[name="setupCategory"]:checked').map(x=>x.value);}
 function toggleStreamSetup(){$('#setupStreamFields').classList.toggle('hidden',!setupCategories().includes('stream-helper'));}
 function openSetup(reconfigure=false){const setup=state.setup||{};$$('input[name="setupCategory"]').forEach(x=>{x.checked=(setup.categories||[]).includes(x.value);});$('#setupCustomNeeds').value=setup.customNeeds||'';if($('#setupAccessibility'))$('#setupAccessibility').value=state.assistant?.preferences?.accessibility||'';$('#setupObsUrl').value=setup.stream?.obsWebSocketUrl||'ws://127.0.0.1:4455';$('#setupStreamGoals').value=setup.stream?.goals||'';$('#cancelSetupBtn').classList.toggle('hidden',!reconfigure&&!setup.completed);$('#setupStatus').textContent='';toggleStreamSetup();$('#setupOverlay').classList.remove('hidden');}
-async function openAdmin(){const status=await window.soul.adminStatus();$('#adminOverlay').classList.remove('hidden');$('#adminLoginStatus').textContent='';$('#adminPassword').value='';$('#adminLoginForm').classList.toggle('hidden',status.authorized);$('#adminPanelForm').classList.toggle('hidden',!status.authorized);$('#adminTitle').textContent=status.configured?'Private administration':'Create administrator password';$('#adminLoginHelp').textContent=status.configured?'Local access only. This session automatically locks after 15 minutes.':'Create a unique password of at least 12 characters for this installation. Eidovara cannot recover it.';$('#adminLoginButton').textContent=status.configured?'Unlock':'Create and unlock';$('#adminLoginForm').dataset.configured=String(Boolean(status.configured));if(status.authorized){$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;}else $('#adminPassword').focus();}
+async function openAdmin(){const status=await window.soul.adminStatus();applyAdminSession(status.authorized===true);$('#adminOverlay').classList.remove('hidden');$('#adminLoginStatus').textContent='';$('#adminPassword').value='';$('#adminLoginForm').classList.toggle('hidden',status.authorized);$('#adminPanelForm').classList.toggle('hidden',!status.authorized);$('#adminTitle').textContent=status.configured?'Private administration':'Create administrator password';$('#adminLoginHelp').textContent=status.configured?'Local access only. This session automatically locks after 15 minutes.':'Create a unique password of at least 12 characters for this installation. Eidovara cannot recover it.';$('#adminLoginButton').textContent=status.configured?'Unlock':'Create and unlock';$('#adminLoginForm').dataset.configured=String(Boolean(status.configured));if(status.authorized){$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;fillAdminAdultStatus();}else $('#adminPassword').focus();}
 
 function renderConversations(){ const list=$('#conversationList'); list.textContent=''; const onlyOne=(state.conversations||[]).length<=1; for(const c of state.conversations){ const row=el('button','conversation'+(c.id===state.activeConversationId?' active':'')); row.type='button'; const label=el('span','label',c.title||'Conversation'); const del=el('button','delete','×'); del.type='button'; del.title='Delete conversation'; del.hidden=onlyOne; del.disabled=onlyOne; del.addEventListener('click',async e=>{e.stopPropagation(); if(state.conversations.length<=1)return; state=await window.soul.deleteConversation(c.id); renderAll();}); row.append(label,del); row.addEventListener('click',async()=>{state=await window.soul.selectConversation(c.id); renderAll();setView('chat');}); list.append(row); } }
 function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>openResearchLink(url));return a;}
@@ -404,6 +447,7 @@ function renderCompanionPanel(){
   log.scrollTop=log.scrollHeight;
 }
 function renderEntertainment(){
+  window.eidovaraSessionLibrary = sessionLibrary;
   const favorites=$('#entertainmentFavorites'),recent=$('#entertainmentRecent'),mix=$('#entertainmentMix');
   favorites.textContent='';recent.textContent='';if(mix)mix.textContent='';
   const e=state.entertainment||{};
@@ -448,7 +492,7 @@ function renderEntertainment(){
     else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
   }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;const p=state?.policy||{};document.body.classList.toggle('adult-mode', p.mode==='adult'&&p.adultSoulEnabled===true&&p.adultStatusConfirmed===true&&p.currentConsent===true);fillAdminAdultStatus();window.eidovaraAdultSoul?.refresh?.();window.eidovaraAdultMedia?.refresh?.();renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -551,7 +595,7 @@ $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)
 $('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
 $('#newChatBtn').addEventListener('click',async()=>{state=await window.soul.newConversation();renderAll();setView('chat');$('#messageInput').focus();});
 $('#memoryForm').addEventListener('submit',async e=>{e.preventDefault();const v=$('#memoryInput').value.trim();if(!v)return;await window.soul.remember(v,{kind:'preference'});$('#memoryInput').value='';state=await window.soul.snapshot();renderAll();});
-$$('[data-command]').forEach(b=>b.addEventListener('click',async()=>{const command=b.dataset.command;if((command==='adult status confirmed'||command==='enable adult soul')&&!state.policy?.adultStatusConfirmed){const accepted=window.confirm(window.eidovaraI18n.t('adultWarning'));if(!accepted)return;if(command==='enable adult soul')await send('adult status confirmed');}setView('chat');await send(command);}));
+$$('[data-command]').forEach(b=>b.addEventListener('click',async()=>{const command=b.dataset.command;const enableCmd=command==='adult status confirmed'||command==='enable adult soul'||command==='I consent';if(enableCmd&&!adminSessionActive()){openAdmin().catch(err=>alert(String(err?.message||err)));return;}if((command==='adult status confirmed'||command==='enable adult soul')&&!state.policy?.adultStatusConfirmed){const accepted=window.confirm(window.eidovaraI18n.t('adultWarning'));if(!accepted)return;if(command==='enable adult soul')await send('adult status confirmed');}setView('chat');await send(command);}));
 $('#settingsForm').addEventListener('submit',async e=>{e.preventDefault();$('#settingsStatus').textContent='Saving…';try{const provider=$('#providerSelect').value, endpoint=$('#endpointInput').value.trim(), model=$('#modelInput').value.trim();settings=await window.soul.saveSettings({provider,endpoint,model,language:$('#languageSelect').value,apiKey:$('#apiKeyInput').value,clearApiKey:$('#clearKeyInput').checked,searchApiKey:$('#searchApiKeyInput').value,clearSearchApiKey:$('#clearSearchKeyInput').checked,assistOptIn:$('#assistOptIn')?$('#assistOptIn').checked:false,theme:{background:$('#themeBackground').value,panel:$('#themePanel').value,accent:$('#themeAccent').value,transparency:Number($('#themeTransparency').value),rgbEffects:$('#themeRgb').checked,gamingMode:$('#gamingModeInput').checked},companion:{avatarMode:$('#avatarMode').value,motion:$('#avatarMotion').value,voiceEnabled:$('#voiceMute')? !$('#voiceMute').checked : $('#voiceEnabled').checked,mute:$('#voiceMute')?$('#voiceMute').checked:!$('#voiceEnabled').checked,voiceName:$('#voiceSelect').value,voiceURI:$('#voiceSelect').value,lookId:$('#presenceLook')?.value||'orb',rate:Number($('#voiceRate').value),pitch:Number($('#voicePitch').value),adultPresentation:$('#adultPresentation').checked,bodyHeight:Number($('#bodyHeight').value),bodyBuild:Number($('#bodyBuild').value),bodyCurves:Number($('#bodyCurves').value)}});$('#apiKeyInput').value='';$('#searchApiKeyInput').value='';$('#clearKeyInput').checked=false;$('#clearSearchKeyInput').checked=false;const labels={offline:'Soul Offline',local:'Local model',compatible:'Connected model'};let note=`Settings saved. Provider: ${labels[settings.provider]||settings.provider}. Language: ${settings.language||'en'}.`;if(settings.provider!=='offline'&&(!endpoint||!model)) note+=' Add an endpoint and model before leaving offline fallback.';$('#settingsStatus').textContent=note;applyTheme();applyCompanion();renderStatus();renderDashboard();}catch(err){$('#settingsStatus').textContent=String(err?.message||err);}});
 $('#addAppBtn').addEventListener('click',async()=>{try{settings=await window.soul.addApplication();applyTheme();renderApps();$('#appsStatus').textContent='Application list updated.';}catch(err){$('#appsStatus').textContent=String(err?.message||err);}});
 const localMediaButton=el('button','secondary',t('openLocalMedia','Open local media'));localMediaButton.type='button';localMediaButton.id='openLocalMediaBtn';localMediaButton.addEventListener('click',async()=>{try{const item=await window.soul.selectLocalMedia();if(item){sessionLibrary=[{...item,playable:true},...sessionLibrary.filter(x=>x.url!==item.url)].slice(0,32);playMedia([item],0,{alreadyConfirmed:true});renderEntertainment();}}catch(err){alert(String(err?.message||err));}});$('#entertainmentView .panel-head').append(localMediaButton);
@@ -740,6 +784,8 @@ const PALETTE_COMMANDS = [
   { id:'scratch', title:'Scratchpad', hint:'Local capture on the Dashboard', run:()=>{ setView('dashboard'); $('#scratchpadInput')?.focus(); } },
   { id:'now-playing', title:'Now playing', hint:'Local media dock — eidovara-media stays locked', run:()=>{ setView('entertainment'); $('#mediaDock')?.classList.remove('hidden'); $('#mediaDock')?.scrollIntoView({block:'nearest'}); } },
   { id:'entertainment', title:'Entertainment', hint:'Local media and official searches', run:()=>setView('entertainment') },
+  { id:'adult-soul', title:'Adult Soul', hint:'21+ studio, Feel Sync pad — triple gate', run:()=>setView('adultSoul') },
+  { id:'adult-media', title:'Adult Media', hint:'Local rails + official HTTPS searches', run:()=>{ setView('entertainment'); $('#adultMediaDesk')?.scrollIntoView({block:'start'}); } },
   { id:'memory', title:'Memory', hint:'Facts Soul can keep', run:()=>setView('memory') },
   { id:'identity', title:'Identity & consent', hint:'Adult Mode stays a triple gate', run:()=>setView('identity') },
   { id:'service', title:'Service URL', hint:'Default https://api.eidovara.org', run:()=>jumpSettings('#serviceForm') },
@@ -756,8 +802,9 @@ const PALETTE_COMMANDS = [
 let paletteIndex = 0;
 function filteredPalette(query){
   const q=String(query||'').trim().toLowerCase();
-  if(!q) return PALETTE_COMMANDS.slice();
-  return PALETTE_COMMANDS.filter(item => `${item.title} ${item.hint} ${item.id}`.toLowerCase().includes(q));
+  const list=PALETTE_COMMANDS.filter(item => adminSessionActive() || (item.id!=='adult-soul' && item.id!=='adult-media'));
+  if(!q) return list.slice();
+  return list.filter(item => `${item.title} ${item.hint} ${item.id}`.toLowerCase().includes(q));
 }
 function renderPaletteList(){
   const box=$('#paletteList'); if(!box) return;
@@ -869,11 +916,36 @@ $$('[data-start]').forEach(b=>b.addEventListener('click',()=>{
 }));
 $('#dismissStartPath')?.addEventListener('click',()=>setStartPathDismissed(true));
 $('#adminCancelBtn').addEventListener('click',()=>$('#adminOverlay').classList.add('hidden'));
-$('#adminLoginForm').addEventListener('submit',async e=>{e.preventDefault();try{const password=$('#adminPassword').value;const status=$('#adminLoginForm').dataset.configured==='true'?await window.soul.adminLogin(password):await window.soul.adminConfigure(password);$('#adminPassword').value='';$('#adminLoginForm').classList.add('hidden');$('#adminPanelForm').classList.remove('hidden');$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;}catch(err){$('#adminLoginStatus').textContent=String(err?.message||err);}});
+$('#adminLoginForm').addEventListener('submit',async e=>{e.preventDefault();try{const password=$('#adminPassword').value;const status=$('#adminLoginForm').dataset.configured==='true'?await window.soul.adminLogin(password):await window.soul.adminConfigure(password);applyAdminSession(true);$('#adminPassword').value='';$('#adminLoginForm').classList.add('hidden');$('#adminPanelForm').classList.remove('hidden');$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;fillAdminAdultStatus();}catch(err){$('#adminLoginStatus').textContent=String(err?.message||err);}});
 $('#adminPanelForm').addEventListener('submit',async e=>{e.preventDefault();try{const status=await window.soul.adminSave({edition:$('#adminEdition').value,storeUrl:$('#adminStoreUrl').value.trim(),serviceUrl:$('#adminServiceUrl').value.trim()});settings=await window.soul.getSettings();renderAll();$('#adminPanelStatus').textContent=`Saved ${status.edition} edition, store, and HTTPS service configuration.`;}catch(err){$('#adminPanelStatus').textContent=String(err?.message||err);}});
-$('#adminLockBtn').addEventListener('click',async()=>{await window.soul.adminLogout();$('#adminOverlay').classList.add('hidden');});
+$('#adminLockBtn').addEventListener('click',async()=>{await window.soul.adminLogout();applyAdminSession(false);$('#adminOverlay').classList.add('hidden');});
 $('#adminStoreBtn').addEventListener('click',()=>{const url=$('#adminStoreUrl').value.trim();if(!url){$('#adminPanelStatus').textContent='Configure an HTTPS store link first.';return;}window.soul.openExternal(url).catch(err=>{$('#adminPanelStatus').textContent=String(err?.message||err);});});
 $('#adminServiceBtn').addEventListener('click',async()=>{try{await window.soul.adminSave({edition:$('#adminEdition').value,storeUrl:$('#adminStoreUrl').value.trim(),serviceUrl:$('#adminServiceUrl').value.trim()});const result=await window.soul.checkService();settings=await window.soul.getSettings();applyServiceIndicator(result);$('#adminPanelStatus').textContent=!result.configured?'Configure a service URL first.':result.online?`${result.service||'Eidovara'} ${result.version||''} is online. Checkout stays off.`.replace(/\s+/g,' ').trim():(result.error||'Service is offline. Offline Soul continues locally.');}catch(err){$('#adminPanelStatus').textContent=String(err?.message||err);}});
+async function adminAdultCommand(command){
+  try{
+    const res=await window.soul.send(command,{view:'identity'});
+    state=res.state;
+    renderAll();
+    fillAdminAdultStatus();
+    if($('#adminPanelStatus')) $('#adminPanelStatus').textContent=res.reply||'Adult Mode updated.';
+  }catch(err){
+    if($('#adminPanelStatus')) $('#adminPanelStatus').textContent=String(err?.message||err);
+  }
+}
+$('#adminAdultConfirmBtn')?.addEventListener('click',()=>adminAdultCommand('adult status confirmed'));
+$('#adminAdultEnableBtn')?.addEventListener('click',async()=>{
+  if(!state?.policy?.adultStatusConfirmed){
+    const accepted=window.confirm(window.eidovaraI18n.t('adultWarning'));
+    if(!accepted)return;
+    await adminAdultCommand('adult status confirmed');
+  }
+  await adminAdultCommand('enable adult soul');
+});
+$('#adminAdultConsentBtn')?.addEventListener('click',()=>adminAdultCommand('I consent'));
+$('#adminAdultRevokeBtn')?.addEventListener('click',()=>adminAdultCommand('revoke consent'));
+$('#adminAdultStandardBtn')?.addEventListener('click',()=>adminAdultCommand('standard mode'));
+$('#adminOpenAdultSoulBtn')?.addEventListener('click',()=>{$('#adminOverlay').classList.add('hidden');setView('adultSoul');});
+$('#adminOpenAdultMediaBtn')?.addEventListener('click',()=>{$('#adminOverlay').classList.add('hidden');setView('entertainment');$('#adultMediaDesk')?.scrollIntoView({block:'start'});});
 let serviceRetryTimer=0;
 async function refreshServiceStatus(silent=false){
   if(!settings?.ageGateAccepted) return;
@@ -913,6 +985,8 @@ function showLegal(section){
   $('#legalOverlay').classList.remove('hidden');
 }
 window.eidovaraSetView=setView;
+window.eidovaraOpenAdmin=openAdmin;
+window.eidovaraAdminSession=adminSessionActive;
 window.eidovaraSend=send;
 window.eidovaraOpenSetup=openSetup;
 window.eidovaraShowLegal=showLegal;
@@ -931,7 +1005,7 @@ function setAgeGated(on){
   $('#ageGateOverlay').classList.toggle('hidden',!on);
   if(on) $('#ageGateTermsCheck')?.focus();
 }
-$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
+$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshAdminSession().catch(()=>{});await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
 $('#ageGateDeclineBtn').addEventListener('click',()=>window.soul.declineAgeGate());
 
-(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;if($('#autoCheckUpdates'))$('#autoCheckUpdates').checked=settings.autoCheckUpdates!==false;if(settings.updateStatus)applyUpdateStatus(settings.updateStatus);setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();
+(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;if($('#autoCheckUpdates'))$('#autoCheckUpdates').checked=settings.autoCheckUpdates!==false;if(settings.updateStatus)applyUpdateStatus(settings.updateStatus);setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshAdminSession();void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();

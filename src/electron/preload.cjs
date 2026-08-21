@@ -18,5 +18,19 @@ contextBridge.exposeInMainWorld('soul', {
   overlayState: () => ipcRenderer.invoke('soul:overlayState'),
   overlayStatus: () => ipcRenderer.invoke('soul:overlayState'),
   overlayOpenExternal: url => ipcRenderer.invoke('soul:overlayOpenExternal', url),
-  processMetrics: () => ipcRenderer.invoke('soul:processMetrics')
+  processMetrics: () => ipcRenderer.invoke('soul:processMetrics'),
+  adultSoulStatus: () => ipcRenderer.invoke('soul:adultSoulStatus'),
+  configureAdultSoul: input => ipcRenderer.invoke('soul:configureAdultSoul', input || {}),
+  startAdultSession: input => ipcRenderer.invoke('soul:startAdultSession', input || {}),
+  stopAdultSession: () => ipcRenderer.invoke('soul:stopAdultSession'),
+  tickAdultSession: atMs => ipcRenderer.invoke('soul:tickAdultSession', atMs),
+  adultSoulCommand: command => ipcRenderer.invoke('soul:adultSoulCommand', command),
+  selectAdultSound: () => ipcRenderer.invoke('soul:selectAdultSound'),
+  adultMediaDesk: input => ipcRenderer.invoke('soul:adultMediaDesk', input || {}),
+  configureAdultMedia: input => ipcRenderer.invoke('soul:configureAdultMedia', input || {}),
+  setAdultPin: (pin, confirm) => ipcRenderer.invoke('soul:setAdultPin', pin, confirm),
+  unlockAdultStealth: pin => ipcRenderer.invoke('soul:unlockAdultStealth', pin),
+  lockAdultStealth: () => ipcRenderer.invoke('soul:lockAdultStealth'),
+  applyFeelLevel: (level, atMs) => ipcRenderer.invoke('soul:applyFeelLevel', level, atMs),
+  addAdultFolderBookmark: (folderId, item) => ipcRenderer.invoke('soul:addAdultFolderBookmark', folderId, item)
 });

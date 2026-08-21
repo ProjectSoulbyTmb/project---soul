@@ -7,7 +7,10 @@ const AGENT = 'Eidovara/0.18 (desktop research client)';
 export const PAGE_BYTE_LIMIT = 512 * 1024;
 export const PAGE_TIMEOUT_MS = 15_000;
 export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.';
-const HANDOFF_HOSTS = ['youtube.com', 'youtu.be', 'spotify.com'];
+const HANDOFF_HOSTS = ['youtube.com', 'youtu.be', 'spotify.com',
+  'pornhub.com', 'xvideos.com', 'xhamster.com', 'spankbang.com', 'redgifs.com',
+  'xnxx.com', 'chaturbate.com', 'stripchat.com', 'onlyfans.com', 'fansly.com',
+  'manyvids.com', 'youporn.com', 'redtube.com', 'tube8.com'];
 const ARCHIVE_HOSTS = ['archive.org'];
 const RAW_DROP_TAGS = new Set(['script', 'style', 'noscript', 'iframe', 'object', 'embed', 'textarea', 'xmp', 'noembed', 'noframes']);
 const TREE_DROP_TAGS = new Set(['head', 'svg', 'canvas']);
