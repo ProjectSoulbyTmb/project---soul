@@ -1,5 +1,10 @@
 # Eidovara
 
+## v0.18.1
+
+- Windows installer rebuild after PR #10 (`cursor/engine-product-surface-c180`) merged to `main`. Tag `v0.18.0` already pointed at older `main` and was not moved. `package.json` / Worker / website-helper version is `0.18.1`. App id stays `com.soulconsciousnessstudios.eidovara`.
+- GitHub Pages `docs/` from `main` is the live site. Operator snapshot: `LIVE.md`. Payments stay fail-closed. No Authenticode claim. No `workers.dev` host in app or public JS.
+
 ## v0.18.0
 
 - Untrusted Wikipedia/Brave result URLs and stored website/store URLs are parsed with `URL` (`https:` and no credentials) instead of an `https://` prefix check. Website helper `/v1/assist` fetch uses `redirect: 'error'` and a 32 KiB JSON bound, matching desktop service GET. Worker `/health` `/v1/config` `/v1/status` now also advertise `checkoutEnabled: false` and `conversationsStored: false`. Payments stay off.

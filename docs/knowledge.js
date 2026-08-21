@@ -1,5 +1,5 @@
-/** Eidovara website helper knowledge pack (v0.18.0). Same answers for Pages and Worker. */
-export const ASSIST_VERSION = '0.18.0';
+/** Eidovara website helper knowledge pack (v0.18.1). Same answers for Pages and Worker. */
+export const ASSIST_VERSION = '0.18.1';
 export const MAX_ASSIST_QUERY = 800;
 export const MAX_ASSIST_BODY = 4096;
 export const STORAGE_KEY = 'eidovara.serviceBase';
@@ -167,7 +167,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing'],
     title: 'Live GitHub Pages publishes from main',
-    reply: 'The public site is GitHub Pages publishing docs/ from the main branch. Product, Download, Assist, Help, FAQ, Status, and Legal pages live in this repository; they go live when that work is merged to main. Until merge, the live github.io URL may still show the older homepage. This helper cannot merge pull requests. pages.yml already deploys docs/ on push to main; do not retarget Pages at a feature branch.',
+    reply: 'The public site is GitHub Pages publishing docs/ from the main branch. Product, Download, Assist, Help, FAQ, Status, and Legal pages are live at the github.io URL after PR #10 merged to main. pages.yml deploys docs/ on push to main; do not retarget Pages at a feature branch. This helper cannot change GitHub settings.',
     links: [{ href: './', label: 'Home' }, { href: 'status.html', label: 'Status' }]
   },
   {

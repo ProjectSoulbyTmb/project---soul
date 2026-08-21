@@ -12,8 +12,8 @@ Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x
 ```powershell
 git checkout main
 git pull origin main
-git tag v0.18.0
-git push origin v0.18.0
+git tag v0.18.1
+git push origin v0.18.1
 ```
 
 3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer`, writes the update manifest and evidence, and publishes `Eidovara-${version}-Windows-x64-Setup.exe` to the GitHub Release. Users download that `.exe`; they do not extract a ZIP.

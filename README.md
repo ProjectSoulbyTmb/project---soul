@@ -1,4 +1,4 @@
-# Eidovara v0.18.0
+# Eidovara v0.18.1
 
 Eidovara is a customizable Windows desktop workspace for applications, gaming, media, research, accessibility, and optional personal assistance. It is created and owned by Tyler Michael Bosworth and published under the intended business name Soul Consciousness Studios™.
 
@@ -6,7 +6,7 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 [Download the latest Windows installer](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest) · [Website](https://projectsoulbytmb.github.io/project---soul/) · [Release notes](CHANGELOG.md)
 
-**Public online path:** anyone can open the HTTPS site (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the Authenticode-unsigned Windows Stable Alpha (18+) from GitHub Releases when a `Setup.exe` is published, or build from source with `npm run dist:win:installer` on Windows. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; it can attach to the online Eidovara service for status/config (`/health`, `/v1/config`, `/v1/status`) while remaining usable offline. That attachment is not required. GitHub Pages publishes `docs/` from `main` — merge this product-surface PR to update the live site. Owner clicks that git cannot finish (Dependency graph, merge-to-`main` Pages, `npx wrangler deploy`, tags, optional custom domain) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md).
+**Public online path:** anyone can open the HTTPS site (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the Authenticode-unsigned Windows Stable Alpha (18+) from GitHub Releases when a `Setup.exe` is published, or build from source with `npm run dist:win:installer` on Windows. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; it can attach to the online Eidovara service for status/config (`/health`, `/v1/config`, `/v1/status`) while remaining usable offline. That attachment is not required. GitHub Pages publishes `docs/` from `main` (PR #10 merged). Owner clicks that git cannot finish (Dependency graph, `npx wrangler deploy` after Worker edits, `v0.18.1` tag if not already pushed, optional custom domain) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md) and [LIVE.md](LIVE.md).
 
 ## What is included
 
