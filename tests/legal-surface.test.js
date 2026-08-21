@@ -263,7 +263,7 @@ test('first-party legal stack is kept; third-party brands are not product names'
   assert.match(trademarks, /unregistered/);
   assert.match(trademarks, /does not contain a USPTO serial number|must not be used unless/i);
   assert.match(read('LEGAL_NOTICES.md'), /not Jarvis/);
-  assert.match(read('TERMS.md'), /not Jarvis/);
+  assert.match(read('TERMS.md'), /\*\*not\*\* Jarvis|\bnot Jarvis\b/);
   assert.match(read('OWNERSHIP.md'), /does \*\*not\*\* claim ®|unregistered/);
   assert.match(read('docs/MARKETING_CLAIMS_POLICY.md'), /Using Jarvis/);
 
