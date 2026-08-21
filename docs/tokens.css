@@ -1,0 +1,89 @@
+/* Eidovara interface tokens — iOS Human Interface–inspired, not an Apple product.
+   System font stack only; do not ship or require licensed SF Pro files. */
+:root {
+  color-scheme: light dark;
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 999px;
+  --hairline: 0.5px;
+  --title-large: 34px;
+  --title-1: 28px;
+  --title-2: 22px;
+  --title-3: 20px;
+  --headline: 17px;
+  --body: 17px;
+  --subhead: 15px;
+  --footnote: 13px;
+  --caption: 12px;
+  --motion: 180ms;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --blur: saturate(180%) blur(20px);
+  --tint: #007aff;
+  --bg: #f2f2f7;
+  --grouped: #f2f2f7;
+  --side: #f2f2f7;
+  --panel: #ffffff;
+  --panel2: #f2f2f7;
+  --elevated: #ffffff;
+  --line: rgba(60, 60, 67, 0.29);
+  --separator: rgba(60, 60, 67, 0.12);
+  --text: #000000;
+  --muted: rgba(60, 60, 67, 0.6);
+  --tertiary: rgba(60, 60, 67, 0.3);
+  --accent: var(--tint);
+  --accent2: #5856d6;
+  --danger: #ff3b30;
+  --good: #34c759;
+  --fill: rgba(120, 120, 128, 0.16);
+  --fill-secondary: rgba(120, 120, 128, 0.12);
+  --fill-tertiary: rgba(118, 118, 128, 0.08);
+  --btn-gray: rgba(120, 120, 128, 0.16);
+  --on-accent: #ffffff;
+  --nav-bar: rgba(249, 249, 249, 0.86);
+  --overlay: rgba(0, 0, 0, 0.32);
+  --shadow: 0 8px 28px rgba(0, 0, 0, 0.08);
+  --aqua: var(--tint);
+  --surface-opacity: 96%;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tint: #0a84ff;
+    --bg: #000000;
+    --grouped: #000000;
+    --side: #000000;
+    --panel: #1c1c1e;
+    --panel2: #2c2c2e;
+    --elevated: #1c1c1e;
+    --line: rgba(84, 84, 88, 0.65);
+    --separator: rgba(84, 84, 88, 0.36);
+    --text: #ffffff;
+    --muted: rgba(235, 235, 245, 0.6);
+    --tertiary: rgba(235, 235, 245, 0.3);
+    --accent: var(--tint);
+    --accent2: #5e5ce6;
+    --danger: #ff453a;
+    --good: #30d158;
+    --fill: rgba(120, 120, 128, 0.36);
+    --fill-secondary: rgba(120, 120, 128, 0.32);
+    --fill-tertiary: rgba(118, 118, 128, 0.24);
+    --btn-gray: rgba(120, 120, 128, 0.32);
+    --on-accent: #ffffff;
+    --nav-bar: rgba(28, 28, 30, 0.86);
+    --overlay: rgba(0, 0, 0, 0.55);
+    --shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+    --aqua: var(--tint);
+  }
+}
