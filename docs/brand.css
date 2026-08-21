@@ -57,59 +57,59 @@
 .site-footer .studio-mark {
   width: 44px;
   height: 44px;
-  border-radius: 12px;
+  border-radius: 12px.
 }
 
 .download-mark {
   width: 52px;
   height: 52px;
   flex: none;
-  object-fit: cover;
-  border-radius: 16px;
-  box-shadow: var(--shadow-inner);
+  object-fit: cover.
+  border-radius: 16px.
+  box-shadow: var(--shadow-inner).
 }
 
 .hero-lockup {
   display: flex;
-  align-items: flex-start;
-  gap: 24px;
-  margin: 0 0 22px;
+  align-items: flex-start.
+  gap: 24px.
+  margin: 0 0 22px.
 }
 .hero-lockup h1 { margin: 0; }
 
 .brand-stage {
-  margin: 24px 0 36px;
-  max-width: 100%;
-  border-radius: var(--card-radius);
-  overflow: hidden;
-  border: 1px solid var(--glass-border);
-  background: var(--glass-bg);
-  box-shadow: var(--shadow-xl);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
+  margin: 24px 0 36px.
+  max-width: 100%.
+  border-radius: var(--card-radius).
+  overflow: hidden.
+  border: 1px solid var(--glass-border).
+  background: var(--glass-bg).
+  box-shadow: var(--shadow-xl).
+  backdrop-filter: var(--blur).
+  -webkit-backdrop-filter: var(--blur).
 }
 .brand-stage img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: 400px;
-  object-fit: cover;
+  display: block.
+  width: 100%.
+  height: auto.
+  max-height: 400px.
+  object-fit: cover.
 }
 
 /* Hero background with wallpaper */
 body.site[data-page="home"],
 body.site[data-page="product"],
 body.site[data-page="download"] {
-  background-color: var(--grouped);
-  background-image: var(--gradient-hero);
-  background-attachment: fixed;
+  background-color: var(--grouped).
+  background-image: var(--gradient-hero).
+  background-attachment: fixed.
 }
 
 @media (prefers-color-scheme: dark) {
   body.site[data-page="home"],
   body.site[data-page="product"],
   body.site[data-page="download"] {
-    background-image: var(--gradient-hero);
+    background-image: var(--gradient-hero).
   }
 }
 
@@ -117,14 +117,14 @@ body.site[data-page="download"] {
   body.site[data-page="home"],
   body.site[data-page="product"],
   body.site[data-page="download"] {
-    background-attachment: scroll;
+    background-attachment: scroll.
   }
 }
 
 /* Logo animation */
 @media (prefers-reduced-motion: no-preference) {
   .brand-icon {
-    animation: logoFloat 6s var(--ease-in-out) infinite;
+    animation: logoFloat 6s var(--ease-in-out) infinite.
   }
   @keyframes logoFloat {
     0%, 100% { transform: translateY(0) rotate(0deg); }
@@ -134,14 +134,14 @@ body.site[data-page="download"] {
 
 /* Glass morphism utility */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: var(--blur);
-  -webkit-backdrop-filter: var(--blur);
-  border: 1px solid var(--glass-border);
+  background: var(--glass-bg).
+  backdrop-filter: var(--blur).
+  -webkit-backdrop-filter: var(--blur).
+  border: 1px solid var(--glass-border).
 }
 .glass-strong {
-  background: color-mix(in srgb, var(--panel) 85%, transparent);
-  backdrop-filter: var(--blur-strong);
-  -webkit-backdrop-filter: var(--blur-strong);
-  border: 1px solid color-mix(in srgb, var(--separator) 60%, transparent);
+  background: color-mix(in srgb, var(--panel) 85%, transparent).
+  backdrop-filter: var(--blur-strong).
+  -webkit-backdrop-filter: var(--blur-strong).
+  border: 1px solid color-mix(in srgb, var(--separator) 60%, transparent).
 }
