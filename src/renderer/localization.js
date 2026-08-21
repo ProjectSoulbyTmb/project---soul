@@ -31,7 +31,11 @@
       diagShow: 'Show diagnostics', diagLead: 'Local snapshot of this installation. Not a security certification or compatibility guarantee.',
       behaviorSaved: 'Behavior settings saved. Language, tone, and accessibility remain as set.',
       dashFocus: 'Focus', dashRoles: 'Roles', dashMemory: 'Memory', dashApps: 'Apps', dashMedia: 'Entertainment', dashPrivacy: 'Workspace', dashBackups: 'Backups', dashHealth: 'Diagnostics',
-      notConfigured: 'not configured', offlineFirst: 'offline-first', connectedProvider: 'connected provider'
+      notConfigured: 'not configured', offlineFirst: 'offline-first', connectedProvider: 'connected provider',
+      mediaDisabled: 'Media playback is disabled in Soul behavior settings.', mediaConfirm: 'Play this media in Eidovara:',
+      launchApp: 'Launch', launchCancelled: 'Launch cancelled.',
+      premiumLocked: 'Free: offline/local models, Wikipedia/Wikimedia research, up to 3 apps. RGB, Brave key, and remote endpoints stay Premium.',
+      premiumUnlocked: 'Premium test gates are on: remote endpoints, Brave search key, RGB, and unlimited apps.'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -64,7 +68,11 @@
       diagShow: 'Mostrar diagnósticos', diagLead: 'Instantánea local de esta instalación. No es una certificación de seguridad ni una garantía de compatibilidad.',
       behaviorSaved: 'Comportamiento guardado. Idioma, tono y accesibilidad se mantienen.',
       dashFocus: 'Enfoque', dashRoles: 'Roles', dashMemory: 'Memoria', dashApps: 'Apps', dashMedia: 'Entretenimiento', dashPrivacy: 'Espacio', dashBackups: 'Copias', dashHealth: 'Diagnóstico',
-      notConfigured: 'sin configurar', offlineFirst: 'primero local', connectedProvider: 'proveedor conectado'
+      notConfigured: 'sin configurar', offlineFirst: 'primero local', connectedProvider: 'proveedor conectado',
+      mediaDisabled: 'La reproducción está desactivada en el comportamiento de Soul.', mediaConfirm: 'Reproducir este medio en Eidovara:',
+      launchApp: 'Abrir', launchCancelled: 'Lanzamiento cancelado.',
+      premiumLocked: 'Gratis: modelos locales, Wikipedia/Wikimedia, hasta 3 apps. RGB, clave Brave y endpoints remotos son Premium.',
+      premiumUnlocked: 'Prueba Premium activa: endpoints remotos, clave Brave, RGB y apps ilimitadas.'
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -97,7 +105,11 @@
       diagShow: 'Afficher les diagnostics', diagLead: 'Instantané local de cette installation. Pas une certification de sécurité ni une garantie de compatibilité.',
       behaviorSaved: 'Comportement enregistré. Langue, ton et accessibilité restent tels quels.',
       dashFocus: 'Focus', dashRoles: 'Rôles', dashMemory: 'Mémoire', dashApps: 'Apps', dashMedia: 'Divertissement', dashPrivacy: 'Espace', dashBackups: 'Sauvegardes', dashHealth: 'Diagnostics',
-      notConfigured: 'non configuré', offlineFirst: 'd’abord hors ligne', connectedProvider: 'fournisseur connecté'
+      notConfigured: 'non configuré', offlineFirst: 'd’abord hors ligne', connectedProvider: 'fournisseur connecté',
+      mediaDisabled: 'La lecture multimédia est désactivée dans le comportement de Soul.', mediaConfirm: 'Lire ce média dans Eidovara :',
+      launchApp: 'Lancer', launchCancelled: 'Lancement annulé.',
+      premiumLocked: 'Gratuit : modèles locaux, Wikipedia/Wikimedia, 3 apps max. RGB, clé Brave et endpoints distants restent Premium.',
+      premiumUnlocked: 'Portes Premium de test actives : endpoints distants, clé Brave, RGB et apps illimitées.'
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -130,7 +142,11 @@
       diagShow: 'Diagnose anzeigen', diagLead: 'Lokale Momentaufnahme dieser Installation. Keine Sicherheitszertifizierung und keine Kompatibilitätsgarantie.',
       behaviorSaved: 'Verhalten gespeichert. Sprache, Ton und Barrierefreiheit bleiben erhalten.',
       dashFocus: 'Fokus', dashRoles: 'Rollen', dashMemory: 'Speicher', dashApps: 'Apps', dashMedia: 'Unterhaltung', dashPrivacy: 'Arbeitsbereich', dashBackups: 'Sicherungen', dashHealth: 'Diagnose',
-      notConfigured: 'nicht konfiguriert', offlineFirst: 'zuerst offline', connectedProvider: 'verbundener Anbieter'
+      notConfigured: 'nicht konfiguriert', offlineFirst: 'zuerst offline', connectedProvider: 'verbundener Anbieter',
+      mediaDisabled: 'Medienwiedergabe ist in den Soul-Verhaltenseinstellungen deaktiviert.', mediaConfirm: 'Dieses Medium in Eidovara wiedergeben:',
+      launchApp: 'Starten', launchCancelled: 'Start abgebrochen.',
+      premiumLocked: 'Free: lokale Modelle, Wikipedia/Wikimedia, bis zu 3 Apps. RGB, Brave-Schlüssel und Remote-Endpunkte bleiben Premium.',
+      premiumUnlocked: 'Premium-Test aktiv: Remote-Endpunkte, Brave-Schlüssel, RGB und unbegrenzte Apps.'
     }
   };
   let locale = 'en';

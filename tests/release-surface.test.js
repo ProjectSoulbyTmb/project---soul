@@ -40,3 +40,21 @@ test('Windows local media uses a gated protocol instead of raw file URLs', () =>
   assert.match(read('package.json'), /"cli": "node src\/cli\.js"/);
   assert.match(read('src/cli.js'), /await engine\.respond/);
 });
+
+test('advertised Free surface confirms launches and media, and does not hard-code workers.dev', () => {
+  const main = read('src/electron/main.js');
+  const renderer = read('src/renderer/renderer.js');
+  const html = read('src/renderer/index.html');
+  assert.match(main, /ipcMain\.handle\('soul:launchApplication'/);
+  assert.match(main, /Ask Windows to open/);
+  assert.match(main, /showMessageBox/);
+  assert.match(renderer, /alreadyConfirmed/);
+  assert.match(renderer, /mediaPlayback/);
+  assert.match(renderer, /applyEditionGates/);
+  assert.match(html, /Animated RGB lighting effects \(Premium\)/);
+  assert.match(html, /Broad web-search key \(Premium\)/);
+  assert.doesNotMatch(main, /dreambot333\.workers\.dev/);
+  assert.doesNotMatch(renderer, /dreambot333\.workers\.dev/);
+  assert.match(read('NETWORK-USAGE.md'), /en\.wikipedia\.org/);
+  assert.match(read('README.md'), /Premium RGB effects/);
+});

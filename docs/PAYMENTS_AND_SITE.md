@@ -18,7 +18,14 @@ Open Eidovara's private administrator panel with Ctrl+A, enter the local adminis
 
 ## HTTPS service
 
-Deploy `server/worker.js` to Cloudflare Workers and copy the generated HTTPS base URL into **Soul HTTPS service** in the administrator panel. Use **Test service** to verify `/health`. Public checkout URLs can be configured in the Worker environment. Keep secrets out of `wrangler.toml` and source control.
+The repository does not auto-deploy the Cloudflare Worker. `server/worker.js` plus `server/wrangler.toml` (`name = "eidovara-api"`) are the source.
+
+1. From `server/`, authenticate with `npx wrangler login` or a local `CLOUDFLARE_API_TOKEN` in your environment (never commit the token).
+2. Deploy with `npx wrangler deploy`. Wrangler is not an Eidovara runtime dependency; install it only on the machine that deploys.
+3. Copy the generated HTTPS **base** URL (no path) into Eidovara's private Ctrl+A panel field **Soul HTTPS service**, then **Test service**. That request hits `{base}/health` and expects JSON `{ "service": "Eidovara", "status": "ok", "version": "0.18.0" }`.
+4. `/v1/config` returns the public website URL and optional provider-hosted checkout links. Leave Stripe/PayPal/Gumroad empty until a real store exists. Live payments stay off.
+
+Owner reference (not compiled into the Electron app): an existing Workers Free endpoint is `https://eidovara-api.dreambot333.workers.dev`. Paste that base, or any later custom domain, yourself. The desktop product never hard-codes `workers.dev`.
 
 ## Required customer-facing decisions
 

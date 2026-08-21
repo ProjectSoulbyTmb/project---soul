@@ -15,11 +15,13 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Safety, consent, and lawful-use boundaries | Working within documented scope | Illegal facilitation block/report locally; adult mode gates and revocable consent; no automatic external reporting claim. |
 | Application age gate and adult avatar profile | Working within documented scope | App-wide local 18+ confirmation; Adult Mode requires local age of majority, enablement, and consent; bounded fictional-avatar profile controls. No photorealistic or anatomical model engine is bundled. |
 | Internet research and media discovery | Working | Explicit internet/web/online request detection; local mood/mix/apps/gaming/study/stream intents do not fire Wikipedia; public sources, optional Premium keyed search, citations, image/audio/video result handling. |
-| Media player and DJ helpers | Working | Audio/video dock, local `eidovara-media://` playback of user-selected files, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube HTTPS handoff. |
-| Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf and confirmation-based launching; no process injection. |
-| Companion and accessibility | Working | Hideable 2D/3D-styled avatar, motion controls, installed Windows voices, optional narration and detected dictation. |
+| Media player and DJ helpers | Working | Audio/video dock, local `eidovara-media://` playback of user-selected files, confirm-first playback unless the user just picked a file, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube HTTPS handoff. |
+| Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf, Start Menu discovery, and a Windows confirm dialog before launch; no process injection. Free max 3 apps. |
+| Companion and accessibility | Working | Hideable 2D/3D-styled CSS avatar, motion controls, installed Windows voices, optional narration and detected dictation. Neural TTS/VRM not bundled. |
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |
-| Appearance and gaming mode | Working | Colors, opacity, RGB option, low-overhead mode, GPU/media diagnostics. |
+| Appearance and gaming mode | Working | Colors, opacity, Premium RGB, low-overhead mode (Eidovara visuals only), GPU/media diagnostics. |
+| Conversation engines | Working | Offline Soul engine; optional loopback Ollama `/api/chat`; Premium HTTPS OpenAI-compatible `/chat/completions`; Chromium media/GPU engine. |
+| HTTPS service | Working when a URL is pasted | Cloudflare Worker `/health` and `/v1/config`; Ctrl+A Test service; no `workers.dev` hard-code in the app. |
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
@@ -30,7 +32,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Area | Required next dependency |
 | --- | --- |
 | Automatic paid Premium activation | Payment account, signed webhooks, D1/KV entitlement store, server signing key, activation UI, cancellation/refund tests. |
-| Stable public API | Select the Cloudflare `workers.dev` account subdomain, deploy Worker, monitor `/health`, configure app service URL. |
+| Stable public API | Select or keep a Cloudflare `workers.dev` account subdomain, deploy `server/worker.js` with Wrangler, paste the HTTPS base into Ctrl+A, monitor `/health`. Not auto-deployed from this repository. |
 | Branded permanent domain | Register an available domain in Tyler Michael Bosworth's account and maintain renewals/security controls. |
 | Authenticode reputation | Obtain an organization/individual code-signing certificate or trusted signing service; current release is explicitly unsigned. |
 | Native neural voice/model packs | Pin exact runtimes/assets only after per-model license, provenance, consent, hash, and sandbox review. |
