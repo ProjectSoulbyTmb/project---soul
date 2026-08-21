@@ -1,6 +1,8 @@
 # Eidovara HTTPS service
 
-This dependency-free Cloudflare Worker supplies public health and store configuration endpoints. It never receives card data, passwords, model credentials, conversations, or local memories. The Electron desktop app does not hard-code a `workers.dev` URL; paste the HTTPS base into Ctrl+A.
+This dependency-free Cloudflare Worker supplies public health and store configuration endpoints. It never receives card data, passwords, model credentials, conversations, or local memories. The Electron desktop app does not hard-code a `workers.dev` URL; paste the HTTPS base into Ctrl+A. **The desktop product works fully offline (Free / Offline Soul) with no Worker URL.**
+
+Owner runbook (Pages, Releases, wrangler, optional custom domain): `docs/PAYMENTS_AND_SITE.md`.
 
 ## Free deployment
 
@@ -11,7 +13,7 @@ This dependency-free Cloudflare Worker supplies public health and store configur
 5. Put only the public HTTPS checkout URLs in `wrangler.toml` variables or the Cloudflare dashboard. Never add API secrets to this repository.
 6. Copy the resulting HTTPS **base** URL into Eidovara's private Ctrl+A administration panel and use **Test service**. That calls `GET /health`.
 
-Owner reference (not baked into the app): `https://eidovara-api.dreambot333.workers.dev` currently serves `/health` and `/v1/config` on Workers Free. Re-deploy after editing `worker.js`. The GitHub Pages site is separate: `https://projectsoulbytmb.github.io/project---soul/`.
+Owner-example (operator paste only — not a user-required server, not compiled into the app): `https://eidovara-api.dreambot333.workers.dev` currently serves `/health` and `/v1/config` on Workers Free. Re-deploy after editing `worker.js`. Prefer a custom domain later (`docs/PAYMENTS_AND_SITE.md`). The GitHub Pages site is separate: `https://projectsoulbytmb.github.io/project---soul/`.
 
 For production, enable Cloudflare account two-factor authentication, keep Wrangler tokens out of source control, deploy from a protected GitHub environment, monitor `/health`, and configure more than one owner-controlled recovery method. The public service is deliberately stateless, so an outage cannot corrupt user conversations or payment records.
 

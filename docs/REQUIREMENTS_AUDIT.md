@@ -25,7 +25,9 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
-| Website | Working | GitHub Pages deployment with responsive product, trust, privacy, security, licensing, and terms pages. |
+| Website | Working | GitHub Pages from `docs/` at `https://projectsoulbytmb.github.io/project---soul/` with Get Eidovara download path (Releases + unsigned Stable Alpha + 18+ + build-from-source fallback). |
+| Public Windows download | Working when a Release exists | `releases/latest` hosts `Eidovara-*-Windows-x64-Setup.exe` for v0.18.0; unsigned; tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. |
+| Optional Worker | Working when deployed and pasted | `/health` and `/v1/config` fail-closed; payments empty; not required to run the app; not hard-coded. |
 
 ## Not yet production-complete
 
