@@ -14,7 +14,7 @@ test('legal docs state source-available 18+ unsigned Windows terms without fake 
   assert.match(read('TERMS.md'), /user-confirmed/i);
   assert.match(read('TERMS.md'), /Authenticode-unsigned/i);
   assert.match(read('TERMS.md'), /not legal advice/i);
-  assert.match(read('TERMS.md'), /local-admin testing only/i);
+  assert.match(read('TERMS.md'), /local administrator testing only/i);
   assert.doesNotMatch(read('TERMS.md'), /patent pending|PCI[- ]DSS certified|federally registered trademark/i);
   assert.match(read('AGE.md'), /18 years old/i);
   assert.match(read('PRIVACY.md'), /What can leave the machine/);

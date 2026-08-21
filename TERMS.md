@@ -27,7 +27,7 @@ You may run an official unmodified Windows release for personal evaluation and l
 
 **Research** is user-directed. Built-in research uses public Wikipedia/Wikimedia only after an explicit internet, web, or online request. Optional Premium Brave Search uses a key **you** supply and is subject to Brave's terms. Eidovara is not a general-purpose crawler.
 
-**Application launching** asks Windows to open a user-selected local `.exe` or `.lnk` after on-screen confirmation. You must already have the right to install and use that application. Eidovara does not inject into games or confer third-party licenses.
+**Application launching** is user-confirmed: Eidovara asks Windows to open a user-selected local `.exe` or `.lnk` after on-screen confirmation. You must already have the right to install and use that application. Eidovara does not inject into games or confer third-party licenses.
 
 ## 4. Adult Mode
 
@@ -53,7 +53,7 @@ Eidovara™ and Soul Consciousness Studios™ are claimed **unregistered** marks
 
 ## 7. Platform, signing, and export
 
-The official advertised product is **unsigned Windows 10/11 x64 desktop software**. Linux and macOS packaging scripts in this repository are development targets, not official signed products. You are responsible for export-control, sanctions, and local law applicable to downloading and running unsigned desktop software.
+The official advertised product is **Authenticode-unsigned Windows 10/11 x64 desktop software**. Linux and macOS packaging scripts in this repository are development targets, not official signed products. You are responsible for export-control, sanctions, and local law applicable to downloading and running unsigned desktop software.
 
 ## 8. Commerce in v0.18.0
 
