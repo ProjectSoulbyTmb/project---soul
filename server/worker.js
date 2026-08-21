@@ -87,6 +87,8 @@ export default {
       website: httpsUrl(env.WEBSITE_URL),
       store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) },
       paymentsEnabled: false,
+      localFirst: true,
+      conversations: false,
       ageRestricted: true,
       minimumAge: 18,
       authenticodeSigned: false,

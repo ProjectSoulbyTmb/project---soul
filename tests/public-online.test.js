@@ -42,6 +42,15 @@ test('operator runbook covers Pages merge, Dependency graph, wrangler, custom do
   assert.match(runbook, /merge this pull request/);
   assert.match(runbook, /cursor\/engine-product-surface-c180/);
   assert.match(runbook, /Do not retarget Pages at a feature branch/);
+  assert.match(runbook, /Live NOW vs merge/);
+  assert.match(runbook, /live `github.io` stays the older homepage/);
+  assert.match(runbook, /Do not invent another production site/);
+  assert.match(read('server/README.md'), /Compatibility matrix/);
+  assert.match(read('server/README.md'), /GET `\/health`, GET `\/v1\/config`, GET `\/v1\/status`/);
+  assert.match(read('server/README.md'), /Optional POST `\/v1\/assist`/);
+  assert.match(read('server/README.md'), /Fail-closed with no URL/);
+  assert.match(read('server/README.md'), /neither client sends conversations|Conversations are not sent/i);
+  assert.match(read('server/README.md'), /HTTPS except loopback/);
   assert.match(runbook, /Honest cannot-ship/);
   assert.match(runbook, /Live payments/);
   assert.match(runbook, /Authenticode/);
@@ -65,6 +74,9 @@ test('Windows release workflow is tag-published, dispatch-safe, and unsigned', (
   assert.match(workflow, /eidovara-windows-unsigned/);
   assert.match(read('.github/workflows/pages.yml'), /path: docs/);
   assert.match(read('.github/workflows/pages.yml'), /branches: \[main\]/);
+  assert.match(read('.github/workflows/pages.yml'), /deploy-pages@v4/);
+  assert.match(read('.github/workflows/pages.yml'), /HTTPS/);
+  assert.match(read('.github/workflows/pages.yml'), /Do not retarget this workflow at a feature branch/);
   assert.match(read('package.json'), /dist:win:installer/);
 });
 

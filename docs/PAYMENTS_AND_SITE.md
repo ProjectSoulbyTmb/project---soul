@@ -4,6 +4,18 @@ Eidovara v0.18.0 is a **local-first Windows desktop app**. Making it “online f
 
 Do not commit API tokens, Wrangler credentials, or payment secrets. Do not hard-code `dreambot333.workers.dev` in the app or public HTML/JS.
 
+## Live NOW vs merge (PR #10)
+
+GitHub Pages deploys `docs/` from **`main` via `.github/workflows/pages.yml`**. This pull request cannot merge itself (`gh` is read-only). Until `cursor/engine-product-surface-c180` (PR #10) is merged to `main`, **live `github.io` stays the older homepage** (no Product / Download / Assist / Help / FAQ / Status). HTTPS is already on for `*.github.io`. Do not retarget Pages at this feature branch and do not stand up a second production site.
+
+| Surface | Live NOW | After merge of PR #10 to `main` |
+| --- | --- | --- |
+| GitHub Pages `https://projectsoulbytmb.github.io/project---soul/` | Older `main` homepage. `pages.yml` already publishes `docs/` on push to `main` (HTTPS). | This branch’s complete marketing site (Home, Product, Download, Assist, Help, FAQ, Status, Legal). |
+| Cloudflare Worker (`npx wrangler deploy` from `server/`) | Optional public `/health` `/v1/config` `/v1/status` `/v1/assist`. Paste the HTTPS **base** — no host is compiled into the app or public JS. | Same contract. Redeploy after `worker.js` changes so the live Worker does not drift. |
+| Desktop app | Settings → Eidovara service **Connect** after 18+; launch retry; Ctrl+A **Test service**. Offline fallback. | Unchanged path: paste-base still required. |
+
+Owner merge path: open PR #10 → merge to `main` → `Deploy project website` uploads `docs/` → github.io updates. Do not invent another production site.
+
 ## Remaining owner clicks (solution paths git cannot finish)
 
 These cannot be completed from source code. Each item is a **solution path**, not an unsolved bug in this PR.

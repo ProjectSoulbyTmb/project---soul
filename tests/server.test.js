@@ -29,6 +29,8 @@ test('server config advertises 18+ source-available Windows alpha with payments 
   const body = await res.json();
   assert.equal(res.status, 200);
   assert.equal(body.paymentsEnabled, false);
+  assert.equal(body.localFirst, true);
+  assert.equal(body.conversations, false);
   assert.equal(body.ageRestricted, true);
   assert.equal(body.minimumAge, 18);
   assert.equal(body.authenticodeSigned, false);

@@ -9,7 +9,8 @@ import {
   checkoutEnabledFromRemoteConfig,
   SERVICE_HEALTH_PATH,
   SERVICE_CONFIG_PATH,
-  SERVICE_STATUS_PATH
+  SERVICE_STATUS_PATH,
+  SERVICE_ASSIST_PATH
 } from '../src/core/service.js';
 import worker from '../server/worker.js';
 
@@ -46,6 +47,9 @@ test('service request URLs do not double-append official paths', () => {
   assert.equal(serviceRequestUrl('https://api.example.test/v1/config', SERVICE_CONFIG_PATH), 'https://api.example.test/v1/config');
   assert.equal(serviceRequestUrl('https://api.example.test/v1/status', SERVICE_STATUS_PATH), 'https://api.example.test/v1/status');
   assert.equal(serviceRequestUrl('https://api.example.test', SERVICE_HEALTH_PATH), 'https://api.example.test/health');
+  assert.equal(serviceRequestUrl('https://api.example.test/v1/assist', SERVICE_ASSIST_PATH), 'https://api.example.test/v1/assist');
+  assert.doesNotMatch(read('src/core/service.js'), /serviceRequestUrl\([^)]*SERVICE_ASSIST_PATH/);
+  assert.doesNotMatch(read('src/electron/main.js'), /\/v1\/assist/);
 });
 
 test('remote config is fail-closed for checkout even if a future payload lied', () => {
@@ -117,6 +121,45 @@ test('unconfigured service stays local without fetching', async () => {
   assert.equal(snapshot.online, false);
   assert.equal(snapshot.paymentsEnabled, false);
   assert.equal(called, 0);
+});
+
+test('Worker health/config/status JSON matches desktop sanitizeRemoteConfig and snapshot', async () => {
+  const fetchImpl = async (url, init = {}) => worker.fetch(new Request(url, init), {});
+  const snapshot = await fetchServiceSnapshot({ base: 'https://api.example.test/v1/assist', fetchImpl });
+  assert.equal(snapshot.online, true);
+  assert.equal(snapshot.configured, true);
+  assert.equal(snapshot.service, 'Eidovara');
+  assert.equal(snapshot.version, '0.18.0');
+  assert.equal(snapshot.paymentsEnabled, false);
+  assert.equal(snapshot.checkoutEnabled, false);
+  assert.equal(snapshot.localFirst, true);
+  assert.equal(snapshot.conversationsStored, false);
+  assert.equal(snapshot.minimumAge, 18);
+  assert.equal(snapshot.ageRestricted, true);
+
+  const configRes = await worker.fetch(new Request('https://api.example.test/v1/config'), {});
+  const config = sanitizeRemoteConfig(await configRes.json());
+  assert.equal(config.paymentsEnabled, false);
+  assert.equal(config.checkoutEnabled, false);
+  assert.equal(config.authenticodeSigned, false);
+  assert.equal(config.minimumAge, 18);
+  assert.equal(config.ageRestricted, true);
+  assert.equal(config.localFirst, true);
+  assert.equal(config.conversationsStored, false);
+  assert.deepEqual(config.officialPlatforms, ['windows-10-11-x64']);
+
+  const assist = await worker.fetch(new Request('https://api.example.test/v1/assist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query: 'Is Eidovara 18+?', mode: 'help' })
+  }), {});
+  const assistBody = await assist.json();
+  assert.equal(assist.status, 200);
+  assert.equal(typeof assistBody.reply, 'string');
+  assert.match(assistBody.reply, /18/);
+  assert.equal(assistBody.paymentsEnabled, false);
+  assert.equal(assistBody.transcripts, false);
+  assert.equal(assistBody.soul, false);
 });
 
 test('Worker status endpoint is public GET and fail-closed', async () => {
