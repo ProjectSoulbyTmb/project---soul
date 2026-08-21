@@ -2,6 +2,7 @@
 
 ## v0.18.0
 
+- Applies an iOS Human Interface–inspired visual pass to the website and desktop renderer: shared design tokens, large titles, grouped inset cards, system light/dark materials, and restrained system-blue controls. Not an Apple product; uses the system font stack rather than licensed SF Pro files.
 - Added gated, local-only body-shape controls and optional non-photorealistic presentation for Soul's explicitly fictional adult avatar; settings remain unavailable unless legal-adult status, Adult Soul, and current consent are active.
 
 - Adds consolidated release legal notices and displays the source-available license during Windows installation.
