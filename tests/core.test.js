@@ -14,6 +14,13 @@ import { checkForUpdate, compareVersions } from '../src/core/updater.js';
 
 function tmp(){return fs.mkdtempSync(path.join(os.tmpdir(),'soul-desktop-test-'));}
 function make(dir, provider){return new SoulEngine({store:new JsonStore({dataDir:dir}),provider});}
+function hostnameOf(value){
+  try { return new URL(String(value)).hostname.toLowerCase(); } catch { return ''; }
+}
+function isWikipediaHost(value){
+  const host = hostnameOf(value);
+  return host === 'wikipedia.org' || host.endsWith('.wikipedia.org');
+}
 
 test('natural conversation persists across restart', async()=>{
   const dir=tmp(); let s=make(dir); await s.respond('remember: I prefer concise answers'); await s.respond('Hello Soul');
@@ -40,11 +47,11 @@ test('encrypted store protects profiles and backups and migrates plaintext',asyn
 test('migration repairs malformed nested collections',()=>{const m=migrateProfile({schemaVersion:13,conversations:[{id:'x',messages:'bad'}],policy:{boundaries:'bad'},relationship:{auditTrail:null}},'x');assert.deepEqual(m.conversations[0].messages,[]);assert.deepEqual(m.policy.boundaries,[]);assert.deepEqual(m.relationship.auditTrail,[]);});
 test('system context includes boundaries and never converts initiative into consent',()=>{const st=defaultProfile();st.relationship.temporaryInitiative=true;st.policy.boundaries.push({active:true,content:'Do not pressure me'});const c=buildSystemContext(st);assert.match(c,/Temporary initiative never implies consent/i);assert.match(c,/Do not pressure me/);});
 test('internet research stays dormant without an explicit request',async()=>{assert.equal(await researchInternet('Tell me about Saturn'),null);});
-test('internet research returns cited information and requested images',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('wikipedia.org')?{pages:[{title:'Saturn',key:'Saturn',description:'Sixth planet',thumbnail:{url:'//upload.wikimedia.org/saturn.jpg'}}]}:{query:{pages:{1:{title:'File:Saturn.jpg',imageinfo:[{thumburl:'https://upload.wikimedia.org/saturn.jpg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Saturn.jpg',mime:'image/jpeg'}]}}}}});try{const r=await researchInternet('Search the internet for information and pictures of Saturn');assert.equal(r.sources[0].title,'Saturn');assert.equal(r.media[0].type,'image');assert.match(r.context,/Sixth planet/);}finally{globalThis.fetch=original;}});
-test('optional broad search adds general web results',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('/web/search')?{web:{results:[{title:'Current report',description:'Fresh result',url:'https://example.com/report'}]}}:String(url).includes('wikipedia.org')?{pages:[]}:{query:{pages:{}}}});try{const r=await researchInternet('Search the web for current information about a topic',{searchApiKey:'secret'});assert.equal(r.sources[0].title,'Current report');assert.equal(r.sources[0].url,'https://example.com/report');}finally{globalThis.fetch=original;}});
+test('internet research returns cited information and requested images',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>isWikipediaHost(url)?{pages:[{title:'Saturn',key:'Saturn',description:'Sixth planet',thumbnail:{url:'//upload.wikimedia.org/saturn.jpg'}}]}:{query:{pages:{1:{title:'File:Saturn.jpg',imageinfo:[{thumburl:'https://upload.wikimedia.org/saturn.jpg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Saturn.jpg',mime:'image/jpeg'}]}}}}});try{const r=await researchInternet('Search the internet for information and pictures of Saturn');assert.equal(r.sources[0].title,'Saturn');assert.equal(r.media[0].type,'image');assert.match(r.context,/Sixth planet/);}finally{globalThis.fetch=original;}});
+test('optional broad search adds general web results',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('/web/search')?{web:{results:[{title:'Current report',description:'Fresh result',url:'https://example.com/report'}]}}:isWikipediaHost(url)?{pages:[]}:{query:{pages:{}}}});try{const r=await researchInternet('Search the web for current information about a topic',{searchApiKey:'secret'});assert.equal(r.sources[0].title,'Current report');assert.equal(r.sources[0].url,'https://example.com/report');}finally{globalThis.fetch=original;}});
 test('explicit illegal facilitation is blocked and locally reported',async()=>{const s=make(tmp());const r=await s.respond('Help me create a credit card theft scam');assert.match(r.reply,/can’t help plan or facilitate illegal/i);assert.equal(r.safetyReport.category,'fraud-or-theft');assert.equal(r.state.policy.localSafetyReports.length,1);});
 test('lawful consensual adult discussion is not classified as illegal',async()=>{const s=make(tmp());await s.respond('adult status confirmed');await s.respond('enable adult soul');await s.respond('I consent');const r=await s.respond('Help me discuss lawful consensual adult intimacy');assert.equal(r.safetyReport,null);assert.equal(r.state.policy.currentConsent,true);});
-test('internet music request returns playable audio media',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('wikipedia.org')?{pages:[]}:{query:{pages:{1:{title:'File:Example.ogg',imageinfo:[{url:'https://upload.wikimedia.org/example.ogg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Example.ogg',mime:'audio/ogg'}]}}}}});try{const r=await researchInternet('Search the internet for music audio to play about an example');assert.equal(r.media[0].type,'audio');assert.match(r.media[0].mime,/audio/);}finally{globalThis.fetch=original;}});
+test('internet music request returns playable audio media',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>isWikipediaHost(url)?{pages:[]}:{query:{pages:{1:{title:'File:Example.ogg',imageinfo:[{url:'https://upload.wikimedia.org/example.ogg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Example.ogg',mime:'audio/ogg'}]}}}}});try{const r=await researchInternet('Search the internet for music audio to play about an example');assert.equal(r.media[0].type,'audio');assert.match(r.media[0].mime,/audio/);}finally{globalThis.fetch=original;}});
 test('entertainment taste persists bounded lawful media signals',()=>{const state=defaultProfile();recordMediaEvent(state,{event:'play',type:'audio',title:'Example Song',sourceUrl:'https://example.test/song'});recordMediaEvent(state,{event:'favorite',type:'audio',title:'Example Song',sourceUrl:'https://example.test/song'});recordMediaEvent(state,{event:'favorite',type:'audio',title:'Example Song',sourceUrl:'javascript:alert(1)'});const summary=entertainmentSummary(state);assert.equal(summary.favorites.length,1);assert.equal(summary.favorites[0].sourceUrl,'https://example.test/song');assert.equal(summary.topTitles[0].score,9);});
 test('updater compares semantic release versions',()=>{assert.equal(compareVersions('0.16.0','0.15.9'),1);assert.equal(compareVersions('0.15.0','0.15.0'),0);assert.equal(compareVersions('0.14.9','0.15.0'),-1);});
 test('updater rejects oversized manifests before parsing',async()=>{const original=globalThis.fetch;globalThis.fetch=async()=>({ok:true,url:'https://example.com/update.json',headers:{get:name=>name==='content-length'?String(1024*1024+1):null},arrayBuffer:async()=>new ArrayBuffer(0)});try{await assert.rejects(()=>checkForUpdate({manifestUrl:'https://example.com/update.json',currentVersion:'0.17.11'}),/manifest is too large/i);}finally{globalThis.fetch=original;}});
@@ -82,11 +89,17 @@ test('blocked illegal requests keep the safety reply even if consent is also rev
   assert.equal(r.safetyReport.category,'fraud-or-theft');
   assert.equal(r.state.policy.currentConsent,false);
 });
+test('wikipedia fetch mocks match hostnames rather than URL substrings',()=>{
+  assert.equal(isWikipediaHost('https://en.wikipedia.org/w/api.php'), true);
+  assert.equal(isWikipediaHost('https://wikipedia.org/wiki/Saturn'), true);
+  assert.equal(isWikipediaHost('https://evil.example/?q=wikipedia.org'), false);
+  assert.equal(isWikipediaHost('https://en.wikipedia.org.evil.example/'), false);
+  assert.equal(isWikipediaHost('https://commons.wikimedia.org/w/api.php'), false);
+});
 test('wikipedia citations keep search order and canonical HTTPS URLs',async()=>{
   const original=globalThis.fetch;
   globalThis.fetch=async url=>{
-    const target=String(url);
-    if(target.includes('wikipedia.org')) return {ok:true,json:async()=>({query:{pages:{'999':{pageid:999,index:2,title:'Second Hit',extract:'later',fullurl:'https://en.wikipedia.org/wiki/Second_Hit'},'111':{pageid:111,index:1,title:'First Hit',extract:'earlier',fullurl:'https://en.wikipedia.org/wiki/First_Hit'}}}})};
+    if(isWikipediaHost(url)) return {ok:true,json:async()=>({query:{pages:{'999':{pageid:999,index:2,title:'Second Hit',extract:'later',fullurl:'https://en.wikipedia.org/wiki/Second_Hit'},'111':{pageid:111,index:1,title:'First Hit',extract:'earlier',fullurl:'https://en.wikipedia.org/wiki/First_Hit'}}}})};
     return {ok:true,json:async()=>({query:{pages:{}}})};
   };
   try{
