@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Research snippet sanitization no longer uses HTML-tag regular expressions (CodeQL `js/bad-html-filtering-regexp`). Script/style/noscript/iframe bodies are dropped with a character scanner; leftover `<` and `>` are stripped. Mixed-case `<SCRIPT>` and spaced `</script >` are covered by tests. Display remains `textContent` / `el()`, never `innerHTML` of fetched pages.
+- Desktop automatic updater: after 18+, Eidovara can check GitHub Releases for a newer Windows NSIS installer, verify `latest.yml` SHA-512, download in the background, and apply only after Restart and install. Authenticode-unsigned. Auto-check can be turned off.
 
 ## v0.19.0
 

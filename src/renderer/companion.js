@@ -263,9 +263,12 @@
         if (item.type === 'capture-scratch' && typeof window.eidovaraLayers?.captureScratch === 'function') window.eidovaraLayers.captureScratch();
         if (item.type === 'confirm-launch-app' && item.appId && window.soul?.launchApplication) window.soul.launchApplication(item.appId);
         if (item.type === 'run-command' && item.command && typeof window.eidovaraSend === 'function') window.eidovaraSend(item.command);
-        if (item.type === 'open-updates') {
-          if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
-          $('#checkUpdateBtn')?.focus();
+        if (item.type === 'open-updates' || item.type === 'check-updates') {
+          if (typeof window.eidovaraCheckUpdates === 'function') window.eidovaraCheckUpdates();
+          else {
+            if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
+            $('#checkUpdateBtn')?.click();
+          }
         }
         if (item.type === 'open-palette' && typeof window.eidovaraOpenPalette === 'function') window.eidovaraOpenPalette();
         if (item.type === 'open-cheatsheet' && typeof window.eidovaraOpenShortcutSheet === 'function') window.eidovaraOpenShortcutSheet();
@@ -335,6 +338,10 @@
     }
   };
 
+  $('#companionCheckUpdatesBtn')?.addEventListener('click', () => {
+    if (typeof window.eidovaraCheckUpdates === 'function') window.eidovaraCheckUpdates();
+    else $('#checkUpdateBtn')?.click();
+  });
   $('#companionForm')?.addEventListener('submit', e => {
     e.preventDefault();
     const text = $('#companionInput')?.value;
