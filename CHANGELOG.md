@@ -1,5 +1,14 @@
 # Eidovara
 
+## v0.18.0
+
+- Added gated, local-only body-shape controls and optional non-photorealistic presentation for Soul's explicitly fictional adult avatar; settings remain unavailable unless legal-adult status, Adult Soul, and current consent are active.
+
+- Adds consolidated release legal notices and displays the source-available license during Windows installation.
+- Presents the age-of-majority warning only when Adult Soul is accessed, while keeping enablement and consent separate.
+- Clarifies minor restrictions, professional-advice limits, mandatory consumer rights, payment status, media rights, and third-party boundaries.
+- Adds persisted English, Spanish, French, and German interface foundations and assistant-language preferences with English fallback.
+
 ## v0.17.12
 
 - Encrypts desktop settings, profiles, conversations, memories, rollback copies, and new backups with operating-system credential protection when available.

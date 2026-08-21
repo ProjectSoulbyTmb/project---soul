@@ -21,3 +21,15 @@ Eidovara 0.17 ships a dependency-free 2D/3D-styled companion and uses voices alr
 - External adapters run out of process with least privilege and cannot receive stored API keys unless the user explicitly configures that provider.
 
 This is a technical screening record, not a legal clearance opinion. Re-check the exact pinned release and every model card before distribution.
+
+## Adult character asset decision for v0.18.0
+
+No third-party anatomical model is bundled in v0.18.0. The lowest-conflict future path identified is a custom, clearly adult character exported from an official unmodified MakeHuman release using only its bundled core assets. MakeHuman states that its core graphical assets and official exports are CC0, while its application code is AGPL. Eidovara may evaluate an exported asset after preserving its exact source version, hashes, export record, license snapshot, and an adult/likeness review; MakeHuman program code must not be copied into Eidovara.
+
+User-contributed MakeHuman assets are excluded unless each asset's license and provenance is reviewed. VRoid Hub models are excluded by default because each model may separately restrict sexual depictions, commercial use, alteration, redistribution, and attribution. Scans of real people, celebrity likenesses, age-ambiguous models, and datasets without documented consent and provenance are prohibited.
+
+Official references reviewed August 21, 2026:
+
+- https://github.com/makehumancommunity/makehuman/blob/master/LICENSE.md
+- https://static.makehumancommunity.org/about/license.html
+- https://developer.vroid.com/en/guidelines/conditions_of_use.html

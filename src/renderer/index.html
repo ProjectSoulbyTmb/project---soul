@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https:; media-src https:; connect-src 'none'; object-src 'none'" />
-  <title>Eidovara v0.17.12</title>
+  <title>Eidovara v0.18.0</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="gaming.css" />
   <link rel="stylesheet" href="internet.css" />
@@ -14,17 +14,17 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand-row">
         <div class="soul-mark" aria-hidden="true"><span></span></div>
-        <div><strong>Eidovara</strong><small>v0.17.12 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
+        <div><strong>Eidovara</strong><small>v0.18.0 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
       </div>
-      <button class="new-chat" id="newChatBtn">＋ New conversation</button>
+      <button class="new-chat" id="newChatBtn" data-i18n="newConversation">＋ New conversation</button>
       <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
       <div class="sidebar-footer">
-        <button class="nav-btn" data-view="dashboard">Dashboard</button>
-        <button class="nav-btn" data-view="apps">Apps & Gaming</button>
-        <button class="nav-btn" data-view="entertainment">Entertainment</button>
-        <button class="nav-btn" data-view="memory">Memory</button>
-        <button class="nav-btn" data-view="identity">Identity</button>
-        <button class="nav-btn" data-view="settings">Settings</button>
+        <button class="nav-btn" data-view="dashboard" data-i18n="dashboard">Dashboard</button>
+        <button class="nav-btn" data-view="apps" data-i18n="apps">Apps & Gaming</button>
+        <button class="nav-btn" data-view="entertainment" data-i18n="entertainment">Entertainment</button>
+        <button class="nav-btn" data-view="memory" data-i18n="memory">Memory</button>
+        <button class="nav-btn" data-view="identity" data-i18n="identity">Identity</button>
+        <button class="nav-btn" data-view="settings" data-i18n="settings">Settings</button>
       </div>
     </aside>
 
@@ -83,13 +83,14 @@
           <div class="card"><h3>Protected identity</h3><div id="selfModel"></div></div>
           <div class="card"><h3>Adaptive personality</h3><div id="traits"></div></div>
           <div class="card"><h3>Relationship stance</h3><div id="relationship"></div></div>
-          <div class="card"><h3>Safety & consent</h3><div id="policy"></div><div class="policy-actions"><button data-command="adult status confirmed">Confirm adult status</button><button data-command="enable adult soul">Enable Adult Soul</button><button data-command="I consent">Grant current consent</button><button class="danger-soft" data-command="revoke consent">Revoke consent</button><button data-command="standard mode">Standard mode</button></div></div>
+          <div class="card"><h3>Safety & consent</h3><div id="policy"></div><div class="policy-actions"><button data-command="adult status confirmed">Confirm legal-adult status</button><button data-command="enable adult soul">Enable Adult Soul</button><button data-command="I consent">Grant current consent</button><button class="danger-soft" data-command="revoke consent">Revoke consent</button><button data-command="standard mode">Standard mode</button></div></div>
         </div>
       </section>
 
       <section class="view panel-view" id="settingsView">
         <div class="panel-head"><div><h2>Conversation engine</h2><p>Use Soul offline, connect a local model service, or connect a compatible remote endpoint.</p></div></div>
         <form id="settingsForm" class="settings-card">
+          <label><span data-i18n="language">Interface language</span><select id="languageSelect"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option></select></label>
           <label>Provider<select id="providerSelect"><option value="offline">Soul Offline</option><option value="local">Local model service</option><option value="compatible">Compatible remote endpoint</option></select></label>
           <label>Endpoint<input id="endpointInput" placeholder="http://127.0.0.1:11434 or provider base URL" /></label>
           <label>Model<input id="modelInput" placeholder="Model name" /></label>
@@ -101,7 +102,7 @@
           <div class="appearance-fields"><label>Background color<input id="themeBackground" type="color" value="#080c16" /></label><label>Panel color<input id="themePanel" type="color" value="#101828" /></label><label>Accent color<input id="themeAccent" type="color" value="#8f7cff" /></label></div>
           <label>Window surface opacity <span id="themeTransparencyValue">96%</span><input id="themeTransparency" type="range" min="65" max="100" value="96" /></label>
           <label class="check"><input type="checkbox" id="themeRgb" /> Animated RGB lighting effects</label>
-          <fieldset class="companion-settings"><legend>Soul companion</legend><p>A lightweight companion that does not inject into games or require a third-party avatar engine.</p><div class="appearance-fields"><label>Avatar<select id="avatarMode"><option value="3d">3D-styled orb</option><option value="2d">2D character</option><option value="hidden">Hidden</option></select></label><label>Motion<select id="avatarMotion"><option value="gentle">Gentle</option><option value="full">Lively</option><option value="reduced">Reduced</option></select></label><label>System voice<select id="voiceSelect"><option value="">Windows default</option></select></label></div><label class="check"><input type="checkbox" id="voiceEnabled" /> Read new Soul replies aloud</label><div class="appearance-fields"><label>Voice speed<input id="voiceRate" type="range" min="0.5" max="2" step="0.1" value="1" /></label><label>Voice pitch<input id="voicePitch" type="range" min="0.5" max="2" step="0.1" value="1" /></label><button type="button" class="secondary" id="voicePreviewBtn">Preview voice</button></div><small id="voiceSupportStatus">Uses voices installed on this Windows device. Voice input is optional and requires microphone access.</small></fieldset>
+          <fieldset class="companion-settings"><legend>Soul companion</legend><p>A lightweight fictional companion that does not inject into games or require a third-party avatar engine.</p><div class="appearance-fields"><label>Avatar<select id="avatarMode"><option value="3d">3D-styled orb</option><option value="2d">2D character</option><option value="hidden">Hidden</option></select></label><label>Motion<select id="avatarMotion"><option value="gentle">Gentle</option><option value="full">Lively</option><option value="reduced">Reduced</option></select></label><label>System voice<select id="voiceSelect"><option value="">Windows default</option></select></label></div><label class="check"><input type="checkbox" id="voiceEnabled" /> Read new Soul replies aloud</label><div class="appearance-fields"><label>Voice speed<input id="voiceRate" type="range" min="0.5" max="2" step="0.1" value="1" /></label><label>Voice pitch<input id="voicePitch" type="range" min="0.5" max="2" step="0.1" value="1" /></label><button type="button" class="secondary" id="voicePreviewBtn">Preview voice</button></div><small id="voiceSupportStatus">Uses voices installed on this Windows device. Voice input is optional and requires microphone access.</small><div id="adultAvatarSettings" class="adult-avatar-settings hidden"><strong>Adult fictional avatar (18+ only)</strong><p>These local controls apply only to Soul's fictional avatar. Real-person likenesses, age-ambiguous characters, and imported-model sexualization are not supported.</p><label class="check"><input type="checkbox" id="adultPresentation" /> Allow optional non-photorealistic nude presentation</label><div class="appearance-fields"><label>Height<input id="bodyHeight" type="range" min="0" max="100" value="50" /></label><label>Build<input id="bodyBuild" type="range" min="0" max="100" value="50" /></label><label>Body shape<input id="bodyCurves" type="range" min="0" max="100" value="50" /></label></div><small>Visible only while legal-adult status, Adult Soul, and current consent are all active. Revoking consent disables presentation.</small></div></fieldset>
           <div class="settings-actions"><button type="submit">Save settings</button><button type="button" class="secondary" id="openDataBtn">Open local data folder</button><button type="button" class="secondary" id="diagnosticsBtn">Show diagnostics</button></div>
           <p class="settings-status" id="settingsStatus"></p>
         </form>
@@ -166,6 +167,8 @@
       <div class="setup-actions"><button type="button" class="secondary" id="adminStoreBtn">Open store</button><button type="button" class="secondary" id="adminServiceBtn">Test service</button><button type="button" class="secondary" id="adminLockBtn">Lock</button><button type="submit">Save</button></div>
     </form>
   </div>
+  <div class="setup-overlay hidden" id="ageGateOverlay" role="dialog" aria-modal="true" aria-labelledby="ageGateTitle"><div class="setup-dialog admin-dialog"><div><h1 id="ageGateTitle">Eidovara is for adults 18+</h1><p>You must be at least 18 years old to use this software. Adult Mode also requires the local age of majority, explicit enablement, and current revocable consent.</p></div><p class="settings-status">This confirmation is stored locally and is not independent age or identity verification.</p><div class="setup-actions"><button type="button" class="secondary" id="ageGateDeclineBtn">Exit</button><button type="button" id="ageGateAcceptBtn">I confirm I am 18 or older</button></div></div></div>
+  <script src="localization.js"></script>
   <script src="renderer.js"></script>
 </body>
 </html>

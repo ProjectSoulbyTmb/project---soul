@@ -42,6 +42,7 @@ jobs:
             dist/CODE-SIGNING-STATUS.txt
             dist/PRIVACY-DECLARATION.json
             dist/PRIVACY.md
+            dist/LEGAL-NOTICES.md
             dist/SECURITY.md
             dist/NETWORK-USAGE.md
             dist/LICENSE
@@ -64,6 +65,7 @@ jobs:
             dist/CODE-SIGNING-STATUS.txt
             dist/PRIVACY-DECLARATION.json
             dist/PRIVACY.md
+            dist/LEGAL-NOTICES.md
             dist/SECURITY.md
             dist/NETWORK-USAGE.md
             dist/LICENSE

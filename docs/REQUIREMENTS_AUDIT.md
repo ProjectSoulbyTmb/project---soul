@@ -6,13 +6,14 @@ Updated: 2026-08-20
 
 Eidovara is the modular Windows workspace; Soul remains its optional adaptive assistant personality. Applications, gaming controls, media, entertainment, appearance, backups, diagnostics, and updates remain useful without a connected model. Soul's protected identity, local continuity, reviewable memory, configurable tone/focus/autonomy, consent boundaries, and relationship model remain separate from the product and publishing identity. User-authored memories and setup text are treated as untrusted data, not system authority.
 
-## Working in v0.17.12
+## Working in v0.18.0
 
 | Area | Status | Evidence |
 | --- | --- | --- |
 | Conversation and Soul personality | Working | Offline provider, optional local/compatible providers, persistent conversations and context tests. |
 | Memory and restart continuity | Working | Atomic JSON persistence, migrations, corrupt-state recovery, backup/restore, restart tests. |
 | Safety, consent, and lawful-use boundaries | Working within documented scope | Illegal facilitation block/report locally; adult mode gates and revocable consent; no automatic external reporting claim. |
+| Application age gate and adult avatar profile | Working within documented scope | App-wide local 18+ confirmation; Adult Mode requires local age of majority, enablement, and consent; bounded fictional-avatar profile controls. No photorealistic or anatomical model engine is bundled. |
 | Internet research and media discovery | Working | Explicit-request detection, public sources, optional keyed search, citations, image/audio/video result handling. |
 | Media player and DJ helpers | Working | Audio/video dock, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube external search links. |
 | Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf and confirmation-based launching; no process injection. |
@@ -39,4 +40,4 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 
 ## Release decision
 
-v0.17.12 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, universally compatible application controller, or Authenticode-signed binary.
+v0.18.0 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, universally compatible application controller, or Authenticode-signed binary.

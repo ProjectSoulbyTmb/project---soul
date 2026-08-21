@@ -13,7 +13,7 @@ import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow, engine, logPath, configPath;
-let config = { provider: 'offline', endpoint: '', model: '', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1 } };
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1, adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 } };
 let pendingUpdate = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -69,7 +69,7 @@ function validateNewAdminPassword(password) {
   if (value.length < 12 || value.length > 200) throw new Error('Use an administrator password between 12 and 200 characters.');
   return value;
 }
-function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en', ageGateAccepted: config.ageGateAccepted === true, apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
@@ -82,7 +82,7 @@ function createWindow() {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
     engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default', codec: protectedStorageCodec() }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.12', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#0b1020', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.18.0', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#0b1020', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
@@ -102,7 +102,7 @@ app.whenReady().then(createWindow).catch(err => fatal('Eidovara initialization e
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('soul:send', (_e, m) => engine.respond(m));
+ipcMain.handle('soul:send', async (_e, m) => { const result = await engine.respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
 ipcMain.handle('soul:snapshot', () => engine.snapshot());
 ipcMain.handle('soul:recordMedia', (_e, input) => engine.recordMedia(input));
 ipcMain.handle('soul:entertainment', () => engine.entertainment());
@@ -113,6 +113,8 @@ ipcMain.handle('soul:newConversation', () => engine.newConversation());
 ipcMain.handle('soul:selectConversation', (_e, id) => engine.selectConversation(String(id)));
 ipcMain.handle('soul:deleteConversation', (_e, id) => engine.deleteConversation(String(id)));
 ipcMain.handle('soul:getSettings', () => publicConfig());
+ipcMain.handle('soul:acceptAgeGate', () => { config.ageGateAccepted = true; saveConfig(); return publicConfig(); });
+ipcMain.handle('soul:declineAgeGate', () => { setImmediate(() => app.quit()); return true; });
 ipcMain.handle('soul:adminLogin', (_e, password) => {
   if (!adminConfigured()) throw new Error('Create an administrator password for this installation first.');
   const now = Date.now();
@@ -155,10 +157,16 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   const provider = ['offline','local','compatible'].includes(incoming?.provider) ? incoming.provider : 'offline';
   if (entitlement() === 'free' && provider === 'compatible') throw new Error('Remote model endpoints are a Premium feature. Eidovara Free supports offline and local models.');
   config.provider = provider;
+  config.language = ['en','es','fr','de'].includes(incoming?.language) ? incoming.language : (config.language || 'en');
   config.endpoint = String(incoming?.endpoint || '').slice(0, 500);
   config.model = String(incoming?.model || '').slice(0, 200);
   if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#080c16'), panel: color(incoming.theme.panel, '#101828'), accent: color(incoming.theme.accent, '#8f7cff'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
-  if (incoming?.companion && typeof incoming.companion === 'object') config.companion = { avatarMode: ['hidden','2d','3d'].includes(incoming.companion.avatarMode) ? incoming.companion.avatarMode : '3d', motion: ['full','gentle','reduced'].includes(incoming.companion.motion) ? incoming.companion.motion : 'gentle', voiceEnabled: Boolean(incoming.companion.voiceEnabled), voiceName: String(incoming.companion.voiceName || '').slice(0, 200), rate: Math.max(0.5, Math.min(2, Number(incoming.companion.rate) || 1)), pitch: Math.max(0.5, Math.min(2, Number(incoming.companion.pitch) || 1)) };
+  if (incoming?.companion && typeof incoming.companion === 'object') {
+    const policy = engine.snapshot().policy || {};
+    const adultGatesActive = policy.adultStatusConfirmed === true && policy.adultSoulEnabled === true && policy.currentConsent === true && policy.mode === 'adult';
+    const boundedShape = value => Math.max(0, Math.min(100, Number(value) || 50));
+    config.companion = { avatarMode: ['hidden','2d','3d'].includes(incoming.companion.avatarMode) ? incoming.companion.avatarMode : '3d', motion: ['full','gentle','reduced'].includes(incoming.companion.motion) ? incoming.companion.motion : 'gentle', voiceEnabled: Boolean(incoming.companion.voiceEnabled), voiceName: String(incoming.companion.voiceName || '').slice(0, 200), rate: Math.max(0.5, Math.min(2, Number(incoming.companion.rate) || 1)), pitch: Math.max(0.5, Math.min(2, Number(incoming.companion.pitch) || 1)), adultPresentation: adultGatesActive && Boolean(incoming.companion.adultPresentation), bodyHeight: boundedShape(incoming.companion.bodyHeight), bodyBuild: boundedShape(incoming.companion.bodyBuild), bodyCurves: boundedShape(incoming.companion.bodyCurves) };
+  }
   if (typeof incoming?.apiKey === 'string' && incoming.apiKey) {
     if (!safeStorage.isEncryptionAvailable()) throw new Error('Secure credential storage is unavailable on this system.');
     config.encryptedApiKey = safeStorage.encryptString(incoming.apiKey).toString('base64');
