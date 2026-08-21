@@ -26,7 +26,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
 | Website | Live on github.io from `main` | Complete `docs/` marketing site (Home, Product, Download, Assist, Help, FAQ, Status, Legal, 404, robots/sitemap, Ask Eidovara). GitHub Pages publishes `docs/` from `main` via `pages.yml` (HTTPS). Live `https://projectsoulbytmb.github.io/project---soul/` is the product-surface site after PR #10 merged. |
-| Public Windows download | Working when a Release exists | `releases/latest` hosts `Eidovara-*-Windows-x64-Setup.exe`; unsigned; tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. `v0.18.0` is the older-main installer; `v0.18.1` is the rebuild of this merged product. |
+| Public Windows download | Working | Primary CTA is `releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe` (official unsigned NSIS `.exe`, 18+ gate on Download). `/releases/latest` remains the notes/checksums page. Source repo is secondary. Tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. `v0.18.0` is the older-main installer and must not be moved. |
 | Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+; website assist is paste-only; not required to run the app; not hard-coded. Redeploy with `npx wrangler deploy` after merge so the live Worker does not drift. Neural TTS/VRM/OBS/live payments stay documented only. |
 
 ## Owner clicks git cannot finish
@@ -34,7 +34,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Problem | Solution path |
 | --- | --- |
 | Dependency review CI fails (“Dependency graph” off) | Settings → Code security → enable Dependency graph. Keep `.github/workflows/dependency-review.yml`. |
-| Windows `v0.18.1` Release | Push tag `v0.18.1` on current `main` (do not move `v0.18.0`). `Release Windows` publishes unsigned Setup.exe. |
+| Windows `v0.18.1` Release | Published. Do not move `v0.18.0`. Site CTAs should keep pointing at the current unsigned Setup.exe. |
 | Deployed Worker lags git | From `server/`, `npx wrangler deploy` after login/token. Never commit the token. |
 
 ## Not yet production-complete

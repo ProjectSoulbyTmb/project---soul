@@ -82,6 +82,7 @@ export default {
     if (url.pathname === '/v1/status') return response(publicPayload({
       pages: 'GitHub Pages publishes docs/ on main. No Worker URL is compiled into the site.',
       releases: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest',
+      installer: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe',
       assist: '/v1/assist knowledge-only, no transcripts'
     }), 200, { 'cache-control': 'public, max-age=30' });
     if (url.pathname === '/v1/config') return response({

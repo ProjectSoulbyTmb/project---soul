@@ -17,7 +17,7 @@ git push origin v0.18.1
 ```
 
 3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer`, writes the update manifest and evidence, and publishes `Eidovara-${version}-Windows-x64-Setup.exe` to the GitHub Release. Users download that `.exe`; they do not extract a ZIP.
-4. Point the public site at `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest` (already used by `docs/index.html`).
+4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button.
 
 Do not reuse a release tag after changing its files. Increment the version and create a new tag so installed applications can compare versions safely.
 

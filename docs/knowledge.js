@@ -375,4 +375,4 @@ export function assistMeta() {
   };
 }
 
-export { RELEASES, SOURCE, SITE, REFUSALS };
+export { RELEASES, INSTALLER, INSTALLER_NAME, INSTALLER_SHA256, SOURCE, SITE, REFUSALS };
