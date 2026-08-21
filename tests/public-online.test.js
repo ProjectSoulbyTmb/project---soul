@@ -68,6 +68,16 @@ test('Windows release workflow is tag-published, dispatch-safe, and unsigned', (
   assert.match(read('package.json'), /dist:win:installer/);
 });
 
+test('CI pnpm setup uses packageManager and does not pin a conflicting version', () => {
+  const pkg = JSON.parse(read('package.json'));
+  assert.equal(pkg.packageManager, 'pnpm@10.33.3');
+  for (const file of ['.github/workflows/security.yml', '.github/workflows/release-windows.yml']) {
+    const yml = read(file);
+    assert.match(yml, /uses: pnpm\/action-setup@v4/);
+    assert.doesNotMatch(yml, /pnpm\/action-setup@v4\n\s+with:\n\s+version:\s/);
+  }
+});
+
 test('desktop app still has no workers.dev default endpoint', () => {
   assert.doesNotMatch(read('src/electron/main.js'), /dreambot333\.workers\.dev/);
   assert.doesNotMatch(read('src/electron/main.js'), /workers\.dev/);
