@@ -53,7 +53,7 @@ Eidovara is not affiliated with, endorsed by, or a product of Apple Inc., Micros
 
 Eidovara, Soul, and the Soul kernel are first-party names. They are **not** Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and this software is not affiliated with those owners. Distinctive third-party slogans are not Eidovara wake words. Command-palette or quick-open UI, if present, is first-party workspace chrome.
 
-Eidovara™ and Soul Consciousness Studios™ are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
+Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (the software self-model feature name) and Soul Consciousness Studios (intended publisher name) are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
 
 ## 7. Platform, signing, and export
 

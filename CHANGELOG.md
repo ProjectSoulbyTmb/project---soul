@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Legal-instrument pack (templates and notices, not filings): strengthened source-available LICENSE (no trademark license; no patent license; contributions assigned only via privately executed docs/CONTRIBUTOR_ASSIGNMENT.md); NOTICE lists Electron/Node packages actually used; TRADEMARKS.md states Eidovara/Soul/Soul Consciousness Studios as unregistered marks of Tyler Michael Bosworth and disclaims Marvel/Jarvis/Apple/third-party marks; COPYRIGHT.txt plus docs/COPYRIGHT.md (copyright.gov checklist, not registered); docs/TRADEMARK_FILING.md (USPTO checklist, not filed); docs/BRAND_GUIDE.md; completed unsigned assignment templates. Owner must still register copyright, file trademarks, form an entity, and sign assignments.
+
 ## v0.18.3
 
 - Professional consumer polish on the running desktop app and public site: after 18+, one Dashboard start path (Soul vs Assist), grouped Settings with short help, Ctrl+K jump list, Ctrl+/ cheatsheet, and Ctrl+A still away from text fields. Empty states, errors, and success copy stay plain language. Confirm-to-launch is unchanged. Age 18+, unsigned Windows, and no live payments stay visible without all-caps spam.

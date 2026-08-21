@@ -101,6 +101,54 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(read('TRADEMARKS.md'), /knockout screen|preliminary exact-word/i);
   assert.match(read('TRADEMARKS.md'), /trademark attorney/);
   assert.match(read('TRADEMARKS.md'), /USPTO/);
+  assert.match(read('LICENSE'), /No patent license is granted/);
+  assert.match(read('LICENSE'), /No trademark license is granted/);
+  assert.match(read('LICENSE'), /docs\/CONTRIBUTOR_ASSIGNMENT\.md/);
+  assert.match(read('LICENSE'), /Posting a pull request is not assignment/);
+});
+
+test('legal-instrument pack is templates and notices, not registrations or OSI giveaway', () => {
+  const copyright = read('docs/COPYRIGHT.md');
+  const filing = read('docs/TRADEMARK_FILING.md');
+  const brand = read('docs/BRAND_GUIDE.md');
+  const claim = read('COPYRIGHT.txt');
+  const marks = read('TRADEMARKS.md');
+  assert.match(copyright, /copyright\.gov/);
+  assert.match(copyright, /not a U\.S\. Copyright Office registration/i);
+  assert.match(copyright, /standard file header|single block/i);
+  assert.doesNotMatch(copyright, /Registration Number TX|Certificate of Registration issued/i);
+  assert.match(filing, /not a trademark application/i);
+  assert.match(filing, /No trademark application is filed by this commit/i);
+  assert.match(filing, /Class/);
+  assert.match(filing, /specimen/i);
+  assert.doesNotMatch(filing, /Serial No\.|Registration No\. \d{7}/);
+  assert.match(brand, /system font/i);
+  assert.match(brand, /SF Pro/);
+  assert.match(brand, /Do not/);
+  assert.match(brand, /Jarvis|Marvel/i);
+  assert.match(claim, /Tyler Michael Bosworth/);
+  assert.match(claim, /not a U\.S\. Copyright Office registration/i);
+  assert.match(claim, /Eidovara Source-Available Evaluation License/);
+  assert.match(marks, /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(marks, /Windows/);
+  assert.match(marks, /GitHub/);
+  assert.match(marks, /Electron/);
+  assert.match(marks, /Cloudflare/);
+  assert.match(marks, /Wikipedia/);
+  assert.match(marks, /Spotify/);
+  assert.match(marks, /YouTube/);
+  assert.match(marks, /not affiliated/i);
+  assert.match(marks, /Marvel/);
+  assert.match(marks, /Jarvis/i);
+  assert.match(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /Sign privately; posting a PR is not assignment/i);
+  assert.match(read('docs/legal.html'), /COPYRIGHT\.md/);
+  assert.match(read('docs/legal.html'), /TRADEMARK_FILING\.md/);
+  assert.match(read('docs/licensing.html'), /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(read('src/renderer/index.html'), /LICENSE and TRADEMARKS\.md/);
+  assert.match(read('NOTICE.md'), /Electron/);
+  assert.match(read('NOTICE.md'), /43\.4\.1/);
+  assert.match(read('NOTICE.md'), /rcedit/);
+  assert.doesNotMatch(read('NOTICE.md'), /\blodash\b|\bexpress\b|\breact\b/);
 });
 
 test('website legal pages cover terms, privacy, age, and Apple disclaimer', () => {

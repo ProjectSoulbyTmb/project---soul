@@ -1,6 +1,6 @@
 # Authorship and ownership
 
-Tyler Michael Bosworth is identified in this project record as Eidovara's owner, creator, product director, publisher, and claimant of rights in qualifying original first-party project materials. Soul Consciousness Studios is the business name under which he intends to publish and commercialize Eidovara.
+Tyler Michael Bosworth is identified in this project record as Eidovara's owner, creator, product director, publisher, and claimant of rights in qualifying original first-party project materials. Soul Consciousness Studios is the business name under which he intends to publish and commercialize Eidovara. Eidovara is a trademark of Tyler Michael Bosworth (unregistered).
 
 Until a separate legal entity is formed and rights are assigned to it in a signed writing, Tyler Michael Bosworth remains the individual owner of these first-party rights. Formation of a company does not automatically transfer pre-formation intellectual property. An unsigned entity-assignment template is [docs/ENTITY_IP_ASSIGNMENT.md](docs/ENTITY_IP_ASSIGNMENT.md); this repository does not contain an executed copy.
 
