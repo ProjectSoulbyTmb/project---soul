@@ -43,6 +43,11 @@ test('guest overlay policy blocks private, loopback, http, file, and non-Discord
   assert.equal(classifyGuestNavigation('https://[::1]/').reason, 'private-host');
   assert.equal(classifyGuestNavigation('https://user:pass@example.com/').reason, 'credentials');
   assert.equal(classifyGuestNavigation('javascript:alert(1)').ok, false);
+  assert.equal(classifyGuestNavigation('javascript:alert(1)').reason, 'unsafe-scheme');
+  assert.equal(classifyGuestNavigation('vbscript:alert(1)').ok, false);
+  assert.equal(classifyGuestNavigation('vbscript:alert(1)').reason, 'unsafe-scheme');
+  assert.equal(classifyGuestNavigation('data:text/html,hi').reason, 'unsafe-scheme');
+  assert.equal(classifyGuestNavigation('blob:https://example.com/1').reason, 'unsafe-scheme');
   const ok = classifyGuestNavigation('https://example.com/path');
   assert.equal(ok.ok, true);
   assert.match(ok.url, /^https:\/\/example\.com\/path/);

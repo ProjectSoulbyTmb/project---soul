@@ -110,7 +110,7 @@ export function classifyGuestNavigation(raw) {
   }
   if (parsed.protocol === 'http:') return { ok: false, reason: 'http' };
   if (parsed.protocol === 'file:') return { ok: false, reason: 'file' };
-  if (parsed.protocol === 'javascript:' || parsed.protocol === 'data:' || parsed.protocol === 'blob:') {
+  if (parsed.protocol === 'javascript:' || parsed.protocol === 'data:' || parsed.protocol === 'blob:' || parsed.protocol === 'vbscript:') {
     return { ok: false, reason: 'unsafe-scheme' };
   }
   return { ok: false, reason: 'scheme' };
