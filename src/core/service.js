@@ -41,7 +41,7 @@ export function serviceRequestUrl(base, suffix) {
   return `${normalizeServiceUrl(base)}${path}`;
 }
 
-function httpsOnlyUrl(value) {
+export function httpsOnlyUrl(value) {
   try {
     const url = new URL(String(value || ''));
     if (url.protocol !== 'https:' || url.username || url.password) return '';

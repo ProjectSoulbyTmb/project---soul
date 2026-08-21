@@ -16,8 +16,20 @@ function orderedPages(data) {
   const list = Array.isArray(raw) ? raw : Object.values(raw);
   return list.sort((a, b) => (Number(a.index) || 0) - (Number(b.index) || 0));
 }
+function asHttps(value) {
+  let raw = String(value || '').trim();
+  if (!raw) return '';
+  if (raw.startsWith('//')) raw = `https:${raw}`;
+  try {
+    const url = new URL(raw);
+    if (url.protocol !== 'https:' || url.username || url.password) return '';
+    return url.toString();
+  } catch {
+    return '';
+  }
+}
 function wikiUrl(page) {
-  if (page?.fullurl && /^https:\/\//i.test(page.fullurl)) return page.fullurl;
+  if (page?.fullurl) return asHttps(page.fullurl);
   const title = String(page?.title || '').replace(/ /g, '_');
   return title ? `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}` : '';
 }
@@ -27,24 +39,24 @@ async function searchArticles(query) {
   return orderedPages(data).slice(0, 5).map(p => ({
     type: 'source', title: plain(p.title), description: plain(p.description || p.extract || p.excerpt),
     url: wikiUrl(p),
-    thumbnail: p.thumbnail?.source || (p.thumbnail?.url ? `https:${String(p.thumbnail.url).replace(/^https?:/, '')}` : null)
+    thumbnail: asHttps(p.thumbnail?.source || p.thumbnail?.url) || null
   })).filter(p => p.title && p.url);
 }
 async function searchMedia(query, kind) {
   const type = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'bitmap';
   const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime', iiurlwidth: '900' });
   const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`);
-  return orderedPages(data).map(p => { const i = p.imageinfo?.[0] || {}; return { type: kind, title: plain(String(p.title || '').replace(/^File:/, '')), url: i.thumburl || i.url, sourceUrl: i.descriptionurl, mime: i.mime }; }).filter(x => x.url && x.sourceUrl).slice(0, 4);
+  return orderedPages(data).map(p => { const i = p.imageinfo?.[0] || {}; return { type: kind, title: plain(String(p.title || '').replace(/^File:/, '')), url: asHttps(i.thumburl || i.url), sourceUrl: asHttps(i.descriptionurl), mime: i.mime }; }).filter(x => x.url && x.sourceUrl).slice(0, 4);
 }
 async function searchBroad(query, apiKey, wantsImages) {
   const params = new URLSearchParams({ q: query, count: '10', search_lang: 'en', safesearch: 'strict' });
   const headers = { 'X-Subscription-Token': apiKey };
   const web = await json(`https://api.search.brave.com/res/v1/web/search?${params}`, 15000, headers);
-  const sources = (web.web?.results || []).slice(0, 8).map(r => ({ type: 'source', title: plain(r.title), description: plain(r.description), url: r.url, thumbnail: r.thumbnail?.src || null })).filter(r => /^https:\/\//.test(r.url));
+  const sources = (web.web?.results || []).slice(0, 8).map(r => ({ type: 'source', title: plain(r.title), description: plain(r.description), url: asHttps(r.url), thumbnail: asHttps(r.thumbnail?.src) || null })).filter(r => r.url);
   let media = [];
   if (wantsImages) {
     const images = await json(`https://api.search.brave.com/res/v1/images/search?${params}`, 15000, headers);
-    media = (images.results || []).slice(0, 6).map(r => ({ type: 'image', title: plain(r.title), url: r.thumbnail?.src || r.properties?.url, sourceUrl: r.url || r.page_url, mime: 'image/*' })).filter(r => /^https:\/\//.test(r.url) && /^https:\/\//.test(r.sourceUrl));
+    media = (images.results || []).slice(0, 6).map(r => ({ type: 'image', title: plain(r.title), url: asHttps(r.thumbnail?.src || r.properties?.url), sourceUrl: asHttps(r.url || r.page_url), mime: 'image/*' })).filter(r => r.url && r.sourceUrl);
   }
   return { sources, media };
 }

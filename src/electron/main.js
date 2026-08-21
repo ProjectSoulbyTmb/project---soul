@@ -8,7 +8,7 @@ import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT, normalizeProviderEndpoint } from '../providers/http.js';
-import { fetchServiceSnapshot, normalizeServiceUrl } from '../core/service.js';
+import { fetchServiceSnapshot, normalizeServiceUrl, httpsOnlyUrl } from '../core/service.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
@@ -85,13 +85,13 @@ function publicServiceStatus() {
     checkoutEnabled: false,
     service: String(stored.service || '').slice(0, 100),
     version: String(stored.version || '').slice(0, 40),
-    website: /^https:\/\//i.test(String(stored.website || '')) ? String(stored.website) : '',
+    website: httpsOnlyUrl(stored.website),
     error: String(stored.error || '').slice(0, 300),
     lastCheckedAt: String(stored.lastCheckedAt || ''),
     localFirst: true
   };
 }
-function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en', ageGateAccepted: config.ageGateAccepted === true, apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: publicServiceUrl(), serviceStatus: publicServiceStatus(), updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en', ageGateAccepted: config.ageGateAccepted === true, apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: httpsOnlyUrl(config.storeUrl), serviceUrl: publicServiceUrl(), serviceStatus: publicServiceStatus(), updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
 function requireAgeGate() { if (config.ageGateAccepted !== true) throw new Error('Eidovara is restricted to users age 18 or older. Confirm age and accept the terms to continue.'); }
 async function checkEidovaraService() {
   const snapshot = await fetchServiceSnapshot({ base: publicServiceUrl() });

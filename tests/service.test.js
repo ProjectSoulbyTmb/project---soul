@@ -7,6 +7,7 @@ import {
   fetchServiceSnapshot,
   sanitizeRemoteConfig,
   checkoutEnabledFromRemoteConfig,
+  httpsOnlyUrl,
   SERVICE_HEALTH_PATH,
   SERVICE_CONFIG_PATH,
   SERVICE_STATUS_PATH,
@@ -66,6 +67,14 @@ test('remote config is fail-closed for checkout even if a future payload lied', 
   assert.equal(sanitized.minimumAge, 18);
   assert.equal(sanitized.website, 'https://projectsoulbytmb.github.io/project---soul/');
   assert.equal(checkoutEnabledFromRemoteConfig({ paymentsEnabled: true }), false);
+});
+
+test('httpsOnlyUrl parses untrusted values instead of matching an https:// prefix', () => {
+  assert.equal(httpsOnlyUrl('https://projectsoulbytmb.github.io/project---soul/'), 'https://projectsoulbytmb.github.io/project---soul/');
+  assert.equal(httpsOnlyUrl('javascript:alert(1)'), '');
+  assert.equal(httpsOnlyUrl('http://example.test'), '');
+  assert.equal(httpsOnlyUrl('https://user:pass@example.test/path'), '');
+  assert.equal(httpsOnlyUrl('https://example.test'), 'https://example.test/');
 });
 
 test('fetch failure leaves the workspace offline-OK and never enables payments', async () => {
@@ -137,8 +146,18 @@ test('Worker health/config/status JSON matches desktop sanitizeRemoteConfig and 
   assert.equal(snapshot.minimumAge, 18);
   assert.equal(snapshot.ageRestricted, true);
 
+  const healthRes = await worker.fetch(new Request('https://api.example.test/health'), {});
+  const health = await healthRes.json();
+  assert.equal(health.checkoutEnabled, false);
+  assert.equal(health.conversationsStored, false);
+  assert.equal(health.paymentsEnabled, false);
+
   const configRes = await worker.fetch(new Request('https://api.example.test/v1/config'), {});
-  const config = sanitizeRemoteConfig(await configRes.json());
+  const rawConfig = await configRes.json();
+  assert.equal(rawConfig.checkoutEnabled, false);
+  assert.equal(rawConfig.conversationsStored, false);
+  assert.equal(rawConfig.paymentsEnabled, false);
+  const config = sanitizeRemoteConfig(rawConfig);
   assert.equal(config.paymentsEnabled, false);
   assert.equal(config.checkoutEnabled, false);
   assert.equal(config.authenticodeSigned, false);
@@ -168,7 +187,9 @@ test('Worker status endpoint is public GET and fail-closed', async () => {
   assert.equal(res.status, 200);
   assert.equal(body.status, 'ok');
   assert.equal(body.paymentsEnabled, false);
+  assert.equal(body.checkoutEnabled, false);
   assert.equal(body.conversations, false);
+  assert.equal(body.conversationsStored, false);
   assert.equal(body.localFirst, true);
   assert.ok(body.endpoints.includes('/health'));
   assert.ok(body.endpoints.includes('/v1/config'));
@@ -186,6 +207,8 @@ test('desktop binds through a persisted service setting, not a baked-in workers.
   assert.match(main, /normalizeServiceUrl/);
   assert.match(main, /requireAgeGate\(\)/);
   assert.match(main, /soul:connectService/);
+  assert.match(main, /httpsOnlyUrl/);
+  assert.doesNotMatch(main, /\^https:\\\/\\\//);
   assert.match(preload, /connectService:/);
   assert.match(html, /id="serviceUrlInput"/);
   assert.match(html, /id="serviceConnectBtn"/);

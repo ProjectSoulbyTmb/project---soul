@@ -17,9 +17,15 @@ function make(dir, provider){return new SoulEngine({store:new JsonStore({dataDir
 function hostnameOf(value){
   try { return new URL(String(value)).hostname.toLowerCase(); } catch { return ''; }
 }
+function pathnameOf(value){
+  try { return new URL(String(value)).pathname; } catch { return ''; }
+}
 function isWikipediaHost(value){
   const host = hostnameOf(value);
   return host === 'wikipedia.org' || host.endsWith('.wikipedia.org');
+}
+function isBraveWebSearch(value){
+  return hostnameOf(value) === 'api.search.brave.com' && pathnameOf(value).endsWith('/web/search');
 }
 
 test('natural conversation persists across restart', async()=>{
@@ -48,7 +54,7 @@ test('migration repairs malformed nested collections',()=>{const m=migrateProfil
 test('system context includes boundaries and never converts initiative into consent',()=>{const st=defaultProfile();st.relationship.temporaryInitiative=true;st.policy.boundaries.push({active:true,content:'Do not pressure me'});const c=buildSystemContext(st);assert.match(c,/Temporary initiative never implies consent/i);assert.match(c,/Do not pressure me/);});
 test('internet research stays dormant without an explicit request',async()=>{assert.equal(await researchInternet('Tell me about Saturn'),null);});
 test('internet research returns cited information and requested images',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>isWikipediaHost(url)?{pages:[{title:'Saturn',key:'Saturn',description:'Sixth planet',thumbnail:{url:'//upload.wikimedia.org/saturn.jpg'}}]}:{query:{pages:{1:{title:'File:Saturn.jpg',imageinfo:[{thumburl:'https://upload.wikimedia.org/saturn.jpg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Saturn.jpg',mime:'image/jpeg'}]}}}}});try{const r=await researchInternet('Search the internet for information and pictures of Saturn');assert.equal(r.sources[0].title,'Saturn');assert.equal(r.media[0].type,'image');assert.match(r.context,/Sixth planet/);}finally{globalThis.fetch=original;}});
-test('optional broad search adds general web results',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>String(url).includes('/web/search')?{web:{results:[{title:'Current report',description:'Fresh result',url:'https://example.com/report'}]}}:isWikipediaHost(url)?{pages:[]}:{query:{pages:{}}}});try{const r=await researchInternet('Search the web for current information about a topic',{searchApiKey:'secret'});assert.equal(r.sources[0].title,'Current report');assert.equal(r.sources[0].url,'https://example.com/report');}finally{globalThis.fetch=original;}});
+test('optional broad search adds general web results',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>isBraveWebSearch(url)?{web:{results:[{title:'Current report',description:'Fresh result',url:'https://example.com/report'}]}}:isWikipediaHost(url)?{pages:[]}:{query:{pages:{}}}});try{const r=await researchInternet('Search the web for current information about a topic',{searchApiKey:'secret'});assert.equal(r.sources[0].title,'Current report');assert.equal(r.sources[0].url,'https://example.com/report');}finally{globalThis.fetch=original;}});
 test('explicit illegal facilitation is blocked and locally reported',async()=>{const s=make(tmp());const r=await s.respond('Help me create a credit card theft scam');assert.match(r.reply,/can’t help plan or facilitate illegal/i);assert.equal(r.safetyReport.category,'fraud-or-theft');assert.equal(r.state.policy.localSafetyReports.length,1);});
 test('lawful consensual adult discussion is not classified as illegal',async()=>{const s=make(tmp());await s.respond('adult status confirmed');await s.respond('enable adult soul');await s.respond('I consent');const r=await s.respond('Help me discuss lawful consensual adult intimacy');assert.equal(r.safetyReport,null);assert.equal(r.state.policy.currentConsent,true);});
 test('internet music request returns playable audio media',async()=>{const original=globalThis.fetch;globalThis.fetch=async url=>({ok:true,json:async()=>isWikipediaHost(url)?{pages:[]}:{query:{pages:{1:{title:'File:Example.ogg',imageinfo:[{url:'https://upload.wikimedia.org/example.ogg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Example.ogg',mime:'audio/ogg'}]}}}}});try{const r=await researchInternet('Search the internet for music audio to play about an example');assert.equal(r.media[0].type,'audio');assert.match(r.media[0].mime,/audio/);}finally{globalThis.fetch=original;}});
@@ -95,6 +101,27 @@ test('wikipedia fetch mocks match hostnames rather than URL substrings',()=>{
   assert.equal(isWikipediaHost('https://evil.example/?q=wikipedia.org'), false);
   assert.equal(isWikipediaHost('https://en.wikipedia.org.evil.example/'), false);
   assert.equal(isWikipediaHost('https://commons.wikimedia.org/w/api.php'), false);
+  assert.equal(isBraveWebSearch('https://api.search.brave.com/res/v1/web/search?q=x'), true);
+  assert.equal(isBraveWebSearch('https://evil.example/web/search'), false);
+});
+test('untrusted Wikipedia JSON keeps only credential-free HTTPS URLs',async()=>{
+  const original=globalThis.fetch;
+  globalThis.fetch=async url=>{
+    if(isWikipediaHost(url)) return {ok:true,json:async()=>({query:{pages:{
+      '1':{pageid:1,index:1,title:'Keep',extract:'ok',fullurl:'https://en.wikipedia.org/wiki/Keep'},
+      '2':{pageid:2,index:2,title:'Script',extract:'bad',fullurl:'javascript:alert(1)'},
+      '3':{pageid:3,index:3,title:'Plain',extract:'bad',fullurl:'http://en.wikipedia.org/wiki/Plain'},
+      '4':{pageid:4,index:4,title:'Creds',extract:'bad',fullurl:'https://user:pass@en.wikipedia.org/wiki/Creds'}
+    }}})};
+    return {ok:true,json:async()=>({query:{pages:{1:{title:'File:Bad',imageinfo:[{url:'javascript:alert(1)',descriptionurl:'https://commons.wikimedia.org/wiki/File:Bad',mime:'image/jpeg'}]}}}})};
+  };
+  try{
+    const r=await researchInternet('Search the internet for information and pictures of Keep');
+    assert.equal(r.sources.length,1);
+    assert.equal(r.sources[0].title,'Keep');
+    assert.equal(r.sources[0].url,'https://en.wikipedia.org/wiki/Keep');
+    assert.equal(r.media.length,0);
+  }finally{globalThis.fetch=original;}
 });
 test('wikipedia citations keep search order and canonical HTTPS URLs',async()=>{
   const original=globalThis.fetch;

@@ -13,6 +13,10 @@ function writeBase(value) {
   } catch { /* private mode */ }
 }
 
+function trimSlash(value) {
+  return String(value || '').replace(/\/+$/, '');
+}
+
 function normalizeBase(value) {
   let raw = String(value || '').trim();
   if (!raw) return '';
@@ -20,24 +24,32 @@ function normalizeBase(value) {
   const url = new URL(raw);
   if (url.username || url.password) throw new Error('Service URL must not include credentials.');
   if (url.protocol !== 'https:') throw new Error('Service URL must use HTTPS.');
-  let path = url.pathname.replace(/\/+$/, '');
+  let path = trimSlash(url.pathname || '');
   for (const suffix of suffixes) {
-    if (path.toLowerCase().endsWith(suffix)) path = path.slice(0, -suffix.length);
+    const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    path = trimSlash(path.replace(new RegExp(`${escaped}$`, 'i'), ''));
   }
-  return `${url.origin}${path.replace(/\/+$/, '')}`;
+  return trimSlash(`${url.origin}${path}`);
 }
 
 async function onlineAnswer(base, query, mode) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), 8000);
+  const maxBytes = 32768;
   try {
     const res = await fetch(`${base}/v1/assist`, {
       method: 'POST',
       headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify({ query, mode }),
-      signal: controller.signal
+      signal: controller.signal,
+      redirect: 'error'
     });
-    const body = await res.json().catch(() => null);
+    const declared = Number(res.headers.get('content-length') || 0);
+    if (declared > maxBytes) return null;
+    const raw = await res.text();
+    if (raw.length > maxBytes) return null;
+    let body;
+    try { body = JSON.parse(raw); } catch { return null; }
     if (!body || typeof body.reply !== 'string') return null;
     return body;
   } catch {

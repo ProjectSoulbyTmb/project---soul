@@ -80,6 +80,26 @@ test('public HTML and site scripts do not compile a workers.dev default', () => 
   assert.match(read('docs/assist.js'), /eidovara-api\.example\.workers\.dev/);
 });
 
+test('site assist and Worker share desktop path-strip and fail-closed fetch rules', () => {
+  const assist = read('docs/assist.js');
+  const site = read('docs/site.js');
+  const worker = read('server/worker.js');
+  const service = read('src/core/service.js');
+  for (const file of [assist, site, service]) {
+    assert.match(file, /\/health/);
+    assert.match(file, /\/v1\/config/);
+    assert.match(file, /\/v1\/status/);
+    assert.match(file, /\/v1\/assist/);
+  }
+  assert.match(assist, /redirect: 'error'/);
+  assert.match(site, /redirect: 'error'/);
+  assert.match(service, /redirect: 'error'/);
+  assert.match(worker, /checkoutEnabled: false/);
+  assert.match(worker, /conversationsStored: false/);
+  assert.doesNotMatch(assist, /dreambot333\.workers\.dev/);
+  assert.doesNotMatch(read('src/renderer/renderer.js'), /workers\.dev/);
+});
+
 test('chatbot knowledge answers golden product questions', () => {
   assert.ok(ENTRIES.length >= 12);
   const age = answerAssist('Do I have to be 18 years old to use Eidovara?');

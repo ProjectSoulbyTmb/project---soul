@@ -65,11 +65,12 @@
     if (url.username || url.password) throw new Error('Service URL must not include credentials.');
     if (url.protocol !== 'https:') throw new Error('Service URL must use HTTPS.');
     const suffixes = ['/health', '/v1/config', '/v1/status', '/v1/assist'];
-    let path = url.pathname.replace(/\/+$/, '');
+    let path = String(url.pathname || '').replace(/\/+$/, '');
     for (const suffix of suffixes) {
-      if (path.toLowerCase().endsWith(suffix)) path = path.slice(0, -suffix.length);
+      const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      path = path.replace(new RegExp(`${escaped}$`, 'i'), '').replace(/\/+$/, '');
     }
-    return `${url.origin}${path.replace(/\/+$/, '')}`;
+    return `${url.origin}${path}`.replace(/\/+$/, '');
   }
 
   function initStatus(form) {
@@ -122,8 +123,8 @@
       const timer = setTimeout(() => controller.abort(), 8000);
       try {
         const [healthRes, statusRes] = await Promise.all([
-          fetch(`${base}/health`, { method: 'GET', signal: controller.signal, headers: { accept: 'application/json' } }),
-          fetch(`${base}/v1/status`, { method: 'GET', signal: controller.signal, headers: { accept: 'application/json' } })
+          fetch(`${base}/health`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }),
+          fetch(`${base}/v1/status`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } })
         ]);
         const health = await healthRes.json().catch(() => ({}));
         const status = await statusRes.json().catch(() => ({}));

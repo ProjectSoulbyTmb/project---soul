@@ -2,6 +2,7 @@
 
 ## v0.18.0
 
+- Untrusted Wikipedia/Brave result URLs and stored website/store URLs are parsed with `URL` (`https:` and no credentials) instead of an `https://` prefix check. Website helper `/v1/assist` fetch uses `redirect: 'error'` and a 32 KiB JSON bound, matching desktop service GET. Worker `/health` `/v1/config` `/v1/status` now also advertise `checkoutEnabled: false` and `conversationsStored: false`. Payments stay off.
 - Live + compatibility: desktop Connect / launch / Ctrl+A Test service uses GET `/health` `/v1/config` `/v1/status` (HTTPS except loopback; path strip includes `/v1/assist`); Ask Eidovara stays on `docs/knowledge.js` with optional pasted POST `/v1/assist`; Status fail-closed without a URL. Worker `/v1/config` matches the same fail-closed JSON (`paymentsEnabled` false, 18+, unsigned Windows, `localFirst`, no conversations). GitHub Pages still publishes `docs/` from `main` only — live github.io stays the older homepage until PR #10 merges. Paste-base still required; no `workers.dev` host is compiled into the app or public JS.
 - Network, security, and licensing inventory now matches current egress: Wikipedia/Wikimedia after an explicit research request, pasted HTTPS providers, Premium Brave, GitHub update checks, optional Worker `/health` `/v1/config` `/v1/status` `/v1/assist`, and Spotify/YouTube HTTPS search links. Payments stay fail-closed. Neural TTS, VRM, OBS control, and live checkout remain document-only. No `workers.dev` default; app CSP still forbids `media-src 'self'`.
 
