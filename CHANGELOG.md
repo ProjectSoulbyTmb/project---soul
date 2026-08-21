@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Consumer workspace layers on the in-app Soul kernel (not a cloned launcher brand): Ctrl+K / Ctrl+P command palette, unified local search (linked apps, memories, settings labels, product intents), pin/reorder dashboard tiles, a real timed focus session with remaining time and a quiet UI, an on-device scratchpad that can capture into Memory, and a Ctrl+/ keyboard cheatsheet. Search is not a background crawler and does not inject into other processes. Focus does not kill or overlay other apps. Linked apps stay confirm-launch. `/v1/assist` stays opt-in and is not used by these layers. OS `speechSynthesis` and CSS/canvas presence are unchanged. 18+ gates unchanged.
+
 ## v0.18.3
 
 - Professional consumer polish on the running desktop app and public site: after 18+, one Dashboard start path (Soul vs Assist), grouped Settings with short help, Ctrl+K jump list, Ctrl+/ cheatsheet, and Ctrl+A still away from text fields. Empty states, errors, and success copy stay plain language. Confirm-to-launch is unchanged. Age 18+, unsigned Windows, and no live payments stay visible without all-caps spam.

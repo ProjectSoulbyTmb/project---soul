@@ -393,6 +393,37 @@ ipcMain.handle('soul:configureKernel', (_e, input) => {
   return { state: ensureEngine().configureKernel({ ...input, assistOptIn: config.assistOptIn }), settings: publicConfig(), kernel: ensureEngine().kernelStatus() };
 });
 ipcMain.handle('soul:kernelStatus', () => { requireAgeGate(); return ensureEngine().kernelStatus(); });
+ipcMain.handle('soul:workspace', (_e, op, payload = {}) => {
+  requireAgeGate();
+  const engine = ensureEngine();
+  const apps = config.apps || [];
+  switch (String(op || '')) {
+    case 'search':
+      return engine.searchWorkspace(payload.query, { apps });
+    case 'palette':
+      return payload.includeApps ? engine.searchWorkspace(payload.query, { apps }) : engine.paletteItems(payload.query || '');
+    case 'pin':
+      return engine.pinWidget(payload.id);
+    case 'unpin':
+      return engine.unpinWidget(payload.id);
+    case 'reorder':
+      return engine.reorderWidgets(payload.order);
+    case 'start-focus':
+      return engine.startFocusSession({ minutes: payload.minutes, label: payload.label });
+    case 'stop-focus':
+      return engine.stopFocusSession();
+    case 'save-scratch':
+      return engine.saveScratchpad(payload.text);
+    case 'capture-scratch':
+      return engine.captureScratchpad(payload.text);
+    case 'recent':
+      return engine.recordPaletteUse(payload);
+    case 'favorite':
+      return engine.togglePaletteFavorite(payload.id);
+    default:
+      throw new Error('Unknown workspace operation.');
+  }
+});
 ipcMain.handle('soul:assistQuery', async (_e, query) => {
   requireAgeGate();
   if (config.assistOptIn !== true) return { ok: false, skipped: true, reason: 'opt-in-off', assist: true, soul: false, conversationsSent: false };

@@ -58,10 +58,11 @@ const ENTRIES = {
   },
   help: {
     title: 'What this kernel can do',
-    reply: 'I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v0.18.3. Assist is not Soul.',
+    reply: 'I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. Ctrl+K (or Ctrl+P) opens a local command palette; Ctrl+/ opens the keyboard cheatsheet. Local search covers linked apps, memories, settings labels, and product intents — no background crawler and no injection into other processes. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v0.18.3. Assist is not Soul.',
     actions: [
       { type: 'open-view', view: 'apps', label: 'Apps & Gaming' },
       { type: 'open-view', view: 'entertainment', label: 'Entertainment' },
+      { type: 'open-cheatsheet', label: 'Keyboard cheatsheet' },
       { type: 'open-legal', legal: 'about', label: 'Legal' }
     ]
   },

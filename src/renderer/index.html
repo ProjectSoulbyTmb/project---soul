@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="gaming.css" />
   <link rel="stylesheet" href="internet.css" />
   <link rel="stylesheet" href="companion.css" />
+  <link rel="stylesheet" href="layers.css" />
 </head>
 <body>
   <div class="app">
@@ -36,14 +37,20 @@
         <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
         <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
         <div class="top-actions">
-          <button type="button" class="icon-btn" id="paletteBtn" aria-label="Jump anywhere" aria-keyshortcuts="Control+K" title="Ctrl+K">Ctrl+K</button>
-          <button type="button" class="icon-btn" id="shortcutBtn" aria-label="Keyboard shortcuts" aria-keyshortcuts="Control+/" title="Ctrl+/">Ctrl+/</button>
+          <button type="button" class="icon-btn" id="paletteOpenBtn" aria-label="Jump anywhere" aria-keyshortcuts="Control+K" title="Ctrl+K">Ctrl+K</button>
+          <button type="button" class="icon-btn" id="cheatsheetOpenBtn" aria-label="Keyboard shortcuts" aria-keyshortcuts="Control+/" title="Ctrl+/">Ctrl+/</button>
           <button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Open Soul companion on the Dashboard"><span class="companion-face"><i></i><i></i></span></button>
           <span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span>
           <span class="status-dot idle" id="kernelDot" title="Local Soul"></span><span id="kernelLabel">Soul waiting</span>
           <span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span>
         </div>
       </header>
+      <div class="focus-quiet-bar hidden" id="focusQuietBar" role="status">
+        <strong id="focusQuietLabel" data-i18n="focusQuiet">Focus session</strong>
+        <span id="focusQuietRemaining">0:00</span>
+        <span class="focus-quiet-note" data-i18n="focusQuietNote">Local timer. Other apps are not closed or injected into.</span>
+        <button type="button" class="secondary" id="focusQuietStop" data-i18n="focusStop">Stop</button>
+      </div>
 
       <section class="view active" id="chatView">
         <div class="chat-scroll" id="chatScroll">
@@ -71,7 +78,7 @@
       </section>
 
       <section class="view panel-view" id="dashboardView">
-        <div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">Home after 18+: pick a next step, then use Apps, Entertainment, or Soul on the right. Soul is local. Assist is optional and off by default.</p></div></div>
+        <div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">Home after 18+: pick a next step, then use Apps, Entertainment, or Soul on the right. Soul is local. Assist is optional and off by default.</p></div><div class="widget-toolbar"><button type="button" class="secondary" id="paletteHintBtn" data-i18n="paletteOpen">Jump (Ctrl+K)</button><button type="button" class="secondary" id="cheatsheetHintBtn" data-i18n="cheatsheetOpen">Shortcuts</button></div></div>
         <div class="start-path card" id="startPath">
           <h3 data-i18n="startPathTitle">Start here</h3>
           <p class="settings-help" data-i18n="startPathLead">One path after you confirm 18+. You can hide this card anytime.</p>
@@ -302,33 +309,25 @@
       <div class="setup-actions"><button type="button" class="secondary" id="legalCloseBtn">Close</button></div>
     </div>
   </div>
-
   <div class="setup-overlay hidden" id="commandPalette" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
     <div class="setup-dialog palette-dialog">
-      <div><h1 id="paletteTitle">Jump anywhere</h1><p>Ctrl+K. Soul is the local assistant on the right. Assist is optional and off by default.</p></div>
-      <label class="setup-field">Find a place<input id="paletteInput" type="search" maxlength="80" placeholder="Dashboard, settings, apps, voices…" aria-label="Filter commands" autocomplete="off" /></label>
-      <div id="paletteList" class="palette-list" role="listbox" aria-label="Commands"></div>
-      <div class="setup-actions"><button type="button" class="secondary" id="paletteCloseBtn">Close</button></div>
+      <div><h1 id="paletteTitle" data-i18n="paletteTitle">Jump in Eidovara</h1><p data-i18n="paletteLead">Local jump and search. No background crawler. Linked apps still confirm-launch. Assist is not Soul.</p></div>
+      <label class="setup-field"><span class="visually-hidden">Palette query</span><input id="paletteInput" type="search" maxlength="200" autocomplete="off" placeholder="Views, intents, settings, memory, linked apps…" aria-label="Command palette" /></label>
+      <ul class="palette-results" id="paletteResults" role="listbox" aria-label="Palette results"></ul>
+      <div id="paletteList" class="palette-list hidden" role="listbox" aria-label="Commands"></div>
+      <p class="palette-hint" data-i18n="paletteHint">↑↓ to move · Enter to run · Esc to close · Ctrl+K</p>
     </div>
   </div>
-  <div class="setup-overlay hidden" id="shortcutSheet" role="dialog" aria-modal="true" aria-labelledby="shortcutTitle">
-    <div class="setup-dialog palette-dialog">
-      <div><h1 id="shortcutTitle">Keyboard shortcuts</h1><p>Ctrl+/ opens this list. Ctrl+A is admin only when you are not typing in a field.</p></div>
-      <dl class="shortcut-list">
-        <div><dt>Ctrl+K</dt><dd>Jump to Dashboard, Settings groups, Apps, Soul, and legal</dd></div>
-        <div><dt>Ctrl+/</dt><dd>Show this cheatsheet</dd></div>
-        <div><dt>Ctrl+A</dt><dd>Private admin (not inside a text field)</dd></div>
-        <div><dt>Enter</dt><dd>Send a message to Soul</dd></div>
-        <div><dt>Shift+Enter</dt><dd>New line in the composer</dd></div>
-        <div><dt>Hold 🎙</dt><dd>Dictate on this PC. No neural TTS is bundled.</dd></div>
-        <div><dt>Esc</dt><dd>Close a dialog</dd></div>
-      </dl>
-      <p class="truth-note">Click the Soul face or type in the right dock to ask locally. Launching an app still asks you to confirm. Assist stays off until you enable it.</p>
-      <div class="setup-actions"><button type="button" class="secondary" id="shortcutCloseBtn">Close</button></div>
+  <div class="setup-overlay hidden" id="cheatsheetOverlay" role="dialog" aria-modal="true" aria-labelledby="cheatsheetTitle">
+    <div class="setup-dialog admin-dialog">
+      <div><h1 id="cheatsheetTitle" data-i18n="cheatsheetTitle">Keyboard cheatsheet</h1><p data-i18n="cheatsheetLead">Eidovara shortcuts. This overlay is in-app only — it does not inject into games or other processes.</p></div>
+      <div id="cheatsheetList" class="cheatsheet-list"></div>
+      <div class="setup-actions"><button type="button" class="secondary" id="cheatsheetCloseBtn" data-i18n="cancel">Close</button></div>
     </div>
   </div>
   <script src="localization.js"></script>
   <script src="renderer.js"></script>
   <script src="companion.js"></script>
+  <script src="workspace-layers.js"></script>
 </body>
 </html>
