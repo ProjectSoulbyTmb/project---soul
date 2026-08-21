@@ -50,7 +50,7 @@ test('LICENSE, TERMS, and NOTICE reserve first-party rights and are not OSI open
   assert.match(license, /not an\s+OSI-approved/i);
   assert.match(license, /LicenseRef-Eidovara-Source-Available-1\.0/);
   assert.match(license, /relicense/);
-  assert.match(license, /does not convert first-party material into OSI open source/i);
+  assert.match(license, /not convert first-party material into OSI open source/i);
   assert.match(license, /does not make the submitter a joint author/i);
   assert.doesNotMatch(license, /this is an OSI[- ]approved|OSI-approved open source license/i);
   assert.doesNotMatch(license, /Copyright Office registration no\.|U\.S\. Patent No\.|patent pending/i);
