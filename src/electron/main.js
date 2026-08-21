@@ -305,10 +305,10 @@ app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); if (c
 app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('soul:send', async (_e, m) => {
+ipcMain.handle('soul:send', async (_e, m, opts) => {
   requireAgeGate();
   applyInternetOptions();
-  const result = await ensureEngine().respond(m);
+  const result = await ensureEngine().respond(m, opts && typeof opts === 'object' ? opts : {});
   if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); }
   return result;
 });

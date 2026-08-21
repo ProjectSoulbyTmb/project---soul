@@ -222,8 +222,10 @@ export class SoulEngine {
     this.store.save(this.state); return this.snapshot();
   }
 
-  async respond(input) {
-    const text = String(input || '').trim();
+  async respond(input, extra = {}) {
+    const payload = input && typeof input === 'object' && !Array.isArray(input) ? input : { text: input, ...extra };
+    const text = String(payload.text || input || '').trim();
+    const view = String(payload.view || extra.view || '').slice(0, 40);
     if (!text) throw new Error('Message cannot be empty.');
     if (text.length > 12000) throw new Error('Message is too long.');
     const now = new Date().toISOString();
@@ -247,7 +249,7 @@ export class SoulEngine {
     if (conv.messages.length === 1) conv.title = text.slice(0, 42) + (text.length > 42 ? '…' : '');
 
     kernelHeartbeat(this.state, { at: now });
-    const route = routeKernel(text, this.state, this.modules);
+    const route = routeKernel(text, this.state, this.modules, { view });
     const locale = this.state.assistant?.preferences?.language || 'en';
 
     if (!policyReply && route.enabled !== false) {
@@ -313,7 +315,7 @@ export class SoulEngine {
       try {
         const researchContext = webResearch ? `\n\nCurrent internet research (cite the numbered source links and do not invent missing facts):\n${webResearch.context}` : '';
         const discoveryContext = !webResearch && mediaDiscovery ? `\n\nLocal library and official search links (cite these; do not invent streams or inject into other players):\n${mediaDiscovery.context}` : '';
-        reply = await this.provider.reply({ input: text, state: this.state, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, messages: [{ role: 'system', content: buildSystemContext(this.state) + researchContext + discoveryContext }, ...history] });
+        reply = await this.provider.reply({ input: text, state: this.state, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, view, intent: route.intent, messages: [{ role: 'system', content: buildSystemContext(this.state) + researchContext + discoveryContext }, ...history] });
       } catch (err) {
         providerError = String(err?.message || err);
         const fallback = new OfflineProvider();
@@ -333,7 +335,7 @@ export class SoulEngine {
     const kernel = kernelPublicMeta({ ...route, actions: kernelActions, view: route.intent === 'research' ? 'research' : route.view });
     if (webResearch) kernel.webLookup = true;
     const done = new Date().toISOString();
-    conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, actions: kernel.actions });
+    conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, actions: kernel.actions, kernelIntent: route.intent });
     conv.updatedAt = done;
     const companion = companionPublicMeta(companionTurn);
     this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId, webLookup: Boolean(webResearch), companionIntent: companion.intent, companionNetwork: false } });

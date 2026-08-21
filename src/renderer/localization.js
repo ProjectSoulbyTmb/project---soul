@@ -78,10 +78,11 @@
       startPathStep2: 'Soul (right dock) is the local software self-model. Ask it here. It is not a person and not the website helper.',
       startPathStep3: 'Assist is an optional Worker helper. It stays off unless you enable it in Settings. Assist is not Soul.',
       startTalk: 'Talk with Soul', startApps: 'Add a trusted app', startSettings: 'Open Settings', startDismiss: 'Hide this guide',
+      companionPanelTitle: 'Workspace companion',
+      companionHere: 'What you can do here', whatHere: 'What can you do here?', companionEmptyHint: 'Type a next step, or ask “what can you do here?” Local kernel only. Assist is not Soul.',
       paletteEmpty: 'No matching places. Try dashboard or settings.',
       paletteTitle: 'Jump in Eidovara', scratchTitle: 'Scratchpad', scratchHint: 'Stays on this PC', scratchCapture: 'Capture to Memory', scratchPlaceholder: 'Quick capture. Stays on this device.',
-      focusQuiet: 'Focus session', focusStart: 'Start 25 minutes', focusStop: 'Stop', pinWidget: 'Pin a tile', unpinWidget: 'Unpin',
-      companionPanelTitle: 'Workspace companion'
+      focusQuiet: 'Focus session', focusStart: 'Start 25 minutes', focusStop: 'Stop', pinWidget: 'Pin a tile', unpinWidget: 'Unpin'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',

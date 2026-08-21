@@ -14,6 +14,8 @@ const assistantPayload = (extra = {}) => {
 
 function activeConversation(){ return state?.conversations?.find(c=>c.id===state.activeConversationId) || state?.conversations?.[0]; }
 function fmt(ts){ try{return new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date(ts));}catch{return '';} }
+function currentView(){ return Object.keys(views).find(name=>views[name]?.classList.contains('active')) || 'dashboard'; }
+function reducedMotion(){ return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches); }
 function setView(name){
   if(!views[name])return;
   Object.values(views).forEach(v=>v.classList.remove('active'));
@@ -21,6 +23,7 @@ function setView(name){
   $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]);
   $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
   if(innerWidth<861) $('#sidebar').classList.remove('open');
+  window.eidovaraCompanion?.renderFollowups?.(name);
   if(name==='research') renderResearchView();
 }
 function el(tag, cls, text){ const n=document.createElement(tag); if(cls)n.className=cls; if(text!==undefined)n.textContent=text; return n; }
@@ -62,12 +65,31 @@ function appendKernelActions(target, actions){
 }
 function runKernelAction(action){
   if(!action||!action.type)return;
-  if(action.type==='open-view'&&action.view) setView(action.view);
-  else if(action.type==='open-legal'&&typeof window.eidovaraShowLegal==='function') window.eidovaraShowLegal(action.legal||'about');
+  const smooth=reducedMotion()?'auto':'smooth';
+  if(action.type==='open-view'&&action.view){
+    setView(action.view);
+    if(action.panel){
+      const node=document.getElementById(action.panel);
+      node?.scrollIntoView({behavior:smooth,block:'center'});
+      node?.querySelector?.('input, select, textarea, button')?.focus?.();
+    }
+    if(action.view==='dashboard') $('#companionInput')?.focus();
+    if(action.view==='chat') $('#messageInput')?.focus();
+  }
+  else if(action.type==='open-legal') showLegal(action.legal||'about');
   else if(action.type==='open-setup') openSetup(true);
   else if(action.type==='open-diagnostics'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
-  else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'}); }
-  else if(action.type==='open-updates'||action.type==='check-updates'){ if(typeof window.eidovaraCheckUpdates==='function') window.eidovaraCheckUpdates(); else { setView('settings'); $('#checkUpdateBtn')?.focus(); } }
+  else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:smooth,block:'center'}); $('#serviceUrlInput')?.focus(); }
+  else if(action.type==='open-updates'||action.type==='check-updates'){ if(typeof window.eidovaraCheckUpdates==='function') window.eidovaraCheckUpdates(); else { setView('settings'); $('#checkUpdateBtn')?.scrollIntoView({behavior:smooth,block:'center'}); $('#checkUpdateBtn')?.focus(); } }
+  else if(action.type==='pick-local-media'){ setView('entertainment'); $('#openLocalMediaBtn')?.click(); }
+  else if(action.type==='discover-apps'){ setView('apps'); $('#discoverAppsBtn')?.click(); }
+  else if(action.type==='start-focus'){ window.eidovaraLayers?.startFocus?.(action.minutes || 25, action.label); }
+  else if(action.type==='stop-focus'){ window.eidovaraLayers?.stopFocus?.(); }
+  else if(action.type==='capture-scratch'){ window.eidovaraLayers?.captureScratch?.(); }
+  else if(action.type==='open-palette'){ openPalette(); }
+  else if(action.type==='open-cheatsheet'){ openShortcutSheet(); }
+  else if(action.type==='confirm-launch-app'&&action.appId&&window.soul?.launchApplication) window.soul.launchApplication(action.appId);
+  else if(action.type==='run-command'&&action.command&&typeof window.eidovaraSend==='function'){ setView(action.view||'chat'); window.eidovaraSend(action.command); }
   else if(action.type==='open-external'&&action.url) openResearchLink(action.url);
 }
 window.eidovaraRunAction=runKernelAction;
@@ -271,13 +293,7 @@ function companionActionButton(action){
   return b;
 }
 function applyCompanionAction(action){
-  if(!action||!action.type)return;
-  if(action.type==='open-view'&&action.view){ if(action.view==='dashboard'){ setView('dashboard'); $('#companionInput')?.focus(); } else setView(action.view); }
-  else if(action.type==='open-legal') showLegal(action.legal||'about');
-  else if(action.type==='open-setup') openSetup(true);
-  else if(action.type==='open-diagnostics'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
-  else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'}); }
-  else if(action.type==='open-updates'||action.type==='check-updates'){ if(typeof window.eidovaraCheckUpdates==='function') window.eidovaraCheckUpdates(); else { setView('settings'); $('#checkUpdateBtn')?.scrollIntoView({behavior:'smooth',block:'center'}); } }
+  runKernelAction(action);
 }
 function applyCompanionResult(res,{applyAuto=false}={}){
   lastCompanion=res?.companion||lastCompanion;
@@ -392,11 +408,12 @@ async function send(text, opts={}){
   }
   const askAssist=$('#assistThisMessage')?.checked===true || (surface==='companion' && $('#companionAssistThis')?.checked===true);
   try{
-    const res=await window.soul.send(text);
+    const res=await window.soul.send(text, { view: currentView() });
     state=res.state;
     lastCompanion=res.companion||lastCompanion;
     renderAll();
     window.eidovaraCompanion?.applyKernelActions?.(res.kernel?.actions);
+    window.eidovaraCompanion?.syncHistory?.();
     const replies=(activeConversation()?.messages||[]).filter(x=>x.role==='assistant');
     if(surface!=='companion') speakSoul(replies.at(-1)?.content);
     if(res.providerError){
@@ -808,6 +825,7 @@ window.eidovaraShowLegal=showLegal;
 window.eidovaraOpenPalette=openPalette;
 window.eidovaraOpenShortcutSheet=openShortcutSheet;window.eidovaraRenderDashboard=renderDashboard;
 window.eidovaraRenderAll=renderAll;
+window.eidovaraActiveConversation=()=>activeConversation()?.messages||[];
 window.eidovaraReloadState=async()=>{state=await window.soul.snapshot();renderAll();};
 $('#legalAboutBtn').addEventListener('click',()=>showLegal('about'));
 $$('#legalOverlay [data-legal]').forEach(b=>b.addEventListener('click',()=>showLegal(b.dataset.legal)));

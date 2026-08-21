@@ -101,7 +101,7 @@ test('desktop companion and send path do not POST chat to the Worker', () => {
   assert.doesNotMatch(joined, /postAssistQuery|sendToService/);
   assert.doesNotMatch(fs.readFileSync('src/core/companion.js', 'utf8'), /soulOnline/);
   assert.doesNotMatch(fs.readFileSync('src/core/companion.js', 'utf8'), /method:\s*['"]POST['"]/);
-  assert.match(fs.readFileSync('src/electron/main.js', 'utf8'), /soul:send[\s\S]*ensureEngine\(\)\.respond\(m\)/);
+  assert.match(fs.readFileSync('src/electron/main.js', 'utf8'), /soul:send[\s\S]*ensureEngine\(\)\.respond\(m/);
   assert.doesNotMatch(fs.readFileSync('src/core/service.js', 'utf8'), /serviceRequestUrl\([^)]*SERVICE_ASSIST_PATH/);
   const html = fs.readFileSync('src/renderer/index.html', 'utf8');
   assert.match(html, /id="companionPanel"/);

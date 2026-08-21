@@ -70,6 +70,8 @@ const engine = new SoulEngine({ store: new JsonStore({ profileId: profile, dataD
 async function replyTo(text) {
   const res = await engine.respond(text);
   console.log(`soul> ${res.reply}`);
+  const actions = res.kernel?.actions || [];
+  if (actions.length) console.log(`next> ${actions.map(a => a.label || a.type).join(' · ')}`);
   return res;
 }
 
