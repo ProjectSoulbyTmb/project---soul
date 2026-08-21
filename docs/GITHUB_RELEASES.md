@@ -16,7 +16,7 @@ git tag v0.19.0
 git push origin v0.19.0
 ```
 
-3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer`, writes the update manifest and evidence, and publishes `Eidovara-${version}-Windows-x64-Setup.exe` to the GitHub Release. Users download that `.exe`; they do not extract a ZIP.
+3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer` (`--publish never` so electron-builder does not create the GitHub Release itself), writes `latest.yml` for `electron-updater`, `update.json`, and evidence, then publishes `Eidovara-${version}-Windows-x64-Setup.exe` plus updater metadata to the GitHub Release. Users download that `.exe`; they do not extract a ZIP. Future tagged releases need a workflow `GITHUB_TOKEN` (already granted via `contents: write`) so `latest.yml` is attached. Do not commit a `GH_TOKEN`.
 4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button. Current SHA-256: `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. Size about 101.3 MiB.
 
 Do not reuse a release tag after changing its files. Increment the version and create a new tag so installed applications can compare versions safely.
@@ -39,6 +39,6 @@ npm run release:manifest
 npm run release:evidence
 ```
 
-Attach `dist/Eidovara-*-Windows-x64-Setup.exe`, `dist/update.json`, `dist/SHA256SUMS.txt`, `dist/SBOM.spdx.json`, and `dist/CODE-SIGNING-STATUS.txt` to a GitHub Release for the matching `v*` tag. Never upload a private signing key.
+Attach `dist/Eidovara-*-Windows-x64-Setup.exe`, `dist/latest.yml`, `dist/update.json`, `dist/SHA256SUMS.txt`, `dist/SBOM.spdx.json`, and `dist/CODE-SIGNING-STATUS.txt` to a GitHub Release for the matching `v*` tag. Never upload a private signing key. Installed copies check GitHub Releases, verify checksums, and prompt before applying an update. Builds stay Authenticode-unsigned.
 
 Overwrite-on-reinstall for existing Eidovara installs is a separate installer change (pull request #9).

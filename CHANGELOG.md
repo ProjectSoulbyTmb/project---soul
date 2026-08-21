@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Desktop automatic updater: after 18+, Eidovara can check GitHub Releases for a newer Windows NSIS installer, verify `latest.yml` SHA-512, download in the background, and apply only after Restart and install. Authenticode-unsigned. Auto-check can be turned off.
+
 ## v0.19.0
 
 - Beautiful consumer release on the land-all 0.18.3 kernel plus internet research: pin-able Dashboard tiles, local scratchpad, a timed quiet focus bar, kernel-backed palette/search (Ctrl+K / Ctrl+P), companion dock, first-run after 18+, grouped Settings, and official `https://api.eidovara.org`.
@@ -9,6 +11,7 @@
 - New unsigned Windows installer: `package.json` / Worker health / website-helper version is `0.19.0`. App id stays `com.soulconsciousnessstudios.eidovara`. Tags `v0.18.0`–`v0.18.3` already exist and were not moved.
 - Primary public download is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe` (the NSIS `.exe`, not the source repository). Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.0/Eidovara-0.19.0-Windows-x64-Setup.exe`. Authenticode-unsigned; not Microsoft-certified. SHA-256 is published on Download after the artifact exists.
 - Shared `docs/tokens.css` / renderer tokens honor `prefers-reduced-motion`. Home, Download, and Help advertise v0.19.0. Honest 18+ / unsigned / no-payments / Assist≠Soul remain visible. No neural TTS/VRM/OBS, no payments, no `workers.dev` default, no `media-src 'self'`.
+- Desktop automatic updater: after 18+, Eidovara checks GitHub Releases (`ProjectSoulbyTmb/project---soul`) on a startup delay plus a 6-hour interval, and from Settings / companion **Check for updates**. Newer stable semver NSIS installers download in the background via `electron-updater` (`latest.yml` SHA-512). Installing needs an explicit Restart and install confirm. Auto-check defaults on and can be turned off for metered networks. Drafts, prereleases (unless this build is already prerelease), downgrades, and files without checksum metadata are refused. Builds stay Authenticode-unsigned; SmartScreen may warn. Fail closed offline. `package.json` `build.publish` is GitHub so future tagged releases emit `latest.yml`; `--publish never` keeps CI from creating the release itself. `GH_TOKEN` is not committed.
 
 ## v0.18.3
 
