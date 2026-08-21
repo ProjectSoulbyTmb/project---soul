@@ -27,6 +27,8 @@ Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (feature 
 ## Logos
 
 - Use only approved first-party emblems in [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md).
+- Website display marks (`docs/eidovara-mark.png`, `docs/soul-consciousness-studios-mark.png`), high-resolution wallpapers (`docs/eidovara-wallpaper-dark.jpg`, `docs/eidovara-wallpaper-light.jpg`, `docs/eidovara-wallpaper-product.jpg`), and the Open Graph image (`docs/eidovara-og.png`) are approved first-party website assets listed in that register. They do not replace the registered application masters in `assets/branding/`.
+- Favicon and 512px website icons stay `docs/eidovara-icon.png` and `docs/soul-consciousness-studios-icon.png` (copies of the registered 512 renditions). Typeset the product name in HTML; do not put Eidovara lettering inside the image files.
 - Do not ship or imply ownership of third-party logos: Windows, GitHub, Electron, Cloudflare, Wikipedia, Spotify, YouTube, Apple, Marvel, or others.
 - Nominative text ("runs on Windows", "source on GitHub") is allowed; their logos are not.
 
