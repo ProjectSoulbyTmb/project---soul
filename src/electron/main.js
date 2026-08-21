@@ -202,8 +202,14 @@ ipcMain.handle('soul:adminSave', (_e, incoming) => {
   requireAgeGate(); requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';
   if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }
   const storeUrl = String(incoming?.storeUrl || '').trim().slice(0, 1000);
-  if (storeUrl && new URL(storeUrl).protocol !== 'https:') throw new Error('The store link must use HTTPS.');
-  config.storeUrl = storeUrl; config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
+  if (storeUrl) {
+    const safeStore = httpsOnlyUrl(storeUrl);
+    if (!safeStore) throw new Error('The store link must use HTTPS without credentials.');
+    config.storeUrl = safeStore;
+  } else {
+    config.storeUrl = '';
+  }
+  config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
@@ -267,7 +273,7 @@ ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return engine.listB
 ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return engine.restoreBackup(String(name || '')); });
 ipcMain.handle('soul:configureSetup', (_e, input) => { requireAgeGate(); return engine.configureSetup(input); });
 ipcMain.handle('soul:configureAssistant', (_e, input) => { requireAgeGate(); return engine.configureAssistant(input); });
-ipcMain.handle('soul:openExternal', (_e, value) => { const url = new URL(String(value || '')); if (url.protocol !== 'https:') throw new Error('Only secure web links can be opened.'); return shell.openExternal(url.toString()); });
+ipcMain.handle('soul:openExternal', (_e, value) => { const url = httpsOnlyUrl(value); if (!url) throw new Error('Only secure web links can be opened.'); return shell.openExternal(url); });
 ipcMain.handle('soul:checkForUpdates', async () => { requireAgeGate(); pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
 ipcMain.handle('soul:installUpdate', async () => {
   requireAgeGate();

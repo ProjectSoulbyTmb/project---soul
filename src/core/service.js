@@ -5,10 +5,6 @@ function isLoopbackHost(hostname) {
   return host === 'localhost' || host === '127.0.0.1' || host === '::1';
 }
 
-function looksLikeIpv6Host(hostname) {
-  return String(hostname || '').includes(':') && !String(hostname || '').startsWith('[');
-}
-
 export const SERVICE_HEALTH_PATH = '/health';
 export const SERVICE_CONFIG_PATH = '/v1/config';
 export const SERVICE_STATUS_PATH = '/v1/status';
@@ -26,14 +22,12 @@ export function normalizeServiceUrl(value) {
   if (!['http:', 'https:'].includes(url.protocol) || (url.protocol !== 'https:' && !loopback)) {
     throw new Error('Service URL must use HTTPS, except for loopback addresses.');
   }
-  const host = looksLikeIpv6Host(url.hostname) ? `[${url.hostname}]` : url.hostname;
-  const origin = `${url.protocol}//${host}${url.port ? `:${url.port}` : ''}`;
   let path = trimSlash(url.pathname || '');
   for (const suffix of STRIP_SUFFIXES) {
     const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     path = trimSlash(path.replace(new RegExp(`${escaped}$`, 'i'), ''));
   }
-  return trimSlash(`${origin}${path}${url.search || ''}`);
+  return trimSlash(`${url.origin}${path}`);
 }
 
 export function serviceRequestUrl(base, suffix) {

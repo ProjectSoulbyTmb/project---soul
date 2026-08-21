@@ -9,10 +9,6 @@ function isLoopbackHost(hostname) {
   return host === 'localhost' || host === '127.0.0.1' || host === '::1';
 }
 
-function looksLikeIpv6Host(hostname) {
-  return String(hostname || '').includes(':') && !String(hostname || '').startsWith('[');
-}
-
 export function normalizeProviderEndpoint(endpoint, { localOnly = false, loopbackOnly = false } = {}) {
   let raw = String(endpoint || '').trim();
   if (!raw) throw new Error('Endpoint is required.');
@@ -25,13 +21,11 @@ export function normalizeProviderEndpoint(endpoint, { localOnly = false, loopbac
     throw new Error('Endpoints must use HTTPS, except for loopback addresses.');
   }
   if ((localOnly || loopbackOnly) && !loopback) throw new Error('The local provider must use a loopback address.');
-  const host = looksLikeIpv6Host(url.hostname) ? `[${url.hostname}]` : url.hostname;
-  const origin = `${url.protocol}//${host}${url.port ? `:${url.port}` : ''}`;
   let path = trimSlash(url.pathname || '');
   if (localOnly || loopbackOnly) path = path.replace(/\/api\/chat$/i, '');
   else path = path.replace(/\/chat\/completions$/i, '');
   path = trimSlash(path);
-  return trimSlash(`${origin}${path}${url.search || ''}`);
+  return trimSlash(`${url.origin}${path}`);
 }
 
 export function providerRequestUrl(endpoint, suffix) {

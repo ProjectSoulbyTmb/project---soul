@@ -36,6 +36,8 @@ test('compatible endpoints require HTTPS except loopback and strip a pasted /cha
   assert.throws(() => normalizeProviderEndpoint('http://api.example.test/v1'), /HTTPS/);
   assert.throws(() => normalizeProviderEndpoint('https://user:pass@api.example.test/v1'), /credentials/);
   assert.throws(() => normalizeProviderEndpoint(''), /required/i);
+  assert.equal(normalizeProviderEndpoint('https://api.example.test/v1?api-key=secret'), 'https://api.example.test/v1');
+  assert.equal(providerRequestUrl('https://api.example.test/v1?api-key=secret', COMPATIBLE_PROVIDER_CHAT_PATH), 'https://api.example.test/v1/chat/completions');
 });
 
 test('providerRequestUrl does not double-append chat suffixes', () => {

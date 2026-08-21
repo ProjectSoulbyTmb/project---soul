@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import worker from '../server/worker.js';
-import { answerAssist, classifyAssistInput, ENTRIES, MAX_ASSIST_QUERY } from '../docs/knowledge.js';
+import { answerAssist, classifyAssistInput, ENTRIES, MAX_ASSIST_QUERY, safePublicHref } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 const docsHtml = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
@@ -99,6 +99,7 @@ test('site assist and Worker share desktop path-strip and fail-closed fetch rule
   assert.match(worker, /checkoutEnabled: false/);
   assert.match(worker, /conversationsStored: false/);
   assert.doesNotMatch(assist, /dreambot333\.workers\.dev/);
+  assert.match(assist, /safePublicHref/);
   assert.doesNotMatch(read('src/renderer/renderer.js'), /workers\.dev/);
 });
 
@@ -202,4 +203,17 @@ test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async
   assert.equal((await worker.fetch(new Request('https://api.example.test/v1/assist', { method: 'DELETE' }), {})).status, 405);
   assert.equal((await worker.fetch(new Request('https://api.example.test/health', { method: 'POST' }), {})).status, 405);
   assert.equal(classifyAssistInput('').ok, false);
+});
+
+test('website helper hrefs stay HTTPS or same-origin html', () => {
+  assert.equal(safePublicHref('product.html'), 'product.html');
+  assert.equal(safePublicHref('./#plans'), './#plans');
+  assert.equal(safePublicHref('javascript:alert(1)'), '');
+  assert.equal(safePublicHref('https://user:pass@evil.example/'), '');
+  assert.equal(safePublicHref('http://example.test/page'), '');
+  assert.equal(safePublicHref('../secret'), '');
+  const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
+  assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));
+  assert.match(read('docs/assist.js'), /safePublicHref\(link\.href\)/);
+  assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
 });

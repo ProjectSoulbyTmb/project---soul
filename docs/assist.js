@@ -1,4 +1,4 @@
-import { answerAssist, STORAGE_KEY } from './knowledge.js';
+import { answerAssist, STORAGE_KEY, safePublicHref } from './knowledge.js';
 
 const suffixes = ['/health', '/v1/config', '/v1/status', '/v1/assist'];
 
@@ -76,11 +76,14 @@ function renderLinks(target, links) {
   if (!Array.isArray(links) || !links.length) return;
   const list = el('p', { className: 'assist-links' });
   for (const link of links) {
-    if (!link || !link.href || !link.label) continue;
-    const a = el('a', { href: link.href, text: link.label });
+    if (!link) continue;
+    const href = safePublicHref(link.href);
+    const label = String(link.label || '').trim().slice(0, 80);
+    if (!href || !label) continue;
+    const a = el('a', { href, text: label });
     list.append(a, document.createTextNode(' '));
   }
-  target.append(list);
+  if (list.childNodes.length) target.append(list);
 }
 
 function addMessage(log, role, text, links) {

@@ -7,5 +7,6 @@ export {
   answerAssist,
   classifyAssistInput,
   assistMeta,
-  isAbuseQuery
+  isAbuseQuery,
+  safePublicHref
 } from '../docs/knowledge.js';

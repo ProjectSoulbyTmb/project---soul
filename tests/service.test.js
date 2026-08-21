@@ -41,6 +41,9 @@ test('service URL requires HTTPS except loopback and strips health/config/status
   assert.throws(() => normalizeServiceUrl('http://api.example.test'), /HTTPS/);
   assert.throws(() => normalizeServiceUrl('https://user:pass@api.example.test'), /credentials/);
   assert.throws(() => normalizeServiceUrl('javascript:alert(1)'), /HTTPS|http\(s\)/i);
+  assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/health?x=1'), 'https://eidovara-api.example.workers.dev');
+  assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/?q=1'), 'https://eidovara-api.example.workers.dev');
+  assert.equal(serviceRequestUrl('https://eidovara-api.example.workers.dev/?q=1', SERVICE_HEALTH_PATH), 'https://eidovara-api.example.workers.dev/health');
 });
 
 test('service request URLs do not double-append official paths', () => {

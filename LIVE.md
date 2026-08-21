@@ -9,7 +9,7 @@ This is an operator note, not a consumer marketing page. It does not claim Authe
 | `main` | PR #10 (`cursor/engine-product-surface-c180`) merged. Merge commit: `394cf3a287fa6fc665aed7568201e93df4165884`. Later `0.18.1` commits may sit on top of that merge. |
 | GitHub Pages | `docs/` from **main only** via `.github/workflows/pages.yml`. Do not retarget Pages at a feature branch. Do not invent a second production site. |
 | Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Redeploy with `npx wrangler deploy` from `server/` after Worker changes. |
-| Windows installer | Tag `v0.18.0` already exists from **older** `main` and must not be force-moved. `package.json` version `0.18.1` is the rebuild of this merged product. Push tag `v0.18.1` so `Release Windows` publishes unsigned `Eidovara-0.18.1-Windows-x64-Setup.exe`. Provenance is not Authenticode. |
+| Windows installer | Tag `v0.18.1` is published on GitHub Releases (unsigned `Eidovara-0.18.1-Windows-x64-Setup.exe`). Tag `v0.18.0` remains the older-main installer and must not be force-moved. Provenance is not Authenticode. |
 
 Desktop app id stays `com.soulconsciousnessstudios.eidovara`. No `workers.dev` host is compiled into the Electron app or public site JS. Paste the HTTPS Worker **base** into Settings → Eidovara service (or Ctrl+A Test service) and, optionally, the website Status / Ask Eidovara fields.
 
@@ -45,9 +45,8 @@ Operator paste example (not baked into the app or public JS): see [docs/PAYMENTS
 Git cannot finish these:
 
 1. **Dependency graph** — Settings → Code security → enable Dependency graph (`https://github.com/ProjectSoulbyTmb/project---soul/settings/security_analysis`). Keep `.github/workflows/dependency-review.yml` at `fail-on-severity: moderate`. Do not weaken it.
-2. **Windows tag** — If `git push origin v0.18.1` is forbidden, the owner must push that tag from current `main` after the `0.18.1` version commit. Do not retag `v0.18.0`.
-3. **Optional custom domain** — Cloudflare / GitHub Pages custom domain; still do not hard-code the API host in the app.
-4. **Authenticode / live payments / company filings** — remain cannot-ship. Do not enable live checkout.
+2. **Worker paste / optional custom domain** — Paste the HTTPS Worker **base** into Settings → Eidovara service after a deploy. Optional Cloudflare / GitHub Pages custom domain; still do not hard-code the API host in the app.
+3. **Authenticode / live payments / company filings** — remain cannot-ship. Do not enable live checkout.
 
 ## Honest cannot-ship
 

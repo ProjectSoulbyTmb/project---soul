@@ -385,6 +385,21 @@ code {
   pointer-events: auto;
 }
 .download-actions a[aria-disabled="true"] { pointer-events: none; }
+.download-source {
+  margin: 16px 0 0;
+  color: var(--muted);
+  font-size: var(--footnote);
+}
+.download-verify {
+  background: var(--panel);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin: 24px 0;
+}
+.download-verify h2 { margin: 0 0 8px; font-size: var(--title-3); }
+.download-verify p { margin: 8px 0; }
+.download-verify .sha-256, .download-verify code { word-break: break-all; }
 .status-panel label, .assist-label { display: block; font-weight: 600; margin: 12px 0 6px; }
 .status-panel input, .assist-service input, .assist-form textarea {
   width: 100%;

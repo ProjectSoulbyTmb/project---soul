@@ -4,9 +4,9 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 > **Release status:** Stable Alpha for Windows 10/11 x64, restricted to users age 18 or older. This label means the documented alpha surface passed the repository's automated and packaged-runtime checks; it is not a claim of universal compatibility or production certification.
 
-[Download the latest Windows installer](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest) · [Website](https://projectsoulbytmb.github.io/project---soul/) · [Release notes](CHANGELOG.md)
+[Download the official Windows installer (Eidovara-0.18.1-Windows-x64-Setup.exe)](https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe) · [Website](https://projectsoulbytmb.github.io/project---soul/) · [Release notes](CHANGELOG.md)
 
-**Public online path:** anyone can open the HTTPS site (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the Authenticode-unsigned Windows Stable Alpha (18+) from GitHub Releases when a `Setup.exe` is published, or build from source with `npm run dist:win:installer` on Windows. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; it can attach to the online Eidovara service for status/config (`/health`, `/v1/config`, `/v1/status`) while remaining usable offline. That attachment is not required. GitHub Pages publishes `docs/` from `main` (PR #10 merged). Owner clicks that git cannot finish (Dependency graph, `npx wrangler deploy` after Worker edits, `v0.18.1` tag if not already pushed, optional custom domain) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md) and [LIVE.md](LIVE.md).
+**Public online path:** anyone can open the HTTPS site (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the official Authenticode-unsigned Windows installer `Eidovara-0.18.1-Windows-x64-Setup.exe` (18+) from GitHub Releases, or build from source with `npm run dist:win:installer` on Windows. That `.exe` is the advertised download — not the GitHub source tree. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; it can attach to the online Eidovara service for status/config (`/health`, `/v1/config`, `/v1/status`) while remaining usable offline. That attachment is not required. GitHub Pages publishes `docs/` from `main` (PR #10 merged). Owner clicks that git cannot finish (Dependency graph, `npx wrangler deploy` after Worker edits, optional custom domain) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md) and [LIVE.md](LIVE.md).
 
 ## What is included
 
@@ -36,7 +36,7 @@ Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices
 
 The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance.
 
-Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. Download only from the official release page and verify its checksum and provenance. No software can guarantee perfect security.
+Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. Download `Eidovara-0.18.1-Windows-x64-Setup.exe` from GitHub Releases (SHA-256 `A7221E7781CEAD32F50E30FABE429092EC77826A5E8878E80D949D754A9404A9`) and verify checksums plus provenance. No software can guarantee perfect security.
 
 ## Editions
 

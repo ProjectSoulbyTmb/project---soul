@@ -30,6 +30,7 @@ test('cli snapshot prints JSON profile state', () => {
 
 test('cli help documents message, snapshot, and 18+ confirmation', () => {
   const result = run(['--help']);
+  const version = JSON.parse(fs.readFileSync('package.json', 'utf8')).version;
   assert.equal(result.status, 0, result.stderr || result.stdout);
   assert.match(result.stdout, /--message/);
   assert.match(result.stdout, /--snapshot/);
@@ -37,12 +38,16 @@ test('cli help documents message, snapshot, and 18+ confirmation', () => {
   assert.match(result.stdout, /18 or older/);
   assert.match(result.stdout, /Tyler Michael Bosworth/);
   assert.match(result.stdout, /Source-available, not open source/);
+  assert.match(result.stdout, new RegExp(`Eidovara v${version.replace(/\./g, '\\.')}`));
 });
 
 test('cli product commands refuse to run without 18+ confirmation', () => {
-  const result = run([`--data-dir=${tmp()}`, '--message', 'Hello Soul']);
+  const dir = tmp();
+  const result = run([`--data-dir=${dir}`, '--message', 'Hello Soul']);
   assert.equal(result.status, 2);
   assert.match(result.stderr, /18 or older/);
+  assert.equal(fs.existsSync(path.join(dir, 'default.json')), false);
+  assert.equal(fs.existsSync(path.join(dir, 'age-gate.json')), false);
 });
 
 test('cli persists 18+ confirmation in the data directory', () => {

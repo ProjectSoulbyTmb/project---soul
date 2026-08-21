@@ -1,11 +1,14 @@
 #!/usr/bin/env node
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { createRequire } from 'node:module';
 import readline from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import { SoulEngine } from './core/engine.js';
 import { JsonStore } from './core/store.js';
 
+const VERSION = createRequire(import.meta.url)('../package.json').version;
 const args = process.argv.slice(2);
 
 function argValue(name) {
@@ -16,7 +19,7 @@ function argValue(name) {
   return undefined;
 }
 
-const HELP = `Eidovara v0.18.0 CLI
+const HELP = `Eidovara v${VERSION} CLI
 
 Restricted to users 18 or older. Source-available, not open source.
 Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
@@ -40,15 +43,15 @@ if (args.includes('--help') || args.includes('-h')) {
 const profile = argValue('--profile') || 'default';
 const dataDir = argValue('--data-dir');
 const message = argValue('--message');
-const engine = new SoulEngine({ store: new JsonStore({ profileId: profile, dataDir }) });
-const ageGatePath = path.join(engine.store.dataDir, 'age-gate.json');
+const resolvedDataDir = dataDir || path.join(os.homedir(), '.project-soul');
+const ageGatePath = path.join(resolvedDataDir, 'age-gate.json');
 
 function ageGateAccepted() {
   try { return JSON.parse(fs.readFileSync(ageGatePath, 'utf8')).accepted === true; } catch { return false; }
 }
 
 function persistAgeGate() {
-  fs.mkdirSync(engine.store.dataDir, { recursive: true });
+  fs.mkdirSync(resolvedDataDir, { recursive: true });
   fs.writeFileSync(ageGatePath, `${JSON.stringify({ accepted: true, at: new Date().toISOString(), statement: '18+' }, null, 2)}\n`, { encoding: 'utf8', mode: 0o600 });
 }
 
@@ -59,6 +62,8 @@ if (!ageGateAccepted()) {
   }
   persistAgeGate();
 }
+
+const engine = new SoulEngine({ store: new JsonStore({ profileId: profile, dataDir }) });
 
 async function replyTo(text) {
   const res = await engine.respond(text);
@@ -81,7 +86,7 @@ if (message !== undefined) {
   }
 }
 
-console.log('Eidovara v0.18.0 CLI. Type /exit to quit, /reset to reset profile.');
+console.log(`Eidovara v${VERSION} CLI. Type /exit to quit, /reset to reset profile.`);
 const rl = readline.createInterface({ input, output });
 while (true) {
   const line = await rl.question('you> ');

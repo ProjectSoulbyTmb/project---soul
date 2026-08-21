@@ -1,5 +1,13 @@
 # Eidovara
 
+## Unreleased
+
+- CLI no longer constructs a profile before `--i-am-18-or-older` (or a stored confirmation) succeeds.
+- Service and provider bases drop query strings so `/health` and chat paths are not appended after `?`.
+- Ask Eidovara and the knowledge pack keep only HTTPS or same-origin `.html` helper links; desktop store/openExternal reject credentialed URLs.
+- Desktop chrome, CLI, installer EULA, and the website helper name v0.18.1 to match `package.json` and GitHub Releases.
+- Home and Download point at `Eidovara-0.18.1-Windows-x64-Setup.exe` (plus SHA-256) instead of implying the GitHub source tree is the installer.
+
 ## v0.18.1
 
 - Windows installer rebuild after PR #10 (`cursor/engine-product-surface-c180`) merged to `main`. Tag `v0.18.0` already pointed at older `main` and was not moved. `package.json` / Worker / website-helper version is `0.18.1`. App id stays `com.soulconsciousnessstudios.eidovara`.
