@@ -28,7 +28,7 @@ Adult Mode is off by default and appears only after legal-adult confirmation, ex
 
 Eidovara is **source-available, not open source**, and restricted to users **18 or older**. Official advertised distribution is an **Authenticode-unsigned Windows 10/11 x64** desktop build. Linux/macOS scripts are development targets, not official products. Premium in v0.18.2 is local-admin testing only; there is no live payment or automatic paid unlock.
 
-Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is public Wikipedia/Wikimedia after an explicit internet/web/online request. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, or Electron and is not an iOS/iPhone product.
+Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is public Wikipedia/Wikimedia after an explicit internet/web/online request. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, or Electron and is not an iOS/iPhone product. Soul is a first-party kernel, not a third-party film or assistant brand.
 
 Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices](LEGAL_NOTICES.md), [Security](SECURITY.md), [Network Usage](NETWORK-USAGE.md), and [Third-Party Notices](THIRD_PARTY_NOTICES.md).
 

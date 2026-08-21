@@ -338,7 +338,7 @@ main.site-main {
 #download .actions { margin-bottom: 64px; }
 code {
   font-size: 0.9em;
-  font-family: ui-monospace, "Cascadia Code", "SF Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+  font-family: ui-monospace, "Cascadia Code", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
   background: var(--fill-tertiary);
   border: var(--hairline) solid var(--separator);
   border-radius: 6px;

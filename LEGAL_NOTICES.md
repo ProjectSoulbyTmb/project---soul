@@ -30,4 +30,6 @@ The current static site and Worker do not process payments or sell subscriptions
 
 ## Trademarks and interface
 
-Eidovara is not an Apple, Microsoft, or Electron product. The visual language may resemble common system UI patterns; it does not require licensed SF Pro fonts and must not be described as an iOS or iPhone app. Named third-party platforms remain their owners' marks.
+Eidovara is not an Apple, Microsoft, or Electron product. The visual language may resemble common system UI patterns; it does not require licensed SF Pro or SF Mono fonts and must not be described as an iOS or iPhone app. Named third-party platforms remain their owners' marks.
+
+Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Quick-open chrome is not those third-party launchers. Nominative mentions of Windows 10/11, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts with this disclaimer, not bundled apps or logos. See [TRADEMARKS.md](TRADEMARKS.md).

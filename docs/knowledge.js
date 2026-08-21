@@ -141,10 +141,18 @@ export const ENTRIES = [
   {
     id: 'platforms',
     modes: ['help', 'download'],
-    tags: ['linux', 'mac', 'macos', 'iphone', 'ios', 'android', 'platform', 'official'],
+    tags: ['linux', 'mac', 'macos', 'iphone', 'ios', 'android', 'platform', 'official', 'sf'],
     title: 'Official platform',
-    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets, not official signed products. Eidovara is not an iOS, iPhone, iPad, or Apple product and does not require licensed SF Pro fonts. It is not affiliated with Apple, Microsoft, or Electron.',
+    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets, not official signed products. Eidovara is not an iOS, iPhone, iPad, or Apple product and does not require licensed SF Pro or SF Mono fonts. It is not affiliated with Apple, Microsoft, or Electron.',
     links: [{ href: 'licensing.html', label: 'Licensing' }]
+  },
+  {
+    id: 'brands',
+    modes: ['help', 'legal'],
+    tags: ['jarvis', 'marvel', 'disney', 'siri', 'alexa', 'copilot', 'chatgpt', 'claude', 'raycast', 'alfred', 'spotlight', 'clippy', 'cortana', 'replika', 'iron', 'stark', 'xbox', 'brand', 'trademark', 'affiliated'],
+    title: 'First-party names only',
+    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Architecture is a session kernel / Soul kernel only. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use — not bundled apps or logos. Marks stay unregistered ™. This is not legal advice.',
+    links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
     id: 'license',
