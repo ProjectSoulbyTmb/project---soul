@@ -19,8 +19,10 @@ const allowedLocalMedia = new Map();
 protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
-let mainWindow, engine, logPath, configPath;
-let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1, adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 } };
+let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0;
+const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
+const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false };
 let pendingUpdate = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -76,7 +78,37 @@ function validateNewAdminPassword(password) {
   if (value.length < 12 || value.length > 200) throw new Error('Use an administrator password between 12 and 200 characters.');
   return value;
 }
-function publicServiceUrl() { try { return normalizeServiceUrl(config.serviceUrl || ''); } catch { return ''; } }
+function companionLookPath() {
+  try {
+    const dir = path.join(app.getPath('userData'), 'companion');
+    fs.mkdirSync(dir, { recursive: true });
+    const found = fs.readdirSync(dir).find(name => COMPANION_IMAGE_EXTS.has(path.extname(name).toLowerCase()));
+    return found ? path.join(dir, found) : '';
+  } catch { return ''; }
+}
+function registerCompanionImage() {
+  const filePath = companionLookPath();
+  if (filePath && fs.existsSync(filePath)) allowedLocalMedia.set(COMPANION_MEDIA_ID, filePath);
+  else allowedLocalMedia.delete(COMPANION_MEDIA_ID);
+  return filePath;
+}
+function companionPresenceUrl() {
+  return registerCompanionImage() ? `${LOCAL_MEDIA_SCHEME}://${COMPANION_MEDIA_ID}/` : '';
+}
+function retainCompanionMedia() {
+  const companionPath = allowedLocalMedia.get(COMPANION_MEDIA_ID);
+  allowedLocalMedia.clear();
+  if (companionPath) allowedLocalMedia.set(COMPANION_MEDIA_ID, companionPath);
+}
+function startKernelHeartbeat() {
+  clearInterval(heartbeatTimer);
+  heartbeatTicks = 0;
+  heartbeatTimer = setInterval(() => {
+    if (!engine || config.ageGateAccepted !== true) return;
+    heartbeatTicks += 1;
+    try { engine.heartbeat({ persist: heartbeatTicks % 12 === 0 }); } catch {}
+  }, 5000);
+}
 function publicServiceStatus() {
   const stored = config.serviceStatus && typeof config.serviceStatus === 'object' ? config.serviceStatus : {};
   return {
@@ -92,7 +124,30 @@ function publicServiceStatus() {
     localFirst: true
   };
 }
-function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en', ageGateAccepted: config.ageGateAccepted === true, apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: httpsOnlyUrl(config.storeUrl), serviceUrl: publicServiceUrl(), serviceStatus: publicServiceStatus(), updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function publicConfig() {
+  const companion = { ...(config.companion || {}) };
+  if (!companion.voiceURI && companion.voiceName) companion.voiceURI = companion.voiceName;
+  if (companion.mute === undefined) companion.mute = companion.voiceEnabled === false;
+  companion.presenceUrl = companionPresenceUrl();
+  companion.hasLocalImage = Boolean(companion.presenceUrl);
+  return {
+    provider: config.provider, endpoint: config.endpoint || '', model: config.model || '',
+    language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en',
+    ageGateAccepted: config.ageGateAccepted === true,
+    apps: Array.isArray(config.apps) ? config.apps : [],
+    theme: config.theme || {},
+    companion,
+    assistOptIn: config.assistOptIn === true,
+    edition: entitlement(),
+    storeUrl: httpsOnlyUrl(config.storeUrl),
+    serviceUrl: publicServiceUrl(),
+    serviceStatus: publicServiceStatus(),
+    updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL),
+    hasApiKey: Boolean(config.encryptedApiKey),
+    hasSearchApiKey: Boolean(config.encryptedSearchApiKey),
+    encryptionAvailable: safeStorage.isEncryptionAvailable()
+  };
+}
 function requireAgeGate() { if (config.ageGateAccepted !== true) throw new Error('Eidovara is restricted to users age 18 or older. Confirm age and accept the terms to continue.'); }
 async function checkEidovaraService() {
   const snapshot = await fetchServiceSnapshot({ base: publicServiceUrl() });
@@ -126,12 +181,24 @@ function ensureEngine() {
       provider: makeProvider(),
       internetOptions: { searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }
     });
+    engine.configureKernel({
+      voice: {
+        voiceURI: config.companion?.voiceURI || config.companion?.voiceName || '',
+        rate: config.companion?.rate,
+        pitch: config.companion?.pitch,
+        mute: config.companion?.mute === undefined ? !config.companion?.voiceEnabled : config.companion.mute
+      },
+      presence: { lookId: config.companion?.lookId, hasLocalImage: Boolean(companionLookPath()) },
+      assistOptIn: config.assistOptIn === true
+    });
+    startKernelHeartbeat();
   }
   return engine;
 }
 function createWindow() {
   try {
     loadConfig();
+    registerCompanionImage();
     if (config.ageGateAccepted === true) ensureEngine();
     mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.18.2', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
@@ -249,7 +316,25 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     const policy = ensureEngine().snapshot().policy || {};
     const adultGatesActive = policy.adultStatusConfirmed === true && policy.adultSoulEnabled === true && policy.currentConsent === true && policy.mode === 'adult';
     const boundedShape = value => Math.max(0, Math.min(100, Number(value) || 50));
-    config.companion = { avatarMode: ['hidden','2d','3d'].includes(incoming.companion.avatarMode) ? incoming.companion.avatarMode : '3d', motion: ['full','gentle','reduced'].includes(incoming.companion.motion) ? incoming.companion.motion : 'gentle', voiceEnabled: Boolean(incoming.companion.voiceEnabled), voiceName: String(incoming.companion.voiceName || '').slice(0, 200), rate: Math.max(0.5, Math.min(2, Number(incoming.companion.rate) || 1)), pitch: Math.max(0.5, Math.min(2, Number(incoming.companion.pitch) || 1)), adultPresentation: adultGatesActive && Boolean(incoming.companion.adultPresentation), bodyHeight: boundedShape(incoming.companion.bodyHeight), bodyBuild: boundedShape(incoming.companion.bodyBuild), bodyCurves: boundedShape(incoming.companion.bodyCurves) };
+    config.companion = {
+      avatarMode: ['hidden','2d','3d'].includes(incoming.companion.avatarMode) ? incoming.companion.avatarMode : '3d',
+      motion: ['full','gentle','reduced'].includes(incoming.companion.motion) ? incoming.companion.motion : 'gentle',
+      voiceEnabled: incoming.companion.mute === undefined ? Boolean(incoming.companion.voiceEnabled) : !Boolean(incoming.companion.mute),
+      voiceName: String(incoming.companion.voiceURI || incoming.companion.voiceName || '').slice(0, 300),
+      voiceURI: String(incoming.companion.voiceURI || incoming.companion.voiceName || '').slice(0, 300),
+      rate: Math.max(0.5, Math.min(2, Number(incoming.companion.rate) || 1)),
+      pitch: Math.max(0.5, Math.min(2, Number(incoming.companion.pitch) || 1)),
+      mute: incoming.companion.mute === undefined ? !Boolean(incoming.companion.voiceEnabled) : Boolean(incoming.companion.mute),
+      lookId: ['orb','hologram','ambient','pulse','silhouette','local-image'].includes(incoming.companion.lookId) ? incoming.companion.lookId : (config.companion?.lookId || 'orb'),
+      adultPresentation: adultGatesActive && Boolean(incoming.companion.adultPresentation),
+      bodyHeight: boundedShape(incoming.companion.bodyHeight),
+      bodyBuild: boundedShape(incoming.companion.bodyBuild),
+      bodyCurves: boundedShape(incoming.companion.bodyCurves)
+    };
+    ensureEngine().configureKernel({
+      voice: { voiceURI: config.companion.voiceURI, rate: config.companion.rate, pitch: config.companion.pitch, mute: config.companion.mute },
+      presence: { lookId: config.companion.lookId, hasLocalImage: Boolean(companionLookPath()) }
+    });
   }
   if (typeof incoming?.apiKey === 'string' && incoming.apiKey) {
     if (!safeStorage.isEncryptionAvailable()) throw new Error('Secure credential storage is unavailable on this system.');
@@ -262,6 +347,10 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.encryptedSearchApiKey = safeStorage.encryptString(incoming.searchApiKey).toString('base64');
   }
   if (incoming?.clearSearchApiKey) config.encryptedSearchApiKey = '';
+  if (incoming && Object.prototype.hasOwnProperty.call(incoming, 'assistOptIn')) {
+    config.assistOptIn = incoming.assistOptIn === true;
+    ensureEngine().configureKernel({ assistOptIn: config.assistOptIn });
+  }
   saveConfig(); ensureEngine().setProvider(makeProvider()); ensureEngine().setInternetOptions({ searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }); return publicConfig();
 });
 ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
@@ -275,7 +364,7 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
   if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
   const id = crypto.randomBytes(16).toString('hex');
-  allowedLocalMedia.clear();
+  retainCompanionMedia();
   allowedLocalMedia.set(id, filePath);
   return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
 });
@@ -284,6 +373,52 @@ ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return ensureEngine
 ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return ensureEngine().restoreBackup(String(name || '')); });
 ipcMain.handle('soul:configureSetup', (_e, input) => { requireAgeGate(); return ensureEngine().configureSetup(input); });
 ipcMain.handle('soul:configureAssistant', (_e, input) => { requireAgeGate(); return ensureEngine().configureAssistant(input); });
+ipcMain.handle('soul:configureKernel', (_e, input) => {
+  requireAgeGate();
+  if (input && Object.prototype.hasOwnProperty.call(input, 'assistOptIn')) config.assistOptIn = input.assistOptIn === true;
+  if (input?.voice || input?.presence) {
+    config.companion = {
+      ...(config.companion || {}),
+      voiceURI: input.voice?.voiceURI !== undefined ? String(input.voice.voiceURI).slice(0, 300) : (config.companion?.voiceURI || ''),
+      voiceName: input.voice?.voiceURI !== undefined ? String(input.voice.voiceURI).slice(0, 300) : (config.companion?.voiceName || ''),
+      rate: input.voice?.rate !== undefined ? Math.max(0.5, Math.min(2, Number(input.voice.rate) || 1)) : (config.companion?.rate || 1),
+      pitch: input.voice?.pitch !== undefined ? Math.max(0.5, Math.min(2, Number(input.voice.pitch) || 1)) : (config.companion?.pitch || 1),
+      mute: input.voice?.mute !== undefined ? Boolean(input.voice.mute) : (config.companion?.mute !== false),
+      voiceEnabled: input.voice?.mute !== undefined ? !Boolean(input.voice.mute) : config.companion?.voiceEnabled,
+      lookId: input.presence?.lookId || config.companion?.lookId || 'orb'
+    };
+    saveConfig();
+  } else if (Object.prototype.hasOwnProperty.call(input || {}, 'assistOptIn')) saveConfig();
+  return { state: ensureEngine().configureKernel({ ...input, assistOptIn: config.assistOptIn }), settings: publicConfig(), kernel: ensureEngine().kernelStatus() };
+});
+ipcMain.handle('soul:kernelStatus', () => { requireAgeGate(); return ensureEngine().kernelStatus(); });
+ipcMain.handle('soul:assistQuery', async (_e, query) => {
+  requireAgeGate();
+  if (config.assistOptIn !== true) return { ok: false, skipped: true, reason: 'opt-in-off', assist: true, soul: false, conversationsSent: false };
+  return ensureEngine().assistQuery(query, { base: publicServiceUrl() });
+});
+ipcMain.handle('soul:selectCompanionImage', async () => {
+  requireAgeGate();
+  const chosen = await dialog.showOpenDialog(mainWindow, {
+    title: 'Choose a local companion image',
+    properties: ['openFile'],
+    filters: [{ name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'webp', 'gif'] }]
+  });
+  if (chosen.canceled || !chosen.filePaths[0]) return publicConfig();
+  const filePath = path.resolve(chosen.filePaths[0]);
+  const extension = path.extname(filePath).toLowerCase();
+  if (!COMPANION_IMAGE_EXTS.has(extension) || !fs.existsSync(filePath)) throw new Error('Choose an existing PNG, JPEG, WebP, or GIF image.');
+  const dir = path.join(app.getPath('userData'), 'companion');
+  fs.mkdirSync(dir, { recursive: true });
+  for (const stale of fs.readdirSync(dir)) fs.rmSync(path.join(dir, stale), { force: true });
+  const target = path.join(dir, `look${extension}`);
+  fs.copyFileSync(filePath, target);
+  registerCompanionImage();
+  config.companion = { ...(config.companion || {}), lookId: 'local-image' };
+  saveConfig();
+  ensureEngine().configureKernel({ presence: { lookId: 'local-image', hasLocalImage: true } });
+  return publicConfig();
+});
 ipcMain.handle('soul:openExternal', (_e, value) => { requireAgeGate(); const url = httpsOnlyUrl(value); if (!url) throw new Error('Only secure web links can be opened.'); return shell.openExternal(url); });
 ipcMain.handle('soul:checkForUpdates', async () => { requireAgeGate(); pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
 ipcMain.handle('soul:installUpdate', async () => {

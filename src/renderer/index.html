@@ -4,12 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https:; media-src https: eidovara-media:; connect-src 'none'; object-src 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src https: eidovara-media:; connect-src 'none'; object-src 'none'" />
   <title>Eidovara v0.18.2</title>
   <link rel="stylesheet" href="tokens.css" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="gaming.css" />
   <link rel="stylesheet" href="internet.css" />
+  <link rel="stylesheet" href="companion.css" />
 </head>
 <body>
   <div class="app">
@@ -34,7 +35,7 @@
       <header class="topbar">
         <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
         <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
-        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul companion; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span><span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span></div>
+        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul presence; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span><span class="status-dot idle" id="kernelDot" title="Local Soul kernel"></span><span id="kernelLabel">Kernel idle</span><span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span></div>
       </header>
 
       <section class="view active" id="chatView">
@@ -56,11 +57,26 @@
         <form class="composer" id="chatForm">
           <textarea id="messageInput" rows="1" maxlength="12000" placeholder="Message Soul…" aria-label="Message Soul"></textarea>
           <button type="button" id="voiceInputBtn" class="voice-input hidden" aria-label="Dictate message" title="Dictate message">🎙</button><button type="submit" id="sendBtn" aria-label="Send message">↑</button>
+          <label class="check composer-assist hidden" id="assistThisWrap"><input type="checkbox" id="assistThisMessage" /> Also ask my Worker helper (one question, no chat history). Assist is not Soul.</label>
           <div class="composer-note">Enter to send · Shift+Enter for a new line</div>
         </form>
       </section>
 
       <section class="view panel-view" id="dashboardView"><div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">A command center for applications, gaming, entertainment, research, backups, and optional Soul assistance.</p></div></div><div class="dashboard-grid" id="dashboardGrid"></div><div class="quick-grid"><button data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button><button data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button><button data-quick="Create a study plan and quiz me." data-i18n="study">Study</button><button data-quick="Help me start a creative project." data-i18n="create">Create</button><button data-quick="Search the internet for current information I need." data-i18n="research">Research</button><button data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button></div></section>
+
+      <aside class="soul-dock" id="soulDock" role="complementary" aria-label="Soul companion">
+        <h2 data-i18n="soulDockTitle">Soul</h2>
+        <div class="soul-presence" id="soulPresence" data-look="orb">
+          <canvas id="soulPresenceCanvas" width="240" height="240" hidden aria-hidden="true"></canvas>
+          <img id="soulPresenceImage" alt="" hidden />
+          <div class="soul-presence-figure" id="soulPresenceFigure" aria-hidden="true"></div>
+          <p class="presence-empty" id="soulPresenceEmpty" hidden>Choose a local image in Settings. Decorative only — not a live model.</p>
+        </div>
+        <p class="soul-heartbeat" id="soulHeartbeat">Confirm 18+ to start the local kernel.</p>
+        <p class="soul-online-copy" id="soulOnlineCopy">Online helper off. Local kernel stays the source of truth.</p>
+        <div class="soul-module-list" id="soulModuleChips" aria-label="Feature modules"></div>
+        <div class="soul-action-list" id="soulQuickActions" aria-label="Custom quick actions"></div>
+      </aside>
 
       <section class="view panel-view" id="appsView">
         <div class="panel-head"><div><h2 data-i18n="appsTitle">Apps & Gaming Hub</h2><p data-i18n="appsLead">Organize trusted Windows applications and ask Windows to launch them. Compatibility varies; Eidovara does not inject into or control them.</p></div><div><button type="button" class="secondary" id="discoverAppsBtn" data-i18n="discoverApps">Discover installed apps</button> <button type="button" id="addAppBtn" data-i18n="chooseFile">＋ Choose file</button></div></div>
@@ -92,8 +108,9 @@
       <section class="view panel-view" id="settingsView">
         <form class="settings-card" id="serviceForm">
           <h3>Eidovara service</h3>
-          <p>Attach this installation to the official online Eidovara service for health, status, and public config. Conversations stay on this PC. If the service is down, Offline Soul and the workspace keep working. HTTPS is required except loopback.</p>
+          <p>Attach this installation to the official online Eidovara service for health, status, and public config. Conversations stay on this PC. If the service is down, Offline Soul and the workspace keep working. HTTPS is required except loopback. Your Worker is not a cloud mind. Assist is not Soul.</p>
           <label>Service URL<input id="serviceUrlInput" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" autocomplete="off" /></label>
+          <label class="check assist-opt"><input type="checkbox" id="assistOptIn" /> Allow optional Worker helper (<code>/v1/assist</code>). Default off. Sends one question you choose — never this conversation.</label>
           <div class="settings-actions"><button type="submit">Save URL</button><button type="button" class="secondary" id="serviceConnectBtn">Connect</button><button type="button" class="secondary hidden" id="serviceSiteBtn">Open site</button></div>
           <p class="settings-status" id="serviceStatusText"></p>
           <div id="serviceDetails" class="service-details">
@@ -118,10 +135,31 @@
           <div class="appearance-fields"><label>Background color<input id="themeBackground" type="color" value="#000000" /></label><label>Panel color<input id="themePanel" type="color" value="#1c1c1e" /></label><label>Accent color<input id="themeAccent" type="color" value="#0a84ff" /></label></div>
           <label>Window surface opacity <span id="themeTransparencyValue">96%</span><input id="themeTransparency" type="range" min="65" max="100" value="96" /></label>
           <label class="check"><input type="checkbox" id="themeRgb" /> Animated RGB lighting effects (Premium)</label>
-          <fieldset class="companion-settings"><legend>Soul companion</legend><p>A lightweight fictional companion that does not inject into games or require a third-party avatar engine. Neural TTS packs and imported VRM/MakeHuman models are not bundled in v0.18.2; playback uses voices already installed in Windows.</p><div class="appearance-fields"><label>Avatar<select id="avatarMode"><option value="3d">3D-styled orb</option><option value="2d">2D character</option><option value="hidden">Hidden</option></select></label><label>Motion<select id="avatarMotion"><option value="gentle">Gentle</option><option value="full">Lively</option><option value="reduced">Reduced</option></select></label><label>System voice<select id="voiceSelect"><option value="">Windows default</option></select></label></div><label class="check"><input type="checkbox" id="voiceEnabled" /> Read new Soul replies aloud</label><div class="appearance-fields"><label>Voice speed<input id="voiceRate" type="range" min="0.5" max="2" step="0.1" value="1" /></label><label>Voice pitch<input id="voicePitch" type="range" min="0.5" max="2" step="0.1" value="1" /></label><button type="button" class="secondary" id="voicePreviewBtn">Preview voice</button></div><small id="voiceSupportStatus">Uses voices installed on this Windows device. Voice input is optional and requires microphone access.</small><div id="adultAvatarSettings" class="adult-avatar-settings hidden"><strong>Adult fictional avatar (18+ only)</strong><p>These local controls apply only to Soul's fictional avatar. Real-person likenesses, age-ambiguous characters, and imported-model sexualization are not supported.</p><label class="check"><input type="checkbox" id="adultPresentation" /> Allow optional non-photorealistic nude presentation</label><div class="appearance-fields"><label>Height<input id="bodyHeight" type="range" min="0" max="100" value="50" /></label><label>Build<input id="bodyBuild" type="range" min="0" max="100" value="50" /></label><label>Body shape<input id="bodyCurves" type="range" min="0" max="100" value="50" /></label></div><small>Visible only while legal-adult status, Adult Soul, and current consent are all active. Revoking consent disables presentation.</small></div></fieldset>
+          <fieldset class="companion-settings"><legend>Soul companion</legend><p>A lightweight fictional companion that does not inject into games or require a third-party avatar engine. Neural TTS packs and imported VRM/MakeHuman models are not bundled in v0.18.2; playback uses voices already installed on this OS. Eidovara does not ship a neural TTS engine.</p><div class="appearance-fields"><label>Avatar<select id="avatarMode"><option value="3d">3D-styled orb</option><option value="2d">2D character</option><option value="hidden">Hidden</option></select></label><label>Motion<select id="avatarMotion"><option value="gentle">Gentle</option><option value="full">Lively</option><option value="reduced">Reduced</option></select></label><label>System voice<select id="voiceSelect"><option value="">OS default</option></select></label></div><label class="check"><input type="checkbox" id="voiceEnabled" /> Read new Soul replies aloud</label><label class="check"><input type="checkbox" id="voiceMute" /> Mute speech</label><div class="appearance-fields"><label>Voice speed<input id="voiceRate" type="range" min="0.5" max="2" step="0.1" value="1" /></label><label>Voice pitch<input id="voicePitch" type="range" min="0.5" max="2" step="0.1" value="1" /></label><button type="button" class="secondary" id="voicePreviewBtn">Preview voice</button></div><small id="voiceSupportStatus">Uses voices installed on this OS via speechSynthesis. Eidovara does not ship a neural TTS engine. Voice input is optional and requires microphone access.</small><div id="adultAvatarSettings" class="adult-avatar-settings hidden"><strong>Adult fictional avatar (18+ only)</strong><p>These local controls apply only to Soul's fictional avatar. Real-person likenesses, age-ambiguous characters, and imported-model sexualization are not supported.</p><label class="check"><input type="checkbox" id="adultPresentation" /> Allow optional non-photorealistic nude presentation</label><div class="appearance-fields"><label>Height<input id="bodyHeight" type="range" min="0" max="100" value="50" /></label><label>Build<input id="bodyBuild" type="range" min="0" max="100" value="50" /></label><label>Body shape<input id="bodyCurves" type="range" min="0" max="100" value="50" /></label></div><small>Visible only while legal-adult status, Adult Soul, and current consent are all active. Revoking consent disables presentation.</small></div>          </fieldset>
           <div class="settings-actions"><button type="submit" data-i18n="save">Save settings</button><button type="button" class="secondary" id="openDataBtn">Open local data folder</button><button type="button" class="secondary" id="diagnosticsBtn" data-i18n="diagShow">Show diagnostics</button></div>
           <p class="settings-status" id="settingsStatus"></p>
         </form>
+        <form class="settings-card kernel-customize" id="kernelCustomizeForm">
+            <h3>Soul customization</h3>
+            <p>Toggle feature modules, add quick actions, pick a presence look, and set local phrasing. Adding a first-party module is a small code path in <code>src/core/modules.js</code>. Everything here stays on this PC.</p>
+            <label>Presence look<select id="presenceLook"></select></label>
+            <div class="settings-actions"><button type="button" class="secondary" id="companionImageBtn">Choose local image</button></div>
+            <div class="phrasing-grid">
+              <label>Wit <input id="phrasingWit" type="range" min="0" max="100" value="40" /></label>
+              <label>Formality <input id="phrasingFormality" type="range" min="0" max="100" value="40" /></label>
+              <label>Brevity <input id="phrasingBrevity" type="range" min="0" max="100" value="50" /></label>
+            </div>
+            <h3>Modules</h3>
+            <div class="kernel-modules" id="kernelModuleList"></div>
+            <h3>Custom quick actions</h3>
+            <div id="customActionList"></div>
+            <div class="appearance-fields">
+              <label>Label<input id="customActionLabel" maxlength="80" placeholder="Evening focus" /></label>
+              <label>Command or intent<input id="customActionCommand" maxlength="200" placeholder="Plan a focused session for my current priority." /></label>
+            </div>
+            <div class="settings-actions"><button type="button" class="secondary" id="addCustomActionBtn">Add action</button><button type="submit">Save customization</button></div>
+            <p class="settings-status" id="kernelCustomizeStatus"></p>
+          </form>
         <div class="card diagnostics hidden" id="diagnosticsCard"><p class="settings-status" data-i18n="diagLead">Local snapshot of this installation. Not a security certification or compatibility guarantee.</p><div class="diagnostics-summary" id="diagnosticsSummary"></div><pre id="diagnosticsText"></pre></div>
         <div class="settings-card"><h3>Software updates</h3><p>Soul checks its official GitHub release channel at startup. Installers are accepted only over HTTPS and after SHA-256 verification.</p><div class="settings-actions"><button type="button" id="checkUpdateBtn">Check for updates</button><button type="button" class="secondary hidden" id="installUpdateBtn">Download and install</button></div><p class="settings-status" id="updateStatus"></p></div>
         <div class="settings-card" id="editionCard"><h3 id="editionTitle">Eidovara Free</h3><p id="editionDescription">A complete core assistant with offline/local models, memory, media, backups, updates, and up to three linked apps.</p><button type="button" class="hidden" id="upgradeBtn">View Eidovara Premium</button></div>
@@ -198,7 +236,7 @@
       <div class="legal-panel" id="legalAboutPanel">
         <p>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Created and owned by Tyler Michael Bosworth. Published under the intended name Soul Consciousness Studios™ (unregistered). Source-available evaluation license — not OSI open source. Official product: unsigned Windows 10/11 x64 desktop software. The advertised download is the official unsigned installer Eidovara-0.18.2-Windows-x64-Setup.exe from GitHub Releases, not a git clone. It is not Authenticode-signed or Microsoft-certified. Linux/macOS scripts are development targets.</p>
         <p>Soul is a software assistant with local continuity. It is not a human, therapy, medical/financial/legal advice, or proof of consciousness. Eidovara is not affiliated with Apple, Microsoft, Electron, GitHub, Spotify, YouTube, or OBS, and is not an iOS or iPhone product. The interface uses a system font stack and does not require licensed SF Pro files. Electron, Chromium, Node.js, Windows, and Wikipedia/Wikimedia content remain their owners' property. Users own their own content. These notices are not legal advice or a government registration.</p>
-        <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed in Windows.</p>
+        <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed on this OS. Optional Worker <code>/v1/assist</code> is off unless you opt in; it is not Soul and never receives conversation history.</p>
       </div>
       <div class="legal-panel hidden" id="legalTermsPanel">
         <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research uses public Wikipedia/Wikimedia only after an explicit internet/web/online request. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify buttons open official HTTPS searches and do not rip streams.</p>
@@ -206,7 +244,7 @@
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
         <p>Local-first: conversations, memories, settings, safety records, linked-app shortcuts, Adult Mode state, and the 18+ flag stay on this device. No owner-operated accounts, telemetry, or analytics.</p>
-        <p>What can leave: explicit Wikipedia/Wikimedia research terms; optional pasted model endpoints; official GitHub update checks; Spotify/YouTube HTTPS searches you click; optional Eidovara service health/config/status after you confirm age and paste a URL in Settings. Payment cards are not collected. Conversations are not sent to the Worker. See PRIVACY.md.</p>
+        <p>What can leave: explicit Wikipedia/Wikimedia research terms; optional pasted model endpoints; official GitHub update checks; Spotify/YouTube HTTPS searches you click; optional Eidovara service health/config/status after you confirm age and paste a URL in Settings; optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
       </div>
       <div class="legal-panel hidden" id="legalAgePanel">
         <p>You must be 18 or older. Declining this gate exits the app. Adult Mode is a separate triple gate. Local confirmation is not independent identity verification and is not a child-safety certification.</p>
@@ -216,5 +254,6 @@
   </div>
   <script src="localization.js"></script>
   <script src="renderer.js"></script>
+  <script src="companion.js"></script>
 </body>
 </html>

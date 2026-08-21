@@ -1,4 +1,6 @@
-export const CURRENT_SCHEMA_VERSION = 17;
+import { defaultKernelState, migrateKernel } from './kernel.js';
+
+export const CURRENT_SCHEMA_VERSION = 18;
 
 export function defaultProfile(profileId = 'default') {
   const now = new Date().toISOString();
@@ -30,6 +32,7 @@ export function defaultProfile(profileId = 'default') {
     entertainment: { favorites: [], history: [], taste: {} },
     memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
     activeConversationId: 'main',
+    kernel: defaultKernelState(),
     audit: [{ at: now, type: 'profile.created', details: { profileId } }]
   };
 }
@@ -45,7 +48,8 @@ export function migrateProfile(input, profileId = 'default') {
     assistant: { ...base.assistant, ...(input.assistant || {}), preferences: { ...base.assistant.preferences, ...(input.assistant?.preferences || {}) }, capabilities: { ...base.assistant.capabilities, ...(input.assistant?.capabilities || {}) } },
     policy: { ...base.policy, ...(input.policy || {}) },
     setup: { ...base.setup, ...(input.setup || {}), stream: { ...base.setup.stream, ...(input.setup?.stream || {}) } },
-    entertainment: { ...base.entertainment, ...(input.entertainment || {}) }
+    entertainment: { ...base.entertainment, ...(input.entertainment || {}) },
+    kernel: migrateKernel(input.kernel)
   };
   if (!Array.isArray(merged.memories)) merged.memories = [];
   if (!Array.isArray(merged.feedback)) merged.feedback = [];

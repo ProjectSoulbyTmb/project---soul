@@ -18,6 +18,25 @@ function quoteMemories(state, limit = 4) {
   return activeMemories(state, limit).map(item => dataLine(item.content)).filter(Boolean);
 }
 
+function phrasingOf(state) {
+  return state?.kernel?.registry?.phrasing || { wit: 40, formality: 40, brevity: 50 };
+}
+
+function applyPhrasing(text, state) {
+  const locale = localeOf(state);
+  const p = phrasingOf(state);
+  const body = String(text || '');
+  if ((p.wit || 0) < 60 || (p.formality || 0) >= 70) return body;
+  const wink = {
+    en: 'That’s the local stack talking — software continuity, not a ghost in the machine.',
+    es: 'Habla la pila local: continuidad de software, no un fantasma en la máquina.',
+    fr: 'C’est la pile locale qui parle — une continuité logicielle, pas un fantôme dans la machine.',
+    de: 'Das spricht der lokale Stapel — Software-Kontinuität, kein Geist in der Maschine.'
+  }[locale];
+  if (!wink || body.includes(wink)) return body;
+  return `${body}\n\n${wink}`;
+}
+
 function pack(locale, mode, opener, bullets, closer) {
   const cap = mode === 'concise' ? 3 : mode === 'detailed' ? 8 : 5;
   const body = bullets.filter(Boolean).slice(0, cap).map(item => `• ${item}`).join('\n');
@@ -89,7 +108,7 @@ function researchReply(webResearch, locale) {
 
 export function composeOfflineReply({ input, state, webResearch } = {}) {
   const locale = localeOf(state);
-  const mode = lengthOf(state);
+  const mode = (phrasingOf(state).brevity || 0) >= 70 ? 'concise' : lengthOf(state);
   const tone = toneOf(state);
   const focus = focusOf(state);
   const intent = classifyWorkspaceIntent(input);
@@ -234,6 +253,32 @@ export function composeOfflineReply({ input, state, webResearch } = {}) {
     return pack(locale, mode, { en: 'I’ll treat that as a durable local preference when learning is enabled.', es: 'Lo trataré como preferencia local duradera si el aprendizaje está activo.', fr: 'Je le traiterai comme préférence locale durable si l’apprentissage est activé.', de: 'Ich behandle das als dauerhafte lokale Präferenz, wenn Lernen aktiv ist.' }[locale], memoryLines.length ? memoryLines.slice(0, 3) : [], { en: 'You can review or forget it any time in the Memory panel.', es: 'Puedes revisarlo u olvidarlo cuando quieras en Memoria.', fr: 'Vous pouvez le revoir ou l’oublier à tout moment dans Mémoire.', de: 'Sie können es jederzeit unter Erinnerungen prüfen oder vergessen.' }[locale]);
   }
 
+  if (intent === 'settings') {
+    return pack(locale, mode, { en: 'Settings is the control room for this PC: engine, backups, voices, presence, modules, and optional service attach.', es: 'Configuración es la sala de control de este PC: motor, copias, voces, presencia, módulos y servicio opcional.', fr: 'Paramètres est la salle de contrôle de cet appareil : moteur, sauvegardes, voix, présence, modules et service optionnel.', de: 'Einstellungen sind die Schaltzentrale: Engine, Sicherungen, Stimmen, Präsenz, Module und optionaler Dienst.' }[locale], [
+      { en: 'OS voices, presence looks, and feature modules stay on this device.', es: 'Voces del sistema, looks de presencia y módulos se quedan en este dispositivo.', fr: 'Voix système, looks de présence et modules restent sur cet appareil.', de: 'Systemstimmen, Präsenz-Looks und Module bleiben auf diesem Gerät.' }[locale],
+      { en: 'Soul-online assist stays off until you paste a Worker URL and opt in. Assist is not Soul.', es: 'El asistente en línea sigue apagado hasta pegar una URL y activarlo. Assist no es Soul.', fr: 'L’aide en ligne reste off jusqu’à une URL collée et un opt-in. Assist n’est pas Soul.', de: 'Soul-online bleibt aus, bis eine Worker-URL und Opt-in da sind. Assist ist nicht Soul.' }[locale]
+    ], { en: 'Open Settings from the sidebar, or ask me to take you there.', es: 'Abre Configuración en la barra, o pídeme llevarte.', fr: 'Ouvrez Paramètres dans la barre, ou demandez-moi de vous y mener.', de: 'Öffnen Sie Einstellungen in der Seitenleiste, oder bitten Sie mich, Sie hinzubringen.' }[locale]);
+  }
+
+  if (intent === 'accessibility') {
+    return pack(locale, mode, { en: 'Accessibility is a first-class workspace role: readable pacing, reduced motion, and keyboard-clear steps.', es: 'La accesibilidad es un rol de primer nivel: ritmo legible, menos movimiento y pasos con teclado.', fr: 'L’accessibilité est un rôle de premier plan : rythme lisible, moins de mouvement, étapes clavier.', de: 'Barrierefreiheit ist eine Kernrolle: lesbares Tempo, weniger Bewegung, tastaturklare Schritte.' }[locale], [
+      access || { en: 'Add needs in Assistant setup or Soul behavior. I will not fight prefers-reduced-motion.', es: 'Añade necesidades en la configuración del asistente. No lucharé contra prefers-reduced-motion.', fr: 'Ajoutez vos besoins dans la configuration. Je ne combattrai pas prefers-reduced-motion.', de: 'Ergänzen Sie Bedarf in der Assistenten-Einrichtung. prefers-reduced-motion wird geachtet.' }[locale],
+      { en: 'The companion dock is keyboard reachable. Presence animation pauses when you prefer reduced motion.', es: 'El panel compañero se alcanza con teclado. La presencia pausa si prefieres menos movimiento.', fr: 'Le dock compagnon est accessible au clavier. La présence pause si vous préférez moins de mouvement.', de: 'Das Begleitdock ist per Tastatur erreichbar. Präsenz pausiert bei reduzierter Bewegung.' }[locale]
+    ], { en: 'Tell me the interaction constraint that should persist.', es: 'Dime la limitación de interacción que debe persistir.', fr: 'Dites la contrainte d’interaction à conserver.', de: 'Nennen Sie die Interaktionsgrenze, die bleiben soll.' }[locale]);
+  }
+
+  if (intent === 'presence') {
+    return pack(locale, mode, { en: 'Presence is local chrome — orb, hologram, ambient, pulse, silhouette, or a picture you choose. It is not alive.', es: 'La presencia es cromo local: orbe, holograma, ambiente, pulso, silueta o una imagen tuya. No está viva.', fr: 'La présence est du chrome local — orbe, hologramme, ambiance, pulse, silhouette ou une image choisie. Ce n’est pas vivant.', de: 'Präsenz ist lokale Oberfläche — Orb, Hologramm, Ambient, Puls, Silhouette oder ein Bild. Nicht lebendig.' }[locale], [
+      { en: 'No VRM, MakeHuman, or Ready Player Me pipeline is bundled.', es: 'No hay pipeline VRM, MakeHuman ni Ready Player Me.', fr: 'Aucun pipeline VRM, MakeHuman ou Ready Player Me n’est inclus.', de: 'Kein VRM-, MakeHuman- oder Ready-Player-Me-Pfad ist enthalten.' }[locale]
+    ], { en: 'Pick a look under Settings → Soul customization. I’ll stay decorative.', es: 'Elige un look en Configuración → personalización de Soul. Seguiré siendo decorativo.', fr: 'Choisissez un look dans Paramètres → personnalisation de Soul. Je reste décoratif.', de: 'Wählen Sie einen Look unter Einstellungen → Soul-Anpassung. Ich bleibe dekorativ.' }[locale]);
+  }
+
+  if (intent === 'help' || intent === 'identity-panel') {
+    return pack(locale, mode, { en: 'I can steer this workspace: apps, media, research, help, settings, and accessibility — plus modules you toggle.', es: 'Puedo orientar este espacio: apps, medios, investigación, ayuda, ajustes y accesibilidad, más módulos que actives.', fr: 'Je peux orienter cet espace : apps, médias, recherche, aide, paramètres, accessibilité — plus les modules que vous activez.', de: 'Ich steuere diesen Arbeitsbereich: Apps, Medien, Recherche, Hilfe, Einstellungen, Barrierefreiheit — plus Module, die Sie einschalten.' }[locale], [
+      { en: 'Soul is a software self-model on this PC. Assist, if you opt in, is your Worker helper — not Soul and not a cloud mind.', es: 'Soul es un automodelo de software en este PC. Assist, si lo activas, es tu Worker: no es Soul ni una mente en la nube.', fr: 'Soul est un auto-modèle logiciel sur cet appareil. Assist, si vous optez, est votre Worker — pas Soul, pas un esprit cloud.', de: 'Soul ist ein Software-Selbstmodell auf diesem PC. Assist nach Opt-in ist Ihr Worker — nicht Soul, kein Cloud-Geist.' }[locale]
+    ], { en: 'Ask a workspace next step, or open the companion dock on the dashboard.', es: 'Pide un siguiente paso, o abre el panel compañero en el tablero.', fr: 'Demandez une prochaine étape, ou ouvrez le dock compagnon sur le tableau.', de: 'Fragen Sie einen nächsten Schritt, oder öffnen Sie das Dock auf der Übersicht.' }[locale]);
+  }
+
   const hint = memories.find(item => /prefer|like|want/i.test(item));
   return pack(locale, mode, toneLead(locale, tone,
     { en: 'I can work with that. Here is a useful way to continue from this workspace.', es: 'Puedo trabajar con eso. Una forma útil de continuar desde este espacio:', fr: 'Je peux m’en occuper. Voici une façon utile de continuer depuis cet espace.', de: 'Damit kann ich arbeiten. So geht es von diesem Arbeitsbereich sinnvoll weiter.' }[locale],
@@ -249,6 +294,6 @@ export function composeOfflineReply({ input, state, webResearch } = {}) {
 
 export class OfflineProvider {
   async reply(payload) {
-    return composeOfflineReply(payload);
+    return applyPhrasing(composeOfflineReply(payload), payload?.state);
   }
 }

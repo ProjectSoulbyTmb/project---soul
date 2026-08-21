@@ -6,10 +6,11 @@ function isLoopbackHost(hostname) {
 }
 
 export const SERVICE_HEALTH_PATH = '/health';
+export const SERVICE_HEALTH_V1_PATH = '/v1/health';
 export const SERVICE_CONFIG_PATH = '/v1/config';
 export const SERVICE_STATUS_PATH = '/v1/status';
 export const SERVICE_ASSIST_PATH = '/v1/assist';
-const STRIP_SUFFIXES = [SERVICE_HEALTH_PATH, SERVICE_CONFIG_PATH, SERVICE_STATUS_PATH, SERVICE_ASSIST_PATH];
+const STRIP_SUFFIXES = [SERVICE_HEALTH_V1_PATH, SERVICE_HEALTH_PATH, SERVICE_CONFIG_PATH, SERVICE_STATUS_PATH, SERVICE_ASSIST_PATH];
 
 export function normalizeServiceUrl(value) {
   let raw = String(value || '').trim();
@@ -101,16 +102,19 @@ export async function fetchServiceSnapshot({ base, fetchImpl = globalThis.fetch,
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const [healthResult, configResult, statusResult] = await Promise.allSettled([
+    const [healthV1Result, healthResult, configResult, statusResult] = await Promise.allSettled([
+      getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_HEALTH_V1_PATH), controller.signal),
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_HEALTH_PATH), controller.signal),
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_CONFIG_PATH), controller.signal),
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_STATUS_PATH), controller.signal)
     ]);
-    const health = healthResult.status === 'fulfilled' ? healthResult.value : null;
+    const health = (healthV1Result.status === 'fulfilled' ? healthV1Result.value : null)
+      || (healthResult.status === 'fulfilled' ? healthResult.value : null);
     const config = sanitizeRemoteConfig(configResult.status === 'fulfilled' ? configResult.value : null);
     const status = statusResult.status === 'fulfilled' ? statusResult.value : null;
-    const online = health?.status === 'ok' || status?.status === 'ok';
-    const failure = [healthResult, configResult, statusResult].find(item => item.status === 'rejected');
+    const healthOk = Boolean(health && (health.status === 'ok' || healthV1Result.status === 'fulfilled' || healthResult.status === 'fulfilled'));
+    const online = Boolean(healthOk && configResult.status === 'fulfilled' && statusResult.status === 'fulfilled' && (health?.status === 'ok' || status?.status === 'ok'));
+    const failure = [healthV1Result, healthResult, configResult, statusResult].find(item => item.status === 'rejected');
     const error = online ? '' : String(failure?.reason?.message || 'Eidovara service is unreachable. Offline Soul continues locally.');
     return {
       configured: true,

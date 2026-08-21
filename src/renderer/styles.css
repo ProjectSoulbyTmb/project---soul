@@ -149,9 +149,13 @@ button { cursor: pointer; }
   min-width: 0;
   display: grid;
   grid-template-rows: 52px minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) minmax(220px, 268px);
   background: var(--grouped);
   position: relative;
 }
+.topbar { grid-column: 1 / -1; }
+.view.active { grid-column: 1; grid-row: 2; }
+.soul-dock { grid-column: 2; grid-row: 2; min-height: 0; }
 .topbar {
   border-bottom: var(--hairline) solid var(--separator);
   display: flex;
@@ -191,11 +195,13 @@ button { cursor: pointer; }
 #serviceDot.idle { background: var(--muted); }
 #serviceDot.online { background: var(--good); }
 #serviceDot.offline { background: var(--danger); }
+#kernelDot.idle { background: var(--muted); }
+#kernelDot.live { background: var(--accent); }
 .service-details { display: grid; gap: 8px; margin-top: 12px; }
 .service-details .kv { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
 
 .view { display: none; min-height: 0; }
-.view.active { display: flex; }
+.view.active { display: flex; flex-direction: column; }
 .chat-scroll {
   flex: 1;
   overflow: auto;
@@ -600,6 +606,14 @@ textarea:focus {
   48% { transform: scaleY(0.1); }
 }
 
+@media (max-width: 1100px) {
+  .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: 52px minmax(0, 1fr) auto; }
+  .view.active { grid-column: 1; grid-row: 2; }
+  .soul-dock { grid-column: 1; grid-row: 3; }
+}
+@media (min-width: 1101px) {
+  .composer { right: 268px; }
+}
 @media (max-width: 860px) {
   .app { grid-template-columns: 1fr; }
   .sidebar {
@@ -616,7 +630,7 @@ textarea:focus {
     box-shadow: var(--shadow);
   }
   .mobile-only { display: block; }
-  .composer { left: 0; }
+  .composer { left: 0; right: 0; }
   .identity-grid { grid-template-columns: 1fr; }
   .topbar { padding: 0 12px; }
 }

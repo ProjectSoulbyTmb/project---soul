@@ -35,7 +35,8 @@
       mediaDisabled: 'Media playback is disabled in Soul behavior settings.', mediaConfirm: 'Play this media in Eidovara:',
       launchApp: 'Launch', launchCancelled: 'Launch cancelled.',
       premiumLocked: 'Free: offline/local models, Wikipedia/Wikimedia research, up to 3 apps. RGB, Brave key, and remote endpoints stay Premium.',
-      premiumUnlocked: 'Premium test gates are on: remote endpoints, Brave search key, RGB, and unlimited apps.'
+      premiumUnlocked: 'Premium test gates are on: remote endpoints, Brave search key, RGB, and unlimited apps.',
+      soulDockTitle: 'Soul', soulLive: 'Soul is live on this PC', soulIdle: 'Soul kernel idle'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -72,7 +73,8 @@
       mediaDisabled: 'La reproducción está desactivada en el comportamiento de Soul.', mediaConfirm: 'Reproducir este medio en Eidovara:',
       launchApp: 'Abrir', launchCancelled: 'Lanzamiento cancelado.',
       premiumLocked: 'Gratis: modelos locales, Wikipedia/Wikimedia, hasta 3 apps. RGB, clave Brave y endpoints remotos son Premium.',
-      premiumUnlocked: 'Prueba Premium activa: endpoints remotos, clave Brave, RGB y apps ilimitadas.'
+      premiumUnlocked: 'Prueba Premium activa: endpoints remotos, clave Brave, RGB y apps ilimitadas.',
+      soulDockTitle: 'Soul', soulLive: 'Soul está en vivo en este PC', soulIdle: 'Kernel de Soul inactivo'
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -109,7 +111,8 @@
       mediaDisabled: 'La lecture multimédia est désactivée dans le comportement de Soul.', mediaConfirm: 'Lire ce média dans Eidovara :',
       launchApp: 'Lancer', launchCancelled: 'Lancement annulé.',
       premiumLocked: 'Gratuit : modèles locaux, Wikipedia/Wikimedia, 3 apps max. RGB, clé Brave et endpoints distants restent Premium.',
-      premiumUnlocked: 'Portes Premium de test actives : endpoints distants, clé Brave, RGB et apps illimitées.'
+      premiumUnlocked: 'Portes Premium de test actives : endpoints distants, clé Brave, RGB et apps illimitées.',
+      soulDockTitle: 'Soul', soulLive: 'Soul est actif sur cet appareil', soulIdle: 'Noyau Soul inactif'
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -146,7 +149,8 @@
       mediaDisabled: 'Medienwiedergabe ist in den Soul-Verhaltenseinstellungen deaktiviert.', mediaConfirm: 'Dieses Medium in Eidovara wiedergeben:',
       launchApp: 'Starten', launchCancelled: 'Start abgebrochen.',
       premiumLocked: 'Free: lokale Modelle, Wikipedia/Wikimedia, bis zu 3 Apps. RGB, Brave-Schlüssel und Remote-Endpunkte bleiben Premium.',
-      premiumUnlocked: 'Premium-Test aktiv: Remote-Endpunkte, Brave-Schlüssel, RGB und unbegrenzte Apps.'
+      premiumUnlocked: 'Premium-Test aktiv: Remote-Endpunkte, Brave-Schlüssel, RGB und unbegrenzte Apps.',
+      soulDockTitle: 'Soul', soulLive: 'Soul ist auf diesem PC aktiv', soulIdle: 'Soul-Kernel inaktiv'
     }
   };
   let locale = 'en';

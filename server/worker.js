@@ -17,7 +17,7 @@ const JSON_HEADERS = {
   'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
   ...CORS
 };
-const ENDPOINTS = ['/health', '/v1/config', '/v1/status', '/v1/assist'];
+const ENDPOINTS = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
 const response = (body, status = 200, extra = {}) => new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extra } });
 const httpsUrl = value => { try { const url = new URL(String(value || '')); return url.protocol === 'https:' && !url.username && !url.password ? url.toString() : ''; } catch { return ''; } };
 
@@ -78,7 +78,7 @@ export default {
       return handleAssist(request, url);
     }
     if (request.method !== 'GET') return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, OPTIONS' });
-    if (url.pathname === '/health') return response(publicPayload(), 200, { 'cache-control': 'public, max-age=30' });
+    if (url.pathname === '/health' || url.pathname === '/v1/health') return response(publicPayload(), 200, { 'cache-control': 'public, max-age=30' });
     if (url.pathname === '/v1/status') return response(publicPayload({
       pages: 'Official site is https://eidovara.org (Cloudflare Pages from docs/). GitHub Pages publishes the same docs/ on main. No Worker URL is compiled into the site.',
       releases: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest',

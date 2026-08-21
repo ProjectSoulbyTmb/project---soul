@@ -1,7 +1,8 @@
 const LOCAL_WORKSPACE_INTENTS = new Set([
   'identity', 'hello', 'memory', 'remember', 'focus', 'gaming', 'study', 'create',
   'mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise', 'talk',
-  'reassure', 'growth', 'thanks', 'apps'
+  'reassure', 'growth', 'thanks', 'apps', 'settings', 'help', 'accessibility',
+  'presence', 'identity-panel'
 ]);
 
 export { LOCAL_WORKSPACE_INTENTS };
@@ -34,6 +35,11 @@ export function classifyWorkspaceIntent(input) {
   if (/\b(video worth watching|watch something)\b/.test(t)) return 'watch';
   if (/\b(surprise me|public media)\b/.test(t)) return 'surprise';
   if (/\b(linked apps?|discover (installed )?apps|add (an? )?(trusted )?(app|application)|start menu|windows (?:app|shortcut|\.exe|\.lnk))\b/.test(t)) return 'apps';
+  if (/\b(open|show|go\s+to|take\s+me\s+to)\b[\s\S]{0,40}\b(?:identity|consent|adult\s+mode)\b/.test(t)) return 'identity-panel';
+  if (/\b(open|show|go\s+to|take\s+me\s+to)\b[\s\S]{0,40}\bsettings\b/.test(t)) return 'settings';
+  if (/\b(change|switch)\b[\s\S]{0,24}\b(?:presence|look|avatar|companion)\b/.test(t)) return 'presence';
+  if (/\b(what can you do|how do i use (?:this|eidovara)|workspace (?:helper|companion|kernel))\b/.test(t)) return 'help';
+  if (/\b(accessibility|reduced motion|keyboard-first|screen reader)\b/.test(t)) return 'accessibility';
   if (/\b(talk something through|talk through|think (this|it) through)\b/.test(t)) return 'talk';
   if (/\b(reassurance|reassure|comfort|overwhelmed|anxious|pressure|struggling)\b/.test(t)) return 'reassure';
   if (/\b(growth|wisdom|clarity|patience|rest|reflection)\b/.test(t)) return 'growth';

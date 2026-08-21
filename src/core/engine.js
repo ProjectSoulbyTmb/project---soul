@@ -10,23 +10,66 @@ import { buildSystemContext } from '../providers/context.js';
 import { researchInternet } from '../providers/internet.js';
 import { entertainmentSummary, recordMediaEvent } from './entertainment.js';
 import { isExplicitInternetRequest } from './workspace.js';
+import {
+  configureKernelState,
+  createRuntimeRegistry,
+  disabledModuleReply,
+  kernelHeartbeat,
+  kernelPublicMeta,
+  kernelView,
+  routeKernel,
+  startKernelSession
+} from './kernel.js';
+import { requestSoulAssist } from './soul-online.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
     this.store = store || new JsonStore();
     this.provider = provider;
     this.internetOptions = internetOptions;
+    this.modules = createRuntimeRegistry();
     this.state = this.store.load();
+    startKernelSession(this.state);
+    this.store.save(this.state);
   }
   setProvider(provider) { this.provider = provider || new OfflineProvider(); }
   setInternetOptions(options = {}) { this.internetOptions = options; }
-  reset() { this.state = this.store.reset(); return this.snapshot(); }
+  registerModule(mod) { return this.modules.register(mod); }
+  kernelStatus() { return kernelView(this.state, this.modules); }
+  heartbeat({ persist = false, at } = {}) {
+    kernelHeartbeat(this.state, { at });
+    if (persist) this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  configureKernel(input = {}) {
+    configureKernelState(this.state, input);
+    this.store.save(this.state);
+    return this.snapshot();
+  }
+  async assistQuery(query, { base, fetchImpl } = {}) {
+    kernelHeartbeat(this.state);
+    const result = await requestSoulAssist({
+      base,
+      query,
+      optIn: this.state.kernel?.soulOnline?.assistOptIn === true,
+      fetchImpl
+    });
+    const at = new Date().toISOString();
+    this.state.audit.push({
+      at,
+      type: result.ok ? 'kernel.assist_ok' : 'kernel.assist_skipped',
+      details: { reason: result.reason || '', conversationsSent: false, soul: false }
+    });
+    this.store.save(this.state);
+    return result;
+  }
+  reset() { this.state = this.store.reset(); startKernelSession(this.state); this.store.save(this.state); return this.snapshot(); }
   snapshot() { return JSON.parse(JSON.stringify(this.state)); }
   remember(content, opts = {}) { const m = addMemory(this.state, content, opts); this.store.save(this.state); return m; }
   forget(idOrText) { const count = forgetMemory(this.state, idOrText); this.store.save(this.state); return count; }
   createBackup() { return this.store.createBackup(this.state); }
   listBackups() { return this.store.listBackups(); }
-  restoreBackup(name) { this.state = this.store.restoreBackup(name); return this.snapshot(); }
+  restoreBackup(name) { this.state = this.store.restoreBackup(name); startKernelSession(this.state); this.store.save(this.state); return this.snapshot(); }
   recordMedia(input) { const event = recordMediaEvent(this.state, input); this.state.audit.push({ at: event.at, type: `media.${event.event}`, details: { type: event.type, title: event.title } }); this.store.save(this.state); return entertainmentSummary(this.state); }
   entertainment() { return entertainmentSummary(this.state); }
   configureSetup(input = {}) {
@@ -108,12 +151,20 @@ export class SoulEngine {
     conv.messages.push({ id: uid('msg'), role: 'user', content: text, at: now });
     if (conv.messages.length === 1) conv.title = text.slice(0, 42) + (text.length > 42 ? '…' : '');
 
+    kernelHeartbeat(this.state, { at: now });
+    const route = routeKernel(text, this.state, this.modules);
+    const locale = this.state.assistant?.preferences?.language || 'en';
+
     let reply = policyReply;
     let providerError = null;
     let internetError = null;
     let webResearch = null;
+    if (!reply && route.enabled === false && route.moduleId) {
+      reply = disabledModuleReply(route, locale);
+    }
+    if (!reply && route.knowledgeReply) reply = route.knowledgeReply;
     if (!reply) {
-      if (this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text)) {
+      if (route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text)) {
         try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); }
       }
       const history = conv.messages.slice(-24).map(m => ({ role: m.role, content: m.content }));
@@ -131,9 +182,9 @@ export class SoulEngine {
     const done = new Date().toISOString();
     conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch });
     conv.updatedAt = done;
-    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError } });
+    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId } });
     if (this.state.audit.length > 5000) this.state.audit = this.state.audit.slice(-5000);
     this.store.save(this.state);
-    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, adultAllowed: adultAllowed(this.state), state: this.snapshot() };
+    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, kernel: kernelPublicMeta(route), adultAllowed: adultAllowed(this.state), state: this.snapshot() };
   }
 }
