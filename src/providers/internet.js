@@ -150,11 +150,18 @@ export function classifyLookupError(err) {
   return err instanceof Error ? err : new Error(message);
 }
 
-async function json(url, timeoutMs = 15000, headers = {}) {
+async function json(url, timeoutMs = 15000, headers = {}, fetchImpl = globalThis.fetch) {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
+  const fetcher = fetchImpl || globalThis.fetch;
   try {
-    const res = await fetch(url, { signal: controller.signal, redirect: 'error', headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'application/json', ...headers } });
+    const res = await fetcher(url, {
+      method: 'GET',
+      signal: controller.signal,
+      redirect: 'error',
+      credentials: 'omit',
+      headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'application/json', ...headers }
+    });
     if (!res.ok) throw new Error(`Internet source returned ${res.status}.`);
     const limit = 5 * 1024 * 1024;
     const declared = Number(res.headers?.get?.('content-length') || 0);
@@ -196,7 +203,7 @@ function asSource(item) {
   };
 }
 
-async function searchArchive(query) {
+async function searchArchive(query, fetchImpl) {
   const params = new URLSearchParams();
   params.set('q', query);
   params.append('fl[]', 'identifier');
@@ -205,7 +212,7 @@ async function searchArchive(query) {
   params.append('fl[]', 'mediatype');
   params.set('output', 'json');
   params.set('rows', '5');
-  const data = await json(`https://archive.org/advancedsearch.php?${params}`);
+  const data = await json(`https://archive.org/advancedsearch.php?${params}`, 15000, {}, fetchImpl);
   const docs = Array.isArray(data?.response?.docs) ? data.response.docs : [];
   return docs.map(doc => {
     const identifier = String(doc.identifier || '').trim();
@@ -222,9 +229,9 @@ async function searchArchive(query) {
   }).filter(item => item.title && item.url).slice(0, 5);
 }
 
-async function searchArticles(query) {
+async function searchArticles(query, fetchImpl) {
   const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrsearch: query, gsrlimit: '5', prop: 'extracts|description|pageimages|info', inprop: 'url', exintro: '1', explaintext: '1', exsentences: '3', piprop: 'thumbnail', pithumbsize: '600' });
-  const data = await json(`https://en.wikipedia.org/w/api.php?${params}`);
+  const data = await json(`https://en.wikipedia.org/w/api.php?${params}`, 15000, {}, fetchImpl);
   return orderedPages(data).slice(0, 5).map(p => asSource({
     type: 'source',
     title: p.title,
@@ -235,10 +242,10 @@ async function searchArticles(query) {
   })).filter(p => p.title && p.url);
 }
 
-async function searchMedia(query, kind) {
+async function searchMedia(query, kind, fetchImpl) {
   const type = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'bitmap';
   const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime', iiurlwidth: '900' });
-  const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`);
+  const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`, 15000, {}, fetchImpl);
   return orderedPages(data).map(p => {
     const i = p.imageinfo?.[0] || {};
     const url = asHttps(i.thumburl || i.url, ['upload.wikimedia.org', 'wikimedia.org']);
@@ -254,10 +261,10 @@ async function searchMedia(query, kind) {
   }).filter(x => x.url && x.sourceUrl).slice(0, 4);
 }
 
-async function searchBroad(query, apiKey, wantsImages) {
+async function searchBroad(query, apiKey, wantsImages, fetchImpl) {
   const params = new URLSearchParams({ q: query, count: '10', search_lang: 'en', safesearch: 'strict' });
   const headers = { 'X-Subscription-Token': apiKey };
-  const web = await json(`https://api.search.brave.com/res/v1/web/search?${params}`, 15000, headers);
+  const web = await json(`https://api.search.brave.com/res/v1/web/search?${params}`, 15000, headers, fetchImpl);
   const sources = (web.web?.results || []).slice(0, 8).map(r => asSource({
     title: r.title,
     description: r.description,
@@ -266,7 +273,7 @@ async function searchBroad(query, apiKey, wantsImages) {
   })).filter(r => r.url);
   let media = [];
   if (wantsImages) {
-    const images = await json(`https://api.search.brave.com/res/v1/images/search?${params}`, 15000, headers);
+    const images = await json(`https://api.search.brave.com/res/v1/images/search?${params}`, 15000, headers, fetchImpl);
     media = (images.results || []).slice(0, 6).map(r => {
       const url = asHttps(r.thumbnail?.src || r.properties?.url);
       const sourceUrl = asHttps(r.url || r.page_url);
@@ -288,6 +295,7 @@ export async function fetchPublicPage(href, { fetchImpl = globalThis.fetch, time
       method: 'GET',
       signal: controller.signal,
       redirect: 'error',
+      credentials: 'omit',
       headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'text/html, text/plain;q=0.9', 'Cache-Control': 'no-store' }
     });
     if (!res.ok) throw new Error(`Internet source returned ${res.status}.`);
@@ -324,6 +332,10 @@ export async function fetchPublicPage(href, { fetchImpl = globalThis.fetch, time
   }
 }
 
+function isStructuredCatalogHost(href) {
+  return hostnameAllowed(href, ['wikipedia.org', 'wikimedia.org', 'archive.org', 'api.search.brave.com']);
+}
+
 async function attachPageExtracts(sources, urls, fetchImpl) {
   const seen = new Set(sources.map(s => s.url));
   const lookups = [];
@@ -336,6 +348,7 @@ async function attachPageExtracts(sources, urls, fetchImpl) {
   for (const source of sources) {
     if (lookups.length >= 3) break;
     if (source.extract || !source.url || seen.has(`extract:${source.url}`)) continue;
+    if (isStructuredCatalogHost(source.url) || isHandoffOnlyHost(source.url)) continue;
     seen.add(`extract:${source.url}`);
     lookups.push(source.url);
   }
@@ -375,12 +388,12 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
   const wantsVideos = /\bvideos?\b/i.test(input);
   const wantsAudio = /\b(audio|music|song|sound|recording|listen|play)\b/i.test(input);
   const jobs = [];
-  if (query) jobs.push(searchArticles(query));
-  if (query && wantsImages) jobs.push(searchMedia(query, 'image'));
-  if (query && wantsVideos) jobs.push(searchMedia(query, 'video'));
-  if (query && wantsAudio) jobs.push(searchMedia(query, 'audio'));
-  if (query) jobs.push(searchArchive(query));
-  if (query && searchApiKey) jobs.push(searchBroad(query, searchApiKey, wantsImages));
+  if (query) jobs.push(searchArticles(query, pageFetch));
+  if (query && wantsImages) jobs.push(searchMedia(query, 'image', pageFetch));
+  if (query && wantsVideos) jobs.push(searchMedia(query, 'video', pageFetch));
+  if (query && wantsAudio) jobs.push(searchMedia(query, 'audio', pageFetch));
+  if (query) jobs.push(searchArchive(query, pageFetch));
+  if (query && searchApiKey) jobs.push(searchBroad(query, searchApiKey, wantsImages, pageFetch));
   const settled = jobs.length ? await Promise.allSettled(jobs) : [];
   const sources = [];
   const media = [];
@@ -416,16 +429,16 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
   }
   const pageSources = await attachPageExtracts(sources, pageUrls, pageFetch);
   sources.unshift(...pageSources);
+  if (!sources.length && !media.length) {
+    const first = lookupErrors[0];
+    if (first) throw classifyLookupError(new Error(first));
+    throw new Error('No usable internet results were returned. The workspace is still available.');
+  }
   const handoffs = officialSearchHandoffs(query || 'media');
   for (const href of userUrls.filter(isHandoffOnlyHost)) {
     if (!handoffs.some(item => item.url === href)) {
       handoffs.push({ provider: handoffProvider(href), title: sourceHost(href), url: href });
     }
-  }
-  if (!sources.length && !media.length && !handoffs.length) {
-    const first = lookupErrors[0];
-    if (first) throw classifyLookupError(new Error(first));
-    throw new Error('No usable internet results were returned. The workspace is still available.');
   }
   const context = [
     ...sources.map((s, i) => `[${i + 1}] ${s.title}${s.hostname ? ` (${s.hostname})` : ''}: ${s.description}\n${s.url}`),

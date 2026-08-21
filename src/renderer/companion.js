@@ -272,32 +272,41 @@
       }
       if (userText) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn', textContent: userText }));
       if (reply) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn assistant', textContent: reply }));
-      if (research?.sources?.length) {
-        const heading = document.createElement('p');
-        heading.className = 'companion-research-note';
-        heading.textContent = research.disclaimer || t('companionResearchNote', 'Public lookup after you asked — not a full-internet index.');
-        log.append(heading);
-        for (const source of research.sources.slice(0, 6)) {
-          const row = document.createElement('div');
-          row.className = 'companion-research-source';
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'kernel-chip';
-          const host = source.hostname || '';
-          btn.textContent = host ? `${source.title || host} · ${host}` : (source.title || 'Open source');
-          btn.addEventListener('click', () => {
-            if (typeof window.eidovaraOpenResearch === 'function') window.eidovaraOpenResearch(source.url, source.title);
-            else window.eidovaraRunAction?.({ type: 'open-external', url: source.url, label: source.title });
-          });
-          const snip = document.createElement('small');
-          snip.textContent = source.description || source.extract || '';
-          row.append(btn, snip);
-          log.append(row);
+      if (research && (research.sources?.length || research.handoffs?.length || research.local?.length || research.media?.length)) {
+        if (typeof window.eidovaraRenderDiscovery === 'function') {
+          const host = document.createElement('div');
+          host.className = 'companion-research-note';
+          window.eidovaraRenderDiscovery(host, research);
+          log.append(host);
+        } else {
+          const heading = document.createElement('p');
+          heading.className = 'companion-research-note';
+          heading.textContent = research.disclaimer || t('companionResearchNote', 'Public lookup after you asked — not a full-internet index.');
+          log.append(heading);
+          for (const source of [...(research.sources || []), ...(research.handoffs || [])].slice(0, 8)) {
+            const row = document.createElement('div');
+            row.className = 'companion-research-source';
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'kernel-chip';
+            const host = source.hostname || source.provider || '';
+            btn.textContent = host ? `${source.title || host} · ${host}` : (source.title || 'Open source');
+            btn.addEventListener('click', () => {
+              if (typeof window.eidovaraOpenResearch === 'function') window.eidovaraOpenResearch(source.url, source.title || source.provider);
+              else window.eidovaraRunAction?.({ type: 'open-external', url: source.url, label: source.title });
+            });
+            const snip = document.createElement('small');
+            snip.textContent = source.description || source.extract || source.provider || '';
+            row.append(btn, snip);
+            log.append(row);
+          }
         }
-      } else if (actions.length) {
+      }
+      if (actions.length) {
         const chips = document.createElement('div');
         chips.className = 'kernel-chips';
         for (const action of actions) {
+          if (action.type === 'open-external' && research) continue;
           const b = document.createElement('button');
           b.type = 'button';
           b.className = 'kernel-chip';
@@ -305,7 +314,7 @@
           b.addEventListener('click', () => window.eidovaraRunAction?.(action));
           chips.append(b);
         }
-        log.append(chips);
+        if (chips.children.length) log.append(chips);
       }
       if (extra) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn', textContent: extra }));
       log.scrollTop = log.scrollHeight;

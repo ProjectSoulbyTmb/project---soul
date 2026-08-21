@@ -95,10 +95,35 @@ function registerCompanionImage() {
 function companionPresenceUrl() {
   return registerCompanionImage() ? `${LOCAL_MEDIA_SCHEME}://${COMPANION_MEDIA_ID}/` : '';
 }
+const sessionLocalLibrary = [];
+const LOCAL_LIBRARY_LIMIT = 32;
 function retainCompanionMedia() {
   const companionPath = allowedLocalMedia.get(COMPANION_MEDIA_ID);
   allowedLocalMedia.clear();
   if (companionPath) allowedLocalMedia.set(COMPANION_MEDIA_ID, companionPath);
+  for (const item of sessionLocalLibrary) {
+    if (item?.id && item.path && fs.existsSync(item.path)) allowedLocalMedia.set(item.id, item.path);
+  }
+}
+function publicLocalLibrary() {
+  return sessionLocalLibrary.map(({ type, title, url }) => ({ type, title, url, local: true, sourceUrl: '' }));
+}
+function applyInternetOptions() {
+  ensureEngine().setInternetOptions({
+    searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '',
+    localLibrary: publicLocalLibrary()
+  });
+}
+function registerSessionMedia(filePath, { type, title }) {
+  const id = crypto.randomBytes(16).toString('hex');
+  allowedLocalMedia.set(id, filePath);
+  const item = { id, type, title: String(title).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, local: true, path: filePath };
+  sessionLocalLibrary.unshift(item);
+  while (sessionLocalLibrary.length > LOCAL_LIBRARY_LIMIT) {
+    const old = sessionLocalLibrary.pop();
+    if (old?.id && old.id !== COMPANION_MEDIA_ID) allowedLocalMedia.delete(old.id);
+  }
+  return { type: item.type, title: item.title, url: item.url, sourceUrl: '', local: true };
 }
 function startKernelHeartbeat() {
   clearInterval(heartbeatTimer);
@@ -180,7 +205,7 @@ function ensureEngine() {
     engine = new SoulEngine({
       store: new JsonStore({ dataDir: path.join(app.getPath('userData'), 'profiles'), profileId: 'default', codec: protectedStorageCodec() }),
       provider: makeProvider(),
-      internetOptions: { searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }
+      internetOptions: { searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '', localLibrary: publicLocalLibrary() }
     });
     engine.configureKernel({
       voice: {
@@ -232,7 +257,13 @@ app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).ca
 app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('soul:send', async (_e, m) => { requireAgeGate(); const result = await ensureEngine().respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
+ipcMain.handle('soul:send', async (_e, m) => {
+  requireAgeGate();
+  applyInternetOptions();
+  const result = await ensureEngine().respond(m);
+  if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); }
+  return result;
+});
 ipcMain.handle('soul:snapshot', () => (config.ageGateAccepted === true ? ensureEngine().snapshot() : defaultProfile('default')));
 ipcMain.handle('soul:recordMedia', (_e, input) => { requireAgeGate(); return ensureEngine().recordMedia(input); });
 ipcMain.handle('soul:entertainment', () => { requireAgeGate(); return ensureEngine().entertainment(); });
@@ -352,7 +383,7 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.assistOptIn = incoming.assistOptIn === true;
     ensureEngine().configureKernel({ assistOptIn: config.assistOptIn });
   }
-  saveConfig(); ensureEngine().setProvider(makeProvider()); ensureEngine().setInternetOptions({ searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }); return publicConfig();
+  saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); return publicConfig();
 });
 ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
 ipcMain.handle('soul:openDataFolder', () => { requireAgeGate(); return shell.openPath(app.getPath('userData')); });

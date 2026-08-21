@@ -106,6 +106,7 @@ test('bounded page fetch is https-only, refuses credentials and redirects, and e
   });
   assert.equal(seen[0].init.redirect, 'error');
   assert.equal(seen[0].init.method, 'GET');
+  assert.equal(seen[0].init.credentials, 'omit');
   assert.doesNotMatch(JSON.stringify(seen[0].init.headers), /authorization|cookie|workers\.dev/i);
   assert.equal(page.hostname, 'example.com');
   assert.equal(page.title, 'Example <Story>');
@@ -159,11 +160,11 @@ test('Brave keyed search still requires an explicit request and is not a live pa
     return jsonOk({ query: { pages: {} } });
   };
   try {
-    assert.equal(await researchInternet('Search the web for current information about a topic'), null === false ? null : (await (async () => {
-      const withoutKey = await researchInternet('Search the web for current information about a topic');
-      assert.equal(seen.some(url => isBraveHost(url)), false);
-      return withoutKey;
-    })()) && null);
+    await assert.rejects(
+      () => researchInternet('Search the web for current information about a topic'),
+      /No usable internet results/i
+    );
+    assert.equal(seen.some(url => isBraveHost(url)), false);
     seen.length = 0;
     const r = await researchInternet('Search the web for current information about a topic', { searchApiKey: 'secret' });
     assert.equal(r.sources[0].title, 'Current report');
