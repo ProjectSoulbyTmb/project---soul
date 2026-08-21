@@ -157,6 +157,13 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.match(cla.reply, /unsigned template|not executed/i);
   assert.match(cla.reply, /do not transfer copyright/i);
 
+  const brands = answerAssist('Is Eidovara Jarvis or like Iron Man?');
+  assert.equal(brands.ok, true);
+  assert.match(brands.reply, /first-party software names/i);
+  assert.match(brands.reply, /not Jarvis/);
+  assert.doesNotMatch(brands.reply, /I am Jarvis|Eidovara Jarvis/i);
+  assert.equal(brands.soul, false);
+
   const pages = answerAssist('Why does the live GitHub Pages site look older than this repository?');
   assert.equal(pages.ok, true);
   assert.match(pages.reply, /main/);

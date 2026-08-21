@@ -6,7 +6,7 @@ export const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2
 export const INSTALLER_SIZE = 'about 101.3 MiB';
 
 export const KNOWLEDGE_INTENTS = new Set([
-  'age', 'unsigned', 'payments', 'premium', 'download', 'platforms', 'connect',
+  'age', 'unsigned', 'payments', 'premium', 'download', 'platforms', 'brands', 'connect',
   'hosted', 'what', 'help', 'legal', 'status', 'forbidden', 'offline', 'privacy'
 ]);
 
@@ -38,7 +38,12 @@ const ENTRIES = {
   },
   platforms: {
     title: 'Official platform',
-    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets, not official products. Eidovara is not an iOS, iPhone, iPad, or Apple product and does not require licensed SF Pro fonts. It is not affiliated with Apple, Microsoft, or Electron.',
+    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets, not official products. Eidovara is not an iOS, iPhone, iPad, or Apple product and does not require licensed SF Pro or SF Mono fonts. It is not affiliated with Apple, Microsoft, or Electron.',
+    actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
+  },
+  brands: {
+    title: 'First-party names only',
+    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Architecture is a session kernel / Soul kernel only. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use — not bundled apps or logos.',
     actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   connect: {
@@ -96,7 +101,8 @@ const PRODUCT_RULES = [
   { id: 'age', re: /\b(18\+|eighteen(?:\s+or\s+older)?|age\s*gate|under\s*18|adults?\s+only|coppa|how\s+old)\b/i },
   { id: 'unsigned', re: /\b(authenticode|unsigned|smartscreen|microsoft[- ]certified|code[ -]?sign(?:ed|ing)?|ev[ -]?sign)\b/i },
   { id: 'payments', re: /\b(pci|stripe|paypal|gumroad|checkout|live\s+payments?|buy\s+(?:premium|eidovara)|credit\s*cards?|card\s+numbers?)\b/i },
-  { id: 'platforms', re: /\b(linux|macos|mac\s*os|iphone|ios|ipad|android|official\s+platform|sf\s*pro)\b/i },
+  { id: 'platforms', re: /\b(linux|macos|mac\s*os|iphone|ios|ipad|android|official\s+platform|sf\s*pro|sf\s*mono)\b/i },
+  { id: 'brands', re: /\b(jarvis|j\.a\.r\.v\.i\.s|iron\s*man|marvel|disney|stark(?:\s+industries)?|siri|alexa|google\s+assistant|copilot|cortana|chatgpt|claude|raycast|alfred|spotlight|clippy|replika|character\.ai|xbox|game\s*bar|hey\s+siri|ok(?:ay)?\s+google)\b/i },
   { id: 'forbidden', re: /\b(neural\s+tts|vrm|makehuman|obs\s+websocket|consciousness|sentien(?:t|ce)|are\s+you\s+(?:alive|conscious|a\s+person))\b/i },
   { id: 'download', re: /\b(download|setup\.exe|installer|github\s+releases|get\s+eidovara)\b/i },
   { id: 'connect', re: /\b(connect\s+(?:the\s+)?service|worker\s+url|paste\s+(?:an?\s+)?https|\/v1\/status|\/v1\/health|\/health)\b/i },

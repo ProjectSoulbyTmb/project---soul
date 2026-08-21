@@ -25,7 +25,10 @@ BY CLICKING I AGREE / INSTALL YOU CONFIRM THAT:
 - Soul is software assistance, not therapy, medical care, or a claim of
   consciousness.
 - Eidovara is not an Apple, Microsoft, iOS, iPhone, or Electron product
-  and does not require licensed SF Pro fonts.
+  and does not require licensed SF Pro or SF Mono fonts.
+- Eidovara, Soul, and the Soul kernel are not Jarvis, Iron Man, Marvel,
+  Disney, Siri, Alexa, Copilot, ChatGPT, Claude, Raycast, Alfred,
+  Spotlight, or other third-party assistant or film products.
 - Qualifying original first-party Eidovara expression is claimed by Tyler
   Michael Bosworth. Soul Consciousness Studios is an intended publisher
   name, not a formed entity that owns this IP unless assigned. Electron,

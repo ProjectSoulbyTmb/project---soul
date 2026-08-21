@@ -9,7 +9,8 @@ test('website and desktop share identical system tokens', () => {
   const app = read('src/renderer/tokens.css');
   assert.equal(docs, app);
   assert.match(docs, /-apple-system, BlinkMacSystemFont, "Segoe UI Variable"/);
-  assert.doesNotMatch(docs, /"SF Pro Text"|"SF Pro Display"/);
+  assert.doesNotMatch(docs, /"SF Pro Text"|"SF Pro Display"|"SF Mono"/);
+  assert.doesNotMatch(read('docs/site.css'), /"SF Mono"/);
   assert.match(docs, /--tint: #007aff/);
   assert.match(docs, /prefers-color-scheme: dark/);
   assert.doesNotMatch(docs, /Apple Inc|SwiftUI|SF Symbols\.otf/i);

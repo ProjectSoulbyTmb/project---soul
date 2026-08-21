@@ -152,6 +152,7 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   const html = read('src/renderer/index.html');
   assert.match(html, /not an iOS or iPhone product/);
   assert.match(html, /does not require licensed SF Pro/);
+  assert.match(html, /not Jarvis/);
   assert.match(html, /local-admin testing only/);
   assert.match(html, /© 2026 Tyler Michael Bosworth\. All rights reserved/);
   assert.match(html, /Source-available; use governed by LICENSE \+ TERMS/);
@@ -243,4 +244,49 @@ test('network, security, and licensing docs match current fail-closed v0.18.2 su
   assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
   assert.match(read('src/core/service.js'), /checkoutEnabledFromRemoteConfig\(_body\) \{\s*return false;/);
   assert.match(read('src/electron/main.js'), /sandbox: true/);
+});
+
+test('first-party legal stack is kept; third-party brands are not product names', () => {
+  for (const file of [
+    'LICENSE', 'NOTICE.md', 'TERMS.md', 'PRIVACY.md', 'AGE.md', 'LEGAL_NOTICES.md',
+    'AUTHORS.md', 'OWNERSHIP.md', 'TRADEMARKS.md'
+  ]) {
+    assert.equal(fs.existsSync(file), true, file);
+  }
+  for (const file of ['LICENSE', 'NOTICE.md', 'TERMS.md', 'LEGAL_NOTICES.md', 'OWNERSHIP.md', 'installer/EULA.txt']) {
+    assert.match(read(file), /Copyright .{0,8}2026 Tyler Michael Bosworth/i, file);
+  }
+  const trademarks = read('TRADEMARKS.md');
+  assert.match(trademarks, /not affiliated/i);
+  assert.match(trademarks, /Jarvis/);
+  assert.match(trademarks, /Soul kernel/);
+  assert.match(trademarks, /unregistered/);
+  assert.match(trademarks, /does not contain a USPTO serial number|must not be used unless/i);
+  assert.match(read('LEGAL_NOTICES.md'), /not Jarvis/);
+  assert.match(read('TERMS.md'), /not Jarvis/);
+  assert.match(read('OWNERSHIP.md'), /does \*\*not\*\* claim ®|unregistered/);
+  assert.match(read('docs/MARKETING_CLAIMS_POLICY.md'), /Using Jarvis/);
+
+  const identityMisuse = /Eidovara Jarvis|Jarvis kernel|Jarvis mode|Soul Jarvis|like Jarvis|our Jarvis|Hey Siri|OK Google|Okay Google|Hey Cortana|Eidovara (?:Raycast|Alfred|Spotlight|Copilot)/i;
+  const productSurfaces = [
+    'README.md', 'CHANGELOG.md', 'docs/index.html', 'docs/product.html', 'docs/download.html',
+    'docs/assist.html', 'docs/help.html', 'docs/faq.html', 'docs/status.html',
+    'src/renderer/localization.js', 'src/renderer/renderer.js', 'src/renderer/companion.js',
+    'src/core/modules.js', 'src/core/engine.js', 'src/core/schema.js'
+  ];
+  for (const file of productSurfaces) {
+    const text = read(file);
+    assert.doesNotMatch(text, identityMisuse, file);
+    assert.doesNotMatch(text, /I am Jarvis|call me Jarvis/i, file);
+  }
+  assert.doesNotMatch(read('CHANGELOG.md'), /Marvel\/Iron Man/);
+  assert.doesNotMatch(read('docs/site.css'), /"SF Mono"/);
+  assert.doesNotMatch(read('src/renderer/tokens.css'), /"SF Pro Text"|"SF Pro Display"|"SF Mono"/);
+  for (const file of [
+    'src/electron/main.js', 'src/renderer/renderer.js', 'src/renderer/index.html',
+    'src/core/kernel.js', 'src/core/service.js', 'docs/index.html', 'docs/assist.js',
+    'docs/site.js', 'docs/knowledge.js'
+  ]) {
+    assert.doesNotMatch(read(file), /dreambot333\.workers\.dev/, file);
+  }
 });

@@ -19,7 +19,8 @@ Eidovara **cannot** own, and does not claim, among other things:
 - Electron, Chromium, Node.js, electron-builder, rcedit, or other third-party packages;
 - Microsoft Windows, its APIs, installed voices, fonts, or other OS components;
 - Wikipedia/Wikimedia content (those projects’ licenses continue to apply);
-- Apple, iOS, SF Pro, Spotify, YouTube, OBS, GitHub, Cloudflare, or other third-party marks, products, or services;
+- Apple, iOS, iPhone, iPad, SF Pro, SF Mono, Siri, Microsoft Copilot, Cortana, Xbox, Game Bar, Spotify, YouTube, OBS, GitHub, Cloudflare, or other third-party marks, products, or services;
+- Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Alexa, Google Assistant, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, or other third-party assistant, launcher, or entertainment brands used as product or feature names;
 - user-created content, local media files, linked applications, and credentials the user supplies.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [docs/CHAIN_OF_TITLE.md](docs/CHAIN_OF_TITLE.md). Overbroad ownership claims would weaken, not strengthen, the first-party record.

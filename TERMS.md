@@ -49,7 +49,9 @@ Eidovara does not grant rights in anyone else's material. You are responsible fo
 
 Soul is a software assistant with a persistent local self-model. It is not a human, a licensed professional, therapy, medical care, financial advice, emergency services, or proof of consciousness or sentience. Output is general assistance. Do not rely on it where a qualified professional is required.
 
-Eidovara is not affiliated with, endorsed by, or a product of Apple Inc., Microsoft Corporation, GitHub, OpenJS Foundation, Spotify, YouTube, OBS, Wikimedia, Brave, or other named vendors. It is **not** an iOS, iPhone, or iPad product. The interface uses a system font stack and does **not** require licensed SF Pro files.
+Eidovara is not affiliated with, endorsed by, or a product of Apple Inc., Microsoft Corporation, GitHub, OpenJS Foundation, Spotify, YouTube, OBS, Wikimedia, Brave, or other named vendors. It is **not** an iOS, iPhone, or iPad product. The interface uses a system font stack and does **not** require licensed SF Pro or SF Mono files.
+
+Eidovara, Soul, and the Soul kernel are first-party names. They are **not** Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and this software is not affiliated with those owners. Distinctive third-party slogans are not Eidovara wake words. Command-palette or quick-open UI, if present, is first-party workspace chrome.
 
 Eidovara™ and Soul Consciousness Studios™ are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
 

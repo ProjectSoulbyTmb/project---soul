@@ -65,7 +65,7 @@ const catalog = [
     id: 'workspace-help',
     title: 'Help',
     summary: 'Honest product facts: 18+, unsigned Windows, payments off, Assist ≠ Soul.',
-    intents: ['help', 'what', 'hosted', 'download', 'unsigned', 'payments', 'premium', 'platforms', 'forbidden', 'offline', 'connect', 'age', 'privacy', 'legal', 'status'],
+    intents: ['help', 'what', 'hosted', 'download', 'unsigned', 'payments', 'premium', 'platforms', 'brands', 'forbidden', 'offline', 'connect', 'age', 'privacy', 'legal', 'status'],
     commands: ['what can you do', 'what is eidovara', 'help'],
     workspace: 'chat',
     ui: { view: 'chat' }
