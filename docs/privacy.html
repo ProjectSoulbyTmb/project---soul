@@ -2,36 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Eidovara privacy notice: local-first Windows app. What stays on the device and what can leave.">
+  <meta property="og:title" content="Privacy · Eidovara">
+  <meta property="og:description" content="Local-first profiles. No owner-operated accounts. Conversations are not stored on the Worker.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/privacy.html">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
   <title>Privacy · Eidovara</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
 </head>
-<body>
-<header class="site-header"><div class="site-header-inner"><a class="brand" href="./"><span class="mark"></span>Eidovara</a><nav><a href="terms.html">Terms</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="security.html">Security</a></nav></div></header>
-<main class="legal">
-  <p class="eyebrow">Privacy notice · v0.18.0</p>
-  <h1>What stays local, and what can leave.</h1>
-  <p>This notice describes Eidovara Stable Alpha for Windows. It is not an independent audit or a compliance certification. Last updated August 21, 2026.</p>
+<body data-page="legal">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="legal">
+    <p class="eyebrow">Privacy notice · v0.18.0</p>
+    <h1>What stays local, and what can leave.</h1>
+    <p>This notice describes Eidovara Stable Alpha for Windows. It is not an independent audit or a compliance certification. Last updated August 21, 2026.</p>
 
-  <div class="legal-card"><h2>Local-first</h2><p>Profiles, conversations, memories, preferences, safety records, linked-app shortcuts, Adult Mode state, the 18+ confirmation, encrypted credentials, and backups stay in the Windows application-data directory (or a CLI data directory you choose). There are no owner-operated accounts, telemetry, advertising identifiers, analytics SDKs, or cloud memory. Operating-system credential encryption protects data at rest when available; it does not protect against malware running as your user.</p></div>
+    <div class="legal-card"><h2>Local-first</h2><p>Profiles, conversations, memories, preferences, safety records, linked-app shortcuts, Adult Mode state, the 18+ confirmation, encrypted credentials, and backups stay in the Windows application-data directory (or a CLI data directory you choose). There are no owner-operated accounts, telemetry, advertising identifiers, analytics SDKs, or cloud memory. Operating-system credential encryption protects data at rest when available; it does not protect against malware running as your user.</p></div>
 
-  <div class="legal-card"><h2>What can leave this device</h2>
-    <ul>
-      <li>Explicit internet/web/online research: search terms to Wikipedia/Wikimedia (and, if you enabled Premium testing and pasted a Brave key, to Brave Search).</li>
-      <li>Optional pasted model endpoints: conversation context to loopback Ollama or to an HTTPS <code>/chat/completions</code> URL you configure.</li>
-      <li>Official GitHub update checks: app version via user agent; installer download only after you confirm.</li>
-      <li>Spotify/YouTube buttons: HTTPS search text in your system browser.</li>
-      <li>Optional Eidovara service: after the 18+ gate, Settings Connect (or Ctrl+A Test service) may call <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code>. Conversations and payment data are not sent. If the service is down, the local app still works.</li>
-    </ul>
-    <p>The application does not collect card numbers or security codes. Review and remove local data from Settings.</p>
-  </div>
+    <div class="legal-card"><h2>What can leave this device</h2>
+      <ul>
+        <li>Explicit internet/web/online research: search terms to Wikipedia/Wikimedia (and, if you enabled Premium testing and pasted a Brave key, to Brave Search).</li>
+        <li>Optional pasted model endpoints: conversation context to loopback Ollama or to an HTTPS <code>/chat/completions</code> URL you configure.</li>
+        <li>Official GitHub update checks: app version via user agent; installer download only after you confirm.</li>
+        <li>Spotify/YouTube buttons: HTTPS search text in your system browser.</li>
+        <li>Optional Eidovara service: after the 18+ gate, Settings Connect (or Ctrl+A Test service) may call <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code>. Conversations and payment data are not sent. If the service is down, the local app still works.</li>
+        <li>Optional website assist: if you paste a Worker base on this site, a single question may be sent to <code>POST /v1/assist</code>. Desktop conversation history is not sent. Transcripts are not stored. The on-page knowledge pack works with no URL.</li>
+      </ul>
+      <p>The application does not collect card numbers or security codes. Review and remove local data from Settings.</p>
+    </div>
 
-  <div class="legal-card"><h2>Age 18+</h2><p>Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Adult Mode additionally requires the age of majority where located. Local confirmation is not independent identity or age verification.</p></div>
-</main>
-<footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved.</span><a href="./">Back to Eidovara</a></div></footer>
+    <div class="legal-card"><h2>Age 18+</h2><p>Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Adult Mode additionally requires the age of majority where located. Local confirmation is not independent identity or age verification.</p></div>
+  </main>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="terms.html">Terms</a> · <a href="age.html">Age 18+</a> · <a href="licensing.html">Licensing</a> · <a href="security.html">Security</a> · <a href="./">Home</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
 </body>
 </html>
