@@ -232,7 +232,7 @@ app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).ca
 app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('soul:send', async (_e, m) => { requireAgeGate(); const result = await ensureEngine().respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
+ipcMain.handle('soul:send', async (_e, m, opts) => { requireAgeGate(); const result = await ensureEngine().respond(m, opts && typeof opts === 'object' ? opts : {}); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
 ipcMain.handle('soul:snapshot', () => (config.ageGateAccepted === true ? ensureEngine().snapshot() : defaultProfile('default')));
 ipcMain.handle('soul:recordMedia', (_e, input) => { requireAgeGate(); return ensureEngine().recordMedia(input); });
 ipcMain.handle('soul:entertainment', () => { requireAgeGate(); return ensureEngine().entertainment(); });

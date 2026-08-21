@@ -35,6 +35,15 @@ function uniqueStrings(value, limit, maxLen) {
 
 const catalog = [
   {
+    id: 'workspace-home',
+    title: 'Dashboard',
+    summary: 'Command surface for this PC: focus, roles, apps, media, backups, and the companion dock.',
+    intents: ['dashboard', 'here'],
+    commands: ['open dashboard', 'what can you do here'],
+    workspace: 'dashboard',
+    ui: { view: 'dashboard' }
+  },
+  {
     id: 'workspace-apps',
     title: 'Apps & Gaming',
     summary: 'Windows shelf of titles you already trust. Confirm-launch only — no injection.',
@@ -47,8 +56,8 @@ const catalog = [
     id: 'workspace-media',
     title: 'Entertainment',
     summary: 'Local taste, queue helpers, and lawful Spotify/YouTube HTTPS handoff.',
-    intents: ['mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise'],
-    commands: ['mood mix', 'surprise me', 'open entertainment'],
+    intents: ['entertainment', 'mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise', 'local-media'],
+    commands: ['mood mix', 'surprise me', 'open entertainment', 'open local media'],
     workspace: 'entertainment',
     ui: { view: 'entertainment' }
   },
@@ -74,8 +83,8 @@ const catalog = [
     id: 'workspace-settings',
     title: 'Settings',
     summary: 'Open conversation engine, backups, service attach, and customization.',
-    intents: ['settings'],
-    commands: ['open settings', 'show settings'],
+    intents: ['settings', 'backups', 'updates', 'service', 'setup', 'theme'],
+    commands: ['open settings', 'show settings', 'create a backup', 'check for updates'],
     workspace: 'settings',
     ui: { view: 'settings' }
   },
@@ -173,8 +182,8 @@ const catalog = [
     id: 'memory-keeper',
     title: 'Memory',
     summary: 'Durable local notes you can review or forget. Your data, not system authority.',
-    intents: ['memory', 'remember'],
-    commands: ['review memory', 'remember that'],
+    intents: ['memory', 'remember', 'forget'],
+    commands: ['review memory', 'remember that', 'forget that'],
     workspace: 'memory',
     ui: { view: 'memory' }
   },
@@ -182,8 +191,8 @@ const catalog = [
     id: 'talk-through',
     title: 'Talk-through',
     summary: 'Slow conversation, reassurance, and growth framing. Not therapy.',
-    intents: ['talk', 'reassure', 'growth', 'thanks', 'hello', 'identity'],
-    commands: ['talk something through', 'who are you'],
+    intents: ['talk', 'reassure', 'growth', 'thanks', 'hello', 'identity', 'conversation'],
+    commands: ['talk something through', 'who are you', 'open conversation'],
     workspace: 'chat',
     ui: { view: 'chat' }
   },
