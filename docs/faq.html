@@ -10,9 +10,9 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Frequently asked questions for Eidovara source v0.22.2: Windows download (live installer v0.19.1), 18+, unsigned builds, optional Worker, and the website helper.">
+  <meta name="description" content="Frequently asked questions for Eidovara v0.22.2: Windows download, 18+, unsigned builds, local-first use, online research, media, updates, and website assistance.">
   <meta property="og:title" content="FAQ · Eidovara">
-  <meta property="og:description" content="Frequently asked questions for Eidovara source v0.22.2: Windows download (live installer v0.19.1), 18+, unsigned builds, optional Worker, and the website helper.">
+  <meta property="og:description" content="Frequently asked questions for the current Eidovara v0.22.2 Windows release.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://eidovara.org/faq.html">
   <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
@@ -31,49 +31,32 @@
       <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
       <nav id="site-nav" aria-label="Primary">
-        <a href="./" data-nav="home">Home</a>
-        <a href="product.html" data-nav="product">Product</a>
-        <a href="assist.html" data-nav="assist">Assist</a>
-        <a href="help.html" data-nav="help">Help</a>
-        <a href="faq.html" data-nav="faq">FAQ</a>
-        <details class="nav-legal">
-          <summary>Legal</summary>
-          <div class="nav-legal-menu">
-            <a href="legal.html">Overview</a>
-            <a href="terms.html">Terms</a>
-            <a href="privacy.html">Privacy</a>
-            <a href="age.html">Age 18+</a>
-            <a href="licensing.html">Licensing</a>
-            <a href="security.html">Security</a>
-          </div>
-        </details>
-        <a href="status.html" data-nav="status">Status</a>
-        <a class="nav-cta" href="download.html" data-nav="download">Download</a>
+        <a href="./" data-nav="home">Home</a><a href="product.html" data-nav="product">Product</a><a href="assist.html" data-nav="assist">Assist</a><a href="help.html" data-nav="help">Help</a><a href="faq.html" data-nav="faq">FAQ</a>
+        <details class="nav-legal"><summary>Legal</summary><div class="nav-legal-menu"><a href="legal.html">Overview</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="security.html">Security</a></div></details>
+        <a href="status.html" data-nav="status">Status</a><a class="nav-cta" href="download.html" data-nav="download">Download</a>
       </nav>
     </div>
   </header>
   <main id="main" class="site-main">
-    <p class="eyebrow">Frequently asked</p>
-    <h1 class="section-title">Straight answers for source v0.22.2.</h1>
-    <p class="lead">These answers match source v0.22.2 and the live advertised Windows installer v0.19.1. They are not legal advice. Use Ask Eidovara for the same knowledge pack.</p>
+    <p class="eyebrow">Frequently asked · current release v0.22.2</p>
+    <h1 class="section-title">Straight answers for the current release.</h1>
+    <p class="lead">These answers match the published Eidovara v0.22.2 Windows release and the current website knowledge pack. They are not legal advice.</p>
     <div class="faq faq-list">
-      <details open><summary>What is Eidovara?</summary><p>A local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. Visiting this website does not create an account. Soul is optional software, not a consciousness claim.</p></details>
-      <details><summary>How do I install Eidovara?</summary><p>Confirm you are 18 or older on the <a href="download.html">Download</a> page. After that gate, the primary button downloads the official unsigned installer <code>Eidovara-0.19.1-Windows-x64-Setup.exe</code> — the <code>.exe</code> (about 101.3 MiB), not the GitHub source tree. SHA-256 <code>72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8</code>. You can still build on Windows with <code>npm run dist:win:installer</code>. After install, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Adults 18+.</p></details>
-      <details><summary>Why does Windows warn me?</summary><p>Official advertised installers are Authenticode-unsigned. They are not Microsoft-certified, EV-signed, or SmartScreen-preapproved. We cannot Authenticode-sign until the owner provides a certificate. SmartScreen may warn. Verify SHA-256 and GitHub provenance. Provenance is not Authenticode.</p></details>
-      <details><summary>Is there a Linux, macOS, or iOS app?</summary><p>No official Linux or macOS product. Not an iOS, iPhone, iPad, or Apple product. Linux/macOS scripts are development targets.</p></details>
-      <details><summary>Is Eidovara someone else’s assistant or a film character?</summary><p>No. Eidovara, Soul, and the Soul kernel are first-party software names. They are not third-party film or assistant products and are not affiliated with those owners. See <a href="licensing.html">Licensing</a> and the repository trademark notice.</p></details>
-      <details><summary>Do I need the cloud?</summary><p>No. Free / Offline Soul works with no Worker URL. After 18+, Settings → Eidovara service defaults to <code>https://api.eidovara.org</code> for <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code> only. Paste another HTTPS base to override. Conversations are not sent.</p></details>
-      <details><summary>Can I pay for Premium here?</summary><p>No. Source v0.22.2 does not sell Premium. The live installer remains v0.19.1 and does not process payments. Ctrl+A local-admin testing is not checkout or PCI processing.</p></details>
-      <details><summary>What are the keyboard shortcuts?</summary><p>In the Windows app after 18+: Ctrl+K jumps to Dashboard, Settings groups, Apps, Soul, and legal. Ctrl+/ opens the cheatsheet. Ctrl+A opens private admin only when you are not typing in a field. Click the Soul face or type in the right dock to ask locally. Hold the mic to dictate. Enter sends a message. Esc closes a dialog. Launching an app still asks you to confirm.</p></details>
-      <details><summary>Is the website helper Soul?</summary><p>No. Ask Eidovara is a website helper over a fixed knowledge pack. It is not Soul and not legal advice. Transcripts are not stored.</p></details>
-      <details><summary>Who owns Eidovara? Is it open source?</summary><p>© 2026 Tyler Michael Bosworth. All rights reserved. Qualifying original first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name only, not a formed entity that owns this IP unless a privately signed assignment exists. The repository is source-available, not OSI open source, and is not MIT, Apache, or GPL. Forks stay under LICENSE. GitHub pull requests do not transfer ownership. Contributor and entity assignment files are unsigned templates. No ® or patent is claimed here. See <a href="licensing.html">Licensing</a> and the dated <a href="IP_CERTIFICATION.md">IP self-attestation</a> (not a government registration).</p></details>
-      <details><summary>Is Eidovara registered with the Copyright Office or USPTO?</summary><p>No. Git notices and the repository self-attestation are evidence of a claim, not a Copyright Office registration, USPTO serial, or patent. The owner can file those privately. Until a real certificate issues, marks stay unregistered ™ and the code is “copyright claimed,” not “registered.”</p></details>
-      <details><summary>Where are the legal documents?</summary><p>Start at the <a href="legal.html">legal hub</a> for Terms, Privacy, Age 18+, Licensing, and Security. Repository notices are not a clearance opinion. Contributor and entity assignment files are unsigned templates only.</p></details>
-      <details><summary>Why would the live website look older than git?</summary><p>GitHub Pages publishes <code>docs/</code> from <code>main</code> only. This site is that live github.io homepage after PR #10 merged. Later branches do not appear here until they merge to <code>main</code>. Do not retarget Pages at a feature branch.</p></details>
+      <details open><summary>What is Eidovara?</summary><p>A local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, internet research, backups, updates, persistent continuity, and optional Soul. Visiting this website does not create an account. Soul is optional software, not a consciousness claim.</p></details>
+      <details><summary>How do I install Eidovara?</summary><p>Confirm you are 18 or older on the <a href="download.html">Download</a> page. The official installer is <code>Eidovara-0.22.2-Windows-x64-Setup.exe</code>, 106,691,429 bytes (about 101.75 MiB). SHA-256: <code>A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE</code>. The installer is Authenticode-unsigned. You can also build from source on Windows with <code>npm run dist:win:installer</code>.</p></details>
+      <details><summary>Why does Windows warn me?</summary><p>The current v0.22.2 installer is Authenticode-unsigned. It is not Microsoft-certified, EV-signed, or SmartScreen-preapproved. Windows SmartScreen may warn. Verify the SHA-256 on the Download page and the GitHub/Sigstore build provenance. Provenance is not Authenticode.</p></details>
+      <details><summary>Is there a Linux, macOS, or iOS app?</summary><p>The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets rather than official signed products. Eidovara is not an iOS, iPhone, iPad, or Apple product.</p></details>
+      <details><summary>Do I need the cloud?</summary><p>No. Local workspace functions and Free / Offline Soul can operate without the official service. After 18+, Settings → Eidovara service defaults to <code>https://api.eidovara.org</code> for health/config/status. Explicit internet research, updates, optional provider connections, and user-directed online media functions require network access.</p></details>
+      <details><summary>What online features are in v0.22.2?</summary><p>v0.22.2 includes explicit internet research with cited and sanitized public sources, online heartbeat/status, media discovery and playback surfaces, update infrastructure, and optional provider connections. Network failures are designed to fall back to the local-first workspace instead of stopping the app.</p></details>
+      <details><summary>Can I pay for Premium here?</summary><p>No. v0.22.2 does not process payments and no live checkout is enabled. Premium feature gates are available only for local administrator testing in the current release.</p></details>
+      <details><summary>What are the keyboard shortcuts?</summary><p>In the Windows app after 18+: Ctrl+K opens navigation/search, Ctrl+/ opens the cheatsheet, and Ctrl+A opens the private administrator panel when you are not typing in a field. Enter sends a Soul message where applicable. Esc closes dialogs. Launching an application still requires confirmation.</p></details>
+      <details><summary>Is the website helper Soul?</summary><p>No. Ask Eidovara is a website helper over a fixed product knowledge pack. It is not Soul, does not store conversation transcripts, and is not legal, medical, or financial advice.</p></details>
+      <details><summary>Who owns Eidovara? Is it open source?</summary><p>© 2026 Tyler Michael Bosworth. All rights reserved. The repository is source-available, not OSI open source. Soul Consciousness Studios is the intended publisher name only. See <a href="licensing.html">Licensing</a> and the repository legal records for details.</p></details>
+      <details><summary>Where are the legal documents?</summary><p>Start at the <a href="legal.html">legal hub</a> for Terms, Privacy, Age 18+, Licensing, and Security. Repository legal records and self-attestations are documentation, not government registrations or legal advice.</p></details>
+      <details><summary>Why might the live website look older than the repository?</summary><p>The official site is deployed from the <code>docs/</code> folder on <code>main</code>. GitHub Pages mirrors the same source, and the Cloudflare Pages production workflow deploys website updates from <code>main</code> when production credentials are configured. Browser or edge caching can briefly show older content after a deployment.</p></details>
     </div>
   </main>
   <footer class="site-footer site-end"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
-  <script src="site.js" defer></script>
-  <script type="module" src="assist.js"></script>
+  <script src="site.js" defer></script><script type="module" src="assist.js"></script>
 </body>
 </html>
