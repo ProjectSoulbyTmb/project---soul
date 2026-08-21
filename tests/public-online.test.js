@@ -204,6 +204,9 @@ test('eidovara.org is the official Cloudflare Pages hostname for the same docs/ 
   assert.match(read('docs/status.html'), /eidovara\.org/);
   assert.doesNotMatch(read('docs/status.html'), /href="[^"]+\.exe"/);
   assert.match(read('server/wrangler.toml'), /WEBSITE_URL = "https:\/\/eidovara\.org\/"/);
+  assert.match(read('server/wrangler.toml'), /pattern = "api\.eidovara\.org"/);
+  assert.match(read('server/wrangler.toml'), /custom_domain = true/);
+  assert.doesNotMatch(read('server/wrangler.toml'), /workers\.dev/);
   assert.doesNotMatch(read('docs/knowledge.js'), /dreambot333\.workers\.dev/);
   assert.match(read('.github/workflows/pages.yml'), /branches: \[main\]/);
   assert.match(read('.github/workflows/dependency-review.yml'), /fail-on-severity: moderate/);

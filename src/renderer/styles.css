@@ -223,6 +223,7 @@ button { cursor: pointer; }
 }
 #serviceDot.idle { background: var(--muted); }
 #serviceDot.online { background: var(--good); }
+#serviceDot.reconnecting { background: var(--accent2); }
 #serviceDot.offline { background: var(--danger); }
 #kernelDot.idle { background: var(--muted); }
 #kernelDot.live { background: var(--accent); }

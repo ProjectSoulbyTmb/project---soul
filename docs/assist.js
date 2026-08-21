@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { answerAssist, STORAGE_KEY, DEFAULT_SERVICE_BASE, safePublicHref } from './knowledge.js';
 
-const suffixes = ['/health', '/v1/config', '/v1/status', '/v1/assist'];
+const suffixes = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
 
 function readBase() {
   try { return String(localStorage.getItem(STORAGE_KEY) || '').trim(); } catch { return ''; }

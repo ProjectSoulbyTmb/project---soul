@@ -95,9 +95,12 @@
     if (online) {
       const opted = kernel.assistOptIn === true;
       const configured = Boolean(window.eidovaraSettings?.serviceUrl);
+      const presence = String(window.eidovaraSettings?.serviceStatus?.presence || '');
       const connected = window.eidovaraSettings?.serviceStatus?.online === true;
+      const reconnecting = presence === 'Reconnecting' || window.eidovaraSettings?.serviceStatus?.reconnecting === true;
       let copy = t('soulOnlineOff', 'Online helper off. Local kernel stays the source of truth.');
       if (opted && !configured) copy = t('soulOnlineNeedUrl', 'Opt-in is on, but no Worker URL is saved. Paste one in Settings.');
+      else if (opted && reconnecting) copy = t('soulOnlineReconnecting', 'Reconnecting. Offline Soul continues locally. Assist is not Soul.');
       else if (opted && !connected) copy = t('soulOnlineDisconnected', 'Worker unreachable. Offline Soul continues locally. Assist is not Soul.');
       else if (opted && connected) copy = t('soulOnlineOn', 'Worker attached. Assist stays off unless you tick the composer box. Conversations are not sent.');
       online.textContent = copy;

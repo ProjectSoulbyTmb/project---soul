@@ -256,6 +256,10 @@ test('desktop binds through the baked official default, overridable, never a wor
   const preload = read('src/electron/preload.cjs');
   const service = read('src/core/service.js');
   assert.match(main, /fetchServiceSnapshot/);
+  assert.match(main, /fetchServiceLiveness/);
+  assert.match(main, /createServiceHeartbeat/);
+  assert.match(main, /bootServiceHeartbeat/);
+  assert.match(main, /stopServiceHeartbeat/);
   assert.match(main, /normalizeServiceUrl/);
   assert.match(main, /resolveServiceBase/);
   assert.match(main, /function publicServiceUrl/);
@@ -266,6 +270,7 @@ test('desktop binds through the baked official default, overridable, never a wor
   assert.match(main, /httpsOnlyUrl/);
   assert.doesNotMatch(main, /\^https:\\\/\\\//);
   assert.match(preload, /connectService:/);
+  assert.match(preload, /onServiceStatus:/);
   assert.match(html, /id="serviceUrlInput"/);
   assert.match(html, /id="serviceConnectBtn"/);
   assert.match(html, /id="serviceLabel"/);
@@ -274,7 +279,13 @@ test('desktop binds through the baked official default, overridable, never a wor
   assert.match(html, /https:\/\/api\.eidovara\.org/);
   assert.match(renderer, /refreshServiceStatus/);
   assert.match(renderer, /connectService/);
+  assert.match(renderer, /onServiceStatus/);
+  assert.match(renderer, /Reconnecting/);
   assert.match(service, /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
+  assert.match(service, /createServiceHeartbeat/);
+  assert.match(service, /fetchServiceLiveness/);
+  assert.doesNotMatch(read('src/renderer/index.html'), /connect-src [^"]*https:/);
+  assert.match(read('src/renderer/index.html'), /connect-src 'none'/);
   for (const text of [main, renderer, html, preload, service]) {
     assert.doesNotMatch(text, /[a-z0-9.-]+\.workers\.dev/i);
   }
