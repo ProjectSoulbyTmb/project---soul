@@ -2,7 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell } from 'electro
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { OfflineProvider } from '../providers/offline.js';
@@ -43,7 +43,7 @@ function createWindow() {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
     engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default' }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.3', backgroundColor: '#0b1020', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.4', backgroundColor: '#0b1020', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
@@ -125,6 +125,15 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
 });
 ipcMain.handle('soul:diagnostics', async () => ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: engine.snapshot().policy.localSafetyReports?.length || 0 }));
 ipcMain.handle('soul:openDataFolder', () => shell.openPath(app.getPath('userData')));
+ipcMain.handle('soul:selectLocalMedia', async () => {
+  const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Open local media in Eidovara', properties: ['openFile'], filters: [{ name: 'Audio and video', extensions: ['mp3','m4a','aac','wav','flac','ogg','opus','mp4','m4v','webm','mov','mkv'] }] });
+  if (chosen.canceled || !chosen.filePaths[0]) return null;
+  const filePath = path.resolve(chosen.filePaths[0]);
+  const extension = path.extname(filePath).toLowerCase();
+  const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
+  if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
+  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: pathToFileURL(filePath).toString(), sourceUrl: '', local: true };
+});
 ipcMain.handle('soul:createBackup', () => engine.createBackup());
 ipcMain.handle('soul:listBackups', () => engine.listBackups());
 ipcMain.handle('soul:restoreBackup', (_e, name) => engine.restoreBackup(String(name || '')));

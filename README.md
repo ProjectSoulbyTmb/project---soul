@@ -1,4 +1,4 @@
-# Eidovara v0.17.3 — Current Release
+# Eidovara v0.17.4 — Current Release
 
 ## Project statement
 
@@ -38,7 +38,7 @@ The local companion can be hidden or displayed as a lightweight 2D character or 
 
 Third-party neural voices and avatar runtimes are not silently bundled. The screened adapter roadmap and consent/license requirements are documented in [docs/COMPANION_MODELS.md](docs/COMPANION_MODELS.md). Public-repository privacy boundaries are documented in [docs/PUBLIC_REPOSITORY_POLICY.md](docs/PUBLIC_REPOSITORY_POLICY.md).
 
-The Apps & Gaming Hub lets each user select trusted Windows executables or shortcuts, keep a local application shelf, and ask Windows to launch them. This does not guarantee universal compatibility or grant control of the target application. Appearance controls persist custom background, panel, accent, opacity, and optional RGB effects. Low-overhead gaming mode disables decorative animation and blur while playing, and Diagnostics reports the active Chromium/GPU/media capabilities. Soul does not inject into or embed third-party processes. See [docs/WINDOWS_COMPATIBILITY.md](docs/WINDOWS_COMPATIBILITY.md).
+The Apps & Gaming Hub lets each user select trusted Windows executables or shortcuts, keep a local application shelf, and ask Windows to launch them. This does not guarantee universal compatibility or grant control of the target application. Appearance controls persist custom background, panel, accent, opacity, and optional RGB effects. Low-overhead mode removes Eidovara animation, transitions, decorative shadows, transparency effects, and active speech while gaming. Diagnostics reports GPU state plus runtime codec, HDR/color, fullscreen, Web Audio, and gamepad capabilities. Soul does not inject into or embed third-party processes. See [docs/WINDOWS_COMPATIBILITY.md](docs/WINDOWS_COMPATIBILITY.md) and [docs/GAMING_MEDIA_STANDARDS.md](docs/GAMING_MEDIA_STANDARDS.md).
 
 ## Start using Soul
 

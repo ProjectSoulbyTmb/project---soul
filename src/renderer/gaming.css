@@ -1,0 +1,5 @@
+/* Low-overhead mode affects Eidovara only; it never changes a game's process. */
+body.gaming-mode *,body.gaming-mode *::before,body.gaming-mode *::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+body.gaming-mode .workspace{background:var(--bg)}
+body.gaming-mode .topbar,body.gaming-mode .card,body.gaming-mode .settings-card{backdrop-filter:none!important;box-shadow:none!important;background:var(--panel)}
+body.gaming-mode .soul-mark,body.gaming-mode .companion-avatar{box-shadow:none!important}

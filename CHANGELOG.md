@@ -1,5 +1,12 @@
 # Eidovara
 
+## v0.17.4
+
+- Made low-overhead gaming mode actually disable Eidovara animations, transitions, transparency effects, decorative shadows, and active speech.
+- Added runtime diagnostics for modern video/audio codecs, HDR and wide-color display queries, fullscreen, picture-in-picture, Web Audio, Media Session, and gamepads.
+- Added explicit single-file local audio/video selection without granting general filesystem access or persisting local paths in entertainment taste records.
+- Documented gaming/media capability ownership and avoided unsupported FPS, latency, HDR, codec, anti-cheat, or universal compatibility claims.
+
 ## v0.17.3
 
 - Bounded adaptive-memory and provider-context surfaces and rejected empty or oversized memory records.
