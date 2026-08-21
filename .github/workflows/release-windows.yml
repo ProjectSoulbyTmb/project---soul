@@ -49,6 +49,8 @@ jobs:
             dist/AUTHORS.md
             dist/TRADEMARKS.md
             dist/THIRD_PARTY_NOTICES.md
+            dist/BRAND-ASSET-POLICY.md
+            dist/COPYRIGHT-ASSET-REGISTER.md
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
@@ -69,3 +71,5 @@ jobs:
             dist/AUTHORS.md
             dist/TRADEMARKS.md
             dist/THIRD_PARTY_NOTICES.md
+            dist/BRAND-ASSET-POLICY.md
+            dist/COPYRIGHT-ASSET-REGISTER.md

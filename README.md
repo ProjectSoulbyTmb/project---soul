@@ -1,4 +1,4 @@
-# Eidovara v0.17.10 — Current Release
+# Eidovara v0.17.11 — Current Release
 
 ## Project statement
 
@@ -9,6 +9,8 @@ The project goal is a broadly useful, user-directed desktop environment whose mo
 Eidovara by Soul Consciousness Studios
 
 > **Rights notice:** Copyright © 2026 Tyler Michael Bosworth. All rights reserved. The public repository is source-available for transparency and evaluation; it is not open-source. No patent, trademark, commercial-use, redistribution, modification, or derivative-work rights are granted except as stated in [LICENSE](LICENSE). See the [IP protection plan](docs/IP_PROTECTION.md).
+
+The approved black, white, and red Eidovara and Soul Consciousness Studios emblems are protected first-party brand assets. Their release hashes and use restrictions are recorded in [COPYRIGHT_ASSET_REGISTER.md](docs/COPYRIGHT_ASSET_REGISTER.md) and [BRAND_ASSET_POLICY.md](docs/BRAND_ASSET_POLICY.md). These records establish provenance but are not government registrations or a guarantee of worldwide design-mark clearance.
 
 Tyler Michael Bosworth is identified as the project owner, creator, product director, publisher, and claimant for qualifying original first-party material. Third-party components and services remain the property of their respective owners; see [AUTHORS.md](AUTHORS.md), [LICENSE](LICENSE), and [TRADEMARKS.md](TRADEMARKS.md).
 

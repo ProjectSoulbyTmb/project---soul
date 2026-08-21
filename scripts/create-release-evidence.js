@@ -15,4 +15,6 @@ const privacy = { schemaVersion: 1, product: 'Eidovara', version: pkg.version, d
 fs.writeFileSync(path.join('dist', 'PRIVACY-DECLARATION.json'), `${JSON.stringify(privacy, null, 2)}\n`, 'utf8');
 fs.copyFileSync('PRIVACY.md', path.join('dist', 'PRIVACY.md')); fs.copyFileSync('SECURITY.md', path.join('dist', 'SECURITY.md')); fs.copyFileSync(path.join('docs', 'NETWORK_USAGE.md'), path.join('dist', 'NETWORK-USAGE.md'));
 for (const name of ['LICENSE','NOTICE.md','AUTHORS.md','TRADEMARKS.md','THIRD_PARTY_NOTICES.md']) fs.copyFileSync(name, path.join('dist', name));
+fs.copyFileSync(path.join('docs', 'BRAND_ASSET_POLICY.md'), path.join('dist', 'BRAND-ASSET-POLICY.md'));
+fs.copyFileSync(path.join('docs', 'COPYRIGHT_ASSET_REGISTER.md'), path.join('dist', 'COPYRIGHT-ASSET-REGISTER.md'));
 console.log(`Release evidence created for ${files.length} files.`);

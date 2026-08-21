@@ -1,5 +1,11 @@
 # Eidovara
 
+## v0.17.11
+
+- Added distinct black, white, and red application and studio emblems with transparent masters and a multi-resolution Windows icon.
+- Integrated the Eidovara icon into the executable, window, installer, uninstaller, website, and favicon.
+- Added CODEOWNERS, Dependabot, CodeQL, brand-use controls, and cryptographic asset provenance records.
+
 ## v0.17.10
 
 - Disabled electron-builder's implicit tag publisher so the dedicated GitHub Release step can publish the completed installer.
