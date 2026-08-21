@@ -3,7 +3,7 @@ main = "worker.js"
 compatibility_date = "2026-08-20"
 
 [vars]
-WEBSITE_URL = "https://projectsoulbytmb.github.io/project---soul/"
+WEBSITE_URL = "https://eidovara.org/"
 STRIPE_PAYMENT_URL = ""
 PAYPAL_PAYMENT_URL = ""
 GUMROAD_PRODUCT_URL = ""
