@@ -8,7 +8,7 @@ export const ASSIST_MODES = ['help', 'download', 'legal'];
 const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
 const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe';
 const INSTALLER_NAME = 'Eidovara-0.18.2-Windows-x64-Setup.exe';
-const INSTALLER_SHA256_NOTE = 'SHA-256 is published as SHA256SUMS.txt on the GitHub Release';
+const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
 const SITE = 'https://projectsoulbytmb.github.io/project---soul/';
 
@@ -42,7 +42,7 @@ export const ENTRIES = [
     modes: ['download', 'help'],
     tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'certified'],
     title: 'Download Windows Alpha',
-    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. ${INSTALLER_SHA256_NOTE}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. Source-available fallback: npm run dist:win:installer on Windows.`,
+    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. Source-available fallback: npm run dist:win:installer on Windows.`,
     links: [{ href: INSTALLER, label: INSTALLER_NAME }, { href: 'download.html', label: 'Download page (18+)' }]
   },
   {
@@ -58,7 +58,7 @@ export const ENTRIES = [
     modes: ['download', 'help', 'legal'],
     tags: ['unsigned', 'authenticode', 'smartscreen', 'sign', 'certificate', 'checksum', 'sha', 'certified', 'microsoft'],
     title: 'Unsigned Windows build',
-    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for v0.18.2, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Download ${INSTALLER_NAME} from the official GitHub Releases asset, then verify ${INSTALLER_SHA256_NOTE}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
+    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for v0.18.2, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Download ${INSTALLER_NAME} from the official GitHub Releases asset, then verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
     links: [{ href: 'security.html', label: 'Security' }, { href: INSTALLER, label: INSTALLER_NAME }]
   },
   {
@@ -375,4 +375,4 @@ export function assistMeta() {
   };
 }
 
-export { RELEASES, INSTALLER, INSTALLER_NAME, INSTALLER_SHA256_NOTE, SOURCE, SITE, REFUSALS };
+export { RELEASES, INSTALLER, INSTALLER_NAME, INSTALLER_SHA256, SOURCE, SITE, REFUSALS };

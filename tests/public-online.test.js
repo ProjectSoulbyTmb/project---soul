@@ -88,6 +88,7 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   assert.ok(primary, 'download page has a primary button');
   assert.equal(primary[1], installerUrl);
   assert.match(downloadPage, new RegExp(installerName.replace(/\./g, '\\.')));
+  assert.match(downloadPage, /EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711/);
   assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.match(downloadPage, /id="ageConfirm"/);
   assert.match(downloadPage, /Authenticode-unsigned/);
@@ -110,6 +111,7 @@ test('primary download CTAs point at the official Windows installer .exe, not on
 
   const knowledge = read('docs/knowledge.js');
   assert.match(knowledge, new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(knowledge, /EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711/);
   assert.match(read('docs/faq.html'), new RegExp(installerName.replace(/\./g, '\\.')));
   assert.match(read('docs/help.html'), new RegExp(installerName.replace(/\./g, '\\.')));
   assert.match(read('LIVE.md'), new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
