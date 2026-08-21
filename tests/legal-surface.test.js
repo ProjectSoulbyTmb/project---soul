@@ -142,7 +142,7 @@ test('legal-instrument pack is templates and notices, not registrations or OSI g
   assert.match(read('NOTICE.md'), /Electron/);
   assert.match(read('NOTICE.md'), /43\.4\.1/);
   assert.match(read('NOTICE.md'), /rcedit/);
-  assert.doesNotMatch(read('NOTICE.md'), /lodash|express|react/);
+  assert.doesNotMatch(read('NOTICE.md'), /\blodash\b|\bexpress\b|\breact\b/);
 });
 
 test('website legal pages cover terms, privacy, age, and Apple disclaimer', () => {

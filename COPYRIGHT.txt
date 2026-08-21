@@ -11,6 +11,7 @@ This page is a copyright notice and ownership claim for qualifying original
 first-party Eidovara expression (source, documentation, first-party UI assets,
 and release materials authored by Tyler Michael Bosworth).
 
+This page is not a U.S. Copyright Office registration or certificate.
 This page is NOT:
   - a U.S. Copyright Office registration or certificate
   - a USPTO trademark registration (marks are unregistered; see TRADEMARKS.md)
