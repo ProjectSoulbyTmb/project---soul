@@ -77,5 +77,5 @@ test('confirm-launch and age gate tests remain in the shipped surface', () => {
   assert.match(main, /function requireAgeGate/);
   assert.equal(DESKTOP_KNOWLEDGE_VERSION, JSON.parse(read('package.json')).version);
   assert.equal(INSTALLER_NAME, 'Eidovara-0.22.2-Windows-x64-Setup.exe');
-  assert.equal(INSTALLER_SHA256, 'A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE');
+  assert.equal(INSTALLER_SHA256, 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675');
 });
