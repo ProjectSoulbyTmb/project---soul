@@ -35,13 +35,17 @@ test('public nav Download uses nav-cta to download.html on every HTML page', () 
   }
 });
 
-test('product, download, and help name source v0.22.2 without inventing a 0.22.2 installer', () => {
-  for (const file of ['docs/product.html', 'docs/download.html', 'docs/help.html']) {
+test('every public HTML page names source v0.22.2 without inventing a 0.22.2 installer', () => {
+  assert.ok(htmlFiles.length >= 14, htmlFiles.length);
+  for (const file of htmlFiles) {
     const html = read(file);
     assert.match(html, /v0\.22\.2/, file);
+    assert.doesNotMatch(html, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/, file);
+  }
+  for (const file of ['docs/product.html', 'docs/download.html', 'docs/help.html']) {
+    const html = read(file);
     assert.match(html, /v0\.19\.1/, file);
     assert.match(html, /Eidovara-0\.19\.1-Windows-x64-Setup\.exe/, file);
-    assert.doesNotMatch(html, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/, file);
   }
   assert.match(read('docs/site.css'), /--eidovara-visual:\s*sleek-c180/);
   assert.match(read('docs/site.css'), /#site-nav > a\.nav-cta/);
