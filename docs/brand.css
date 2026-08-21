@@ -14,3 +14,94 @@
   object-fit: contain;
   border-radius: 8px;
 }
+.hero-mark {
+  width: 92px;
+  height: 92px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #fff 58%, transparent),
+    0 10px 28px color-mix(in srgb, #3a0a14 28%, transparent);
+}
+.studio-mark {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--separator) 80%, transparent);
+}
+.creator .studio-mark,
+.site-footer .studio-mark {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+}
+.download-mark {
+  width: 48px;
+  height: 48px;
+  flex: none;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #fff 50%, transparent);
+}
+.hero-lockup {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  margin: 0 0 14px;
+}
+.hero-lockup h1 { margin: 0; }
+.brand-stage {
+  margin: 18px 0 28px;
+  max-width: 100%;
+  border-radius: var(--card-radius, 18px);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--separator) 80%, transparent);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  box-shadow: 0 18px 40px -28px rgba(16, 24, 40, 0.42);
+}
+.brand-stage img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 320px;
+  object-fit: cover;
+}
+
+body.site[data-page="home"],
+body.site[data-page="product"],
+body.site[data-page="download"] {
+  background-color: var(--grouped);
+  background-image:
+    linear-gradient(
+      color-mix(in srgb, var(--grouped) 84%, transparent),
+      color-mix(in srgb, var(--grouped) 90%, transparent)
+    ),
+    url("eidovara-wallpaper-light.jpg");
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+@media (prefers-color-scheme: dark) {
+  body.site[data-page="home"],
+  body.site[data-page="product"],
+  body.site[data-page="download"] {
+    background-image:
+      linear-gradient(
+        color-mix(in srgb, var(--grouped) 72%, transparent),
+        color-mix(in srgb, var(--grouped) 86%, transparent)
+      ),
+      url("eidovara-wallpaper-dark.jpg");
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.site[data-page="home"],
+  body.site[data-page="product"],
+  body.site[data-page="download"] {
+    background-attachment: scroll;
+  }
+}
