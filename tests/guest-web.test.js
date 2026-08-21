@@ -29,10 +29,12 @@ test('web guest is off by default and only allows public HTTPS pages', () => {
 
 test('guest window is an isolated sandboxed partition and the main workspace stays locked', () => {
   const guest = read('src/electron/guest-window.js');
+  const core = read('src/core/guest-web.js');
   const main = read('src/electron/main.js');
   const html = read('src/renderer/index.html');
   assert.match(guest, /partition: GUEST_PARTITION/);
-  assert.match(guest, new RegExp(GUEST_PARTITION.replace(':', '\\:')));
+  assert.match(core, /persist:eidovara-guest/);
+  assert.equal(GUEST_PARTITION, 'persist:eidovara-guest');
   assert.match(guest, /sandbox: true/);
   assert.match(guest, /nodeIntegration: false/);
   assert.match(guest, /contextIsolation: true/);
