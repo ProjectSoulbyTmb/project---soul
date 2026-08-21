@@ -22,6 +22,7 @@ import {
   startKernelSession
 } from './kernel.js';
 import { requestSoulAssist } from './soul-online.js';
+import { answerCompanion, companionPublicMeta } from './companion.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
@@ -160,10 +161,12 @@ export class SoulEngine {
     let providerError = null;
     let internetError = null;
     let webResearch = null;
+    const companionTurn = answerCompanion(text, { state: this.state });
     if (!reply && route.enabled === false && route.moduleId) {
       reply = disabledModuleReply(route, locale);
     }
     if (!reply && route.knowledgeReply) reply = route.knowledgeReply;
+    if (!reply && companionTurn.usedKnowledge && companionTurn.reply) reply = companionTurn.reply;
     if (!reply) {
       if (route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text)) {
         try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); }
@@ -186,9 +189,10 @@ export class SoulEngine {
     const done = new Date().toISOString();
     conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch });
     conv.updatedAt = done;
-    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId } });
+    const companion = companionPublicMeta(companionTurn);
+    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId, companionIntent: companion.intent, companionNetwork: false } });
     if (this.state.audit.length > 5000) this.state.audit = this.state.audit.slice(-5000);
     this.store.save(this.state);
-    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, kernel: kernelPublicMeta(route), adultAllowed: adultAllowed(this.state), state: this.snapshot() };
+    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, companion, kernel: kernelPublicMeta(route), adultAllowed: adultAllowed(this.state), state: this.snapshot() };
   }
 }

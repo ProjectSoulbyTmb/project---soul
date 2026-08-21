@@ -93,7 +93,7 @@ const ENTRIES = {
 };
 
 const PRODUCT_RULES = [
-  { id: 'age', re: /\b(18\+|eighteen(?:\s+or\s+older)?|age\s*gate|under\s*18|adults?\s+only|coppa|how\s+old)\b/i },
+  { id: 'age', re: /18\+|eighteen(?:\s+or\s+older)?|\bage\s*gate\b|\bunder\s*18\b|\badults?\s+only\b|\bcoppa\b|\bhow\s+old\b/i },
   { id: 'unsigned', re: /\b(authenticode|unsigned|smartscreen|microsoft[- ]certified|code[ -]?sign(?:ed|ing)?|ev[ -]?sign)\b/i },
   { id: 'payments', re: /\b(pci|stripe|paypal|gumroad|checkout|live\s+payments?|buy\s+(?:premium|eidovara)|credit\s*cards?|card\s+numbers?)\b/i },
   { id: 'platforms', re: /\b(linux|macos|mac\s*os|iphone|ios|ipad|android|official\s+platform|sf\s*pro)\b/i },
