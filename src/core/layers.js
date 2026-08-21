@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * In-app consumer workspace layers for the Soul kernel.
  *

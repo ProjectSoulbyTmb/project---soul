@@ -36,13 +36,15 @@
     <main class="workspace">
       <header class="topbar">
         <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
-        <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
+        <div class="title-wrap"><strong id="viewTitle">Dashboard</strong><span id="modePill">Standard Soul</span></div>
         <div class="top-actions">
           <button type="button" class="icon-btn" id="paletteBtn" aria-label="Jump anywhere" aria-keyshortcuts="Control+K" title="Ctrl+K">Ctrl+K</button>
           <button type="button" class="icon-btn" id="shortcutBtn" aria-label="Keyboard shortcuts" aria-keyshortcuts="Control+/" title="Ctrl+/">Ctrl+/</button>
-          <button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Open Soul companion on the Dashboard"><span class="companion-face"><i></i><i></i></span></button>
+          <button type="button" class="icon-btn visually-hidden" id="paletteOpenBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette">⌘K</button>
+          <button type="button" class="icon-btn visually-hidden" id="cheatsheetOpenBtn" title="Keyboard cheatsheet (Ctrl+/)" aria-label="Open keyboard cheatsheet">?</button>
+          <button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Open Soul companion"><span class="companion-face"><i></i><i></i></span></button>
           <span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span>
-          <span class="status-dot idle" id="kernelDot" title="Local Soul"></span><span id="kernelLabel">Soul waiting</span>
+          <span class="status-dot idle" id="kernelDot" title="Local Soul kernel"></span><span id="kernelLabel">Soul waiting</span>
           <span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span>
         </div>
       </header>
@@ -51,9 +53,12 @@
         <span id="focusQuietRemaining">0:00</span>
         <span class="focus-quiet-note">Quiet block on this PC. Other apps are not closed or injected into.</span>
         <button type="button" class="secondary" id="focusQuietStop">Stop</button>
-      </div>
+        <strong id="focusQuietLabel" data-i18n="focusQuiet">Focus session</strong>
+        <span id="focusQuietRemaining">0:00</span>
+        <span class="focus-quiet-note" data-i18n="focusQuietNote">Local timer. Other apps are not closed or injected into.</span>
+        <button type="button" class="secondary" id="focusQuietStop" data-i18n="focusStop">Stop</button>      </div>
 
-      <section class="view active" id="chatView">
+      <section class="view" id="chatView">
         <div class="chat-scroll" id="chatScroll">
           <div class="welcome" id="welcome">
             <div class="soul-mark large" aria-hidden="true"><span></span></div>
@@ -62,6 +67,7 @@
             <div class="starter-grid">
               <button type="button" id="welcomeDashboardBtn" data-i18n="welcomeDashboard">Open Dashboard</button>
               <button data-starter="Hello Soul. Tell me who you are.">Meet Soul</button>
+              <button data-starter="What can this workspace do?">Workspace help</button>
               <button data-starter="I want to talk something through with you.">Talk something through</button>
               <button data-starter="Remember that I prefer concise, direct answers.">Set a preference</button>
               <button data-starter="What do you remember about me?">Review memory</button>
@@ -78,24 +84,62 @@
         </form>
       </section>
 
-      <section class="view panel-view" id="dashboardView">
-        <div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">Home after 18+: pick a next step, then use Apps, Entertainment, or Soul on the right. Soul is local. Assist is optional and off by default.</p></div></div>
-        <div class="start-path card" id="startPath">
-          <h3 data-i18n="startPathTitle">Start here</h3>
-          <p class="settings-help" data-i18n="startPathLead">One path after you confirm 18+. You can hide this card anytime.</p>
-          <ol class="start-path-steps">
-            <li data-i18n="startPathStep1">This Dashboard is home. Cards below open the real surfaces.</li>
-            <li data-i18n="startPathStep2">Soul (right dock) is the local software self-model. Ask it here. It is not a person and not the website helper.</li>
-            <li data-i18n="startPathStep3">Assist is an optional Worker helper. It stays off unless you enable it in Settings. Assist is not Soul.</li>
-          </ol>
-          <div class="empty-actions start-path-actions">
-            <button type="button" data-start="talk" data-i18n="startTalk">Talk with Soul</button>
-            <button type="button" class="secondary" data-start="apps" data-i18n="startApps">Add a trusted app</button>
-            <button type="button" class="secondary" data-start="settings" data-i18n="startSettings">Open Settings</button>
-            <button type="button" class="secondary" id="dismissStartPath" data-i18n="startDismiss">Hide this guide</button>
+      <section class="view panel-view active" id="dashboardView">
+        <div class="panel-head">
+          <div>
+            <h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2>
+            <p data-i18n="dashboardLead">Home after 18+: pick a next step, then use Apps, Entertainment, or Soul on the right. Soul is local. Assist is optional and off by default.</p>
           </div>
+          <div class="widget-toolbar"><button type="button" class="secondary" id="paletteHintBtn" data-i18n="paletteOpen">Jump (Ctrl+K)</button><button type="button" class="secondary" id="cheatsheetHintBtn" data-i18n="cheatsheetOpen">Shortcuts</button></div>
         </div>
-        <div class="dashboard-grid" id="dashboardGrid"></div><div class="quick-grid" id="dashboardQuick"><button data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button><button data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button><button data-quick="Create a study plan and quiz me." data-i18n="study">Study</button><button data-quick="Help me start a creative project." data-i18n="create">Create</button><button data-quick="Search the internet for current information I need." data-i18n="research">Research</button><button data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button></div></section>
+        <div class="dashboard-shell">
+          <div class="dashboard-main">
+            <div class="start-path card" id="startPath">
+              <h3 data-i18n="startPathTitle">Start here</h3>
+              <p class="settings-help" data-i18n="startPathLead">One path after you confirm 18+. You can hide this card anytime.</p>
+              <ol class="start-path-steps">
+                <li data-i18n="startPathStep1">This Dashboard is home. Cards below open the real surfaces.</li>
+                <li data-i18n="startPathStep2">Soul (right dock) is the local software self-model. Ask it here. It is not a person and not the website helper.</li>
+                <li data-i18n="startPathStep3">Assist is an optional Worker helper. It stays off unless you enable it in Settings. Assist is not Soul.</li>
+              </ol>
+              <div class="empty-actions start-path-actions">
+                <button type="button" data-start="talk" data-i18n="startTalk">Talk with Soul</button>
+                <button type="button" class="secondary" data-start="apps" data-i18n="startApps">Add a trusted app</button>
+                <button type="button" class="secondary" data-start="settings" data-i18n="startSettings">Open Settings</button>
+                <button type="button" class="secondary" id="dismissStartPath" data-i18n="startDismiss">Hide this guide</button>
+              </div>
+            </div>
+            <div class="dashboard-grid" id="dashboardGrid"></div>
+            <div class="quick-grid" id="dashboardQuick">
+              <button type="button" data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button>
+              <button type="button" data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button>
+              <button type="button" data-quick="Create a study plan and quiz me." data-i18n="study">Study</button>
+              <button type="button" data-quick="Help me start a creative project." data-i18n="create">Create</button>
+              <button type="button" data-quick="Search the internet for current information I need." data-i18n="research">Research</button>
+              <button type="button" data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button>
+            </div>
+          </div>
+          <aside class="companion-panel" id="companionPanel" aria-labelledby="companionPanelTitle">
+            <header class="companion-head">
+              <div>
+                <h3 id="companionPanelTitle" data-i18n="companionPanelTitle">Workspace companion</h3>
+                <p id="companionSub" class="companion-sub" data-i18n="companionLead">Local answers. Conversations stay on this PC. Ctrl+/ to focus.</p>
+              </div>
+              <p id="companionSoulStatus" class="companion-soul is-off" role="status"></p>
+            </header>
+            <div class="companion-actions" id="companionQuickActions" role="toolbar" aria-label="Companion quick actions">
+              <button type="button" data-companion-nav="apps" data-i18n="companionApps">Apps</button>
+              <button type="button" data-companion-nav="entertainment" data-i18n="companionMedia">Media</button>
+              <button type="button" data-companion-nav="memory" data-i18n="companionMemory">Memory</button>
+              <button type="button" data-companion-nav="legal" data-i18n="companionLegal">Legal</button>
+              <button type="button" data-companion-nav="status" data-i18n="companionStatus">Status</button>
+              <button type="button" data-companion-ask="What can this workspace do?" data-i18n="companionHelp">Help</button>
+            </div>
+            <div class="companion-log" id="companionLog" aria-live="polite"></div>
+            <p class="composer-note" data-i18n="companionNote">Composer is on the Soul dock. Local only · Assist is not Soul · no live payments</p>
+          </aside>
+        </div>
+      </section>
 
       <section class="view panel-view" id="researchView">
         <div class="panel-head"><div><h2 data-i18n="researchTitle">Research</h2><p id="researchLead" data-i18n="researchLead">Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.</p></div></div>
@@ -121,7 +165,6 @@
         <p class="soul-online-copy" id="soulOnlineCopy">Online helper off. Local kernel stays the source of truth.</p>
         <div class="soul-module-list" id="soulModuleChips" aria-label="Feature modules"></div>
         <div class="soul-action-list" id="soulQuickActions" aria-label="Custom quick actions"></div>
-        <div class="companion-log" id="companionLog" aria-live="polite"></div>
         <p class="companion-error hidden" id="companionError" role="status"></p>
         <form class="companion-form" id="companionForm">
           <label class="visually-hidden" for="companionInput" data-i18n="companionAskLabel">Ask Soul</label>
@@ -302,8 +345,8 @@
         <button type="button" class="secondary" data-legal="age">Age 18+</button>
       </div>
       <div class="legal-panel" id="legalAboutPanel">
-        <p>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. See also LICENSE and TRADEMARKS.md. Third-party stays third-party. Created and owned by Tyler Michael Bosworth. Published under the intended name Soul Consciousness Studios™ (unregistered). Source-available evaluation license — not OSI open source. Official product: unsigned Windows 10/11 x64 desktop software. The advertised download is the official unsigned installer Eidovara-0.19.0-Windows-x64-Setup.exe from GitHub Releases, not a git clone. It is not Authenticode-signed or Microsoft-certified. Linux/macOS scripts are development targets.</p>
-        <p>Soul is a software assistant with local continuity. It is not a human, therapy, medical/financial/legal advice, or proof of consciousness. It is not Marvel's J.A.R.V.I.S. or any Disney/Marvel character. Eidovara is not affiliated with Apple, Microsoft, Electron, GitHub, Spotify, YouTube, or OBS, and is not an iOS or iPhone product. The interface uses a system font stack and does not require licensed SF Pro files. Electron, Chromium, Node.js, Windows, and Wikipedia/Wikimedia content remain their owners' property. Users own their own content. These notices are not legal advice or a government registration.</p>
+        <p>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Created and owned by Tyler Michael Bosworth. Published under the intended name Soul Consciousness Studios™ (unregistered) — that name is the intended publisher only, not a formed entity that owns this IP unless a signed assignment exists. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Source-available evaluation license — not OSI open source. Forks remain under LICENSE and may not be relicensed as MIT, Apache, GPL, or other open source. GitHub pull requests do not transfer ownership or trademark rights; contributor-assignment and entity-assignment files in the repository are unsigned templates only. Official product: unsigned Windows 10/11 x64 desktop software. The advertised download is the official unsigned installer Eidovara-0.19.0-Windows-x64-Setup.exe from GitHub Releases, not a git clone. It is not Authenticode-signed or Microsoft-certified. Linux/macOS scripts are development targets.</p>
+        <p>Soul is a software assistant with local continuity. It is not a human, therapy, medical/financial/legal advice, or proof of consciousness. Eidovara is not affiliated with Apple, Microsoft, Electron, GitHub, Spotify, YouTube, OBS, Marvel, or Disney, and is not an iOS or iPhone product, not Jarvis, and not a Marvel character. The interface uses a system font stack and does not require licensed SF Pro or SF Mono files. Eidovara, Soul, and the Soul kernel are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar. Electron, Chromium, Node.js, Windows, and Wikipedia/Wikimedia content remain their owners' property. Users own their own content. These notices are not legal advice or a government registration. Full LICENSE and TRADEMARKS.md ship with this installation.</p>
         <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed on this OS. Optional Worker <code>/v1/assist</code> is off unless you opt in; it is not Soul and never receives conversation history.</p>
       </div>
       <div class="legal-panel hidden" id="legalTermsPanel">
@@ -320,17 +363,25 @@
       <div class="setup-actions"><button type="button" class="secondary" id="legalCloseBtn">Close</button></div>
     </div>
   </div>
-
   <div class="setup-overlay hidden" id="commandPalette" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
     <div class="setup-dialog palette-dialog">
-      <div><h1 id="paletteTitle">Jump anywhere</h1><p>Ctrl+K. Soul is the local assistant on the right. Assist is optional and off by default.</p></div>
-      <label class="setup-field">Find a place<input id="paletteInput" type="search" maxlength="80" placeholder="Dashboard, settings, apps, voices…" aria-label="Filter commands" autocomplete="off" /></label>
-      <div id="paletteList" class="palette-list" role="listbox" aria-label="Commands"></div>
+      <div><h1 id="paletteTitle" data-i18n="paletteTitle">Jump in Eidovara</h1><p data-i18n="paletteLead">Local jump and search. No background crawler. Linked apps still confirm-launch. Assist is not Soul.</p></div>
+      <label class="setup-field"><span class="visually-hidden">Palette query</span><input id="paletteInput" type="search" maxlength="200" autocomplete="off" placeholder="Views, intents, settings, memory, linked apps…" aria-label="Command palette" /></label>
+      <ul class="palette-results" id="paletteResults" role="listbox" aria-label="Palette results"></ul>
+      <div id="paletteList" class="palette-list hidden" role="listbox" aria-label="Commands"></div>
+      <p class="palette-hint" data-i18n="paletteHint">↑↓ to move · Enter to run · Esc to close · Ctrl+K</p>
       <div class="setup-actions"><button type="button" class="secondary" id="paletteCloseBtn">Close</button></div>
     </div>
   </div>
+  <div class="setup-overlay hidden" id="cheatsheetOverlay" role="dialog" aria-modal="true" aria-labelledby="cheatsheetTitle">
+    <div class="setup-dialog admin-dialog">
+      <div><h1 id="cheatsheetTitle" data-i18n="cheatsheetTitle">Keyboard cheatsheet</h1><p data-i18n="cheatsheetLead">Eidovara shortcuts. This overlay is in-app only — it does not inject into games or other processes.</p></div>
+      <div id="cheatsheetList" class="cheatsheet-list"></div>
+      <div class="setup-actions"><button type="button" class="secondary" id="cheatsheetCloseBtn" data-i18n="cancel">Close</button></div>
+    </div>
+  </div>
   <div class="setup-overlay hidden" id="shortcutSheet" role="dialog" aria-modal="true" aria-labelledby="shortcutTitle">
-    <div class="setup-dialog palette-dialog" id="cheatsheetOverlay">
+    <div class="setup-dialog palette-dialog">
       <div><h1 id="shortcutTitle">Keyboard shortcuts</h1><p>Ctrl+/ opens this list. Ctrl+A is admin only when you are not typing in a field.</p></div>
       <dl class="shortcut-list">
         <div><dt>Ctrl+K</dt><dd>Jump to Dashboard, Settings groups, Apps, Soul, and legal</dd></div>

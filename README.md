@@ -28,7 +28,7 @@ Adult Mode is off by default and appears only after legal-adult confirmation, ex
 
 Eidovara is **source-available, not open source**, and restricted to users **18 or older**. Official advertised distribution is an **Authenticode-unsigned Windows 10/11 x64** desktop build. Linux/macOS scripts are development targets, not official products. Premium in v0.19.0 is local-admin testing only; there is no live payment or automatic paid unlock.
 
-Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is public Wikipedia/Wikimedia after an explicit internet/web/online request. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, or Electron and is not an iOS/iPhone product.
+Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is public Wikipedia/Wikimedia after an explicit internet/web/online request. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, or Electron and is not an iOS/iPhone product. Soul is a first-party kernel, not a third-party film or assistant brand.
 
 Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices](LEGAL_NOTICES.md), [Security](SECURITY.md), [Network Usage](NETWORK-USAGE.md), and [Third-Party Notices](THIRD_PARTY_NOTICES.md).
 
@@ -58,6 +58,6 @@ The Windows installer is generated in `dist/`. Linux and macOS packaging scripts
 
 ## Rights and project records
 
-Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party.
+Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party. Soul Consciousness Studios is the intended publisher name only.
 
-See [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice.
+See [LICENSE](LICENSE), [COPYRIGHT.txt](COPYRIGHT.txt), [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Copyright notices](docs/COPYRIGHT.md), [Trademark filing checklist](docs/TRADEMARK_FILING.md) (not filed), [Brand guide](docs/BRAND_GUIDE.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). First-party JavaScript carries SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Forks remain under LICENSE and may not be relicensed as open source. GitHub pull requests do not transfer ownership. These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice. The owner must still register copyright at copyright.gov, file trademarks if desired, form an entity if desired, and sign assignments privately.

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 (() => {
   const $ = s => document.querySelector(s);
   const $$ = s => [...document.querySelectorAll(s)];
@@ -254,6 +256,13 @@
           $('#serviceForm')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' });
         }
         if (item.type === 'open-legal' && typeof window.eidovaraShowLegal === 'function') window.eidovaraShowLegal(item.legal || 'about');
+        if (item.type === 'open-palette' && typeof window.eidovaraLayers?.openPalette === 'function') window.eidovaraLayers.openPalette();
+        if (item.type === 'open-cheatsheet' && typeof window.eidovaraLayers?.openCheatsheet === 'function') window.eidovaraLayers.openCheatsheet();
+        if (item.type === 'start-focus' && typeof window.eidovaraLayers?.startFocus === 'function') window.eidovaraLayers.startFocus(item.minutes || 25, item.label);
+        if (item.type === 'stop-focus' && typeof window.eidovaraLayers?.stopFocus === 'function') window.eidovaraLayers.stopFocus();
+        if (item.type === 'capture-scratch' && typeof window.eidovaraLayers?.captureScratch === 'function') window.eidovaraLayers.captureScratch();
+        if (item.type === 'confirm-launch-app' && item.appId && window.soul?.launchApplication) window.soul.launchApplication(item.appId);
+        if (item.type === 'run-command' && item.command && typeof window.eidovaraSend === 'function') window.eidovaraSend(item.command);
         if (item.type === 'open-updates') {
           if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
           $('#checkUpdateBtn')?.focus();

@@ -42,6 +42,7 @@ test('Escape closes legal, admin, palette, cheatsheet, and cancelable setup over
   assert.match(renderer, /#adminOverlay/);
   assert.match(renderer, /#commandPalette/);
   assert.match(renderer, /#shortcutSheet/);
+  assert.match(renderer, /#cheatsheetOverlay/);
 });
 
 test('desktop chrome and installer EULA match package.json version', () => {

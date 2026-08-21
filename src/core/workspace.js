@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const LOCAL_WORKSPACE_INTENTS = new Set([
   'identity', 'hello', 'memory', 'remember', 'focus', 'gaming', 'study', 'create',
   'mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise', 'talk',

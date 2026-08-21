@@ -25,7 +25,9 @@ Use this checklist for websites, store listings, release notes, videos, screensh
 - “Patented,” “patent pending,” “registered trademark,” “certified,” “government approved,” “lawyer approved,” or “legally compliant everywhere.”
 - Guaranteed game performance, universal compatibility, complete computer access, infallible security, or guaranteed prevention of malware or illegal use.
 - Partnership, sponsorship, certification, or endorsement by Apple, Microsoft, GitHub, Electron, Spotify, YouTube, OBS, Twitch, NVIDIA, payment providers, model providers, or any other third party without a signed agreement.
-- Describing Eidovara as an iOS, iPhone, iPad, or Apple product, or stating that licensed SF Pro fonts are required.
+- Describing Eidovara as an iOS, iPhone, iPad, or Apple product, or stating that licensed SF Pro or SF Mono fonts are required.
+- Using Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, or Character.AI as an Eidovara product or feature name.
+- Copying distinctive third-party slogans (including “Hey Siri”, “OK Google”, Clippy-style help, or Copilot key art) or shipping unlicensed third-party logos, fonts, screenshots, lyrics, books, news articles, or copied help articles.
 - An active subscription, automatic entitlement, refund promise, or payment security certification before the commerce service and its complete consumer terms are deployed and tested.
 
 ## Publication gate

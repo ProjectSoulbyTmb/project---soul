@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /** Eidovara website helper knowledge pack (v0.19.0). Same answers for Pages and Worker. */
 export const ASSIST_VERSION = '0.19.0';
 export const MAX_ASSIST_QUERY = 800;
@@ -139,17 +141,25 @@ export const ENTRIES = [
   {
     id: 'platforms',
     modes: ['help', 'download'],
-    tags: ['linux', 'mac', 'macos', 'iphone', 'ios', 'android', 'platform', 'official'],
+    tags: ['linux', 'mac', 'macos', 'iphone', 'ios', 'android', 'platform', 'official', 'sf'],
     title: 'Official platform',
-    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets, not official signed products. Eidovara is not an iOS, iPhone, iPad, or Apple product and does not require licensed SF Pro fonts. It is not affiliated with Apple, Microsoft, or Electron.',
+    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets, not official signed products. Eidovara is not an iOS, iPhone, iPad, or Apple product and does not require licensed SF Pro or SF Mono fonts. It is not affiliated with Apple, Microsoft, or Electron.',
     links: [{ href: 'licensing.html', label: 'Licensing' }]
+  },
+  {
+    id: 'brands',
+    modes: ['help', 'legal'],
+    tags: ['jarvis', 'marvel', 'disney', 'siri', 'alexa', 'copilot', 'chatgpt', 'claude', 'raycast', 'alfred', 'spotlight', 'clippy', 'cortana', 'replika', 'iron', 'stark', 'xbox', 'brand', 'trademark', 'affiliated'],
+    title: 'First-party names only',
+    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Architecture is a session kernel / Soul kernel only. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use — not bundled apps or logos. Marks stay unregistered ™. This is not legal advice.',
+    links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
     id: 'license',
     modes: ['legal', 'help'],
     tags: ['license', 'open', 'source-available', 'oss', 'copyright', 'evaluation'],
     title: 'Source-available, not open source',
-    reply: 'The repository uses the Eidovara Source-Available Evaluation License. That is not an OSI open-source license and is not MIT, Apache, or GPL. Viewing the source does not transfer ownership or grant patent or trademark rights. Read LICENSE, TERMS, NOTICE, OWNERSHIP, and AGE included with each release.',
+    reply: 'The repository uses the Eidovara Source-Available Evaluation License (LicenseRef-Eidovara-Source-Available-1.0). That is not an OSI open-source license and is not MIT, Apache, or GPL. Viewing or forking the source does not transfer ownership, grant patent or trademark rights, or let anyone relicense first-party material as open source. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Read LICENSE, TERMS, NOTICE, OWNERSHIP, TRADEMARKS, and AGE included with each release.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: SOURCE, label: 'GitHub' }]
   },
   {
@@ -157,7 +167,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
     title: 'First-party owner',
-    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. Pull requests do not transfer copyright until a privately executed assignment. The contributor CLA and entity assignment files are unsigned templates only; this repository does not contain executed copies. This is not legal advice, a court judgment, or a government registration.',
+    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. A fork stays under LICENSE and is not open source. Pull requests do not transfer copyright, joint authorship, or trademark rights until a privately executed assignment. Sign privately; posting a PR is not assignment. The contributor CLA and entity assignment files are unsigned templates only; this repository does not contain executed copies. This is not legal advice, a court judgment, or a government registration.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {

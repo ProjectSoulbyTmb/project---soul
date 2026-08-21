@@ -4,7 +4,7 @@
 
 This file is a blank form the first-party owner may print or copy and complete **privately** with a contributor after independent legal review. It is **not** a signed agreement. Publishing it does not mean any contributor has assigned rights. The repository does not store executed copies, wet-ink signatures, or a roster of unknown signers.
 
-**Do not “sign” this by opening a GitHub pull request.** Eidovara does not accept copyrightable contributions through issues, suggestions, or PRs until Tyler Michael Bosworth gives prior written approval **and** both parties execute a separate written agreement appropriate to that material. Platform terms that apply to material posted on GitHub remain independently applicable and are not a substitute for this assignment. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+**Sign privately; posting a PR is not assignment.** **Do not “sign” this by opening a GitHub pull request.** Eidovara does not accept copyrightable contributions through issues, suggestions, or PRs until Tyler Michael Bosworth gives prior written approval **and** both parties execute a separate written agreement appropriate to that material. Platform terms that apply to material posted on GitHub remain independently applicable and are not a substitute for this assignment. See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 This template is **not legal advice** and is not a court judgment. Have qualified counsel review it before use. Replace bracketed placeholders. Do not commit completed or signed copies to this public repository.
 
@@ -14,15 +14,27 @@ This template is **not legal advice** and is not a court judgment. Have qualifie
 
 **Effective date:** [YYYY-MM-DD]
 
+**Governing law / venue (complete with counsel):** [State / country], [courts]
+
+**Consideration:** Contributor acknowledges receipt of [describe: $1.00 / other bargained consideration / opportunity to have the Contribution considered for incorporation], the sufficiency of which Contributor acknowledges.
+
 **Owner (assignee):** Tyler Michael Bosworth, an individual, claiming first-party rights in the Eidovara project (“Owner”). Soul Consciousness Studios is an intended publisher name only and is not a party unless a formed entity is named in a separate signed writing.
 
-**Contributor (assignor):** [Legal name], [address], [email] (“Contributor”).
+**Contributor (assignor):**
+
+| Field | Complete privately |
+| --- | --- |
+| Legal name | [Legal name] |
+| Address | [street, city, state/province, postal code, country] |
+| Email | [email] |
+| Age | Contributor is at least 18: [yes / no] |
+| GitHub username (optional, identification only) | [username — posting under this name is still not assignment] |
 
 ### 1. Contribution
 
 “Contribution” means the copyrightable material described below, including source code, documentation, artwork, configuration, and related original expression, whether submitted privately or (after approval) incorporated into Eidovara:
 
-[Describe files, commit SHAs, or attach a schedule. Do not paste secrets.]
+[Describe files, commit SHAs, or attach Exhibit A. Do not paste secrets.]
 
 ### 2. Assignment
 
@@ -30,13 +42,15 @@ Contributor hereby irrevocably assigns to Owner all right, title, and interest i
 
 To the extent a right cannot be assigned, Contributor hereby grants Owner an exclusive, irrevocable, royalty-free, worldwide, transferable license (with right to sublicense) to exercise all such rights, including reproduction, preparation of derivative works, distribution, public display, and public performance.
 
+If applicable law treats the Contribution as a work made for hire in favor of Owner, the parties intend that result; the assignment in this section is a backup if work-made-for-hire does not apply.
+
 ### 3. Moral rights
 
 To the maximum extent permitted by applicable law, Contributor waives (and agrees not to assert) moral rights, rights of attribution or integrity, and similar rights in the Contribution, solely as needed for Owner to use, modify, license, and commercialize Eidovara. Where a waiver is not permitted, Contributor consents to Owner’s reasonable uses.
 
 ### 4. Patents
 
-If Contributor owns or controls patent claims that would necessarily be infringed by the Contribution as incorporated into Eidovara, Contributor grants Owner a perpetual, irrevocable, worldwide, royalty-free license to those claims solely to make, use, sell, offer to sell, import, and otherwise exploit the Contribution as part of Eidovara and official unmodified releases. This clause does **not** represent that any patent exists or has been filed.
+If Contributor owns or controls patent claims that would necessarily be infringed by the Contribution as incorporated into Eidovara, Contributor grants Owner a perpetual, irrevocable, worldwide, royalty-free license to those claims solely to make, use, sell, offer to sell, import, and otherwise exploit the Contribution as part of Eidovara and official unmodified releases. This clause does **not** represent that any patent exists or has been filed. It does not grant a patent license in Eidovara as a whole beyond the Contribution.
 
 ### 5. Representations
 
@@ -48,11 +62,15 @@ Material Contributor does not own (including Electron, Chromium, Node.js, Window
 
 ### 7. No GitHub acceptance
 
-A pull request, issue, or uploaded patch is not acceptance of the Contribution and does not transfer ownership. Owner may decline the Contribution. Only a fully executed copy of this form (or another written agreement Owner accepts) plus Owner’s written approval authorizes incorporation.
+A pull request, issue, or uploaded patch is not acceptance of the Contribution and does not transfer ownership. **Sign privately; posting a PR is not assignment.** Owner may decline the Contribution. Only a fully executed copy of this form (or another written agreement Owner accepts) plus Owner’s written approval authorizes incorporation.
 
-### 8. Governing law; miscellaneous
+### 8. Further assurances
 
-[Governing law and venue — to be completed with counsel.] This is the entire agreement for the Contribution. Amendments must be in writing and signed by both parties. If a provision is unenforceable, the remainder remains in effect.
+Contributor will execute documents reasonably requested to evidence or record this assignment, at Owner’s expense, without representing that any government office will accept them.
+
+### 9. Governing law; miscellaneous
+
+[Governing law and venue — to be completed with counsel.] This is the entire agreement for the Contribution. Amendments must be in writing and signed by both parties. If a provision is unenforceable, the remainder remains in effect. This template creates no obligation until both parties have signed a private original.
 
 ### Signatures (leave blank in the repository)
 

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 export function reflectOnGrowth(state, text) {
   const t = text.toLowerCase();
   const isGrowth = /\b(growth|wisdom|reflect|patience|rest|learn|restraint|clarity)\b/.test(t);

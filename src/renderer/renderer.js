@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const $ = s => document.querySelector(s);
 const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
@@ -12,7 +14,15 @@ const assistantPayload = (extra = {}) => {
 
 function activeConversation(){ return state?.conversations?.find(c=>c.id===state.activeConversationId) || state?.conversations?.[0]; }
 function fmt(ts){ try{return new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date(ts));}catch{return '';} }
-function setView(name){ if(!views[name])return;Object.values(views).forEach(v=>v.classList.remove('active')); views[name].classList.add('active'); $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]); if(innerWidth<861) $('#sidebar').classList.remove('open'); if(name==='research') renderResearchView(); }
+function setView(name){
+  if(!views[name])return;
+  Object.values(views).forEach(v=>v.classList.remove('active'));
+  views[name].classList.add('active');
+  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]);
+  $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
+  if(innerWidth<861) $('#sidebar').classList.remove('open');
+  if(name==='research') renderResearchView();
+}
 function el(tag, cls, text){ const n=document.createElement(tag); if(cls)n.className=cls; if(text!==undefined)n.textContent=text; return n; }
 function latestResearch(){
   const convs=state?.conversations||[];
@@ -201,18 +211,20 @@ function renderApps(){
 }
 async function refreshBackups(){const select=$('#backupSelect');select.textContent='';const backups=await window.soul.listBackups();backupCount=backups.length;for(const b of backups){const o=el('option','',`${new Date(b.createdAt).toLocaleString()} · ${Math.ceil(b.bytes/1024)} KB`);o.value=b.name;select.append(o);}if(!backups.length)select.append(el('option','',t('noBackups','No backups yet. Create one before changing providers or resetting.')));$('#restoreBackupBtn').disabled=!backups.length;if(!backups.length && !$('#backupStatus').textContent) $('#backupStatus').textContent=t('noBackups','No backups yet. Create one before changing providers or resetting.');}
 function renderDashboard(){
-  const box=$('#dashboardGrid'); if(!box) return;
+  window.eidovaraState=state;
+  window.eidovaraSettings=settings;
   if(window.eidovaraLayers?.renderDashboard){
     window.eidovaraLayers.renderDashboard({state,settings,backupCount,setView,send,openSetup});
     return;
   }
+  const box=$('#dashboardGrid'); if(!box) return;
   box.textContent='';
   const roles=(state.setup?.categories||[]);
   const memories=(state.memories||[]).filter(x=>x.active).length;
   const apps=(settings?.apps||[]).length;
   const taste=Object.keys(state.entertainment?.taste||{}).length;
   const items=[
-    {label:t('dashFocus','Focus'), value:state.assistant?.preferences?.focusMode||'general', next:t('focusSession','Focus session'), run:()=>{setView('chat');send('Plan a focused session for my current priority.');}},
+    {label:t('dashFocus','Focus'), value:state.assistant?.preferences?.focusMode||'general', next:t('focusSession','Focus session'), run:()=>{setView('dashboard');send('Plan a focused session for my current priority.',{surface:'companion'});}},
     {label:t('dashRoles','Roles'), value:roles.length?roles.join(', '):t('notConfigured','not configured'), next:t('nextConfigure','Configure roles'), run:()=>openSetup(true)},
     {label:t('dashMemory','Memory'), value:`${memories} active`, next:t('nextMemory','Review memory'), run:()=>setView('memory')},
     {label:t('dashApps','Apps'), value:`${apps} linked`, next:t('nextAddApps','Add a trusted app'), run:()=>setView('apps')},
@@ -224,6 +236,92 @@ function renderDashboard(){
     {label:t('dashHealth','Diagnostics'), value:settings?.encryptionAvailable?'OS-protected':'local files', next:t('nextDiagnostics','Show diagnostics'), run:()=>{setView('settings');$('#diagnosticsBtn').click();}}
   ];
   for(const item of items){const c=el('button','dashboard-card');c.type='button';c.append(el('small','',item.label),el('strong','',item.value),el('span','next',item.next));c.addEventListener('click',item.run);box.append(c);}
+  renderCompanionPanel();
+}
+let lastCompanion = null;
+function soulSetupOn(){ return state?.setup?.completed === true; }
+function setCompanionError(text){
+  const note=$('#companionError');
+  if(!note)return;
+  const value=String(text||'').trim();
+  note.textContent=value;
+  note.classList.toggle('hidden',!value);
+}
+function setCompanionBusy(on){
+  const btn=$('#companionSendBtn');
+  if(btn)btn.disabled=Boolean(on);
+  const log=$('#companionLog');
+  if(!log)return;
+  $('#companionTyping')?.remove();
+  if(on){
+    const typing=el('div','companion-msg companion-msg-assistant companion-typing');
+    typing.id='companionTyping';
+    typing.append(el('p','',t('companionThinking','Working locally…')));
+    log.append(typing);
+    log.scrollTop=log.scrollHeight;
+  }
+}
+function companionActionButton(action){
+  const b=el('button','',action.label||action.type);
+  b.type='button';
+  b.addEventListener('click',()=>applyCompanionAction(action));
+  return b;
+}
+function applyCompanionAction(action){
+  if(!action||!action.type)return;
+  if(action.type==='open-view'&&action.view){ if(action.view==='dashboard'){ setView('dashboard'); $('#companionInput')?.focus(); } else setView(action.view); }
+  else if(action.type==='open-legal') showLegal(action.legal||'about');
+  else if(action.type==='open-setup') openSetup(true);
+  else if(action.type==='open-diagnostics'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
+  else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'}); }
+  else if(action.type==='open-updates'){ setView('settings'); $('#checkUpdateBtn')?.scrollIntoView({behavior:'smooth',block:'center'}); }
+}
+function applyCompanionResult(res,{applyAuto=false}={}){
+  lastCompanion=res?.companion||lastCompanion;
+  if(applyAuto){
+    const first=(lastCompanion?.actions||[]).find(a=>a.auto);
+    if(first) applyCompanionAction(first);
+  }
+  renderCompanionPanel();
+}
+function renderCompanionPanel(){
+  const status=$('#companionSoulStatus');
+  const sub=$('#companionSub');
+  const log=$('#companionLog');
+  if(!status||!log)return;
+  const soul=lastCompanion?.soul;
+  const enabled=soul?Boolean(soul.enabled):soulSetupOn();
+  status.classList.toggle('is-off',!enabled);
+  status.textContent=soul?.label || (enabled
+    ? t('companionSoulOn','Soul is a software self-model on this device — not a claim of consciousness.')
+    : t('companionSoulOff','Optional Soul setup is off. This companion is not Soul and is not conscious.'));
+  const attached=Boolean(settings?.serviceUrl);
+  const online=Boolean(settings?.serviceStatus?.online);
+  if(sub){
+    if(!attached) sub.textContent=t('companionOffline','Local-only. Conversations stay on this PC. Service not attached.');
+    else if(!online) sub.textContent=t('companionServiceDown','Local-only. Attached service is unreachable; the workspace still works.');
+    else sub.textContent=t('companionServiceIdle','Local conversations. Service is health/status only — chat is not sent.');
+  }
+  log.textContent='';
+  const messages=(activeConversation()?.messages||[]).slice(-8);
+  if(!messages.length){
+    const empty=el('div','companion-empty');
+    empty.append(el('strong','',t('companionEmptyTitle','Ask this workspace.')), el('p','',t('companionEmpty','Local answers from product facts and your on-device profile. Nothing is sent to the website helper or Worker /v1/assist.')));
+    log.append(empty);
+    return;
+  }
+  for(const m of messages){
+    const row=el('div',`companion-msg companion-msg-${m.role==='assistant'?'assistant':'user'}`);
+    row.append(el('p','',m.content));
+    log.append(row);
+  }
+  const actions=lastCompanion?.actions||[];
+  if(actions.length && messages.at(-1)?.role==='assistant'){
+    const chips=el('div','companion-chips');
+    for(const action of actions) chips.append(companionActionButton(action));
+    log.append(chips);
+  }
+  log.scrollTop=log.scrollHeight;
 }
 function renderEntertainment(){
   const favorites=$('#entertainmentFavorites'),recent=$('#entertainmentRecent'),mix=$('#entertainmentMix');
@@ -255,47 +353,45 @@ function renderEntertainment(){
     else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
   }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
-function autoSize(){ const ta=$('#messageInput');ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
+function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
   text=String(text||'').trim();
   if(!text||sending)return;
-  const stayCompanion=opts.surface==='companion';
-  if(!stayCompanion) setView('chat');
+  const surface=opts.surface||'chat';
   sending=true;
-  $('#sendBtn').disabled=true;
-  $('#companionSendBtn') && ($('#companionSendBtn').disabled=true);
-  $('#messageInput').value='';
-  if($('#companionInput') && stayCompanion) $('#companionInput').value='';
-  autoSize();
-  if(!activeConversation()?.messages?.length) $('#welcome').classList.add('hidden');
-  const user=el('div','message user');
-  const c=el('div');
-  c.append(el('div','bubble',text));
-  user.append(c);
-  $('#messages').append(user);
-  addTyping();
-  const askAssist=$('#assistThisMessage')?.checked===true || $('#companionAssistThis')?.checked===true;
+  setCompanionError('');
+  if($('#sendBtn')) $('#sendBtn').disabled=true;
+  if($('#companionSendBtn')) $('#companionSendBtn').disabled=true;
+  if(surface!=='companion') setView('chat');
+  if($('#messageInput') && surface!=='companion'){ $('#messageInput').value=''; autoSize(); }
+  if($('#companionInput') && surface==='companion') $('#companionInput').value='';
+  if(!activeConversation()?.messages?.length) $('#welcome')?.classList.add('hidden');
+  if(surface==='companion') setCompanionBusy(true);
+  else {
+    const user=el('div','message user');const c=el('div');c.append(el('div','bubble',text));user.append(c);$('#messages').append(user);addTyping();
+  }
+  const askAssist=$('#assistThisMessage')?.checked===true || (surface==='companion' && $('#companionAssistThis')?.checked===true);
   try{
     const res=await window.soul.send(text);
     state=res.state;
+    lastCompanion=res.companion||lastCompanion;
     renderAll();
     window.eidovaraCompanion?.applyKernelActions?.(res.kernel?.actions);
     const replies=(activeConversation()?.messages||[]).filter(x=>x.role==='assistant');
-    const replyText=replies.at(-1)?.content;
-    speakSoul(replyText);
+    if(surface!=='companion') speakSoul(replies.at(-1)?.content);
     if(res.providerError){
-      const note=el('div','error-note',`${t('modelIssue','Model connection issue:')} ${res.providerError}`);
-      $('#messages').append(note);
+      const note=`${t('modelIssue','Model connection issue:')} ${res.providerError}`;
+      if(surface==='companion') setCompanionError(note);
+      else $('#messages').append(el('div','error-note',note));
     }
     if(res.internetError){
-      const note=el('div','error-note',`${t('researchIssue','Internet search issue:')} ${res.internetError}`);
-      $('#messages').append(note);
-      const surface=$('#researchError');
-      if(surface) surface.textContent=res.internetError;
+      const note=`${t('researchIssue','Internet search issue:')} ${res.internetError}`;
+      if(surface==='companion') setCompanionError(note);
+      else $('#messages').append(el('div','error-note',note));
+      if($('#researchError')) $('#researchError').textContent=res.internetError;
     } else if($('#researchError')) $('#researchError').textContent='';
-    let assistNote='';
     if(askAssist){
       if($('#assistThisMessage')) $('#assistThisMessage').checked=false;
       if($('#companionAssistThis')) $('#companionAssistThis').checked=false;
@@ -303,37 +399,32 @@ async function send(text, opts={}){
         const assist=await window.soul.assistQuery(text);
         const note=el('div',assist.ok?'research-panel':'error-note');
         note.append(el('div','research-title','Assist from your pasted service (not Soul)'));
-        note.append(el('p','',assist.ok?(assist.reply||assist.warning): (assist.reason||'Assist unavailable. Local Soul continues.')));
-        if(assist.warning)note.append(el('small','',assist.warning));
-        $('#messages').append(note);
-        assistNote=assist.ok?`Assist (not Soul): ${assist.reply||assist.warning||''}`:(assist.reason||'Assist unavailable. Local Soul continues.');
+        note.append(el('p','',assist.ok?(assist.reply||assist.warning):(assist.reason||'Assist unavailable. Local Soul continues.')));
+        if(assist.warning) note.append(el('small','',assist.warning));
+        if(surface==='companion') setCompanionError(assist.ok?(assist.reply||assist.warning||''):(assist.reason||'Assist unavailable. Local Soul continues.'));
+        else $('#messages').append(note);
       }catch(err){
-        const note=el('div','error-note',`Worker helper: ${err?.message||err}`);
-        $('#messages').append(note);
-        assistNote=`Worker helper: ${err?.message||err}`;
+        const fail=`Worker helper: ${err?.message||err}`;
+        if(surface==='companion') setCompanionError(fail);
+        else $('#messages').append(el('div','error-note',fail));
       }
     }
-    window.eidovaraCompanion?.noteExchange?.(text, replyText, assistNote, { research: res.webResearch || res.mediaDiscovery, actions: res.kernel?.actions });
-    if(stayCompanion){
-      if(res.kernel?.intent==='research' || res.kernel?.view==='research') setView('research');
-      else setView('dashboard');
-      $('#companionInput')?.focus();
-    } else if(res.kernel?.intent==='research' || res.kernel?.view==='research') {
-      setView('research');
-    }
+    applyCompanionResult(res,{applyAuto:surface==='companion'});
+    window.eidovaraCompanion?.noteExchange?.(text, replies.at(-1)?.content, '', { research: res.webResearch || res.mediaDiscovery, actions: res.kernel?.actions });
+    if(res.kernel?.intent==='research' || res.kernel?.view==='research') setView('research');
+    else if(surface==='companion') setView('dashboard');
   }catch(err){
     $('#typing')?.remove();
-    const note=el('div','error-note',String(err?.message||err));
-    $('#messages').append(note);
-    if($('#companionError')){
-      $('#companionError').textContent=String(err?.message||err);
-      $('#companionError').classList.remove('hidden');
-    }
+    const note=String(err?.message||err);
+    if(surface==='companion') setCompanionError(note);
+    else $('#messages').append(el('div','error-note',note));
   }finally{
     sending=false;
-    $('#sendBtn').disabled=false;
+    setCompanionBusy(false);
+    if($('#sendBtn')) $('#sendBtn').disabled=false;
     if($('#companionSendBtn')) $('#companionSendBtn').disabled=false;
-    if(!stayCompanion) $('#messageInput').focus();
+    if(surface==='companion') $('#companionInput')?.focus();
+    else $('#messageInput')?.focus();
   }
 }
 
@@ -345,7 +436,17 @@ $('#researchForm')?.addEventListener('submit',e=>{
   const prompt=/\b(?:internet|web|online)\b/i.test(topic)?topic:`Search the internet for ${topic}`;
   send(prompt);
 });
-$('#messageInput').addEventListener('input',autoSize);$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value);}});
+$('#companionForm')?.addEventListener('submit',e=>{e.preventDefault();send($('#companionInput')?.value,{surface:'companion'});});
+$('#companionInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value,{surface:'companion'});}});
+$$('[data-companion-nav]').forEach(b=>b.addEventListener('click',()=>{
+  const nav=b.dataset.companionNav;
+  if(nav==='apps') setView('apps');
+  else if(nav==='entertainment') setView('entertainment');
+  else if(nav==='memory') setView('memory');
+  else if(nav==='legal') showLegal('about');
+  else if(nav==='status'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
+}));
+$$('[data-companion-ask]').forEach(b=>b.addEventListener('click',()=>{setView('dashboard');send(b.dataset.companionAsk,{surface:'companion'});}));$('#messageInput').addEventListener('input',autoSize);$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value);}});
 $$('[data-starter]').forEach(b=>b.addEventListener('click',()=>send(b.dataset.starter)));
 $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 $('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
@@ -493,7 +594,12 @@ function renderPaletteList(){
 }
 function openPalette(){
   if(document.body.classList.contains('age-gated')) return;
+  if(typeof window.eidovaraLayers?.openPalette === 'function'){
+    window.eidovaraLayers.openPalette();
+    return;
+  }
   $('#shortcutSheet')?.classList.add('hidden');
+  $('#cheatsheetOverlay')?.classList.add('hidden');
   $('#commandPalette')?.classList.remove('hidden');
   paletteIndex=0;
   if($('#paletteInput')) $('#paletteInput').value='';
@@ -503,11 +609,18 @@ function openPalette(){
 function closePalette(){ $('#commandPalette')?.classList.add('hidden'); }
 function openShortcutSheet(){
   if(document.body.classList.contains('age-gated')) return;
+  if(typeof window.eidovaraLayers?.openCheatsheet === 'function'){
+    window.eidovaraLayers.openCheatsheet();
+    return;
+  }
   closePalette();
   $('#shortcutSheet')?.classList.remove('hidden');
   $('#shortcutCloseBtn')?.focus();
 }
-function closeShortcutSheet(){ $('#shortcutSheet')?.classList.add('hidden'); }
+function closeShortcutSheet(){
+  $('#shortcutSheet')?.classList.add('hidden');
+  $('#cheatsheetOverlay')?.classList.add('hidden');
+}
 function overlayOpen(id){ const n=$(id); return n && !n.classList.contains('hidden'); }
 
 document.addEventListener('keydown',e=>{
@@ -515,21 +628,27 @@ document.addEventListener('keydown',e=>{
     if(overlayOpen('#ageGateOverlay')) return;
     if(overlayOpen('#commandPalette')){ closePalette(); e.preventDefault(); return; }
     if(overlayOpen('#shortcutSheet')){ closeShortcutSheet(); e.preventDefault(); return; }
+    if(overlayOpen('#cheatsheetOverlay')){$('#cheatsheetOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#legalOverlay')){$('#legalOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#adminOverlay')){$('#adminOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#setupOverlay')&&!$('#cancelSetupBtn').classList.contains('hidden')){$('#setupOverlay').classList.add('hidden');e.preventDefault();}
     return;
   }
   if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&(e.key.toLowerCase()==='k'||e.key.toLowerCase()==='p')){
+    if(e.defaultPrevented) return;
     if(document.body.classList.contains('age-gated')) return;
     e.preventDefault();
     if(overlayOpen('#commandPalette')) closePalette(); else openPalette();
     return;
   }
   if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&(e.key==='/'||e.key==='?')){
+    if(e.defaultPrevented) return;
     if(document.body.classList.contains('age-gated')) return;
     e.preventDefault();
-    if(overlayOpen('#shortcutSheet')) closeShortcutSheet(); else openShortcutSheet();
+    if(overlayOpen('#shortcutSheet')||overlayOpen('#cheatsheetOverlay')){
+      closeShortcutSheet();
+      $('#cheatsheetOverlay')?.classList.add('hidden');
+    } else openShortcutSheet();
     return;
   }
   if(overlayOpen('#commandPalette')){
@@ -608,8 +727,7 @@ window.eidovaraSend=send;
 window.eidovaraOpenSetup=openSetup;
 window.eidovaraShowLegal=showLegal;
 window.eidovaraOpenPalette=openPalette;
-window.eidovaraOpenShortcutSheet=openShortcutSheet;
-window.eidovaraRenderDashboard=renderDashboard;
+window.eidovaraOpenShortcutSheet=openShortcutSheet;window.eidovaraRenderDashboard=renderDashboard;
 window.eidovaraRenderAll=renderAll;
 window.eidovaraReloadState=async()=>{state=await window.soul.snapshot();renderAll();};
 $('#legalAboutBtn').addEventListener('click',()=>showLegal('about'));
@@ -622,7 +740,7 @@ function setAgeGated(on){
   $('#ageGateOverlay').classList.toggle('hidden',!on);
   if(on) $('#ageGateTermsCheck')?.focus();
 }
-$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
+$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
 $('#ageGateDeclineBtn').addEventListener('click',()=>window.soul.declineAgeGate());
 
 (async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();

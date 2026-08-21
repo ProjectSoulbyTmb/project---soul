@@ -8,9 +8,9 @@ This file is a **project record**, not a court judgment, signed assignment, gove
 
 Tyler Michael Bosworth claims copyright in **qualifying original first-party expression** in Eidovara (source, documentation, first-party UI assets, and release materials he authored). Soul Consciousness Studios™ is his **intended publisher name**. Until a formed legal entity exists **and** he executes a written assignment to it, that name does not own this IP. See [docs/COMPANY_FORMATION.md](docs/COMPANY_FORMATION.md) and the unsigned [docs/ENTITY_IP_ASSIGNMENT.md](docs/ENTITY_IP_ASSIGNMENT.md) template.
 
-Eidovara is **source-available, not OSI open source**, and restricted to users **18 or older**. The Eidovara Source-Available Evaluation License is not MIT, Apache, or GPL. No copyleft license is applied to first-party code.
+Eidovara is **source-available, not OSI open source**, and restricted to users **18 or older**. The Eidovara Source-Available Evaluation License (`LicenseRef-Eidovara-Source-Available-1.0`) is not MIT, Apache, or GPL. No copyleft license is applied to first-party code. Viewing or forking the repository does not permit relicensing first-party material as open source.
 
-Eidovara™ and Soul Consciousness Studios™ are claimed **unregistered** marks (`™` only). This repository does **not** claim ®, a USPTO registration number, a U.S. Copyright Office registration, or any patent / “patent pending.” Enhancement of trademark or copyright protection requires qualified counsel and actual filings. See [TRADEMARKS.md](TRADEMARKS.md) and [docs/TRADEMARK_CLEARANCE_LOG.md](docs/TRADEMARK_CLEARANCE_LOG.md).
+Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (the software self-model feature name) and Soul Consciousness Studios (intended publisher name) are likewise claimed **unregistered** marks (`™` only where used). This repository does **not** claim ®, a USPTO registration number, a U.S. Copyright Office registration, or any patent / “patent pending.” Enhancement of trademark or copyright protection requires qualified counsel and actual filings. See [TRADEMARKS.md](TRADEMARKS.md), [docs/TRADEMARK_FILING.md](docs/TRADEMARK_FILING.md) (not filed by this repository), and [docs/COPYRIGHT.md](docs/COPYRIGHT.md).
 
 ## What is not claimed
 
@@ -19,7 +19,8 @@ Eidovara **cannot** own, and does not claim, among other things:
 - Electron, Chromium, Node.js, electron-builder, rcedit, or other third-party packages;
 - Microsoft Windows, its APIs, installed voices, fonts, or other OS components;
 - Wikipedia/Wikimedia content (those projects’ licenses continue to apply);
-- Apple, iOS, SF Pro, Spotify, YouTube, OBS, GitHub, Cloudflare, or other third-party marks, products, or services;
+- Apple, iOS, iPhone, iPad, SF Pro, SF Mono, Siri, Microsoft Copilot, Cortana, Xbox, Game Bar, Spotify, YouTube, OBS, GitHub, Cloudflare, or other third-party marks, products, or services;
+- Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Alexa, Google Assistant, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, or other third-party assistant, launcher, or entertainment brands used as product or feature names;
 - user-created content, local media files, linked applications, and credentials the user supplies.
 
 See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [docs/CHAIN_OF_TITLE.md](docs/CHAIN_OF_TITLE.md). Overbroad ownership claims would weaken, not strengthen, the first-party record.

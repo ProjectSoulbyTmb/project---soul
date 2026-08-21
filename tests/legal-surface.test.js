@@ -47,10 +47,16 @@ test('LICENSE, TERMS, and NOTICE reserve first-party rights and are not OSI open
   assert.doesNotMatch(license, /Permission is hereby granted, free of charge/);
   assert.doesNotMatch(license, /GNU General Public License/);
   assert.doesNotMatch(license, /Apache License, Version 2/);
-  assert.doesNotMatch(license, /OSI[- ]approved|open source license/i);
+  assert.match(license, /not an\s+OSI-approved/i);
+  assert.match(license, /LicenseRef-Eidovara-Source-Available-1\.0/);
+  assert.match(license, /relicense/);
+  assert.match(license, /not convert first-party material into OSI open source/i);
+  assert.match(license, /does not make the submitter a joint author/i);
+  assert.doesNotMatch(license, /this is an OSI[- ]approved|OSI-approved open source license/i);
   assert.doesNotMatch(license, /Copyright Office registration no\.|U\.S\. Patent No\.|patent pending/i);
   assert.match(terms, /not MIT, Apache, or GPL/);
   assert.match(terms, /not.*OSI open-source/i);
+  assert.match(terms, /relicense as open source/i);
   assert.ok(eula.includes('Eidovara Source-Available Evaluation License 1.0'));
   assert.ok(eula.includes(license.trim()));
   assert.match(read('package.json'), /SEE LICENSE IN LICENSE/);
@@ -95,6 +101,54 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(read('TRADEMARKS.md'), /knockout screen|preliminary exact-word/i);
   assert.match(read('TRADEMARKS.md'), /trademark attorney/);
   assert.match(read('TRADEMARKS.md'), /USPTO/);
+  assert.match(read('LICENSE'), /No patent license is granted/);
+  assert.match(read('LICENSE'), /No trademark license is granted/);
+  assert.match(read('LICENSE'), /docs\/CONTRIBUTOR_ASSIGNMENT\.md/);
+  assert.match(read('LICENSE'), /Posting a pull request is not assignment/);
+});
+
+test('legal-instrument pack is templates and notices, not registrations or OSI giveaway', () => {
+  const copyright = read('docs/COPYRIGHT.md');
+  const filing = read('docs/TRADEMARK_FILING.md');
+  const brand = read('docs/BRAND_GUIDE.md');
+  const claim = read('COPYRIGHT.txt');
+  const marks = read('TRADEMARKS.md');
+  assert.match(copyright, /copyright\.gov/);
+  assert.match(copyright, /not a U\.S\. Copyright Office registration/i);
+  assert.match(copyright, /standard file header|single block/i);
+  assert.doesNotMatch(copyright, /Registration Number TX|Certificate of Registration issued/i);
+  assert.match(filing, /not a trademark application/i);
+  assert.match(filing, /No trademark application is filed by this commit/i);
+  assert.match(filing, /Class/);
+  assert.match(filing, /specimen/i);
+  assert.doesNotMatch(filing, /Serial No\.|Registration No\. \d{7}/);
+  assert.match(brand, /system font/i);
+  assert.match(brand, /SF Pro/);
+  assert.match(brand, /Do not/);
+  assert.match(brand, /Jarvis|Marvel/i);
+  assert.match(claim, /Tyler Michael Bosworth/);
+  assert.match(claim, /not a U\.S\. Copyright Office registration/i);
+  assert.match(claim, /Eidovara Source-Available Evaluation License/);
+  assert.match(marks, /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(marks, /Windows/);
+  assert.match(marks, /GitHub/);
+  assert.match(marks, /Electron/);
+  assert.match(marks, /Cloudflare/);
+  assert.match(marks, /Wikipedia/);
+  assert.match(marks, /Spotify/);
+  assert.match(marks, /YouTube/);
+  assert.match(marks, /not affiliated/i);
+  assert.match(marks, /Marvel/);
+  assert.match(marks, /Jarvis/i);
+  assert.match(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /Sign privately; posting a PR is not assignment/i);
+  assert.match(read('docs/legal.html'), /COPYRIGHT\.md/);
+  assert.match(read('docs/legal.html'), /TRADEMARK_FILING\.md/);
+  assert.match(read('docs/licensing.html'), /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(read('src/renderer/index.html'), /LICENSE and TRADEMARKS\.md/);
+  assert.match(read('NOTICE.md'), /Electron/);
+  assert.match(read('NOTICE.md'), /43\.4\.1/);
+  assert.match(read('NOTICE.md'), /rcedit/);
+  assert.doesNotMatch(read('NOTICE.md'), /\blodash\b|\bexpress\b|\breact\b/);
 });
 
 test('website legal pages cover terms, privacy, age, and Apple disclaimer', () => {
@@ -152,6 +206,7 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   const html = read('src/renderer/index.html');
   assert.match(html, /not an iOS or iPhone product/);
   assert.match(html, /does not require licensed SF Pro/);
+  assert.match(html, /not Jarvis/);
   assert.match(html, /local-admin testing only/);
   assert.match(html, /© 2026 Tyler Michael Bosworth\. All rights reserved/);
   assert.match(html, /Source-available; use governed by LICENSE \+ TERMS/);
@@ -159,6 +214,9 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   assert.match(html, /not legal advice/);
   assert.match(html, /Soul Consciousness Studios™ \(unregistered\)/);
   assert.match(html, /LICENSE and TRADEMARKS\.md/);
+  assert.match(html, /intended publisher only/);
+  assert.match(html, /pull requests do not transfer ownership/i);
+  assert.match(html, /unsigned templates only/);
   assert.doesNotMatch(html, /I am conscious|scientifically proven consciousness|®/);
 });
 
@@ -266,4 +324,97 @@ test('network, security, and licensing docs match current fail-closed v0.19.0 su
   assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
   assert.match(read('src/core/service.js'), /checkoutEnabledFromRemoteConfig\(_body\) \{\s*return false;/);
   assert.match(read('src/electron/main.js'), /sandbox: true/);
+});
+
+test('first-party JS carries SPDX source-available headers and does not donate OSS rights', () => {
+  const walk = (dir) => {
+    const out = [];
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = `${dir}/${entry.name}`;
+      if (entry.isDirectory()) out.push(...walk(full));
+      else if (/\.(?:js|cjs)$/.test(entry.name)) out.push(full);
+    }
+    return out;
+  };
+  const files = [...walk('src'), ...fs.readdirSync('docs').filter(n => n.endsWith('.js')).map(n => `docs/${n}`)];
+  assert.ok(files.length >= 30, files.length);
+  const header = /SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth/;
+  const spdx = /SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0/;
+  for (const file of files) {
+    const text = read(file);
+    const head = text.split(/\n/).slice(0, 6).join('\n');
+    assert.match(head, header, file);
+    assert.match(head, spdx, file);
+    assert.doesNotMatch(head, /SPDX-License-Identifier: MIT|Apache-2\.0|GPL/);
+  }
+  assert.match(read('CONTRIBUTING.md'), /Drive-by pull requests do not create ownership/i);
+  assert.match(read('CONTRIBUTING.md'), /does \*\*not\*\* transfer copyright|does not transfer copyright/i);
+  assert.match(read('CONTRIBUTING.md'), /LicenseRef-Eidovara-Source-Available-1\.0/);
+  assert.match(read('TRADEMARKS.md'), /does not grant the submitter trademark rights/i);
+  const pkg = JSON.parse(read('package.json'));
+  assert.match(pkg.author, /Tyler Michael Bosworth/);
+  assert.match(pkg.author, /intended publisher/);
+  assert.doesNotMatch(pkg.author, /published by Soul Consciousness Studios$/);
+  assert.equal(pkg.build.appId, 'com.soulconsciousnessstudios.eidovara');
+  const owners = read('.github/CODEOWNERS');
+  assert.match(owners, /^\* @ProjectSoulbyTmb/m);
+  assert.match(owners, /LICENSE @ProjectSoulbyTmb/);
+  assert.doesNotMatch(owners, /@(?!ProjectSoulbyTmb)\S+/);
+  const footerPages = ['docs/index.html', 'docs/legal.html', 'docs/licensing.html', 'docs/help.html', 'docs/faq.html'];
+  for (const page of footerPages) {
+    assert.match(read(page), /© 2026 Tyler Michael Bosworth\. All rights reserved/);
+    assert.match(read(page), /Source-available, not open source/);
+    assert.match(read(page), /intended publisher only/);
+  }
+  assert.match(read('docs/legal.html'), /LicenseRef-Eidovara-Source-Available-1\.0/);
+  assert.match(read('SECURITY.md'), /private vulnerability-reporting/);
+  assert.match(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /template only/);
+  assert.match(read('docs/ENTITY_IP_ASSIGNMENT.md'), /not executed/);
+  assert.doesNotMatch(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /signed on |executed copy attached/i);
+  assert.doesNotMatch(read('LICENSE') + read('OWNERSHIP.md') + read('TRADEMARKS.md'), /USPTO Registration No|Copyright Office registration number|U\.S\. Patent No/);
+});
+
+test('first-party legal stack is kept; third-party brands are not product names', () => {
+  for (const file of [
+    'LICENSE', 'NOTICE.md', 'TERMS.md', 'PRIVACY.md', 'AGE.md', 'LEGAL_NOTICES.md',
+    'AUTHORS.md', 'OWNERSHIP.md', 'TRADEMARKS.md'
+  ]) {
+    assert.equal(fs.existsSync(file), true, file);
+  }
+  for (const file of ['LICENSE', 'NOTICE.md', 'TERMS.md', 'LEGAL_NOTICES.md', 'OWNERSHIP.md', 'installer/EULA.txt']) {
+    assert.match(read(file), /Copyright .{0,8}2026 Tyler Michael Bosworth/i, file);
+  }
+  const trademarks = read('TRADEMARKS.md');
+  assert.match(trademarks, /not affiliated/i);
+  assert.match(trademarks, /Jarvis/);
+  assert.match(trademarks, /Soul kernel/);
+  assert.match(trademarks, /unregistered/);
+  assert.match(trademarks, /does not contain a USPTO serial number|must not be used unless/i);
+  assert.match(read('LEGAL_NOTICES.md'), /not Jarvis/);
+  assert.match(read('TERMS.md'), /\*\*not\*\* Jarvis|\bnot Jarvis\b/);
+  assert.match(read('OWNERSHIP.md'), /does \*\*not\*\* claim ®|unregistered/);
+  assert.match(read('docs/MARKETING_CLAIMS_POLICY.md'), /Using Jarvis/);
+
+  const identityMisuse = /Eidovara Jarvis|Jarvis kernel|Jarvis mode|Soul Jarvis|like Jarvis|our Jarvis|Hey Siri|OK Google|Okay Google|Hey Cortana|Eidovara (?:Raycast|Alfred|Spotlight|Copilot)/i;
+  const productSurfaces = [
+    'README.md', 'CHANGELOG.md', 'docs/index.html', 'docs/product.html', 'docs/download.html',
+    'docs/assist.html', 'docs/help.html', 'docs/faq.html', 'docs/status.html',
+    'src/renderer/localization.js', 'src/renderer/renderer.js', 'src/renderer/companion.js',
+    'src/core/modules.js', 'src/core/engine.js', 'src/core/schema.js'
+  ];
+  for (const file of productSurfaces) {
+    const text = read(file);
+    assert.doesNotMatch(text, identityMisuse, file);
+    assert.doesNotMatch(text, /I am Jarvis|call me Jarvis/i, file);
+  }
+  assert.doesNotMatch(read('CHANGELOG.md'), /Marvel\/Iron Man/);
+  assert.doesNotMatch(read('docs/site.css'), /"SF Mono"/);
+  assert.doesNotMatch(read('src/renderer/tokens.css'), /"SF Pro Text"|"SF Pro Display"|"SF Mono"/);
+  for (const file of [
+    'src/electron/main.js', 'src/renderer/renderer.js', 'src/renderer/index.html',
+    'src/core/kernel.js', 'src/core/service.js', 'docs/index.html', 'docs/assist.js',
+    'docs/site.js', 'docs/knowledge.js'
+  ]) {
+    assert.doesNotMatch(read(file), /dreambot333\.workers\.dev/, file);
+  }
 });

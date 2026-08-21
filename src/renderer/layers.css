@@ -128,8 +128,6 @@ body.focus-quiet .soul-presence-figure { animation: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .palette-dialog,
-  .setup-overlay,
-  body.focus-quiet .quick-grid,
-  body.focus-quiet .starter-grid { transition: none !important; }
+  .setup-overlay { transition: none !important; }
   body.focus-quiet .soul-presence-figure { animation: none !important; }
 }

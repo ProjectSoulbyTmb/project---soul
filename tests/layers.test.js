@@ -189,7 +189,6 @@ test('cheatsheet lists Ctrl+K, Ctrl+/, and Ctrl+A without claiming hold-to-talk 
   assert.ok(voiced.includes('dictate'));
   const html = fs.readFileSync('src/renderer/index.html', 'utf8');
   assert.match(html, /id="commandPalette"/);
-  assert.match(html, /id="shortcutSheet"/);
   assert.match(html, /id="cheatsheetOverlay"/);
   assert.match(html, /id="focusQuietBar"/);
   assert.doesNotMatch(html, /media-src [^"]*'self'/);

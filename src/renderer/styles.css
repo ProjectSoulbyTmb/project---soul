@@ -143,7 +143,11 @@ button { cursor: pointer; }
   border-bottom: var(--hairline) solid var(--separator);
   font-size: 15px;
 }
-.sidebar-footer .nav-btn:last-child { border-bottom: 0; }
+.sidebar-footer .nav-btn.active {
+  background: var(--fill);
+  color: var(--accent);
+  font-weight: 600;
+}
 
 .workspace {
   min-width: 0;
@@ -154,8 +158,7 @@ button { cursor: pointer; }
   position: relative;
 }
 .topbar { grid-column: 1 / -1; grid-row: 1; }
-.focus-quiet-bar { grid-column: 1 / -1; grid-row: 2; }
-.view.active { grid-column: 1; grid-row: 3; }
+.focus-quiet-bar { grid-column: 1 / -1; grid-row: 2; }.view.active { grid-column: 1; grid-row: 3; }
 .soul-dock { grid-column: 2; grid-row: 3; min-height: 0; }
 .topbar {
   border-bottom: var(--hairline) solid var(--separator);
@@ -516,6 +519,17 @@ textarea:focus {
 }
 
 .hidden { display: none !important; }
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 .mobile-only { display: none; }
 .icon-btn {
   background: transparent;

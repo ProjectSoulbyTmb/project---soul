@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { normalizeServiceUrl, serviceRequestUrl, SERVICE_ASSIST_PATH } from './service.js';
 
 export const ASSIST_MAX_BYTES = 32768;

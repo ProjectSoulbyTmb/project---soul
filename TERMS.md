@@ -12,7 +12,7 @@ Eidovara is restricted to users who are **18 years of age or older**. Adult Mode
 
 ## 2. Source-available, not open source
 
-The public repository is source-available for lawful evaluation under the Eidovara Source-Available Evaluation License. That is **not** an OSI open-source license and is not MIT, Apache, or GPL. Viewing the source does not grant rights to copy, modify, redistribute, sublicense, or create competing products. No patent, trademark, or trade-secret license is granted except the narrow run-and-evaluate permission in LICENSE.
+The public repository is source-available for lawful evaluation under the Eidovara Source-Available Evaluation License (`LicenseRef-Eidovara-Source-Available-1.0`). That is **not** an OSI open-source license and is not MIT, Apache, or GPL. Viewing, forking, or cloning the source does not grant rights to copy, modify, redistribute, sublicense, relicense as open source, or create competing products. A GitHub fork remains under LICENSE; it is not a donation of first-party rights. No patent, trademark, or trade-secret license is granted except the narrow run-and-evaluate permission in LICENSE.
 
 Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original first-party Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name and does not own this IP unless a signed assignment to a formed entity exists. Electron, Chromium, Node.js, Windows, Wikimedia content, and user-created content remain their owners' property. See [OWNERSHIP.md](OWNERSHIP.md). This document is not legal advice, a court judgment, or a government registration.
 
@@ -49,9 +49,11 @@ Eidovara does not grant rights in anyone else's material. You are responsible fo
 
 Soul is a software assistant with a persistent local self-model. It is not a human, a licensed professional, therapy, medical care, financial advice, emergency services, or proof of consciousness or sentience. Output is general assistance. Do not rely on it where a qualified professional is required.
 
-Eidovara is not affiliated with, endorsed by, or a product of Apple Inc., Microsoft Corporation, GitHub, OpenJS Foundation, Spotify, YouTube, OBS, Wikimedia, Brave, or other named vendors. It is **not** an iOS, iPhone, or iPad product. The interface uses a system font stack and does **not** require licensed SF Pro files.
+Eidovara is not affiliated with, endorsed by, or a product of Apple Inc., Microsoft Corporation, GitHub, OpenJS Foundation, Spotify, YouTube, OBS, Wikimedia, Brave, or other named vendors. It is **not** an iOS, iPhone, or iPad product. The interface uses a system font stack and does **not** require licensed SF Pro or SF Mono files.
 
-Eidovara™ and Soul Consciousness Studios™ are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
+Eidovara, Soul, and the Soul kernel are first-party names. They are **not** Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and this software is not affiliated with those owners. Distinctive third-party slogans are not Eidovara wake words. Command-palette or quick-open UI, if present, is first-party workspace chrome.
+
+Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (the software self-model feature name) and Soul Consciousness Studios (intended publisher name) are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
 
 ## 7. Platform, signing, and export
 

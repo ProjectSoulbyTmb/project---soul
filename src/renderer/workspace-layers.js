@@ -1,10 +1,17 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 (() => {
   const $ = s => document.querySelector(s);
   const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
   const reducedMotion = () => Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches);
+  const inField = target => Boolean(target?.closest?.('input, textarea, select, [contenteditable="true"]'));
+  const overlayOpen = id => { const n = $(id); return n && !n.classList.contains('hidden'); };
 
-  let lastScratch = '';
+  let paletteItems = [];
+  let paletteIndex = 0;
+  let paletteTimer = 0;
   let focusTimer = 0;
+  let lastScratch = '';
 
   function kernelWorkspace() {
     return window.eidovaraState?.kernel?.workspace || window.eidovaraKernel?.workspace || {};
@@ -22,6 +29,11 @@
     const start = Date.parse(focus.startedAt);
     if (!Number.isFinite(start)) return 0;
     return Math.max(0, start + (Number(focus.durationMs) || 0) - Date.now());
+  }
+
+  function closeOverlays() {
+    $('#commandPalette')?.classList.add('hidden');
+    $('#cheatsheetOverlay')?.classList.add('hidden');
   }
 
   async function refreshKernel() {
@@ -58,6 +70,7 @@
   function tileDefs(ctx) {
     const state = ctx.state || {};
     const settings = ctx.settings || {};
+    const roles = (state.setup?.categories || []);
     const memories = (state.memories || []).filter(x => x.active).length;
     const apps = (settings.apps || []).length;
     const taste = Object.keys(state.entertainment?.taste || {}).length;
@@ -197,6 +210,65 @@
     renderFocusBar();
   }
 
+  function paintPalette(selected) {
+    const box = $('#paletteResults');
+    if (!box) return;
+    box.textContent = '';
+    paletteIndex = Math.max(0, Math.min(selected, Math.max(0, paletteItems.length - 1)));
+    if (!paletteItems.length) {
+      box.append(Object.assign(document.createElement('li'), { textContent: t('paletteEmpty', 'No local matches. Search stays on this PC.') }));
+      return;
+    }
+    paletteItems.forEach((item, index) => {
+      const li = document.createElement('li');
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.id = `palette-opt-${index}`;
+      b.setAttribute('role', 'option');
+      b.setAttribute('aria-selected', String(index === paletteIndex));
+      b.append(Object.assign(document.createElement('strong'), { textContent: item.title || item.label || item.id }));
+      b.append(Object.assign(document.createElement('small'), { textContent: `${item.kind || 'command'}${item.summary ? ' · ' + item.summary : ''}` }));
+      b.addEventListener('click', () => runPaletteItem(item));
+      li.append(b);
+      box.append(li);
+    });
+    box.children[paletteIndex]?.querySelector('button')?.focus();
+  }
+
+  async function queryPalette(text) {
+    if (!window.soul?.workspace) return;
+    try {
+      paletteItems = await window.soul.workspace('palette', { query: text, includeApps: true }) || [];
+    } catch {
+      paletteItems = [];
+    }
+    paintPalette(0);
+  }
+
+  async function openPalette() {
+    if (document.body.classList.contains('age-gated')) return;
+    closeOverlays();
+    $('#commandPalette')?.classList.remove('hidden');
+    const input = $('#paletteInput');
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    await queryPalette('');
+  }
+
+  function closePalette() {
+    $('#commandPalette')?.classList.add('hidden');
+  }
+
+  async function runPaletteItem(item) {
+    closePalette();
+    if (item?.id && window.soul?.workspace) {
+      try { await window.soul.workspace('recent', { id: item.id, title: item.title, kind: item.kind, action: item.action }); } catch {}
+    }
+    await executeAction(item?.action || item);
+  }
+
   async function executeAction(action) {
     if (!action || !action.type) return;
     const type = action.type;
@@ -215,8 +287,8 @@
       if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
       $('#checkUpdateBtn')?.focus();
     }
-    if (type === 'open-palette' && typeof window.eidovaraOpenPalette === 'function') window.eidovaraOpenPalette();
-    if (type === 'open-cheatsheet' && typeof window.eidovaraOpenShortcutSheet === 'function') window.eidovaraOpenShortcutSheet();
+    if (type === 'open-palette') openPalette();
+    if (type === 'open-cheatsheet') openCheatsheet();
     if (type === 'start-focus') await startFocus(action.minutes || 25, action.label);
     if (type === 'stop-focus') await stopFocus();
     if (type === 'capture-scratch') await captureScratch();
@@ -232,14 +304,20 @@
   async function startFocus(minutes, label) {
     if (!window.soul?.workspace) return;
     const kernel = await window.soul.workspace('start-focus', { minutes: minutes || 25, label: label || t('focusQuiet', 'Focus session') });
-    applyKernel(kernel);
+    window.eidovaraKernel = kernel;
+    if (window.eidovaraState) window.eidovaraState.kernel = { ...(window.eidovaraState.kernel || {}), workspace: kernel.workspace };
     if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('dashboard');
+    renderFocusBar();
+    window.eidovaraRenderDashboard?.();
   }
 
   async function stopFocus() {
     if (!window.soul?.workspace) return;
     const kernel = await window.soul.workspace('stop-focus');
-    applyKernel(kernel);
+    window.eidovaraKernel = kernel;
+    if (window.eidovaraState) window.eidovaraState.kernel = { ...(window.eidovaraState.kernel || {}), workspace: kernel.workspace };
+    renderFocusBar();
+    window.eidovaraRenderDashboard?.();
   }
 
   async function saveScratch(text) {
@@ -290,10 +368,131 @@
     renderFocusBar();
   }
 
+  function cheatsheetRows() {
+    const voice = Boolean($('#voiceInputBtn') && !$('#voiceInputBtn').classList.contains('hidden'));
+    const rows = [
+      { keys: 'Ctrl+K', detail: t('shortcutPalette', 'Command palette — jump to views, intents, settings, legal, modules, and linked apps. Ctrl+P does the same.') },
+      { keys: 'Ctrl+/', detail: t('shortcutCheatsheet', 'This cheatsheet. ? also opens it when you are not in a text field.') },
+      { keys: 'Ctrl+A', detail: t('shortcutAdmin', 'Private administrator panel. Does not steal select-all from input, textarea, or select fields.') },
+      { keys: 'Esc', detail: t('shortcutEsc', 'Close palette, cheatsheet, legal, admin, or cancelable setup overlays.') },
+      { keys: 'Enter', detail: t('shortcutSend', 'Send the conversation. Shift+Enter inserts a new line.') }
+    ];
+    if (voice) rows.push({ keys: 'Hold 🎙', detail: t('shortcutDictate', 'Hold the dictation control to talk; release to stop. Uses OS speech recognition. Eidovara does not ship a neural TTS engine.') });
+    return rows;
+  }
+
+  function openCheatsheet() {
+    if (document.body.classList.contains('age-gated')) return;
+    closePalette();
+    const box = $('#cheatsheetList');
+    if (box) {
+      box.textContent = '';
+      for (const row of cheatsheetRows()) {
+        const line = document.createElement('div');
+        line.className = 'cheatsheet-row';
+        const kbd = document.createElement('kbd');
+        kbd.textContent = row.keys;
+        line.append(kbd, Object.assign(document.createElement('span'), { textContent: row.detail }));
+        box.append(line);
+      }
+    }
+    $('#cheatsheetOverlay')?.classList.remove('hidden');
+    $('#cheatsheetCloseBtn')?.focus();
+  }
+
+  function bindHoldToTalk() {
+    const btn = $('#voiceInputBtn');
+    if (!btn || btn.dataset.holdBound) return;
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) return;
+    btn.dataset.holdBound = '1';
+    let hold = null;
+    const stop = () => { try { hold?.stop(); } catch {} hold = null; };
+    btn.addEventListener('pointerdown', e => {
+      if (e.button !== 0) return;
+      e.preventDefault();
+      btn.dataset.holdUsed = '1';
+      try {
+        hold = new Recognition();
+        hold.continuous = true;
+        hold.interimResults = false;
+        hold.onresult = ev => {
+          const input = $('#messageInput');
+          if (!input) return;
+          const chunk = [...ev.results].map(r => r[0].transcript).join(' ');
+          input.value = `${input.value} ${chunk}`.trim();
+        };
+        hold.start();
+      } catch {}
+    });
+    btn.addEventListener('pointerup', stop);
+    btn.addEventListener('pointerleave', stop);
+    btn.addEventListener('pointercancel', stop);
+    btn.addEventListener('click', e => {
+      if (btn.dataset.holdUsed === '1') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        btn.dataset.holdUsed = '';
+      }
+    }, true);
+  }
+
+  document.addEventListener('keydown', e => {
+    if (document.body.classList.contains('age-gated')) return;
+    if (e.key === 'Escape') {
+      if (overlayOpen('#commandPalette')) { closePalette(); e.preventDefault(); e.stopImmediatePropagation(); return; }
+      if (overlayOpen('#cheatsheetOverlay')) { $('#cheatsheetOverlay').classList.add('hidden'); e.preventDefault(); e.stopImmediatePropagation(); }
+      return;
+    }
+    const ctrl = e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey;
+    if (ctrl && (e.key.toLowerCase() === 'k' || e.key.toLowerCase() === 'p')) {
+      e.preventDefault();
+      if (overlayOpen('#commandPalette')) closePalette();
+      else openPalette();
+      return;
+    }
+    if (ctrl && e.key === '/') {
+      e.preventDefault();
+      if (overlayOpen('#cheatsheetOverlay')) $('#cheatsheetOverlay').classList.add('hidden');
+      else openCheatsheet();
+      return;
+    }
+    if (e.key === '?' && !e.ctrlKey && !e.altKey && !inField(e.target)) {
+      e.preventDefault();
+      openCheatsheet();
+      return;
+    }
+    if (!overlayOpen('#commandPalette')) return;
+    if (e.key === 'ArrowDown') { e.preventDefault(); paintPalette(paletteIndex + 1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); paintPalette(paletteIndex - 1); }
+    if (e.key === 'Enter' && paletteItems[paletteIndex]) {
+      if (e.target === $('#paletteInput') || e.target?.closest?.('#paletteResults')) {
+        e.preventDefault();
+        runPaletteItem(paletteItems[paletteIndex]);
+      }
+    }
+  }, true);
+
+  $('#paletteInput')?.addEventListener('input', e => {
+    clearTimeout(paletteTimer);
+    const value = e.currentTarget.value;
+    paletteTimer = setTimeout(() => queryPalette(value), reducedMotion() ? 0 : 80);
+  });
+  $('#paletteOpenBtn')?.addEventListener('click', () => openPalette());
+  $('#paletteBtn')?.addEventListener('click', () => openPalette());
+  $('#paletteHintBtn')?.addEventListener('click', () => openPalette());
+  $('#cheatsheetOpenBtn')?.addEventListener('click', () => openCheatsheet());
+  $('#shortcutBtn')?.addEventListener('click', () => openCheatsheet());
+  $('#cheatsheetHintBtn')?.addEventListener('click', () => openCheatsheet());
+  $('#cheatsheetCloseBtn')?.addEventListener('click', () => $('#cheatsheetOverlay')?.classList.add('hidden'));
   $('#focusQuietStop')?.addEventListener('click', () => stopFocus());
+  $('#commandPalette')?.addEventListener('click', e => { if (e.target === $('#commandPalette')) closePalette(); });
+  $('#cheatsheetOverlay')?.addEventListener('click', e => { if (e.target === $('#cheatsheetOverlay')) $('#cheatsheetOverlay').classList.add('hidden'); });
 
   window.eidovaraLayers = {
     renderDashboard,
+    openPalette,
+    openCheatsheet,
     executeAction,
     startFocus,
     stopFocus,
@@ -306,5 +505,6 @@
     renderFocusBar
   };
 
+  bindHoldToTalk();
   refreshKernel();
 })();
