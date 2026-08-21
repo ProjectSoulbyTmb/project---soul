@@ -92,6 +92,12 @@ function renderApps(){
 }
 async function refreshBackups(){const select=$('#backupSelect');select.textContent='';const backups=await window.soul.listBackups();backupCount=backups.length;for(const b of backups){const o=el('option','',`${new Date(b.createdAt).toLocaleString()} · ${Math.ceil(b.bytes/1024)} KB`);o.value=b.name;select.append(o);}if(!backups.length)select.append(el('option','',t('noBackups','No backups yet. Create one before changing providers or resetting.')));$('#restoreBackupBtn').disabled=!backups.length;if(!backups.length && !$('#backupStatus').textContent) $('#backupStatus').textContent=t('noBackups','No backups yet. Create one before changing providers or resetting.');}
 function renderDashboard(){
+  window.eidovaraState=state;
+  window.eidovaraSettings=settings;
+  if(window.eidovaraLayers?.renderDashboard){
+    window.eidovaraLayers.renderDashboard({state,settings,backupCount,setView,send,openSetup});
+    return;
+  }
   const box=$('#dashboardGrid');box.textContent='';
   const roles=(state.setup?.categories||[]);
   const memories=(state.memories||[]).filter(x=>x.active).length;
@@ -207,7 +213,7 @@ function renderEntertainment(){
   const seeds=Object.entries(e.taste||{}).sort((a,b)=>b[1]-a[1]).filter(([,score])=>score>0).slice(0,4).map(([title])=>title);
   if(mix) mix.textContent=seeds.length?`${seeds.join(', ')}. Spotify and YouTube remain official HTTPS searches in your browser.` : t('mixEmpty','Play or favorite something to grow a local mix. Suggestions stay on this device.');
 }
-function renderAll(){ renderConversations();renderMessages();renderDashboard();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraSettings=settings;window.eidovaraCompanion?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -399,6 +405,8 @@ document.addEventListener('keydown',e=>{
   const overlayOpen=id=>{const n=$(id);return n&&!n.classList.contains('hidden');};
   if(e.key==='Escape'){
     if(overlayOpen('#ageGateOverlay')) return;
+    if(overlayOpen('#commandPalette')){$('#commandPalette').classList.add('hidden');e.preventDefault();return;}
+    if(overlayOpen('#cheatsheetOverlay')){$('#cheatsheetOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#legalOverlay')){$('#legalOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#adminOverlay')){$('#adminOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#setupOverlay')&&!$('#cancelSetupBtn').classList.contains('hidden')){$('#setupOverlay').classList.add('hidden');e.preventDefault();}
@@ -466,6 +474,9 @@ window.eidovaraSetView=setView;
 window.eidovaraSend=send;
 window.eidovaraOpenSetup=openSetup;
 window.eidovaraShowLegal=showLegal;
+window.eidovaraRenderDashboard=renderDashboard;
+window.eidovaraRenderAll=renderAll;
+window.eidovaraReloadState=async()=>{state=await window.soul.snapshot();renderAll();};
 $('#legalAboutBtn').addEventListener('click',()=>showLegal('about'));
 $$('#legalOverlay [data-legal]').forEach(b=>b.addEventListener('click',()=>showLegal(b.dataset.legal)));
 $('#legalCloseBtn').addEventListener('click',()=>$('#legalOverlay').classList.add('hidden'));

@@ -93,9 +93,54 @@ const catalog = [
   {
     id: 'focus-session',
     title: 'Focus session',
-    summary: 'One outcome, 25–50 minutes, then a stop. No other-process control.',
-    intents: ['focus'],
-    commands: ['plan a focused session', 'focus session'],
+    summary: 'A timed local block with remaining time and a quiet UI. No other-process control.',
+    intents: ['focus', 'focus-stop'],
+    commands: ['plan a focused session', 'start a focus session', 'stop focus session'],
+    workspace: 'dashboard',
+    ui: { view: 'dashboard' }
+  },
+  {
+    id: 'command-palette',
+    title: 'Command palette',
+    summary: 'Ctrl+K / Ctrl+P jump to views, intents, settings, legal, modules, and companion commands.',
+    intents: ['palette'],
+    commands: ['open command palette', 'jump to'],
+    workspace: 'dashboard',
+    ui: { view: 'dashboard' }
+  },
+  {
+    id: 'workspace-search',
+    title: 'Local search',
+    summary: 'Filter linked apps, memories, settings labels, and knowledge intents. No background crawler.',
+    intents: ['search'],
+    commands: ['search this workspace', 'find in memory'],
+    workspace: 'dashboard',
+    ui: { view: 'dashboard' }
+  },
+  {
+    id: 'dashboard-widgets',
+    title: 'Dashboard tiles',
+    summary: 'Pin and reorder a few workspace tiles. Persisted on this PC. Not a fake OS shell.',
+    intents: ['widgets'],
+    commands: ['pin dashboard tiles', 'reorder widgets'],
+    workspace: 'dashboard',
+    ui: { view: 'dashboard' }
+  },
+  {
+    id: 'scratchpad',
+    title: 'Scratchpad',
+    summary: 'Quick local capture to the dashboard pad or Memory. Stays on this device.',
+    intents: ['scratch'],
+    commands: ['capture scratchpad', 'quick note'],
+    workspace: 'dashboard',
+    ui: { view: 'dashboard' }
+  },
+  {
+    id: 'hotkey-cheatsheet',
+    title: 'Keyboard cheatsheet',
+    summary: 'Ctrl+/, or ? away from fields. Lists Ctrl+K, Ctrl+A, and dictation when present.',
+    intents: ['cheatsheet'],
+    commands: ['keyboard shortcuts', 'cheatsheet'],
     workspace: 'dashboard',
     ui: { view: 'dashboard' }
   },
