@@ -46,7 +46,7 @@ npm run cli
 npm run dist:win:installer
 ```
 
-`run-gui.bat` and `run-cli.bat` install dependencies if needed and launch the documented Windows desktop or terminal app. Official CI uses `pnpm install --frozen-lockfile` with the committed lockfile. The app starts in the existing offline mode; optional local models, remote providers, keyed search, and the HTTPS service remain Settings/Ctrl+A configuration after launch.
+`run-gui.bat` and `run-cli.bat` install dependencies if needed and launch the documented Windows desktop or terminal app. Official CI uses `pnpm install --frozen-lockfile` with the committed lockfile. The app starts in the existing offline mode; optional local models, remote providers, keyed search, and the HTTPS service remain Settings/Ctrl+A configuration after launch. Linux and macOS development hosts can use `./run-gui.sh` or `./run-cli.sh`; on Linux, Chromium sandbox and GPU are reduced only when the host cannot provide them.
 
 The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 
