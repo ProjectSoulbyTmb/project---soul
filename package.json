@@ -1,6 +1,6 @@
 {
   "name": "eidovara",
-  "version": "0.17.9",
+  "version": "0.17.10",
   "description": "Eidovara privacy-focused desktop assistant and media workspace.",
   "author": "Tyler Michael Bosworth, project creator and product director; published by Soul Consciousness Studios",
   "license": "SEE LICENSE IN LICENSE",
@@ -20,7 +20,7 @@
     "release:manifest": "node scripts/create-update-manifest.js",
     "release:evidence": "node scripts/create-release-evidence.js",
     "dist:win": "electron-builder --win nsis portable --x64",
-    "dist:win:installer": "electron-builder --win nsis --x64",
+    "dist:win:installer": "electron-builder --win nsis --x64 --publish never",
     "dist": "npm run dist:win",
     "dist:linux": "electron-builder --linux AppImage deb --x64",
     "dist:mac:x64": "electron-packager . 'Eidovara' --platform=darwin --arch=x64 --out=dist-mac --overwrite --asar --prune=true",

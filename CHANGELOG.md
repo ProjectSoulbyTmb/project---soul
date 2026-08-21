@@ -1,5 +1,9 @@
 # Eidovara
 
+## v0.17.10
+
+- Disabled electron-builder's implicit tag publisher so the dedicated GitHub Release step can publish the completed installer.
+
 ## v0.17.9
 
 - Corrected the installer-only GitHub Actions build invocation after the v0.17.8 packaging job failed.
