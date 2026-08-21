@@ -57,7 +57,13 @@ function mockFetch(urls) {
 
 test('sanitizeSnippet strips markup and keeps readable text', () => {
   assert.equal(sanitizeSnippet('<b>Sixth</b> planet <script>alert(1)</script>'), 'Sixth planet');
-  assert.doesNotMatch(sanitizeSnippet('<img src=x onerror=alert(1)>Gas giant'), /<|>|onerror/);
+  const img = sanitizeSnippet('<img src=x onerror=alert(1)>Gas giant');
+  assert.equal(img, 'Gas giant');
+  assert.equal(img.includes('<'), false);
+  assert.equal(img.includes('>'), false);
+  assert.equal(img.toLowerCase().includes('onerror'), false);
+  assert.equal(sanitizeSnippet('<SCRIPT>steal()</SCRIPT>ok'), 'ok');
+  assert.equal(sanitizeSnippet('keep</script >text'), 'keep text');
   assert.match(HONEST_RESEARCH_COPY, /not a full-internet index/i);
 });
 
@@ -77,8 +83,11 @@ test('explicit companion/engine turn pulls sanitized titles, snippets, and hostn
     assert.equal(source.title, 'Saturn');
     assert.equal(source.hostname, 'en.wikipedia.org');
     assert.match(source.description, /Gas giant|Sixth planet/);
-    assert.doesNotMatch(source.description, /<script>|<b>|onerror/i);
-    assert.doesNotMatch(source.extract || '', /<script>|<b>/i);
+    assert.equal(source.description.includes('<'), false);
+    assert.equal(source.description.includes('>'), false);
+    assert.equal(source.description.toLowerCase().includes('onerror'), false);
+    assert.equal((source.extract || '').includes('<'), false);
+    assert.equal((source.extract || '').includes('>'), false);
     assert.match(r.reply, /Saturn/);
     assert.match(r.reply, /en\.wikipedia\.org/);
     assert.match(r.reply, /Gas giant|Sixth planet/);
@@ -128,7 +137,8 @@ test('model replies without citations still get sanitized source lines', () => {
   assert.match(cited, /Saturn/);
   assert.match(cited, /en\.wikipedia\.org/);
   assert.match(cited, /Sixth planet/);
-  assert.doesNotMatch(cited, /<b>/);
+  assert.equal(cited.includes('<'), false);
+  assert.equal(cited.includes('>'), false);
   assert.match(cited, /full-internet index/i);
   const actions = researchOpenActions(research);
   assert.equal(actions[0].type, 'open-external');
