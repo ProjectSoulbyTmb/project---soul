@@ -32,5 +32,6 @@ contextBridge.exposeInMainWorld('soul', {
   unlockAdultStealth: pin => ipcRenderer.invoke('soul:unlockAdultStealth', pin),
   lockAdultStealth: () => ipcRenderer.invoke('soul:lockAdultStealth'),
   applyFeelLevel: (level, atMs) => ipcRenderer.invoke('soul:applyFeelLevel', level, atMs),
-  addAdultFolderBookmark: (folderId, item) => ipcRenderer.invoke('soul:addAdultFolderBookmark', folderId, item)
+  addAdultFolderBookmark: (folderId, item) => ipcRenderer.invoke('soul:addAdultFolderBookmark', folderId, item),
+  stayAwake: input => ipcRenderer.invoke('soul:stayAwake', input || {})
 });

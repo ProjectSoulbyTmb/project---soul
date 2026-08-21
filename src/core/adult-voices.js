@@ -204,6 +204,7 @@ export const ADULT_VOICE_SOFTWARE = Object.freeze({
   speechSynthesis: true,
   windowsNaturalWhenInstalled: true,
   userImportedAudio: true,
+  proceduralAmbient: true,
   bundledNeuralEngine: false,
   celebrityCloning: false,
   cloudVoiceApi: false,

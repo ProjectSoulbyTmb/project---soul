@@ -81,6 +81,13 @@
     root?.classList.toggle('hidden', !on);
     root?.classList.toggle('is-active', on);
     document.body.classList.toggle('has-now-playing', on);
+    if (!on) window.soul?.stayAwake?.({ on: false, reason: 'media' }).catch(() => {});
+  }
+  function mediaStayAwake() {
+    const audio = $('#audioPlayer');
+    const video = $('#videoPlayer');
+    const playing = el => Boolean(el && el.src && !el.paused && !el.ended);
+    window.soul?.stayAwake?.({ on: playing(audio) || playing(video), reason: 'media' }).catch(() => {});
   }
   function fillQuality(item) {
     const sel = $('#mediaQuality');
@@ -432,10 +439,10 @@
   $('#videoPlayer')?.addEventListener('ended', ended);
   $('#audioPlayer')?.addEventListener('timeupdate', paint);
   $('#videoPlayer')?.addEventListener('timeupdate', paint);
-  $('#audioPlayer')?.addEventListener('play', paint);
-  $('#videoPlayer')?.addEventListener('play', paint);
-  $('#audioPlayer')?.addEventListener('pause', paint);
-  $('#videoPlayer')?.addEventListener('pause', paint);
+  $('#audioPlayer')?.addEventListener('play', () => { paint(); mediaStayAwake(); });
+  $('#videoPlayer')?.addEventListener('play', () => { paint(); mediaStayAwake(); });
+  $('#audioPlayer')?.addEventListener('pause', () => { paint(); mediaStayAwake(); });
+  $('#videoPlayer')?.addEventListener('pause', () => { paint(); mediaStayAwake(); });
   window.soul?.onPlayerDocked?.(() => { poppedOut = false; paint(); });
   window.soul?.onPlayerCommand?.(command => {
     if (command === 'previous') loadMedia(index - 1);

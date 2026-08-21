@@ -7,9 +7,11 @@ import {
   SHOW_REACTIONS, SHOW_HONESTY, sexyStylePatch, frameworkSkin, WARDROBE
 } from './adult-show.js';
 import {
-  defaultAdultFeel, normalizeAdultFeel, publicStealth, FEEL_HONESTY, FEEL_PATTERNS, FEEL_SYNC_MODES,
+  defaultAdultFeel, normalizeAdultFeel, publicStealth, FEEL_HONESTY, GAMEPAD_HONESTY, FEEL_PATTERNS, FEEL_SYNC_MODES,
   BOOKMARK_FOLDERS, WELLNESS_CARDS, classifyAdultFeelIntent, adultFeelReply
 } from './adult-feel.js';
+import { AMBIENT_HONESTY, AMBIENT_ENGINE } from './adult-ambient.js';
+import { runtimeEngineCatalog } from './runtime-engines.js';
 
 export const ADULT_APPEARANCE_MIN_YEARS = 21;
 export const ADULT_SOUL_KIND = 'adult-soul-studio';
@@ -1025,6 +1027,10 @@ export function adultSoulView(state) {
       reactions: SHOW_REACTIONS,
       showHonesty: SHOW_HONESTY,
       feelHonesty: FEEL_HONESTY,
+      gamepadHonesty: GAMEPAD_HONESTY,
+      ambientHonesty: AMBIENT_HONESTY,
+      ambientEngine: AMBIENT_ENGINE,
+      engines: runtimeEngineCatalog(),
       patterns: FEEL_PATTERNS,
       syncModes: FEEL_SYNC_MODES,
       folders: BOOKMARK_FOLDERS,
@@ -1081,6 +1087,10 @@ export function adultSoulView(state) {
       stealth: publicStealth(soul.feel.stealth)
     },
     feelHonesty: FEEL_HONESTY,
+    gamepadHonesty: GAMEPAD_HONESTY,
+    ambientHonesty: AMBIENT_HONESTY,
+    ambientEngine: AMBIENT_ENGINE,
+    engines: runtimeEngineCatalog(),
     patterns: FEEL_PATTERNS,
     syncModes: FEEL_SYNC_MODES,
     folders: BOOKMARK_FOLDERS,

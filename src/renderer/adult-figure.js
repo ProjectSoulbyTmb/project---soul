@@ -337,6 +337,7 @@ export function attachAdultFigure(canvas) {
     backend: {
       webgl: Boolean(gl),
       webgl2: Boolean(gl && typeof WebGL2RenderingContext !== 'undefined' && gl instanceof WebGL2RenderingContext),
+      webgpu: Boolean(globalThis.navigator && globalThis.navigator.gpu),
       maxQuality: 'ultra',
       ...FIGURE_BACKEND,
       qualityPresets: FIGURE_QUALITY

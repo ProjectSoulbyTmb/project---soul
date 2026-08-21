@@ -91,4 +91,8 @@ test('hydrate keeps adultSoul schema 3', () => {
   const view = adultSoulView({ policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false }, adultSoul: soul });
   assert.equal(view.open, false);
   assert.match(view.reason, /administrator panel/i);
+  assert.equal(view.neuralTts, false);
+  assert.equal(view.vrm, false);
+  assert.equal(view.ambientEngine.neuralTts, false);
+  assert.equal(view.engines.find(item => item.id === 'neural-tts').bundled, false);
 });

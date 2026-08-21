@@ -85,7 +85,7 @@ const ENTRIES = {
   },
   status: {
     title: 'Local status',
-    reply: 'Diagnostics and the Eidovara service indicator are local to this installation. Service attach is optional and fail-closed. Payments stay off even if a remote config lied. This is not an uptime dashboard for a hosted Soul, and it is not a security certification.',
+    reply: 'Diagnostics and the Eidovara service indicator are local to this installation. Service attach is optional and fail-closed. Payments stay off even if a remote config lied. This is not an uptime dashboard for a hosted Soul, and it is not a security certification. First-party engines on this PC: Soul kernel, WebGL lathe, Web Audio Feel, procedural ambient, OS speechSynthesis, Chromium media/Media Session, Electron stay-awake, optional gamepad for the Feel pad. Neural TTS, VRM, Three.js, and OBS websocket are not bundled.',
     actions: [{ type: 'open-diagnostics', label: 'Show diagnostics' }, { type: 'open-service', label: 'Service settings' }]
   },
   forbidden: {

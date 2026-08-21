@@ -5,6 +5,7 @@ import { knowledgeEntry, matchProductIntent, shouldUseKnowledgeReply } from './k
 import { builtinModules, moduleForIntent } from './modules.js';
 import { PRESENCE_LOOKS, defaultPresence, normalizePresence, presenceLook } from './presence.js';
 import { FUTURE_VOICE_BACKEND, defaultVoiceSettings, normalizeVoiceSettings } from './voices.js';
+import { ENGINE_HONESTY, runtimeEngineCatalog } from './runtime-engines.js';
 import { defaultSoulOnline, normalizeSoulOnline } from './soul-online.js';
 import {
   createRuntimeRegistry,
@@ -130,6 +131,8 @@ export function kernelView(state, runtime) {
     modules,
     looks: PRESENCE_LOOKS,
     futureVoiceBackend: FUTURE_VOICE_BACKEND,
+    engines: runtimeEngineCatalog(),
+    engineHonesty: ENGINE_HONESTY,
     selfModel: state?.continuity?.selfModel || null,
     assistOptIn: kernel.soulOnline.assistOptIn === true,
     workspace: workspacePublicView(state?.kernel?.workspace || kernel.workspace)
@@ -573,4 +576,4 @@ export function applyPhrasing(text, knobs, locale = 'en') {
   return out;
 }
 
-export { builtinModules, createRuntimeRegistry, FUTURE_VOICE_BACKEND };
+export { builtinModules, createRuntimeRegistry, FUTURE_VOICE_BACKEND, runtimeEngineCatalog, ENGINE_HONESTY };

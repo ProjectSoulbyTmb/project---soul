@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { app, BrowserWindow, WebContentsView, ipcMain, dialog, safeStorage, shell, protocol, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, WebContentsView, ipcMain, dialog, safeStorage, shell, protocol, Tray, Menu, nativeImage, powerSaveBlocker } from 'electron';
 import fs from 'node:fs';
 import { createReadStream } from 'node:fs';
 import path from 'node:path';
@@ -23,6 +23,7 @@ import { adultAllowed } from '../core/policy.js';
 import { defaultOverlayLayout, normalizeOverlayLayout } from '../core/overlays.js';
 import { attachOverlayWindows } from './overlay-windows.js';
 import { createGuestOverlayManager } from './guest-overlays.js';
+import { runtimeEngineCatalog } from '../core/runtime-engines.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
@@ -39,6 +40,36 @@ let desktopUpdater = null;
 let playerWindows = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
+const stayAwakeReasons = new Set();
+let stayAwakeBlocker = 0;
+
+function stayAwakeStatus() {
+  return { active: stayAwakeReasons.size > 0, reasons: [...stayAwakeReasons] };
+}
+
+function setStayAwakeReason(reason, on) {
+  const key = String(reason || 'app').replace(/[^a-z0-9-]/gi, '').slice(0, 40) || 'app';
+  if (on === true) stayAwakeReasons.add(key);
+  else stayAwakeReasons.delete(key);
+  const want = stayAwakeReasons.size > 0;
+  if (want) {
+    if (!stayAwakeBlocker || !powerSaveBlocker.isStarted(stayAwakeBlocker)) {
+      stayAwakeBlocker = powerSaveBlocker.start('prevent-display-sleep');
+    }
+  } else if (stayAwakeBlocker) {
+    powerSaveBlocker.stop(stayAwakeBlocker);
+    stayAwakeBlocker = 0;
+  }
+  return stayAwakeStatus();
+}
+
+function releaseStayAwake() {
+  stayAwakeReasons.clear();
+  if (stayAwakeBlocker) {
+    try { powerSaveBlocker.stop(stayAwakeBlocker); } catch {}
+    stayAwakeBlocker = 0;
+  }
+}
 
 function log(message, error) { try { if (!logPath) logPath = path.join(app.getPath('userData'), 'project-soul.log'); fs.mkdirSync(path.dirname(logPath), { recursive: true }); fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${message}${error ? `\n${error?.stack || error}` : ''}\n`); } catch {} }
 function fatal(title, error) { log(title, error); try { dialog.showErrorBox(title, `${error?.stack || error}\n\nLog: ${logPath}`); } catch {} }
@@ -385,7 +416,7 @@ app.whenReady().then(() => {
   createWindow();
   if (config.ageGateAccepted === true) desktopUpdater?.schedule?.();
 }).catch(err => fatal('Eidovara initialization error', err));
-app.on('before-quit', () => { quitting = true; overlayManager?.closeAll?.(); destroyTray(); });
+app.on('before-quit', () => { quitting = true; overlayManager?.closeAll?.(); destroyTray(); releaseStayAwake(); });
 app.on('window-all-closed', () => {
   allowedLocalMedia.clear();
   if (process.platform !== 'darwin' && !(config.desktop?.trayStay === true && process.platform === 'win32' && !quitting)) app.quit();
@@ -532,7 +563,11 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   }
   saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); overlayManager?.hideIfGated?.(); return publicConfig();
 });
-ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
+ipcMain.handle('soul:stayAwake', (_e, input) => {
+  requireAgeGate();
+  return setStayAwakeReason(input && input.reason, input && input.on === true);
+});
+ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, engines: runtimeEngineCatalog(), stayAwake: stayAwakeStatus(), userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
 ipcMain.handle('soul:openDataFolder', () => { requireAgeGate(); return shell.openPath(app.getPath('userData')); });
 ipcMain.handle('soul:selectLocalMedia', async () => {
   requireAgeGate();

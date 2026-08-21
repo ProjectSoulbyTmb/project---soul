@@ -275,7 +275,8 @@ function rendererCapabilities(){
     video:{h264:supported(video,'video/mp4; codecs="avc1.42E01E"'),hevc:supported(video,'video/mp4; codecs="hvc1"'),vp9:supported(video,'video/webm; codecs="vp9"'),av1:supported(video,'video/mp4; codecs="av01.0.05M.08"'),pictureInPicture:'pictureInPictureEnabled' in document,fullscreen:document.fullscreenEnabled},
     audio:{aac:supported(audio,'audio/mp4; codecs="mp4a.40.2"'),mp3:supported(audio,'audio/mpeg'),opus:supported(audio,'audio/webm; codecs="opus"'),flac:supported(audio,'audio/flac'),webAudio:Boolean(window.AudioContext||window.webkitAudioContext)},
     input:{gamepadApi:'getGamepads' in navigator,connectedGamepads:'getGamepads' in navigator?[...navigator.getGamepads()].filter(Boolean).length:0},
-    browser:{mediaSession:'mediaSession' in navigator,logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null}
+    gpu:{webgl:Boolean(window.WebGLRenderingContext),webgl2:Boolean(window.WebGL2RenderingContext),webgpu:Boolean(navigator.gpu),wakeLock:Boolean(navigator.wakeLock)},
+    browser:{mediaSession:'mediaSession' in navigator,logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null,speechSynthesis:'speechSynthesis' in window,speechRecognition:Boolean(window.SpeechRecognition||window.webkitSpeechRecognition)}
   };
 }
 function renderPlayDesk(){
@@ -676,7 +677,12 @@ $('#diagnosticsBtn').addEventListener('click',async()=>{
     const rows=[
       ['Eidovara', `${d.version} · ${d.platform}/${d.arch}`],
       ['Chromium', `${d.chromium || 'n/a'} · GPU accel ${d.hardwareAcceleration?'on':'off'}`],
+      ['Engines', (d.engines||[]).filter(e=>e.shipped).map(e=>e.title).join(' · ') || 'Soul kernel'],
+      ['Not bundled', (d.engines||[]).filter(e=>e.blocked).map(e=>e.title).join(' · ') || 'neural TTS / VRM / Three.js'],
+      ['Stay-awake', d.stayAwake?.active?'display sleep blocked':'idle'],
       ['Codecs', `H.264 ${codecs.video?.h264?'yes':'no'} · VP9 ${codecs.video?.vp9?'yes':'no'} · AV1 ${codecs.video?.av1?'yes':'no'} · AAC ${codecs.audio?.aac?'yes':'no'}`],
+      ['WebGPU probe', codecs.gpu?.webgpu?'navigator.gpu present (figure still WebGL)':'not present'],
+      ['Gamepad', `${codecs.input?.gamepadApi?'API':'no API'} · ${codecs.input?.connectedGamepads||0} connected`],
       ['Protection', d.settings?.encryptionAvailable ? 'OS credential protection available' : 'OS credential protection unavailable'],
       ['Safety log', `${d.localSafetyReportCount||0} local reports (not sent automatically)`]
     ];

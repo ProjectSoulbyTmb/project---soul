@@ -1,10 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { attachAdultFigure } from './adult-figure.js';
+import { createAdultAmbient } from './adult-ambient.js';
+import { attachFeelGamepad, stayAwake } from './runtime-chrome.js';
 import {
   HAIR_STYLES, CLOTHING, BODY_PRESENTATIONS, PERSONA_STYLES, sessionCatalog, adultSoulStudioOpen
 } from '../core/adult-soul.js';
-import { FEEL_PATTERNS, FEEL_SYNC_MODES, FEEL_HONESTY } from '../core/adult-feel.js';
+import { FEEL_PATTERNS, FEEL_SYNC_MODES, FEEL_HONESTY, GAMEPAD_HONESTY } from '../core/adult-feel.js';
+import { AMBIENT_HONESTY } from '../core/adult-ambient.js';
 import {
   ADULT_VOICE_PRESETS, ADULT_VOICE_HONESTY, enrichInstalledVoices, speakAdultCue,
   adultPreviewLine, applyPresetToSounds, groupVoicesForPicker
@@ -40,6 +43,8 @@ let sessionTimer = 0;
 let lastSpoken = '';
 let idleTimer = 0;
 let feelPointer = false;
+let ambient = null;
+let gamepadCtl = null;
 
 function adultOn() {
   const p = window.eidovaraState?.policy || {};
@@ -171,6 +176,11 @@ function renderFeel() {
   if (!feel) return;
   const honesty = $('#adultFeelHonesty');
   if (honesty) honesty.textContent = view.feelHonesty || FEEL_HONESTY;
+  const padHelp = $('#adultGamepadStatus');
+  if (padHelp && !padHelp.dataset.ready) {
+    padHelp.textContent = view.gamepadHonesty || GAMEPAD_HONESTY;
+    padHelp.dataset.ready = '1';
+  }
   fillSelect($('#adultFeelPattern'), FEEL_PATTERNS, feel.pattern);
   fillSelect($('#adultFeelSync'), FEEL_SYNC_MODES, feel.syncMode);
   const intensity = $('#adultFeelIntensity');
@@ -207,6 +217,21 @@ function bumpIdle() {
   idleTimer = setTimeout(() => { window.soul?.lockAdultStealth?.().then(refresh); }, ms);
 }
 
+function syncRuntime() {
+  const locked = view?.feel?.stealth?.locked === true || view?.feel?.stealth?.blanked === true;
+  const live = adultOn() && view?.open && !locked;
+  if (!live) {
+    ambient?.stop();
+    stayAwake(false, 'adult-session');
+    return;
+  }
+  if (!ambient) ambient = createAdultAmbient();
+  const reduced = Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  ambient.start(view.sounds, { reducedMotion: reduced });
+  ambient.setFeelLevel(Number(view?.feel?.lastLevel) || 0);
+  stayAwake(Boolean(view?.session?.active), 'adult-session');
+}
+
 function renderCue() {
   const cue = $('#adultSoulCue');
   if (!cue) return;
@@ -234,13 +259,16 @@ function renderFigure() {
   if (meta && view.avatar) {
     const mesh = buildAdultMesh(view.avatar, view.avatar.render?.quality || 'ultra');
     const q = FIGURE_QUALITY[view.avatar.render?.quality] || FIGURE_QUALITY.ultra;
-    meta.textContent = `${q.label} · ${mesh.triangleCount.toLocaleString()} tris · score ${meshQualityScore(mesh)} · ${figure.backend.webgl ? (figure.backend.webgl2 ? 'WebGL2' : 'WebGL') : 'canvas'} · not VRM`;
+    meta.textContent = `${q.label} · ${mesh.triangleCount.toLocaleString()} tris · score ${meshQualityScore(mesh)} · ${figure.backend.webgl ? (figure.backend.webgl2 ? 'WebGL2' : 'WebGL') : 'canvas'}${figure.backend.webgpu ? ' · WebGPU probed' : ''} · not VRM`;
   }
 }
 
 function render() {
   renderLocked();
-  if (!(adultOn() && view?.open)) return;
+  if (!(adultOn() && view?.open)) {
+    syncRuntime();
+    return;
+  }
   renderSliders(view.avatar);
   renderSessions();
   renderVoices();
@@ -267,6 +295,15 @@ function render() {
   if (heat) heat.value = String(view.persona?.heat ?? 72);
   const honesty = $('#adultVoiceHonesty');
   if (honesty) honesty.textContent = ADULT_VOICE_HONESTY;
+  const ambientHelp = $('#adultAmbientHonesty');
+  if (ambientHelp) ambientHelp.textContent = view.ambientHonesty || AMBIENT_HONESTY;
+  const ambientState = view.sounds && view.sounds.ambient ? view.sounds.ambient : {};
+  const mixState = view.sounds && view.sounds.mix ? view.sounds.mix : {};
+  if ($('#adultAmbientHeartbeat')) $('#adultAmbientHeartbeat').checked = ambientState.heartbeat !== false;
+  if ($('#adultAmbientBreath')) $('#adultAmbientBreath').checked = ambientState.breath !== false;
+  if ($('#adultAmbientDrone')) $('#adultAmbientDrone').checked = ambientState.drone !== false;
+  if ($('#adultAmbientMix')) $('#adultAmbientMix').value = String(Number.isFinite(Number(mixState.ambient)) ? mixState.ambient : 45);
+  syncRuntime();
   bumpIdle();
 }
 
@@ -346,7 +383,9 @@ function bind() {
     const level = Number(ev.detail?.level || 0);
     if (!window.soul?.applyFeelLevel || !adultOn()) return;
     const sample = await window.soul.applyFeelLevel(level, Date.now());
-    if (view?.feel) view.feel.lastLevel = sample.level;
+    if (view.feel) view.feel.lastLevel = sample.level;
+    ambient?.setFeelLevel(sample.level || 0);
+    gamepadCtl?.rumble(sample.level || 0);
     const line = $('#adultFeelLevel');
     if (line && sample) line.textContent = `Level ${Math.round((sample.level || 0) * 100)} · ${sample.pattern} · ${sample.syncMode}`;
     if (figure && view) {
@@ -376,11 +415,55 @@ function bind() {
     if (window.soul?.stopAdultSession) view = await window.soul.stopAdultSession();
     lastSpoken = '';
     window.speechSynthesis?.cancel?.();
+    ambient?.stop();
+    stayAwake(false, 'adult-session');
     render();
   });
   $('#adultPreviewVoiceBtn')?.addEventListener('click', () => {
     speakAdultCue(window.speechSynthesis, adultPreviewLine(view?.sounds?.presetId), view?.sounds, { Utterance: window.SpeechSynthesisUtterance });
   });
+  const patchAmbient = extra => {
+    const prior = view?.sounds || {};
+    const ambientNext = { ...(prior.ambient || {}), ...(extra.ambient || {}) };
+    const mixNext = { ...(prior.mix || {}), ...(extra.mix || {}) };
+    save({ sounds: { ...prior, ambient: ambientNext, mix: mixNext } });
+  };
+  $('#adultAmbientHeartbeat')?.addEventListener('change', e => patchAmbient({ ambient: { heartbeat: e.target.checked } }));
+  $('#adultAmbientBreath')?.addEventListener('change', e => patchAmbient({ ambient: { breath: e.target.checked } }));
+  $('#adultAmbientDrone')?.addEventListener('change', e => patchAmbient({ ambient: { drone: e.target.checked } }));
+  $('#adultAmbientMix')?.addEventListener('input', e => patchAmbient({ mix: { ambient: Number(e.target.value) } }));
+  if (!gamepadCtl) {
+    gamepadCtl = attachFeelGamepad({
+      reducedMotion: Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
+      getFeel: () => view?.feel || {},
+      onStick: stick => {
+        if (!(adultOn() && view?.open)) return;
+        save({ feel: { ...(view?.feel || {}), speed: stick.speed, intensity: stick.intensity } });
+      },
+      onPattern: id => {
+        if (!(adultOn() && view?.open)) return;
+        save({ feel: { ...(view?.feel || {}), pattern: id } });
+      },
+      onFloat: on => {
+        if (!(adultOn() && view?.open)) return;
+        save({ feel: { ...(view?.feel || {}), float: on } });
+      },
+      onStop: async () => {
+        if (window.soul?.stopAdultSession) view = await window.soul.stopAdultSession();
+        lastSpoken = '';
+        ambient?.stop();
+        stayAwake(false, 'adult-session');
+        render();
+      },
+      onPad: info => {
+        const line = $('#adultGamepadStatus');
+        if (!line) return;
+        line.textContent = info.connected
+          ? `${info.connected} gamepad connected · ${view?.gamepadHonesty || GAMEPAD_HONESTY}`
+          : (view?.gamepadHonesty || GAMEPAD_HONESTY);
+      }
+    });
+  }
   $('#adultVoiceList')?.addEventListener('click', e => {
     const uri = e.target.closest('button')?.dataset?.uri;
     if (!uri) return;

@@ -15,6 +15,8 @@ const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fa
 
 export const FEEL_HONESTY = 'Feel Sync is on-screen only: it maps local eidovara-media loudness and Adult Soul session beats to the figure, voice coach, and intensity pad. Eidovara does not pair Lovense, Vibease, or other toys, does not record the screen, does not auto-tip cam sites, and does not embed Pornhub. Hardware toys stay in their vendor app. PIN lock is local digits on this PC — not fingerprint or cloud. Revoke Adult Mode anytime.';
 
+export const GAMEPAD_HONESTY = 'A connected Chromium-visible gamepad can steer this pad and dual-rumble that same controller. That is the Gamepad API — not Lovense, not XInput injection into a game, and not in-game haptics.';
+
 export const FEEL_PATTERNS = Object.freeze([
   { id: 'pulse', title: 'Pulse', hint: 'Even on/off beats' },
   { id: 'wave', title: 'Wave', hint: 'Slow sine rise and fall' },
@@ -243,6 +245,47 @@ export function feelToPace(level) {
   if (n < 0.34) return 'slow';
   if (n < 0.72) return 'medium';
   return 'fast';
+}
+
+export function nextFeelPattern(id) {
+  const current = String(id || '');
+  const index = FEEL_PATTERN_IDS.indexOf(current);
+  const next = index < 0 ? 0 : (index + 1) % FEEL_PATTERN_IDS.length;
+  return FEEL_PATTERN_IDS[next];
+}
+
+export function mapGamepadStick(axes, prior = {}) {
+  const ax = Number(axes && axes[0]) || 0;
+  const ay = Number(axes && axes[1]) || 0;
+  const speedPrior = Math.round(clamp(Number(prior.speed) || 48, 0, 100));
+  const intensityPrior = Math.round(clamp(Number(prior.intensity) || 55, 0, 100));
+  if (Math.hypot(ax, ay) < 0.2) {
+    return { speed: speedPrior, intensity: intensityPrior, moved: false };
+  }
+  return {
+    speed: Math.round(clamp((ax + 1) * 50, 0, 100)),
+    intensity: Math.round(clamp((1 - ay) * 50, 0, 100)),
+    moved: true
+  };
+}
+
+export function mapGamepadButtons(buttons, priorPressed = {}) {
+  const down = index => Boolean(buttons && buttons[index] && buttons[index].pressed);
+  const was = index => Boolean(priorPressed && priorPressed[index]);
+  return {
+    cyclePattern: down(0) && !was(0),
+    toggleFloat: down(1) && !was(1),
+    stopSession: down(9) && !was(9)
+  };
+}
+
+export function rumbleFromLevel(level) {
+  const n = clamp(Number(level) || 0, 0, 1);
+  return {
+    duration: 140,
+    strongMagnitude: Math.round(n * 0.72 * 1000) / 1000,
+    weakMagnitude: Math.round(n * 0.42 * 1000) / 1000
+  };
 }
 
 export function addBookmarkToFolder(feelInput, folderId, item) {
