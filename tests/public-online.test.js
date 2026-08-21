@@ -78,7 +78,7 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   const installerName = `Eidovara-${version}-Windows-x64-Setup.exe`;
   const installerUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${installerName}`;
   const pinnedUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${version}/${installerName}`;
-  const sha = 'F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310';
+  const sha = '72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8';
   const latest = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
   const repoRoot = /^https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/?$/i;
   const isInstallerHref = href => href === installerUrl
