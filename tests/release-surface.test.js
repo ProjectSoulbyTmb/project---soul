@@ -37,7 +37,7 @@ test('Windows local media uses a gated protocol instead of raw file URLs', () =>
   assert.match(main, /LOCAL_MEDIA_SCHEME = 'eidovara-media'/);
   assert.match(main, /allowedLocalMedia/);
   assert.match(main, /protocol\.registerSchemesAsPrivileged/);
-  assert.match(html, /media-src https: eidovara-media:/);
+  assert.match(html, /media-src eidovara-media: eidovara-online:/);
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
   assert.match(read('package.json'), /"cli": "node src\/cli\.js"/);
   assert.match(read('src/cli.js'), /await engine\.respond/);

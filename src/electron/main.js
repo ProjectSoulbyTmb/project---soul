@@ -14,12 +14,28 @@ import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPO
 import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
+import {
+  ONLINE_MEDIA_SCHEME,
+  adultLockStopsOnline,
+  authorizePlayableMedia,
+  classifyOnlineMediaUrl,
+  followRedirectUrl,
+  isOnlineMediaEnabled,
+  lookupPublicAddresses,
+  MAX_ONLINE_DECLARED_BYTES,
+  MAX_ONLINE_REDIRECTS,
+  requestHeadersForOnlineMedia
+} from '../core/online-media.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
 const allowedLocalMedia = new Map();
+const allowedOnlineMedia = new Map();
+const floatWindows = new Set();
+let floatWindow = null;
 protocol.registerSchemesAsPrivileged([
-  { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
+  { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
+  { scheme: ONLINE_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
 let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
@@ -229,11 +245,11 @@ function createWindow() {
     registerCompanionImage();
     if (config.ageGateAccepted === true) ensureEngine();
     mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.19.0', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
-      webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
+      webPreferences: rendererPrefs() });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
     mainWindow.once('ready-to-show', () => mainWindow.show());
-    mainWindow.on('closed', () => { allowedLocalMedia.clear(); mainWindow = null; });
+    mainWindow.on('closed', () => { allowedLocalMedia.clear(); allowedOnlineMedia.clear(); mainWindow = null; });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
     mainWindow.webContents.on('will-attach-webview', e => e.preventDefault());
@@ -243,6 +259,130 @@ function createWindow() {
   } catch (err) { fatal('Eidovara startup error', err); }
 }
 
+function sidecarTracks(filePath) {
+  const extension = path.extname(filePath);
+  const base = filePath.slice(0, filePath.length - extension.length);
+  const tracks = [];
+  for (const extra of ['.vtt', '.srt']) {
+    const sidecar = `${base}${extra}`;
+    if (!fs.existsSync(sidecar)) continue;
+    const id = crypto.randomBytes(16).toString('hex');
+    allowedLocalMedia.set(id, sidecar);
+    tracks.push({ kind: 'subtitles', label: extra.slice(1).toUpperCase(), src: `${LOCAL_MEDIA_SCHEME}://${id}/` });
+  }
+  return tracks;
+}
+function stopOnlinePlayback(reason = 'stopped') {
+  allowedOnlineMedia.clear();
+  for (const win of [...floatWindows]) {
+    try { if (!win.isDestroyed()) win.close(); } catch {}
+  }
+  floatWindows.clear();
+  floatWindow = null;
+  try { mainWindow?.webContents.send('soul:online-stopped', { reason }); } catch {}
+}
+function onlineGateOptions() {
+  requireAgeGate();
+  const state = ensureEngine().snapshot();
+  return {
+    explicit: true,
+    onlineMediaEnabled: isOnlineMediaEnabled(state),
+    adultLock: adultLockStopsOnline(state)
+  };
+}
+async function resolveOnlineMediaPayload(input = {}) {
+  const authorized = await authorizePlayableMedia(String(input.url || input.sourceUrl || '').trim(), onlineGateOptions());
+  if (authorized.kind === 'catalog-handoff') return { ...authorized, playbackUrl: '' };
+  if (authorized.kind !== 'playable') {
+    const err = new Error(authorized.copy || authorized.message || 'That media cannot play inside Eidovara.');
+    err.reason = authorized.reason;
+    throw err;
+  }
+  if (authorized.protocol) {
+    const err = new Error('That address is not a public HTTPS media file.');
+    err.reason = 'https-only';
+    throw err;
+  }
+  const id = crypto.randomBytes(16).toString('hex');
+  allowedOnlineMedia.set(id, { url: authorized.url, type: authorized.type });
+  const title = String(input.title || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200)
+    || decodeURIComponent((authorized.url.split('/').pop() || 'Online media').split('?')[0]).slice(0, 200);
+  return {
+    type: authorized.type === 'video' ? 'video' : 'audio',
+    title,
+    url: `${ONLINE_MEDIA_SCHEME}://${id}/`,
+    sourceUrl: authorized.url,
+    local: false,
+    remote: true,
+    quality: 'Stream',
+    tracks: []
+  };
+}
+async function fetchOnlineWithRedirects(targetUrl, incoming, hops = 0) {
+  if (hops > MAX_ONLINE_REDIRECTS) return new Response('Redirect limit', { status: 400 });
+  const classified = classifyOnlineMediaUrl(targetUrl);
+  if (classified.kind !== 'playable' || !classified.url || classified.protocol) return new Response('Forbidden', { status: 403 });
+  try { await lookupPublicAddresses(classified.hostname); } catch { return new Response('Forbidden', { status: 403 }); }
+  const res = await net.fetch(classified.url, {
+    method: incoming.method || 'GET',
+    headers: requestHeadersForOnlineMedia(incoming),
+    redirect: 'manual',
+    credentials: 'omit'
+  });
+  if ([301, 302, 303, 307, 308].includes(res.status)) {
+    const next = followRedirectUrl(classified.url, res.headers.get('location'));
+    if (!next) return new Response('Redirect limit', { status: 400 });
+    return fetchOnlineWithRedirects(next, incoming, hops + 1);
+  }
+  const declared = Number(res.headers.get('content-length') || 0);
+  if (declared > MAX_ONLINE_DECLARED_BYTES) return new Response('Too large', { status: 413 });
+  return res;
+}
+function registerOnlineMediaProtocol() {
+  protocol.handle(ONLINE_MEDIA_SCHEME, async request => {
+    let id = '';
+    try { id = new URL(request.url).hostname; } catch { return new Response('Bad request', { status: 400 }); }
+    if (!/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
+    const entry = allowedOnlineMedia.get(id);
+    if (!entry?.url) return new Response('Not found', { status: 404 });
+    try {
+      const state = engine ? engine.snapshot() : null;
+      if (!state || !isOnlineMediaEnabled(state) || adultLockStopsOnline(state)) return new Response('Forbidden', { status: 403 });
+      return await fetchOnlineWithRedirects(entry.url, request);
+    } catch {
+      return new Response('Unavailable', { status: 502 });
+    }
+  });
+}
+function rendererPrefs() {
+  return { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false };
+}
+function createFloatWindow() {
+  if (floatWindow && !floatWindow.isDestroyed()) return floatWindow;
+  floatWindow = new BrowserWindow({
+    width: 520,
+    height: 340,
+    minWidth: 320,
+    minHeight: 180,
+    frame: false,
+    transparent: true,
+    backgroundColor: '#00000000',
+    alwaysOnTop: true,
+    hasShadow: true,
+    title: 'Eidovara player',
+    show: false,
+    webPreferences: rendererPrefs()
+  });
+  floatWindows.add(floatWindow);
+  floatWindow.setMenuBarVisibility(false);
+  floatWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
+  floatWindow.webContents.on('will-navigate', e => e.preventDefault());
+  floatWindow.webContents.on('will-attach-webview', e => e.preventDefault());
+  floatWindow.on('closed', () => { floatWindows.delete(floatWindow); floatWindow = null; });
+  floatWindow.loadFile(path.join(__dirname, '../renderer/float-player.html')).catch(err => fatal('Eidovara player window error', err));
+  floatWindow.once('ready-to-show', () => floatWindow.show());
+  return floatWindow;
+}
 function registerLocalMediaProtocol() {
   protocol.handle(LOCAL_MEDIA_SCHEME, async request => {
     let id = '';
@@ -255,8 +395,8 @@ function registerLocalMediaProtocol() {
 }
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
 process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
-app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).catch(err => fatal('Eidovara initialization error', err));
-app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
+app.whenReady().then(() => { registerLocalMediaProtocol(); registerOnlineMediaProtocol(); createWindow(); }).catch(err => fatal('Eidovara initialization error', err));
+app.on('window-all-closed', () => { allowedLocalMedia.clear(); allowedOnlineMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
 ipcMain.handle('soul:send', async (_e, m) => {
@@ -264,6 +404,7 @@ ipcMain.handle('soul:send', async (_e, m) => {
   applyInternetOptions();
   const result = await ensureEngine().respond(m);
   if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); }
+  if (result.adultAllowed) stopOnlinePlayback('adult-lock');
   return result;
 });
 ipcMain.handle('soul:snapshot', () => (config.ageGateAccepted === true ? ensureEngine().snapshot() : defaultProfile('default')));
@@ -400,13 +541,43 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   const id = crypto.randomBytes(16).toString('hex');
   retainCompanionMedia();
   allowedLocalMedia.set(id, filePath);
-  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
+  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true, quality: 'Native', tracks: sidecarTracks(filePath) };
+});
+ipcMain.handle('soul:resolveOnlineMedia', async (_e, input) => {
+  requireAgeGate();
+  return resolveOnlineMediaPayload(input);
+});
+ipcMain.handle('soul:stopOnlineMedia', () => { requireAgeGate(); stopOnlinePlayback('user'); return true; });
+ipcMain.handle('soul:popOutPlayer', async (_e, payload) => {
+  requireAgeGate();
+  if (payload?.item && payload.item.local !== true && adultLockStopsOnline(ensureEngine().snapshot())) {
+    stopOnlinePlayback('adult-lock');
+    throw new Error('Adult Mode is on, so remote playback is stopped.');
+  }
+  const win = createFloatWindow();
+  const send = () => { if (!win.isDestroyed()) win.webContents.send('soul:float-load', payload || {}); };
+  if (win.webContents.isLoadingMainFrame?.() || win.webContents.isLoading()) win.webContents.once('did-finish-load', send);
+  else send();
+  return { poppedOut: true };
+});
+ipcMain.handle('soul:dockPlayer', async (_e, payload) => {
+  requireAgeGate();
+  if (floatWindow && !floatWindow.isDestroyed()) floatWindow.close();
+  try { mainWindow?.webContents.send('soul:float-docked', payload || {}); } catch {}
+  return { poppedOut: false };
 });
 ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return ensureEngine().createBackup(); });
 ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return ensureEngine().listBackups(); });
 ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return ensureEngine().restoreBackup(String(name || '')); });
 ipcMain.handle('soul:configureSetup', (_e, input) => { requireAgeGate(); return ensureEngine().configureSetup(input); });
-ipcMain.handle('soul:configureAssistant', (_e, input) => { requireAgeGate(); return ensureEngine().configureAssistant(input); });
+ipcMain.handle('soul:configureAssistant', (_e, input) => {
+  requireAgeGate();
+  const snap = ensureEngine().configureAssistant(input);
+  if (!isOnlineMediaEnabled(snap) || adultLockStopsOnline(snap)) {
+    stopOnlinePlayback(!isOnlineMediaEnabled(snap) ? 'online-media-off' : 'adult-lock');
+  }
+  return snap;
+});
 ipcMain.handle('soul:configureKernel', (_e, input) => {
   requireAgeGate();
   if (input && Object.prototype.hasOwnProperty.call(input, 'assistOptIn')) config.assistOptIn = input.assistOptIn === true;

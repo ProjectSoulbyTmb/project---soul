@@ -4,12 +4,13 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src https: eidovara-media:; connect-src 'none'; object-src 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src eidovara-media: eidovara-online:; connect-src 'none'; object-src 'none'" />
   <title>Eidovara v0.19.0</title>
   <link rel="stylesheet" href="tokens.css" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="gaming.css" />
   <link rel="stylesheet" href="internet.css" />
+  <link rel="stylesheet" href="now-playing.css" />
   <link rel="stylesheet" href="companion.css" />
   <link rel="stylesheet" href="layers.css" />
 </head>
@@ -185,7 +186,7 @@
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
-      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, queue helpers, and lawful platform handoff — Spotify, YouTube, and Internet Archive stay official HTTPS searches.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div></section>
+      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local files play at native quality. Optional Online media plays public HTTPS audio/video you ask for. Spotify, YouTube, and Netflix open in your browser.</p></div></div><form class="online-media-form memory-form" id="onlineMediaForm"><input id="onlineMediaUrl" maxlength="1000" placeholder="https://example.com/file.mp3" aria-label="Public HTTPS media URL" /><button type="submit" data-i18n="playOnline">Play HTTPS file</button></form><p class="settings-help" data-i18n="onlineMediaHelp">Off until you enable Online media in Settings. Direct HTTPS files only (mp4, webm, ogg, mp3, flac, wav, m4a, aac). No DRM catalogs in-process. Wikimedia and Internet Archive file URLs are allowed when they are HTTPS files.</p><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, Netflix, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div></section>
 
       <section class="view panel-view" id="memoryView">
         <div class="panel-head"><div><h2>Memory</h2><p>Durable facts and preferences Soul can carry across conversations.</p></div></div>
@@ -276,7 +277,7 @@
         <div class="settings-card settings-group" id="editionCard"><h3 id="editionTitle">Eidovara Free</h3><p id="editionDescription">A complete core assistant with offline/local models, memory, media, backups, updates, and up to three linked apps.</p><p class="settings-help">Premium in this version is local-admin testing only. There is no live checkout.</p><button type="button" class="hidden" id="upgradeBtn">View Eidovara Premium</button></div>
         <div class="settings-card settings-group"><h3>Assistant setup</h3><p class="settings-help">Choose what Soul should help with. You can change this later. Direct OBS control is not in this release.</p><button type="button" id="openSetupBtn">Configure assistant</button></div>
         <div class="settings-card settings-group"><h3>Privacy, security &amp; rights</h3><p class="settings-help">18+, unsigned Windows, no live payments. Product copy, not legal advice.</p><div class="settings-actions"><button type="button" id="legalAboutBtn">About &amp; legal</button><button type="button" class="secondary" id="privacyNoticeBtn">Privacy</button><button type="button" class="secondary" id="termsNoticeBtn">Terms</button><button type="button" class="secondary" id="ageNoticeBtn">Age 18+</button><button type="button" class="secondary" id="securityCenterBtn">Security</button><button type="button" class="secondary" id="licensingBtn">Licensing</button></div></div>
-        <form class="settings-card settings-group" id="assistantBehaviorForm"><h3>Soul behavior</h3><p class="settings-help">How Soul talks and which tools it may offer. Launching an app still asks you to confirm every time.</p><label>Autonomy<select id="assistantAutonomy"><option value="user-led">User-led</option><option value="balanced">Balanced</option><option value="proactive">Proactive within the current goal</option></select></label><div class="appearance-fields"><label>Response length<select id="responseLength"><option value="concise">Concise</option><option value="balanced">Balanced</option><option value="detailed">Detailed</option></select></label><label>Tone<select id="responseTone"><option value="natural">Natural</option><option value="direct">Direct</option><option value="warm">Warm</option><option value="professional">Professional</option><option value="playful">Playful</option></select></label><label>Focus mode<select id="focusMode"><option value="general">General</option><option value="gaming">Gaming</option><option value="streaming">Streaming</option><option value="studying">Studying</option><option value="creative">Creative</option><option value="productivity">Productivity</option></select></label></div><label>Accessibility or interaction needs<input id="assistantAccessibility" maxlength="500" placeholder="Reading level, reduced motion, keyboard-first, pacing, or other needs" /></label><label>Web research<select id="webResearchPolicy"><option value="ask">Only on explicit request</option><option value="enabled">May suggest research</option><option value="disabled">Disabled</option></select></label><label>Media playback<select id="mediaPlaybackPolicy"><option value="confirm">Confirm first</option><option value="enabled">Enabled</option><option value="disabled">Disabled</option></select></label><label class="check"><input type="checkbox" id="memoryLearning" /> Allow durable preference learning</label><label class="check"><input type="checkbox" id="assistantInitiative" /> Allow suggestions and reversible local initiative</label><label class="check"><input type="checkbox" id="assistantReflection" /> Allow continuity reflection and learning from feedback</label><button type="submit">Save behavior</button><p class="settings-status" id="assistantBehaviorStatus"></p></form>
+        <form class="settings-card settings-group" id="assistantBehaviorForm"><h3>Soul behavior</h3><p class="settings-help">How Soul talks and which tools it may offer. Launching an app still asks you to confirm every time.</p><label>Autonomy<select id="assistantAutonomy"><option value="user-led">User-led</option><option value="balanced">Balanced</option><option value="proactive">Proactive within the current goal</option></select></label><div class="appearance-fields"><label>Response length<select id="responseLength"><option value="concise">Concise</option><option value="balanced">Balanced</option><option value="detailed">Detailed</option></select></label><label>Tone<select id="responseTone"><option value="natural">Natural</option><option value="direct">Direct</option><option value="warm">Warm</option><option value="professional">Professional</option><option value="playful">Playful</option></select></label><label>Focus mode<select id="focusMode"><option value="general">General</option><option value="gaming">Gaming</option><option value="streaming">Streaming</option><option value="studying">Studying</option><option value="creative">Creative</option><option value="productivity">Productivity</option></select></label></div><label>Accessibility or interaction needs<input id="assistantAccessibility" maxlength="500" placeholder="Reading level, reduced motion, keyboard-first, pacing, or other needs" /></label><label>Web research<select id="webResearchPolicy"><option value="ask">Only on explicit request</option><option value="enabled">May suggest research</option><option value="disabled">Disabled</option></select></label><label>Media playback<select id="mediaPlaybackPolicy"><option value="confirm">Confirm first</option><option value="enabled">Enabled</option><option value="disabled">Disabled</option></select></label><label class="check"><input type="checkbox" id="onlineMediaPolicy" /> <span>Online media — play public HTTPS audio/video files I ask for (off by default). Spotify, YouTube, and Netflix still open in the browser.</span></label><label class="check"><input type="checkbox" id="memoryLearning" /> Allow durable preference learning</label><label class="check"><input type="checkbox" id="assistantInitiative" /> Allow suggestions and reversible local initiative</label><label class="check"><input type="checkbox" id="assistantReflection" /> Allow continuity reflection and learning from feedback</label><button type="submit">Save behavior</button><p class="settings-status" id="assistantBehaviorStatus"></p></form>
         <div class="settings-card settings-group" id="backupSection"><h3 data-i18n="backupTitle">Backups</h3><p class="settings-help" data-i18n="backupLead">Create a portable local snapshot or restore an earlier snapshot. Encrypted when Windows protection is available.</p><div class="settings-actions"><button type="button" id="backupBtn" data-i18n="createBackup">Create backup</button><button type="button" class="secondary" id="refreshBackupsBtn" data-i18n="refreshList">Refresh list</button></div><label>Available backups<select id="backupSelect"></select></label><button type="button" class="secondary" id="restoreBackupBtn" data-i18n="restoreBackup">Restore selected backup</button><p class="settings-status" id="backupStatus"></p></div>
         <div class="danger-zone card"><h3>Reset Soul</h3><p>Deletes the current profile state from the app and creates a fresh local identity profile. This cannot be undone from the UI.</p><button class="danger" id="resetBtn">Reset current Soul profile</button></div>
       </section>
@@ -301,19 +302,77 @@
       <div class="setup-actions"><button type="button" class="secondary hidden" id="cancelSetupBtn" data-i18n="cancel">Cancel</button><button type="submit" data-i18n="saveContinue">Save and continue</button></div>
     </form>
   </div>
-  <section class="media-dock hidden" id="mediaDock" aria-label="Soul media player">
-    <div class="media-now"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small></div>
-    <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
-    <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
-    <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
-    <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
-    <button type="button" id="mediaSimilarBtn">Similar</button>
-    <audio id="audioPlayer" controls preload="metadata"></audio>
-    <video id="videoPlayer" controls preload="metadata"></video>
-    <button type="button" id="mediaSpotifyBtn">Spotify</button>
-    <button type="button" id="mediaYouTubeBtn">YouTube</button>
-    <button type="button" id="mediaSourceBtn">Source</button>
-    <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
+  <section class="eidovara-player" id="mediaDock" aria-label="Soul media player" aria-hidden="true">
+    <div class="now-playing-bar">
+      <button type="button" class="np-art" id="mediaArtBtn" aria-label="Expand player">
+        <canvas id="mediaArtCanvas" width="52" height="52" hidden></canvas>
+        <span id="mediaArtFallback">E</span>
+      </button>
+      <div class="media-now" id="mediaTitleWrap">
+        <strong id="mediaTitle">Nothing playing</strong>
+        <small id="mediaKind"></small>
+      </div>
+      <div class="np-transport">
+        <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
+        <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
+        <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
+      </div>
+      <div class="np-seek">
+        <span id="mediaTime">0:00</span>
+        <input id="mediaSeek" type="range" min="0" max="0" value="0" />
+        <span id="mediaDuration">0:00</span>
+      </div>
+      <div class="np-volume"><input id="mediaVolume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume" /></div>
+      <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
+      <button type="button" id="mediaSimilarBtn">Similar</button>
+      <button type="button" id="mediaExpandBtn" aria-label="Expand player">Expand</button>
+      <button type="button" id="mediaPopOutBtn">Pop out</button>
+      <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
+    </div>
+    <div class="now-playing-stage" id="nowPlayingStage" aria-hidden="true" inert>
+      <div class="np-stage-head">
+        <button type="button" id="mediaCollapseBtn">Collapse player</button>
+        <span id="mediaQuality">Native</span>
+      </div>
+      <div class="np-stage-main">
+        <div class="np-surface" id="mediaSurface" data-kind="audio">
+          <div class="np-audio-art" id="mediaStageArt"><strong></strong></div>
+          <video id="videoPlayer" playsinline></video>
+          <audio id="audioPlayer"></audio>
+          <div class="np-chrome">
+            <button type="button" id="mediaStagePrevBtn" aria-label="Previous media">⏮</button>
+            <button type="button" id="mediaStagePlayBtn" aria-label="Play or pause">▶</button>
+            <button type="button" id="mediaStageNextBtn" aria-label="Next media">⏭</button>
+            <span id="mediaStageTime">0:00</span>
+            <input id="mediaStageSeek" type="range" min="0" max="0" value="0" />
+            <span id="mediaStageDuration">0:00</span>
+            <input id="mediaStageVolume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume" />
+            <button type="button" id="mediaFullscreenBtn">Fullscreen</button>
+          </div>
+        </div>
+        <aside class="np-side">
+          <h3 id="mediaStageTitle">Nothing playing</h3>
+          <p id="mediaStageMeta"></p>
+          <p id="mediaLyrics">No licensed lyrics in-app</p>
+          <div class="np-extras">
+            <button type="button" id="mediaLoopBtn">Loop</button>
+            <button type="button" id="mediaShuffleBtn">Shuffle</button>
+            <label>Rate <select id="mediaRate"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+            <label>Sleep <select id="mediaSleep"><option value="0">Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option></select></label>
+          </div>
+          <h4>Queue</h4>
+          <ul class="np-queue" id="mediaQueueList"></ul>
+          <div class="np-handoff">
+            <button type="button" id="mediaSpotifyBtn">Spotify</button>
+            <button type="button" id="mediaYouTubeBtn">YouTube</button>
+            <button type="button" id="mediaNetflixBtn">Netflix</button>
+            <button type="button" id="mediaStageSpotifyBtn" hidden>Spotify</button>
+            <button type="button" id="mediaStageYouTubeBtn" hidden>YouTube</button>
+            <button type="button" id="mediaSourceBtn">Source</button>
+          </div>
+        </aside>
+      </div>
+    </div>
   </section>
   <div class="setup-overlay hidden" id="adminOverlay" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
     <form class="setup-dialog admin-dialog" id="adminLoginForm">
@@ -397,6 +456,7 @@
     </div>
   </div>
   <script src="localization.js"></script>
+  <script src="now-playing.js"></script>
   <script src="renderer.js"></script>
   <script src="companion.js"></script>
   <script src="workspace-layers.js"></script>

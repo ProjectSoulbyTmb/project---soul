@@ -312,6 +312,7 @@ export function kernelPublicMeta(route) {
       hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
       snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
       label: String(item.label || '').slice(0, 80),
+      catalog: item.catalog === true ? true : undefined,
       auto: item.type === 'open-external' ? false : Boolean(item.auto)
     })).filter(item => item.type && (item.type !== 'open-external' || /^https:\/\//i.test(item.url || ''))) : [],
     soul: {

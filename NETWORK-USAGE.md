@@ -22,7 +22,8 @@ Network access is user-directed except the official GitHub update-manifest check
 | Optional desktop `POST /v1/assist` | After 18+: pasted HTTPS base in Settings **and** Soul-online opt-in **and** the per-message send checkbox (all default off) | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
 | Optional desktop helper `POST /v1/assist` | User pastes a Worker HTTPS base **and** enables **Allow one-shot Worker helper** (default off), then checks **Ask the Worker helper** on one send | The typed query only (about 32 KiB bound). Conversations, memories, and chat history stay local. Transcripts are not stored. |
 | `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
-| Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
+| Spotify, YouTube, or Netflix web service | User clicks the respective media button or an explicit catalog URL | Current track search text or the official page URL, IP address, platform cookies/account state |
+| User-initiated public HTTPS audio/video file | Entertainment Online field, explicit “play this https …” after **Online media** is enabled, or Play on a Wikimedia/Archive **file** URL | URL request, IP address, application user agent. No cookies. Redirects capped. Streamed through `eidovara-online:`. |
 
 No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Empty/default Settings → Eidovara service resolves to `https://api.eidovara.org`. If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.19.0; the app never enables live checkout from a remote flag.
 
@@ -42,7 +43,8 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Optional website `GET`/`POST /v1/assist` after a pasted HTTPS base
 - Optional desktop `POST /v1/assist` after a pasted HTTPS base, Soul-online opt-in, and a per-message send checkbox (default off; Assist is not Soul)
 - Optional desktop `POST /v1/assist` only after pasted HTTPS base **and** explicit helper opt-in (default off); conversations are not sent
-- Spotify/YouTube official HTTPS search links (no stream ripping)
+- Spotify/YouTube/Netflix official HTTPS search or catalog links (no stream ripping)
+- User-initiated public HTTPS media files after Online media is enabled, gated in the main process and streamed on `eidovara-online:`
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure
 
@@ -53,6 +55,7 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Direct OBS websocket control
 - Live payments, card collection, webhook entitlement, or PCI processing
 - Weakening the renderer sandbox, 18+ gates, or `.github/workflows/dependency-review.yml`
-- App CSP `media-src 'self'` (local media stays on `eidovara-media:`)
+- App CSP `media-src 'self'` (local media stays on `eidovara-media:`; remote play uses `eidovara-online:` after a main-process gate — do not put `https:` in renderer `media-src`)
+- youtube-dl, yt-dlp, Invidious, Piped, googlevideo progressive URLs, Spotify Web Playback SDK, Widevine CDM hacks, iframe embeds, or CDN hls.js/Shaka
 - Fake registered-mark, patent, or PCI-DSS claims
 - A hardcoded `workers.dev` Worker URL in the desktop app or public site

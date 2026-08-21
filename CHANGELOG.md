@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Fluid now-playing bar and expanded stage, plus frameless glass pop-out windows (Pop out / Dock). Local files play at native Chromium quality; rate, loop, shuffle, fullscreen, sleep timer, and sidecar captions (`.vtt` / `.srt` next to the file) apply to local media.
+- Optional **Online media** (Settings, default off) plays **user-initiated** public HTTPS audio/video files (mp4, webm, ogg, mp3, flac, wav, m4a, aac; Wikimedia and Internet Archive **file** URLs). The main process gates the URL (`credentials: 'omit'`, no cookies, redirect cap, no private/loopback/link-local/metadata hosts) and streams through `eidovara-online:`. Renderer CSP is `media-src eidovara-media: eidovara-online:` — never `'self'`, never `https:` in `media-src`. Adult Mode stops remote playback and closes floats.
+- YouTube, Spotify, Netflix, and other catalog/DRM apps stay confirm → `openExternal` with copy: “This service can’t play inside Eidovara; it opens in your browser.” No yt-dlp, Invidious, Piped, googlevideo progressive URLs, Spotify Web Playback SDK, Widevine hacks, iframe embeds, or CDN hls.js/Shaka.
+- Companion “play this https …” hands a classified URL to the player after the same gate; it does not scrape pages for hidden media. Hello, startup, and telemetry still do not fetch remote media.
+
 ## v0.19.0
 
 - Beautiful consumer release on the land-all 0.18.3 kernel plus internet research: pin-able Dashboard tiles, local scratchpad, a timed quiet focus bar, kernel-backed palette/search (Ctrl+K / Ctrl+P), companion dock, first-run after 18+, grouped Settings, and official `https://api.eidovara.org`.

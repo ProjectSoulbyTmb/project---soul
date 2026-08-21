@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src eidovara-media: eidovara-online:; connect-src 'none'; object-src 'none'" />
+  <title>Eidovara player</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="now-playing.css" />
+</head>
+<body class="float-player">
+  <div class="float-glass" id="mediaDock">
+    <div class="float-drag" aria-hidden="true"></div>
+    <div class="np-surface" id="mediaSurface" data-kind="audio">
+      <div class="np-audio-art" id="mediaStageArt"><strong></strong></div>
+      <video id="videoPlayer" playsinline></video>
+      <audio id="audioPlayer"></audio>
+      <div class="np-chrome">
+        <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
+        <span id="mediaTime">0:00</span>
+        <input id="mediaSeek" type="range" min="0" max="0" value="0" />
+        <span id="mediaDuration">0:00</span>
+      </div>
+    </div>
+    <div class="float-chrome">
+      <strong id="mediaTitle">Nothing playing</strong>
+      <small id="mediaKind"></small>
+      <span id="mediaQuality"></span>
+      <button type="button" id="mediaDockBtn">Dock</button>
+    </div>
+  </div>
+  <script src="now-playing.js"></script>
+  <script src="float-player.js"></script>
+</body>
+</html>

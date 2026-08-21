@@ -4,12 +4,11 @@ const $ = s => document.querySelector(s);
 const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
 let state = null, settings = null, sending = false, backupCount = 0;
-let mediaQueue = [], mediaIndex = -1;
 const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), settings: $('#settingsView') };
 const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 const assistantPayload = (extra = {}) => {
   const p = state?.assistant?.preferences || {}, c = state?.assistant?.capabilities || {};
-  return { autonomy: state?.assistant?.autonomy, initiativeEnabled: state?.assistant?.initiativeEnabled, reflectionEnabled: state?.assistant?.reflectionEnabled, responseLength: p.responseLength, tone: p.tone, focusMode: p.focusMode, accessibility: p.accessibility, language: $('#languageSelect')?.value || p.language || 'en', webResearch: c.webResearch, mediaPlayback: c.mediaPlayback, memoryLearning: c.memoryLearning, ...extra };
+  return { autonomy: state?.assistant?.autonomy, initiativeEnabled: state?.assistant?.initiativeEnabled, reflectionEnabled: state?.assistant?.reflectionEnabled, responseLength: p.responseLength, tone: p.tone, focusMode: p.focusMode, accessibility: p.accessibility, language: $('#languageSelect')?.value || p.language || 'en', webResearch: c.webResearch, mediaPlayback: c.mediaPlayback, onlineMedia: c.onlineMedia, memoryLearning: c.memoryLearning, ...extra };
 };
 
 function activeConversation(){ return state?.conversations?.find(c=>c.id===state.activeConversationId) || state?.conversations?.[0]; }
@@ -38,12 +37,13 @@ function latestResearch(){
 function hostnameOf(href){
   try { return new URL(String(href||'')).hostname; } catch { return ''; }
 }
-function openResearchLink(url, title){
+function openResearchLink(url, title, opts={}){
   const href=String(url||'');
   if(!href) return;
   const host=hostnameOf(href);
   const line=[title, host].filter(Boolean).join(' · ');
-  const ok=window.confirm(`${t('confirmOpenLink','Open this HTTPS page in your browser?')}${line?`\n${line}`:''}\n${href}`);
+  const catalog=opts.catalog?`\n${t('catalogHandoff','This service can’t play inside Eidovara; it opens in your browser.')}`:'';
+  const ok=window.confirm(`${t('confirmOpenLink','Open this HTTPS page in your browser?')}${catalog}${line?`\n${line}`:''}\n${href}`);
   if(!ok) return;
   window.soul.openExternal(href).catch(err=>alert(String(err?.message||err)));
 }
@@ -68,7 +68,8 @@ function runKernelAction(action){
   else if(action.type==='open-diagnostics'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
   else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'}); }
   else if(action.type==='open-updates'){ setView('settings'); $('#checkUpdateBtn')?.focus(); }
-  else if(action.type==='open-external'&&action.url) openResearchLink(action.url);
+  else if(action.type==='open-external'&&action.url) openResearchLink(action.url, action.label, { catalog: action.catalog });
+  else if(action.type==='play-online'&&action.url) playMedia([{ type: action.mediaType || 'audio', title: action.title, url: action.url, sourceUrl: action.url }], 0, { alreadyConfirmed: true });
 }
 window.eidovaraRunAction=runKernelAction;
 function setupCategories(){return $$('input[name="setupCategory"]:checked').map(x=>x.value);}
@@ -78,10 +79,9 @@ async function openAdmin(){const status=await window.soul.adminStatus();$('#admi
 
 function renderConversations(){ const list=$('#conversationList'); list.textContent=''; const onlyOne=(state.conversations||[]).length<=1; for(const c of state.conversations){ const row=el('button','conversation'+(c.id===state.activeConversationId?' active':'')); row.type='button'; const label=el('span','label',c.title||'Conversation'); const del=el('button','delete','×'); del.type='button'; del.title='Delete conversation'; del.hidden=onlyOne; del.disabled=onlyOne; del.addEventListener('click',async e=>{e.stopPropagation(); if(state.conversations.length<=1)return; state=await window.soul.deleteConversation(c.id); renderAll();}); row.append(label,del); row.addEventListener('click',async()=>{state=await window.soul.selectConversation(c.id); renderAll();setView('chat');}); list.append(row); } }
 function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>openResearchLink(url));return a;}
-function currentPlayer(){return mediaQueue[mediaIndex]?.type==='video'?$('#videoPlayer'):$('#audioPlayer');}
-function mediaSignal(event,item=mediaQueue[mediaIndex]){if(!item||!['audio','video'].includes(item.type))return;window.soul.recordMedia({event,type:item.type,title:item.title,sourceUrl:item.sourceUrl}).catch(()=>{});}
-function loadMedia(index,autoplay=true){if(!mediaQueue.length)return;const previous=mediaQueue[mediaIndex];if(previous&&index!==mediaIndex)mediaSignal('skip',previous);mediaIndex=(index+mediaQueue.length)%mediaQueue.length;const item=mediaQueue[mediaIndex],audio=$('#audioPlayer'),video=$('#videoPlayer'),player=item.type==='video'?video:audio;audio.pause();video.pause();audio.classList.toggle('hidden',item.type==='video');video.classList.toggle('hidden',item.type!=='video');player.src=item.url;$('#mediaTitle').textContent=item.title||'Untitled media';$('#mediaKind').textContent=`${item.local?'local ':''}${item.type} · ${mediaIndex+1} of ${mediaQueue.length}`;$('#mediaFavoriteBtn').textContent='♡';$('#mediaSourceBtn').disabled=!item.sourceUrl;$('#mediaDock').classList.remove('hidden');mediaSignal('play',item);if(autoplay)player.play().catch(()=>{});}
-function playMedia(items,index,opts={}){const mode=state?.assistant?.capabilities?.mediaPlayback||'confirm';if(mode==='disabled'){alert(t('mediaDisabled','Media playback is disabled in Soul behavior settings.'));return;}const selected=items[index];if(mode==='confirm'&&!opts.alreadyConfirmed){if(!window.confirm(`${t('mediaConfirm','Play this media in Eidovara:')} ${selected?.title||''}`.trim()))return;}mediaQueue=items.filter(m=>m.type==='audio'||m.type==='video');loadMedia(Math.max(0,mediaQueue.indexOf(selected)));}
+function currentPlayer(){return window.eidovaraNowPlaying?.currentPlayer?.();}
+function mediaSignal(event,item){if(!item||!['audio','video'].includes(item.type))return;window.soul.recordMedia({event,type:item.type,title:item.title,sourceUrl:item.sourceUrl}).catch(()=>{});}
+function playMedia(items,index,opts={}){return window.eidovaraNowPlaying?.play?.(items,index,opts);}
 function renderResearch(target,research){
   if(!research)return;
   const remote=Boolean(research.fetchedAt);
@@ -353,7 +353,7 @@ function renderEntertainment(){
     else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
   }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';if($('#onlineMediaPolicy'))$('#onlineMediaPolicy').checked=c.onlineMedia==='enabled';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -413,6 +413,8 @@ async function send(text, opts={}){
     const replyText=replies.at(-1)?.content;
     const assistNote='';
     window.eidovaraCompanion?.noteExchange?.(text, replyText, assistNote, { research: res.webResearch || res.mediaDiscovery, actions: res.kernel?.actions });
+    if(res.adultAllowed) window.eidovaraNowPlaying?.applyAdultLock?.();
+    else await window.eidovaraNowPlaying?.handleEnginePlayback?.(res.onlinePlayback);
     if(res.kernel?.intent==='research' || res.kernel?.view==='research') setView('research');
     else if(surface==='companion') setView('dashboard');
   }catch(err){
@@ -430,6 +432,12 @@ async function send(text, opts={}){
   }
 }
 
+$('#onlineMediaForm')?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const url=$('#onlineMediaUrl')?.value.trim();
+  if(!url) return;
+  playMedia([{ type: /\.(mp4|m4v|webm|ogv)$/i.test(url)?'video':'audio', title: url.split('/').pop()||'Online media', url, sourceUrl: url }], 0, { alreadyConfirmed: true });
+});
 $('#chatForm').addEventListener('submit',e=>{e.preventDefault();send($('#messageInput').value);});
 $('#researchForm')?.addEventListener('submit',e=>{
   e.preventDefault();
@@ -522,7 +530,7 @@ $('#ageNoticeBtn').addEventListener('click',()=>window.soul.openExternal('https:
 $('#securityCenterBtn').addEventListener('click',()=>window.soul.openExternal('https://eidovara.org/security.html'));
 $('#licensingBtn').addEventListener('click',()=>window.soul.openExternal('https://eidovara.org/licensing.html'));
 $('#upgradeBtn').addEventListener('click',()=>{if(settings?.storeUrl)window.soul.openExternal(settings.storeUrl).catch(err=>{$('#settingsStatus').textContent=String(err?.message||err);});});
-$('#assistantBehaviorForm').addEventListener('submit',async e=>{e.preventDefault();try{state=await window.soul.configureAssistant({autonomy:$('#assistantAutonomy').value,initiativeEnabled:$('#assistantInitiative').checked,reflectionEnabled:$('#assistantReflection').checked,responseLength:$('#responseLength').value,tone:$('#responseTone').value,focusMode:$('#focusMode').value,accessibility:$('#assistantAccessibility').value,language:$('#languageSelect').value,webResearch:$('#webResearchPolicy').value,mediaPlayback:$('#mediaPlaybackPolicy').value,memoryLearning:$('#memoryLearning').checked?'enabled':'disabled'});$('#assistantBehaviorStatus').textContent=t('behaviorSaved','Behavior settings saved. Language, tone, and accessibility remain as set.');renderAll();}catch(err){$('#assistantBehaviorStatus').textContent=String(err?.message||err);}});
+$('#assistantBehaviorForm').addEventListener('submit',async e=>{e.preventDefault();try{state=await window.soul.configureAssistant({autonomy:$('#assistantAutonomy').value,initiativeEnabled:$('#assistantInitiative').checked,reflectionEnabled:$('#assistantReflection').checked,responseLength:$('#responseLength').value,tone:$('#responseTone').value,focusMode:$('#focusMode').value,accessibility:$('#assistantAccessibility').value,language:$('#languageSelect').value,webResearch:$('#webResearchPolicy').value,mediaPlayback:$('#mediaPlaybackPolicy').value,onlineMedia:$('#onlineMediaPolicy')?.checked?'enabled':'disabled',memoryLearning:$('#memoryLearning').checked?'enabled':'disabled'});$('#assistantBehaviorStatus').textContent=t('behaviorSaved','Behavior settings saved. Language, tone, and accessibility remain as set.');renderAll();}catch(err){$('#assistantBehaviorStatus').textContent=String(err?.message||err);}});
 $$('#dashboardQuick [data-quick]').forEach(b=>b.addEventListener('click',()=>{setView('dashboard');send(b.dataset.quick,{surface:'companion'});}));
 $$('#entertainmentView [data-quick]').forEach(b=>b.addEventListener('click',()=>{setView('chat');send(b.dataset.quick);}));
 $('#diagnosticsBtn').addEventListener('click',async()=>{
@@ -547,7 +555,6 @@ $('#diagnosticsBtn').addEventListener('click',async()=>{
 async function checkUpdates(silent=false){try{const u=await window.soul.checkForUpdates();if(!u.configured){if(!silent)$('#updateStatus').textContent='This development build has no published release channel.';return;}if(u.available){$('#updateStatus').textContent=`Version ${u.version} is available.${u.notes?' '+u.notes:''}`;$('#installUpdateBtn').classList.remove('hidden');}else if(!silent){ $('#updateStatus').textContent=`Eidovara ${u.currentVersion} is current.`;}}catch(err){if(!silent)$('#updateStatus').textContent=String(err?.message||err);}}
 $('#checkUpdateBtn').addEventListener('click',()=>checkUpdates(false));$('#installUpdateBtn').addEventListener('click',async()=>{try{$('#updateStatus').textContent='Downloading and verifying update…';const result=await window.soul.installUpdate();$('#updateStatus').textContent=result.cancelled?'Update cancelled.':'Verified installer launched.';}catch(err){$('#updateStatus').textContent=String(err?.message||err);}});
 $$('input[name="setupCategory"]').forEach(x=>x.addEventListener('change',toggleStreamSetup));$('#openSetupBtn').addEventListener('click',()=>openSetup(true));$('#cancelSetupBtn').addEventListener('click',()=>$('#setupOverlay').classList.add('hidden'));$('#setupForm').addEventListener('submit',async e=>{e.preventDefault();const categories=setupCategories();const access=$('#setupAccessibility')?.value.trim()||'';if(!categories.length&&!$('#setupCustomNeeds').value.trim()&&!access){$('#setupStatus').textContent='Choose at least one role or describe what you need.';return;}try{$('#setupStatus').textContent='Saving…';state=await window.soul.configureSetup({categories,customNeeds:$('#setupCustomNeeds').value,obsWebSocketUrl:$('#setupObsUrl').value,streamGoals:$('#setupStreamGoals').value});if(access||categories.includes('accessibility')) state=await window.soul.configureAssistant(assistantPayload({accessibility:access || state.assistant?.preferences?.accessibility || ''}));$('#setupOverlay').classList.add('hidden');renderAll();}catch(err){$('#setupStatus').textContent=String(err?.message||err);}});
-$('#mediaPrevBtn').addEventListener('click',()=>loadMedia(mediaIndex-1));$('#mediaNextBtn').addEventListener('click',()=>loadMedia(mediaIndex+1));$('#mediaPlayBtn').addEventListener('click',()=>{const p=currentPlayer();if(!p)return;p.paused?p.play().catch(()=>{}):p.pause();});$('#mediaFavoriteBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;await window.soul.recordMedia({event:'favorite',type:item.type,title:item.title,sourceUrl:item.sourceUrl});$('#mediaFavoriteBtn').textContent='♥';});$('#mediaSimilarBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;const taste=await window.soul.entertainment();const favorites=taste.topTitles.slice(0,3).map(x=>x.title).join(', ');send(`Find something similar to my favorite music: ${item.title}${favorites?`, considering ${favorites}`:''}`);});$('#mediaSpotifyBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://open.spotify.com/search/${encodeURIComponent(item.title)}`);});$('#mediaYouTubeBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`);});$('#mediaSourceBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(item.sourceUrl);});$('#mediaCloseBtn').addEventListener('click',()=>{const p=currentPlayer();p?.pause();$('#mediaDock').classList.add('hidden');});function completeMedia(){const next=mediaIndex+1;mediaSignal('complete');mediaIndex=-1;loadMedia(next);}$('#audioPlayer').addEventListener('ended',completeMedia);$('#videoPlayer').addEventListener('ended',completeMedia);
 $('#backupBtn').addEventListener('click',async()=>{try{$('#backupStatus').textContent='Creating local snapshot…';const b=await window.soul.createBackup();$('#backupStatus').textContent=`Created ${b.name} (${Math.ceil(b.bytes/1024)} KB). Restore is available from the list below.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});
 $('#refreshBackupsBtn').addEventListener('click',()=>refreshBackups().then(()=>{$('#backupStatus').textContent=backupCount?`${backupCount} local snapshot${backupCount===1?'':'s'} available.` : t('noBackups');renderDashboard();}).catch(err=>{$('#backupStatus').textContent=String(err?.message||err);}));
 $('#restoreBackupBtn').addEventListener('click',async()=>{const name=$('#backupSelect').value;if(!name||name.startsWith('No backups')||!confirm('Restore this backup and replace the current profile state?'))return;try{state=await window.soul.restoreBackup(name);renderAll();$('#backupStatus').textContent=`Restored ${name}. Conversations, memories, and Soul continuity now match that snapshot.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});

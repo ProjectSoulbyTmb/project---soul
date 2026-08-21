@@ -250,8 +250,10 @@ async function searchMedia(query, kind, fetchImpl) {
   const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`, 15000, {}, fetchImpl);
   return orderedPages(data).map(p => {
     const i = p.imageinfo?.[0] || {};
-    const url = asHttps(i.thumburl || i.url, ['upload.wikimedia.org', 'wikimedia.org']);
+    const fileUrl = asHttps(i.url, ['upload.wikimedia.org', 'wikimedia.org']);
+    const thumb = asHttps(i.thumburl || i.url, ['upload.wikimedia.org', 'wikimedia.org']);
     const sourceUrl = asHttps(i.descriptionurl, ['commons.wikimedia.org', 'wikimedia.org', 'wikipedia.org']);
+    const url = kind === 'image' ? (thumb || fileUrl) : (fileUrl || thumb);
     return {
       type: kind,
       title: plain(String(p.title || '').replace(/^File:/, '')),
