@@ -20,7 +20,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Companion and accessibility | Working | Hideable 2D/3D-styled avatar, motion controls, installed Windows voices, optional narration and detected dictation. |
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |
 | Appearance and gaming mode | Working | Colors, opacity, RGB option, low-overhead mode, GPU/media diagnostics. |
-| Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
+| Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. Setup overwrites an existing Eidovara program install without deleting local user data. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
 | Website | Working | GitHub Pages deployment with responsive product, trust, privacy, security, licensing, and terms pages. |

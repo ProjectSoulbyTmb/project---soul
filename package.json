@@ -79,8 +79,10 @@
       "license": "LICENSE",
       "installerIcon": "assets/branding/eidovara.ico",
       "uninstallerIcon": "assets/branding/eidovara.ico",
+      "include": "build/installer.nsh",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },

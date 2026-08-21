@@ -44,7 +44,7 @@ npm run smoke
 npm run dist:win:installer
 ```
 
-The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
+The Windows installer is generated in `dist/`. Running Setup again overwrites an existing Eidovara program install for the same application ID: a running Eidovara window is closed first so files can be replaced. Local user data is not wiped. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 
 ## Rights and project records
 
