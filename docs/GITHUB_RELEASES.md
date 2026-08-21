@@ -17,7 +17,7 @@ git push origin v0.19.1
 ```
 
 3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer` (`--publish never` so electron-builder does not create the GitHub Release itself), writes `latest.yml` for `electron-updater`, `update.json`, and evidence, then publishes `Eidovara-${version}-Windows-x64-Setup.exe` plus updater metadata to the GitHub Release. Users download that `.exe`; they do not extract a ZIP. Future tagged releases need a workflow `GITHUB_TOKEN` (already granted via `contents: write`) so `latest.yml` is attached. Do not commit a `GH_TOKEN`.
-4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button. Current SHA-256: `F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310`. Size about 101.3 MiB. Until a 0.19.1 artifact exists, that hash is the last published installer (`v0.19.0`).
+4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button. Current SHA-256: `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`. Size about 101.3 MiB.
 
 Do not reuse a release tag after changing its files. Increment the version and create a new tag so installed applications can compare versions safely.
 
