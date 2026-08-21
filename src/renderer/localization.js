@@ -58,7 +58,9 @@
       startPathStep2: 'Soul (right dock) is the local software self-model. Ask it here. It is not a person and not the website helper.',
       startPathStep3: 'Assist is an optional Worker helper. It stays off unless you enable it in Settings. Assist is not Soul.',
       startTalk: 'Talk with Soul', startApps: 'Add a trusted app', startSettings: 'Open Settings', startDismiss: 'Hide this guide',
-      paletteEmpty: 'No matching places. Try dashboard or settings.'
+      paletteEmpty: 'No matching places. Try dashboard or settings.',
+      paletteTitle: 'Jump in Eidovara', scratchTitle: 'Scratchpad', scratchHint: 'Stays on this PC', scratchCapture: 'Capture to Memory', scratchPlaceholder: 'Quick capture. Stays on this device.',
+      focusQuiet: 'Focus session', focusStart: 'Start 25 minutes', focusStop: 'Stop', pinWidget: 'Pin a tile', unpinWidget: 'Unpin'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -119,7 +121,9 @@
       startPathStep2: 'Soul (el muelle derecho) es el modelo de software local. Pregúntale aquí. No es una persona ni el ayudante del sitio.',
       startPathStep3: 'Assist es un ayudante opcional del Worker. Permanece apagado salvo que lo actives en Configuración. Assist no es Soul.',
       startTalk: 'Hablar con Soul', startApps: 'Añadir app de confianza', startSettings: 'Abrir Configuración', startDismiss: 'Ocultar esta guía',
-      paletteEmpty: 'Ningún lugar coincide. Prueba panel o configuración.'
+      paletteEmpty: 'Ningún lugar coincide. Prueba panel o configuración.',
+      paletteTitle: 'Saltar en Eidovara', scratchTitle: 'Bloc', scratchHint: 'Se queda en este PC', scratchCapture: 'Capturar a Memoria', scratchPlaceholder: 'Captura rápida. Se queda en este dispositivo.',
+      focusQuiet: 'Sesión de enfoque', focusStart: 'Empezar 25 minutos', focusStop: 'Parar', pinWidget: 'Fijar mosaico', unpinWidget: 'Quitar'
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -180,7 +184,9 @@
       startPathStep2: 'Soul (panneau droit) est le modèle logiciel local. Demandez-lui ici. Ce n’est pas une personne ni l’aide du site.',
       startPathStep3: 'Assist est une aide Worker facultative. Elle reste désactivée tant que vous ne l’activez pas dans Paramètres. Assist n’est pas Soul.',
       startTalk: 'Parler à Soul', startApps: 'Ajouter une app de confiance', startSettings: 'Ouvrir Paramètres', startDismiss: 'Masquer ce guide',
-      paletteEmpty: 'Aucun lieu correspondant. Essayez tableau de bord ou paramètres.'
+      paletteEmpty: 'Aucun lieu correspondant. Essayez tableau de bord ou paramètres.',
+      paletteTitle: 'Aller dans Eidovara', scratchTitle: 'Brouillon', scratchHint: 'Reste sur cet appareil', scratchCapture: 'Capturer vers Mémoire', scratchPlaceholder: 'Capture rapide. Reste sur cet appareil.',
+      focusQuiet: 'Session de focus', focusStart: 'Démarrer 25 minutes', focusStop: 'Arrêter', pinWidget: 'Épingler une tuile', unpinWidget: 'Détacher'
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -241,7 +247,9 @@
       startPathStep2: 'Soul (rechtes Dock) ist das lokale Software-Selbstmodell. Fragen Sie hier. Keine Person und nicht der Website-Helfer.',
       startPathStep3: 'Assist ist ein optionaler Worker-Helfer. Er bleibt aus, bis Sie ihn in den Einstellungen einschalten. Assist ist nicht Soul.',
       startTalk: 'Mit Soul sprechen', startApps: 'Vertrauenswürdige App hinzufügen', startSettings: 'Einstellungen öffnen', startDismiss: 'Diese Anleitung ausblenden',
-      paletteEmpty: 'Kein Treffer. Versuchen Sie Übersicht oder Einstellungen.'
+      paletteEmpty: 'Kein Treffer. Versuchen Sie Übersicht oder Einstellungen.',
+      paletteTitle: 'Springen in Eidovara', scratchTitle: 'Notizblock', scratchHint: 'Bleibt auf diesem PC', scratchCapture: 'In den Speicher erfassen', scratchPlaceholder: 'Schnelle Notiz. Bleibt auf diesem Gerät.',
+      focusQuiet: 'Fokus-Sitzung', focusStart: '25 Minuten starten', focusStop: 'Stopp', pinWidget: 'Kachel anheften', unpinWidget: 'Lösen'
     }
   };
   let locale = 'en';

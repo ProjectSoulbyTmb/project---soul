@@ -2,7 +2,14 @@
 
 ## Unreleased
 
+## v0.19.0
+
+- Beautiful consumer release on the v0.18.3 kernel plus internet research: pin-able Dashboard tiles, local scratchpad, a timed quiet focus bar, and kernel-backed palette/search (Ctrl+K / Ctrl+P). Companion dock, first-run after 18+, grouped Settings, and official `https://api.eidovara.org` stay.
 - Companion and conversation turns run public web lookup during `engine.respond` after an explicit internet/web/online request — not only the Research panel. Wikipedia/Wikimedia, optional Internet Archive catalog search, optional Premium Brave key (local testing gate, not a live payment unlock), and a bounded HTTPS fetch of a user-provided or result URL (https only, no credentials, redirects refused, size/timeout caps). The assistant reply cites sanitized titles, snippets, and hostnames. Source chips in the companion log confirm, then use `openExternal`. Readable text extracts stay sanitized (`textContent`, never raw `innerHTML`). Honest copy: public lookup after you ask, not a full-internet index. Fail closed on offline/timeout/blocked host; the workspace keeps working. This path does not call `/v1/assist` unless the existing Assist opt-in is already on and the user asked Assist. Assist is not Soul.
+- New unsigned Windows installer: `package.json` / Worker health / website-helper version is `0.19.0`. App id stays `com.soulconsciousnessstudios.eidovara`. Tags `v0.18.0`–`v0.18.3` already exist and were not moved.
+- Primary public download is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe` (the NSIS `.exe`, not the source repository). Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.0/Eidovara-0.19.0-Windows-x64-Setup.exe`. Authenticode-unsigned; not Microsoft-certified. SHA-256 is published on Download after the artifact exists.
+- Legal-instrument pack (templates only): `COPYRIGHT.txt`, `docs/COPYRIGHT.md`, `docs/TRADEMARK_FILING.md`, `docs/BRAND_GUIDE.md`, and an honest unregistered-trademark policy. Not a Copyright Office or USPTO filing. Not Marvel Jarvis. System fonts only; no SF Pro.
+- Shared `docs/tokens.css` / renderer tokens honor `prefers-reduced-motion`. Home, Download, and Help advertise v0.19.0. Honest 18+ / unsigned / no-payments / Assist≠Soul remain visible. No neural TTS/VRM/OBS, no payments, no `workers.dev` default, no `media-src 'self'`.
 
 ## v0.18.3
 

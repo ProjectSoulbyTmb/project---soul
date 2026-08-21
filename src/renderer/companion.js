@@ -258,6 +258,11 @@
           if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
           $('#checkUpdateBtn')?.focus();
         }
+        if (item.type === 'open-palette' && typeof window.eidovaraOpenPalette === 'function') window.eidovaraOpenPalette();
+        if (item.type === 'open-cheatsheet' && typeof window.eidovaraOpenShortcutSheet === 'function') window.eidovaraOpenShortcutSheet();
+        if (item.type === 'start-focus' && typeof window.eidovaraLayers?.startFocus === 'function') window.eidovaraLayers.startFocus(item.minutes || 25, item.label);
+        if (item.type === 'stop-focus' && typeof window.eidovaraLayers?.stopFocus === 'function') window.eidovaraLayers.stopFocus();
+        if (item.type === 'capture-scratch' && typeof window.eidovaraLayers?.captureScratch === 'function') window.eidovaraLayers.captureScratch();
       }
     },
     noteExchange(userText, reply, extra, payload) {

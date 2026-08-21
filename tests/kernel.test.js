@@ -166,6 +166,7 @@ test('no workers.dev host is compiled into the desktop kernel', () => {
     'src/electron/main.js',
     'src/renderer/renderer.js',
     'src/renderer/companion.js',
+    'src/renderer/workspace-layers.js',
     'src/core/kernel.js',
     'src/core/soul-online.js',
     'src/core/service.js',
@@ -183,6 +184,10 @@ test('no workers.dev host is compiled into the desktop kernel', () => {
   assert.match(read('src/core/modules.js'), /To add a module/);
   const html = read('src/renderer/index.html');
   assert.match(html, /id="soulDock"/);
+  assert.match(html, /id="commandPalette"/);
+  assert.match(html, /id="shortcutSheet"/);
+  assert.match(html, /id="cheatsheetOverlay"/);
+  assert.match(html, /id="focusQuietBar"/);
   assert.match(html, /id="kernelCustomizeForm"/);
   assert.match(html, /id="assistOptIn"/);
   assert.match(html, /id="companionForm"/);

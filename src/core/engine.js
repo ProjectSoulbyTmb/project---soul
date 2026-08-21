@@ -23,6 +23,25 @@ import {
   startKernelSession
 } from './kernel.js';
 import { requestSoulAssist } from './soul-online.js';
+import {
+  captureScratchToMemory,
+  filterPalette,
+  builtinPaletteItems,
+  isFocusStartCommand,
+  isFocusStopCommand,
+  isScratchCaptureCommand,
+  parseFocusMinutes,
+  pinWidget,
+  recordRecent,
+  reorderWidgets,
+  saveScratchpad,
+  scratchBodyFromInput,
+  searchWorkspace,
+  startFocusSession,
+  stopFocusSession,
+  toggleFavorite,
+  unpinWidget
+} from './layers.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
@@ -47,6 +66,77 @@ export class SoulEngine {
     configureKernelState(this.state, input);
     this.store.save(this.state);
     return this.snapshot();
+  }
+  searchWorkspace(query, extras = {}) {
+    kernelHeartbeat(this.state);
+    const kernel = this.state.kernel;
+    return searchWorkspace(query, {
+      apps: extras.apps || [],
+      memories: this.state.memories || [],
+      modules: this.modules.list(),
+      customActions: kernel?.registry?.customActions || [],
+      recents: kernel?.workspace?.recents || [],
+      favorites: kernel?.workspace?.favorites || [],
+      enabledOf: id => this.modules.enabled(id, kernel?.registry)
+    });
+  }
+  paletteItems(query = '', extras = {}) {
+    const kernel = this.state.kernel;
+    const items = builtinPaletteItems({
+      modules: this.modules.list(),
+      customActions: kernel?.registry?.customActions || [],
+      recents: kernel?.workspace?.recents || [],
+      favorites: kernel?.workspace?.favorites || [],
+      enabledOf: id => this.modules.enabled(id, kernel?.registry)
+    });
+    const filtered = filterPalette(query, items);
+    return extras.apps ? this.searchWorkspace(query, extras) : filtered;
+  }
+  pinWidget(id) {
+    pinWidget(this.state, id);
+    this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  unpinWidget(id) {
+    unpinWidget(this.state, id);
+    this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  reorderWidgets(order) {
+    reorderWidgets(this.state, order);
+    this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  startFocusSession(opts = {}) {
+    startFocusSession(this.state, opts);
+    kernelHeartbeat(this.state);
+    this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  stopFocusSession(opts = {}) {
+    stopFocusSession(this.state, opts);
+    this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  saveScratchpad(text) {
+    saveScratchpad(this.state, text);
+    this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  captureScratchpad(extra) {
+    const memory = captureScratchToMemory(this.state, { extra });
+    this.store.save(this.state);
+    return { memory, kernel: this.kernelStatus(), state: this.snapshot() };
+  }
+  recordPaletteUse(item) {
+    recordRecent(this.state, item);
+    this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  togglePaletteFavorite(id) {
+    toggleFavorite(this.state, id);
+    this.store.save(this.state);
+    return this.kernelStatus();
   }
   async assistQuery(query, { base, fetchImpl } = {}) {
     kernelHeartbeat(this.state);
@@ -157,6 +247,24 @@ export class SoulEngine {
     const route = routeKernel(text, this.state, this.modules);
     const locale = this.state.assistant?.preferences?.language || 'en';
 
+    if (!policyReply && route.enabled !== false) {
+      if (route.intent === 'focus' && isFocusStartCommand(text)) {
+        this.startFocusSession({ minutes: parseFocusMinutes(text), label: text.slice(0, 80), at: now });
+      } else if (route.intent === 'focus-stop' || (route.intent === 'focus' && isFocusStopCommand(text))) {
+        this.stopFocusSession({ at: now });
+      } else if (route.intent === 'scratch') {
+        const body = scratchBodyFromInput(text);
+        if (body && /^(note:|scratch:)/i.test(text)) {
+          this.saveScratchpad(body);
+          this.captureScratchpad(body);
+        } else if (isScratchCaptureCommand(text)) {
+          this.captureScratchpad(body || undefined);
+        } else if (body) {
+          this.saveScratchpad(body);
+        }
+      }
+    }
+
     let reply = policyReply;
     let providerError = null;
     let internetError = null;
@@ -166,6 +274,23 @@ export class SoulEngine {
       reply = disabledModuleReply(route, locale);
     }
     if (!reply && route.knowledgeReply) reply = route.knowledgeReply;
+    if (!reply && route.intent === 'search') {
+      const hits = this.searchWorkspace(text, { apps: [] });
+      const lines = hits.slice(0, 8).map(item => `• ${item.title} (${item.kind})`).join('\n');
+      reply = hits.length
+        ? `Local workspace matches on this PC (no background crawler, no /v1/assist). Assist is not Soul.\n${lines}`
+        : 'No local matches for that query. Search stays on this device — it does not crawl other apps or POST /v1/assist.';
+    }
+    if (!reply && route.intent === 'focus-stop') {
+      reply = 'Focus session stopped. Remaining time is cleared. Eidovara did not close, inject into, or throttle other processes.';
+    }
+    if (!reply && route.intent === 'focus' && isFocusStartCommand(text)) {
+      const mins = Math.round((this.state.kernel?.workspace?.focus?.durationMs || 0) / 60000) || parseFocusMinutes(text);
+      reply = `Focus session started on this PC (${mins} minutes). The quiet bar shows remaining time. Other apps are not closed or injected into. Assist is not Soul.`;
+    }
+    if (!reply && route.intent === 'scratch' && /^(note:|scratch:)/i.test(text)) {
+      reply = 'Captured to Memory on this device from the scratchpad. Nothing was sent to /v1/assist.';
+    }
     if (!reply) {
       const wantRemote = route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text);
       if (wantRemote) {

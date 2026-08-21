@@ -35,11 +35,13 @@ test('memory panel can record preference kind through preload', () => {
   assert.match(read('src/renderer/renderer.js'), /remember\(v,\{kind:'preference'\}\)/);
 });
 
-test('Escape closes legal, admin, and cancelable setup overlays', () => {
+test('Escape closes legal, admin, palette, cheatsheet, and cancelable setup overlays', () => {
   const renderer = read('src/renderer/renderer.js');
   assert.match(renderer, /e\.key==='Escape'/);
   assert.match(renderer, /#legalOverlay/);
   assert.match(renderer, /#adminOverlay/);
+  assert.match(renderer, /#commandPalette/);
+  assert.match(renderer, /#shortcutSheet/);
 });
 
 test('desktop chrome and installer EULA match package.json version', () => {

@@ -87,3 +87,11 @@
     --aqua: var(--tint);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion: 0ms;
+    --ease: linear;
+    --blur: none;
+  }
+}

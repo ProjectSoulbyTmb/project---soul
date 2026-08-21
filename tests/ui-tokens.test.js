@@ -12,6 +12,7 @@ test('website and desktop share identical system tokens', () => {
   assert.doesNotMatch(docs, /"SF Pro Text"|"SF Pro Display"/);
   assert.match(docs, /--tint: #007aff/);
   assert.match(docs, /prefers-color-scheme: dark/);
+  assert.match(docs, /prefers-reduced-motion: reduce/);
   assert.doesNotMatch(docs, /Apple Inc|SwiftUI|SF Symbols\.otf/i);
 });
 
