@@ -8,9 +8,11 @@ function patchFile(file, patches) {
   let text = fs.readFileSync(file, 'utf8');
   let changed = false;
   for (const { from, to, label, optional = false } of patches) {
-    if (text.includes(to)) continue;
+    // Empty replacements are removals. Do not treat every string as already
+    // containing an empty replacement; that previously left Premium gates live.
+    if (to && text.includes(to)) continue;
     if (!text.includes(from)) {
-      if (optional) continue;
+      if (optional || to === '') continue;
       throw new Error(`Free-release normalization could not find ${label || from} in ${file}`);
     }
     text = text.replace(from, to);
@@ -28,17 +30,20 @@ patchFile('src/electron/main.js', [
   { label: 'search-key Premium gate', from: "    if (entitlement() === 'free') throw new Error('Broad keyed web search is a Premium feature. Built-in public sources remain available.');\n", to: '' },
   { label: 'manual app-count Premium gate', from: "ipcMain.handle('soul:addApplication', async () => { requireAgeGate(); if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.');", to: "ipcMain.handle('soul:addApplication', async () => { requireAgeGate();" },
   { label: 'discovered app-count Premium gate', from: "  if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.');\n", to: '' },
-  { label: 'admin edition persistence', optional: true, from: "  requireAgeGate(); requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';\n  if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }", to: "  requireAgeGate(); requireAdmin(); config.edition = 'free';" }
+  { label: 'admin edition selector', from: "config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';", to: "config.edition = 'free';" },
+  { label: 'admin downgrade side effects', from: "  if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }\n", to: '' }
 ]);
 
+// Normalize repeated engine expressions and any line-ending variants that older
+// source revisions may carry. These are compatibility migrations, not feature deletion.
 {
   const file = 'src/electron/main.js';
   let text = fs.readFileSync(file, 'utf8');
-  const old = "searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : ''";
-  if (text.includes(old)) {
-    text = text.split(old).join('searchApiKey: getSearchApiKey()');
-    fs.writeFileSync(file, text);
-  }
+  text = text.split("searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : ''").join('searchApiKey: getSearchApiKey()');
+  text = text.replace(/\s*if \(entitlement\(\) === 'free' && provider === 'compatible'\) throw new Error\('Remote model endpoints are a Premium feature\. Eidovara Free supports offline and local models\.'\);\r?\n/g, '\n');
+  text = text.replace(/\s*if \(entitlement\(\) === 'free'\) throw new Error\('Broad keyed web search is a Premium feature\. Built-in public sources remain available\.'\);\r?\n/g, '\n');
+  text = text.replace(/if \(entitlement\(\) === 'free' && \(config\.apps \|\| \[\]\)\.length >= 3\) throw new Error\('Eidovara Free supports up to three linked applications\. Premium removes this limit\.'\);\s*/g, '');
+  fs.writeFileSync(file, text);
 }
 
 patchFile('src/renderer/renderer.js', [
@@ -92,6 +97,21 @@ patchFile('docs/knowledge.js', [
 
 patchFile('tests/legal-surface.test.js', [
   { label: 'stale v0.19.1 test title', from: "test('network, security, and licensing docs match current fail-closed v0.19.1 surface', () => {", to: "test('network, security, and licensing docs match current fail-closed v0.22.2 surface', () => {" }
+]);
+
+patchFile('tests/internet.test.js', [
+  { label: 'full-free keyed search test name', from: "test('Brave keyed search still requires an explicit request and is not a live payment unlock', async () => {", to: "test('full-free keyed search still requires an explicit request and is not a live payment unlock', async () => {" },
+  { label: 'full-free keyed search entitlement', from: "  assert.equal(premiumFeatureAllowed('free', 'searchKey'), false);", to: "  assert.equal(premiumFeatureAllowed('free', 'searchKey'), true);" }
+]);
+
+patchFile('tests/ui-tokens.test.js', [
+  { label: 'full-free RGB test name', from: "test('premium RGB lighting remains gated in the desktop settings save path', () => {", to: "test('RGB lighting remains available in the full-free v0.22.2 settings save path', () => {" },
+  { label: 'full-free RGB source assertion', from: "  assert.match(main, /rgbEffects: entitlement\\(\\) === 'premium' && Boolean\\(incoming\\.theme\\.rgbEffects\\)/);", to: "  assert.match(main, /rgbEffects: Boolean\\(incoming\\.theme\\.rgbEffects\\)/);" }
+]);
+
+patchFile('tests/site-assist.test.js', [
+  { label: 'generic brand query', from: "  const brands = answerAssist('Is Eidovara Jarvis or like Iron Man?');", to: "  const brands = answerAssist('Is Eidovara affiliated with a third-party assistant platform?');" },
+  { label: 'generic brand ownership assertion', from: "  assert.match(brands.reply, /not Jarvis/);", to: "  assert.match(brands.reply, /Third-party products|respective owners|do not imply sponsorship/i);" }
 ]);
 
 console.log('Eidovara v0.22.2 full-free release policy normalized.');
