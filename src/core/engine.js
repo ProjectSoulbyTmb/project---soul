@@ -37,9 +37,32 @@ export class SoulEngine {
     this.state.audit.push({ at: this.state.setup.completedAt, type: 'setup.configured', details: { categories } }); this.store.save(this.state); return this.snapshot();
   }
   configureAssistant(input = {}) {
-    const autonomy = ['user-led', 'balanced', 'proactive'].includes(input.autonomy) ? input.autonomy : 'balanced';
+    const prev = this.state.assistant || {};
+    const prefs = prev.preferences || {};
+    const caps = prev.capabilities || {};
     const choice=(value,allowed,fallback)=>allowed.includes(value)?value:fallback;
-    this.state.assistant = { ...this.state.assistant, autonomy, initiativeEnabled: Boolean(input.initiativeEnabled), reflectionEnabled: Boolean(input.reflectionEnabled), preferences: { responseLength: choice(input.responseLength,['concise','balanced','detailed'],'balanced'), tone: choice(input.tone,['natural','direct','warm','professional','playful'],'natural'), focusMode: choice(input.focusMode,['general','gaming','streaming','studying','creative','productivity'],'general'), accessibility: String(input.accessibility||'').trim().slice(0,500), language: choice(input.language,['en','es','fr','de'],'en') }, capabilities: { webResearch: choice(input.webResearch,['disabled','ask','enabled'],'ask'), appLaunch: 'confirm', mediaPlayback: choice(input.mediaPlayback,['disabled','confirm','enabled'],'confirm'), memoryLearning: choice(input.memoryLearning,['disabled','enabled'],'enabled') } };
+    const autonomy = choice(input.autonomy, ['user-led', 'balanced', 'proactive'], choice(prev.autonomy, ['user-led', 'balanced', 'proactive'], 'balanced'));
+    this.state.assistant = {
+      ...prev,
+      autonomy,
+      initiativeEnabled: input.initiativeEnabled === undefined ? prev.initiativeEnabled !== false : Boolean(input.initiativeEnabled),
+      reflectionEnabled: input.reflectionEnabled === undefined ? prev.reflectionEnabled !== false : Boolean(input.reflectionEnabled),
+      preferences: {
+        ...prefs,
+        responseLength: choice(input.responseLength, ['concise', 'balanced', 'detailed'], prefs.responseLength || 'balanced'),
+        tone: choice(input.tone, ['natural', 'direct', 'warm', 'professional', 'playful'], prefs.tone || 'natural'),
+        focusMode: choice(input.focusMode, ['general', 'gaming', 'streaming', 'studying', 'creative', 'productivity'], prefs.focusMode || 'general'),
+        accessibility: String(input.accessibility !== undefined ? input.accessibility : (prefs.accessibility || '')).trim().slice(0, 500),
+        language: choice(input.language, ['en', 'es', 'fr', 'de'], prefs.language || 'en')
+      },
+      capabilities: {
+        ...caps,
+        webResearch: choice(input.webResearch, ['disabled', 'ask', 'enabled'], caps.webResearch || 'ask'),
+        appLaunch: 'confirm',
+        mediaPlayback: choice(input.mediaPlayback, ['disabled', 'confirm', 'enabled'], caps.mediaPlayback || 'confirm'),
+        memoryLearning: choice(input.memoryLearning, ['disabled', 'enabled'], caps.memoryLearning || 'enabled')
+      }
+    };
     const at = new Date().toISOString(); this.state.audit.push({ at, type: 'assistant.configured', details: { autonomy, initiativeEnabled: this.state.assistant.initiativeEnabled } }); this.store.save(this.state); return this.snapshot();
   }
   activeConversation() { return this.state.conversations.find(c => c.id === this.state.activeConversationId) || this.state.conversations[0]; }

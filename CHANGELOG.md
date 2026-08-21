@@ -1,5 +1,12 @@
 # Eidovara
 
+## Unreleased
+
+- Deepened offline Soul replies for dashboard, entertainment, setup, and memory starters using local roles, memories, taste, accessibility notes, and language preference, while remaining a software self-model rather than a claim of consciousness.
+- Made the dashboard, Apps empty state, and Entertainment queue helper reflect current workspace state with honest next actions (Windows-confirmed launching, no process injection, Spotify/YouTube as HTTPS handoff only).
+- Honored the existing `accessibility` setup role in the assistant wizard and expanded EN/ES/FR/DE coverage of workspace chrome with English fallback.
+- Clarified diagnostics, backup, and settings-save status; preserved assistant language when behavior is saved; kept the CLI awaiting replies and exposed `npm run cli`.
+
 ## v0.18.0
 
 - Added gated, local-only body-shape controls and optional non-photorealistic presentation for Soul's explicitly fictional adult avatar; settings remain unavailable unless legal-adult status, Adult Soul, and current consent are active.
