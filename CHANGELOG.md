@@ -2,12 +2,9 @@
 
 ## Unreleased
 
-<<<<<<< HEAD
 - Restore `publicServiceUrl` in the Electron main process (it was dropped when the Soul kernel was wired, which broke Connect / launch / Test service) and keep `SoulEngine` imported from `../core/engine.js`.
 - Desktop Settings → Eidovara service defaults to the official custom hostname `https://api.eidovara.org` (HTTPS base only, no path). Empty/default still resolves there; paste another HTTPS base to override. No `workers.dev` host is compiled in. Conversations are not sent. Fetch failure stays local-first.
-=======
 - First-party IP notices: LICENSE/EULA close relicensing-as-OSS and contributor-mark loopholes; SPDX `LicenseRef-Eidovara-Source-Available-1.0` on LICENSE and first-party `src/**/*.js` / `docs/*.js`; Soul Consciousness Studios stays the intended publisher only; assignment files remain unsigned templates. No ®, patent, or Copyright Office registration is claimed.
->>>>>>> origin/cursor/secure-ip-c180
 - In-app Soul kernel (not a Marvel/Iron Man product; not consciousness): after 18+ and profile load, an always-on session routes workspace intents (apps, media, research, help, settings, accessibility), keeps a local self-model JSON, and exposes a feature-module registry (`register({ id, title, enabled, commands, ui? })`). Built-in modules include workspace surfaces plus focus, study, creative desk, gaming prep, memory keeper, talk-through, companion presence, identity/consent, and custom quick actions. Adding a module is appending a descriptor in `src/core/modules.js`.
 - Customization registry persists module toggles, custom quick actions, OS `speechSynthesis` voice URI/rate/pitch/mute, companion presence look, and local phrasing knobs. Voices are whatever Windows/OS has installed; Eidovara does not ship a neural TTS engine. Speech recognition is optional Chromium `SpeechRecognition` with a permission/error line. Companion presence is CSS/canvas/ambient or a local image via `eidovara-media:` (CSP `img-src` includes that scheme; `media-src` is unchanged). Looks are not alive and are not VRM/MakeHuman.
 - Soul online stays opt-in and fail-closed: the official default is `https://api.eidovara.org` (overridable in the same Settings field) **and** enable **Allow one-shot Worker helper** (default off). Connect still uses `GET /v1/health` (fallback `/health`), `/v1/config`, `/v1/status`. Optional `POST /v1/assist` sends only the typed query (~32 KiB), never conversations by default. Assist is not Soul; the Worker is the operator’s, not a cloud mind. Offline kernel remains source of truth.
