@@ -56,16 +56,16 @@ export const ENTRIES = [
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: 'security.html', label: 'Security' }]
   },
   {
-    id: 'payments', modes: ['help', 'legal', 'download'], tags: ['pay', 'payment', 'premium', 'checkout', 'stripe', 'paypal', 'gumroad', 'buy', 'price', 'subscription', 'card', 'pci'],
-    title: 'Payments stay off',
-    reply: `v${ASSIST_VERSION} does not process payments and there is no live checkout. Free is $0. Premium feature gates exist for local administrator testing only. Payment-card data is not accepted by the current service.`,
-    links: [{ href: './#plans', label: 'Free vs Premium' }, { href: 'terms.html', label: 'Terms' }]
+    id: 'payments', modes: ['help', 'legal', 'download'], tags: ['pay', 'payment', 'premium', 'checkout', 'stripe', 'paypal', 'gumroad', 'buy', 'price', 'subscription', 'card', 'pci', 'free'],
+    title: 'v0.22.2 is a full free Alpha',
+    reply: `v${ASSIST_VERSION} does not process payments and there is no live checkout or subscription. All currently implemented v0.22.2 capabilities are included in the free Alpha; no paid entitlement is required. Payment-card data is not accepted by the current service.`,
+    links: [{ href: 'product.html', label: 'Product' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
     id: 'premium', modes: ['help'], tags: ['premium', 'free', 'edition', 'rgb', 'apps', 'unlimited', 'remote', 'model', 'search'],
-    title: 'Free vs Premium',
-    reply: `Eidovara Free includes the workspace, media, gaming mode, backups, updates, offline/local assistance, public research, and up to three linked applications. Premium remains a local-admin test gate for compatible remote-model endpoints, broader keyed search, unlimited linked apps, and RGB appearance. No live checkout unlocks Premium in v${ASSIST_VERSION}.`,
-    links: [{ href: './#plans', label: 'Plans' }]
+    title: 'Full free v0.22.2 release',
+    reply: `Eidovara v${ASSIST_VERSION} is currently a full free Alpha. Workspace, media, gaming mode, backups, updates, offline/local assistance, compatible remote-model endpoints, keyed research, RGB appearance, and linked-app capabilities are not blocked behind a paid entitlement. Older stored edition labels are retained only for compatibility.`,
+    links: [{ href: 'product.html', label: 'Product' }]
   },
   {
     id: 'connect', modes: ['help'], tags: ['connect', 'worker', 'service', 'health', 'config', 'status', 'settings', 'url', 'https', 'offline'],
@@ -76,7 +76,7 @@ export const ENTRIES = [
   {
     id: 'offline', modes: ['help'], tags: ['offline', 'local', 'internet', 'airplane', 'disconnected'],
     title: 'Offline and local-first use',
-    reply: 'Core workspace features and Free / Offline Soul can work without the official service. Profiles, conversations, memories, and backups stay in the Windows application-data area by default. Explicit internet research, online updates, online media discovery, and remote provider connections require network access.',
+    reply: 'Core workspace features and Offline Soul can work without the official service. Profiles, conversations, memories, and backups stay in the Windows application-data area by default. Explicit internet research, online updates, online media discovery, and remote provider connections require network access.',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'privacy.html', label: 'Privacy' }]
   },
   {
@@ -142,7 +142,7 @@ export const ENTRIES = [
   {
     id: 'ip-certify', modes: ['legal', 'help'], tags: ['attestation', 'self-attestation', 'certification', 'ip-certify', 'uspto', 'copyright-office', 'registered', 'registration', 'deposit', 'infringement', 'dmca'],
     title: 'Repository IP self-attestation',
-    reply: `docs/IP_CERTIFICATION.md is a repository self-attestation for Eidovara v${ASSIST_VERSION}. It is not a government registration, patent, Authenticode certificate, or executed assignment.`,
+    reply: `docs/IP_CERTIFICATION.md is a repository self-attestation for Eidovara v${ASSIST_VERSION}. It is not a U.S. Copyright Office registration or other government registration, patent, Authenticode certificate, or executed assignment. Eidovara and Soul Consciousness Studios marks remain unregistered.`,
     links: [{ href: 'IP_CERTIFICATION.md', label: 'IP self-attestation' }, { href: 'licensing.html', label: 'Licensing' }]
   },
   {
