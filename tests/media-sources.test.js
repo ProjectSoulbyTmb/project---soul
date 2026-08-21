@@ -197,6 +197,7 @@ test('source files do not inject into Spotify or other vendors’ players', () =
 test('entertainment view and companion surface library, Archive chip, and listLocalMedia', () => {
   const html = fs.readFileSync('src/renderer/index.html', 'utf8');
   const renderer = fs.readFileSync('src/renderer/renderer.js', 'utf8');
+  const player = fs.readFileSync('src/renderer/player.js', 'utf8');
   const companion = fs.readFileSync('src/renderer/companion.js', 'utf8');
   const preload = fs.readFileSync('src/electron/preload.cjs', 'utf8');
   const main = fs.readFileSync('src/electron/main.js', 'utf8');
@@ -205,7 +206,7 @@ test('entertainment view and companion surface library, Archive chip, and listLo
   assert.match(html, /id="mediaArchiveBtn"/);
   assert.match(renderer, /handoff-chip/);
   assert.match(renderer, /eidovaraRenderDiscovery/);
-  assert.match(renderer, /archive\.org\/search\?query=/);
+  assert.match(player, /archive\.org\/search\?query=/);
   assert.match(companion, /eidovaraRenderDiscovery/);
   assert.match(preload, /listLocalMedia:/);
   assert.match(main, /soul:listLocalMedia/);

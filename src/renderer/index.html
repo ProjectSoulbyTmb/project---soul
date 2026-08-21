@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="internet.css" />
   <link rel="stylesheet" href="companion.css" />
   <link rel="stylesheet" href="layers.css" />
+  <link rel="stylesheet" href="now-playing.css" />
 </head>
 <body>
   <div class="app">
@@ -308,20 +309,61 @@
       <div class="setup-actions"><button type="button" class="secondary hidden" id="cancelSetupBtn" data-i18n="cancel">Cancel</button><button type="submit" data-i18n="saveContinue">Save and continue</button></div>
     </form>
   </div>
-  <section class="media-dock hidden" id="mediaDock" aria-label="Soul media player">
-    <div class="media-now"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small></div>
-    <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
-    <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
-    <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
-    <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
-    <button type="button" id="mediaSimilarBtn">Similar</button>
-    <audio id="audioPlayer" controls preload="metadata"></audio>
-    <video id="videoPlayer" controls preload="metadata"></video>
-    <button type="button" id="mediaSpotifyBtn">Spotify</button>
-    <button type="button" id="mediaYouTubeBtn">YouTube</button>
-    <button type="button" id="mediaArchiveBtn">Archive</button>
-    <button type="button" id="mediaSourceBtn">Source</button>
-    <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
+  <section class="eidovara-player hidden" id="eidovaraPlayer" aria-label="Eidovara now playing">
+    <div class="now-playing-stage" id="nowPlayingStage">
+      <div class="np-stage-head">
+        <button type="button" id="npCollapseBtn">Close stage</button>
+        <h2 id="npStageTitle">Eidovara</h2>
+        <small id="npStageKind"></small>
+      </div>
+      <div class="np-stage-main">
+        <div class="np-surface" id="npSurface" data-kind="audio">
+          <div class="np-audio-art"><strong id="npArtTitle">Eidovara</strong></div>
+          <audio id="audioPlayer" preload="auto"></audio>
+          <video id="videoPlayer" preload="auto" playsinline></video>
+          <div class="np-chrome is-chrome-visible">
+            <button type="button" id="mediaFullBtn">Fullscreen</button>
+            <button type="button" id="mediaPipBtn">Video window</button>
+            <p class="np-honesty" id="mediaLyrics">No licensed lyrics in-app</p>
+          </div>
+        </div>
+        <aside class="np-side">
+          <h3>Now playing</h3>
+          <p class="np-honesty">Spotify-class transport in Eidovara chrome. Not a Spotify or YouTube embed. Local files use eidovara-media.</p>
+          <h4>Playback</h4>
+          <div class="np-extras">
+            <label>Rate <select id="mediaRate"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+            <button type="button" id="mediaLoopBtn" aria-label="Loop">🔁︎</button>
+            <button type="button" id="mediaShuffleBtn" aria-label="Shuffle">Shuffle</button>
+            <label>Sleep <select id="mediaSleep"><option value="0">Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option></select></label>
+            <div class="np-quality is-empty" id="mediaQualityWrap"><label>Quality <select id="mediaQuality"></select></label></div>
+            <button type="button" id="mediaOutputBtn">Output</button>
+            <select id="mediaOutput" class="hidden" aria-label="Audio output"></select>
+          </div>
+        </aside>
+      </div>
+    </div>
+    <section class="media-dock now-playing-bar" id="mediaDock">
+      <button type="button" class="np-art" id="npArt" aria-label="Expand player"><span>▶</span></button>
+      <div class="media-now" id="mediaNow"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small></div>
+      <div class="np-transport">
+        <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
+        <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
+        <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
+      </div>
+      <div class="np-seek"><span id="mediaTime">0:00 / 0:00</span><input id="mediaSeek" type="range" min="0" max="0" value="0" step="0.1" aria-label="Seek" /></div>
+      <div class="np-volume"><input id="mediaVolume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume" /></div>
+      <button type="button" id="mediaExpandBtn">Expand</button>
+      <button type="button" id="mediaPopOutBtn">Pop out</button>
+      <button type="button" id="mediaDockBtn">Dock</button>
+      <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
+      <button type="button" id="mediaSimilarBtn">Similar</button>
+      <button type="button" id="mediaSpotifyBtn">Spotify</button>
+      <button type="button" id="mediaYouTubeBtn">YouTube</button>
+      <button type="button" id="mediaArchiveBtn">Archive</button>
+      <button type="button" id="mediaSourceBtn">Source</button>
+      <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
+    </section>
   </section>
   <div class="setup-overlay hidden" id="adminOverlay" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
     <form class="setup-dialog admin-dialog" id="adminLoginForm">
@@ -406,6 +448,7 @@
   </div>
   <script src="localization.js"></script>
   <script src="renderer.js"></script>
+  <script src="player.js"></script>
   <script src="companion.js"></script>
   <script src="workspace-layers.js"></script>
 </body>

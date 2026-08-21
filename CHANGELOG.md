@@ -5,6 +5,7 @@
 - Research snippet sanitization no longer uses HTML-tag regular expressions (CodeQL `js/bad-html-filtering-regexp`). Script/style/noscript/iframe bodies are dropped with a character scanner; leftover `<` and `>` are stripped. Mixed-case `<SCRIPT>` and spaced `</script >` are covered by tests. Display remains `textContent` / `el()`, never `innerHTML` of fetched pages.
 - Desktop automatic updater: after 18+, Eidovara can check GitHub Releases for a newer Windows NSIS installer, verify `latest.yml` SHA-512, download in the background, and apply only after Restart and install. Authenticode-unsigned. Auto-check can be turned off.
 - Music, watch, and mood requests surface the local entertainment library (play in Eidovara through `eidovara-media:`, never `media-src 'self'`) plus official YouTube, Spotify, and Internet Archive HTTPS search chips. Eidovara does not scrape those sites’ HTML, rip streams, or inject into Spotify, iTunes, VLC, or Windows Media Player. Remote Wikipedia/Archive/Brave/page fetches still require an explicit internet/web/online request.
+- Fluid now-playing bar with expand stage, frameless glass Pop out / Dock (hidden in Adult Mode and before 18+), native HD playback (no default downscale, hardware decode when Chromium GPU is on, HTTP Range seek), quality menu only for real extra renditions, rate/loop/shuffle, sidecar vtt/srt, sleep timer, fullscreen, media keys via Media Session, and Chromium output picker when `setSinkId` exists. No Spotify/YouTube embeds, DRM rip, Hi-Res logos, or ffmpeg.
 
 ## v0.19.0
 

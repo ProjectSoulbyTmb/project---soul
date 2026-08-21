@@ -425,16 +425,20 @@ async function searchArticles(query, fetchImpl) {
 
 async function searchMedia(query, kind, fetchImpl) {
   const type = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'bitmap';
-  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime', iiurlwidth: '900' });
+  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime|size' });
+  if (kind === 'image') params.set('iiurlwidth', '900');
   const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`, 15000, {}, fetchImpl);
   return orderedPages(data).map(p => {
     const i = p.imageinfo?.[0] || {};
-    const url = asHttps(i.thumburl || i.url, ['upload.wikimedia.org', 'wikimedia.org']);
+    const original = asHttps(i.url, ['upload.wikimedia.org', 'wikimedia.org']);
+    const thumb = asHttps(i.thumburl, ['upload.wikimedia.org', 'wikimedia.org']);
+    const url = kind === 'image' ? (thumb || original) : (original || thumb);
     const sourceUrl = asHttps(i.descriptionurl, ['commons.wikimedia.org', 'wikimedia.org', 'wikipedia.org']);
     return {
       type: kind,
       title: plain(String(p.title || '').replace(/^File:/, '')),
       url,
+      originalUrl: original,
       sourceUrl,
       hostname: sourceHost(sourceUrl || url),
       mime: i.mime

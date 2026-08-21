@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol } from 'electron';
 import fs from 'node:fs';
+import { createReadStream } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { Readable } from 'node:stream';
+import { fileURLToPath } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { defaultProfile } from '../core/schema.js';
@@ -14,6 +16,8 @@ import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPO
 import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 import { attachDesktopUpdater } from './auto-update.js';
+import { attachPlayerWindows } from './player-windows.js';
+import { parseByteRange, rangeResponseHeaders, isMediaId, sidecarCaptionPaths } from '../core/media-protocol.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
@@ -26,6 +30,7 @@ const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companio
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
 let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, autoCheckUpdates: true };
 let desktopUpdater = null;
+let playerWindows = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
 
@@ -119,13 +124,26 @@ function applyInternetOptions() {
 function registerSessionMedia(filePath, { type, title }) {
   const id = crypto.randomBytes(16).toString('hex');
   allowedLocalMedia.set(id, filePath);
-  const item = { id, type, title: String(title).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, local: true, path: filePath };
+  const captions = [];
+  for (const captionPath of sidecarCaptionPaths(filePath)) {
+    if (!fs.existsSync(captionPath)) continue;
+    const captionId = crypto.randomBytes(16).toString('hex');
+    allowedLocalMedia.set(captionId, captionPath);
+    const ext = path.extname(captionPath).toLowerCase();
+    captions.push({
+      url: `${LOCAL_MEDIA_SCHEME}://${captionId}/`,
+      label: ext === '.vtt' ? 'Captions' : 'Subtitles',
+      kind: 'subtitles',
+      srclang: 'und'
+    });
+  }
+  const item = { id, type, title: String(title).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, local: true, path: filePath, captions };
   sessionLocalLibrary.unshift(item);
   while (sessionLocalLibrary.length > LOCAL_LIBRARY_LIMIT) {
     const old = sessionLocalLibrary.pop();
     if (old?.id && old.id !== COMPANION_MEDIA_ID) allowedLocalMedia.delete(old.id);
   }
-  return { type: item.type, title: item.title, url: item.url, sourceUrl: '', local: true };
+  return { type: item.type, title: item.title, url: item.url, sourceUrl: '', local: true, captions };
 }
 function startKernelHeartbeat() {
   clearInterval(heartbeatTimer);
@@ -249,10 +267,16 @@ function registerLocalMediaProtocol() {
   protocol.handle(LOCAL_MEDIA_SCHEME, async request => {
     let id = '';
     try { id = new URL(request.url).hostname; } catch { return new Response('Bad request', { status: 400 }); }
-    if (!/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
+    if (!isMediaId(id)) return new Response('Not found', { status: 404 });
     const filePath = allowedLocalMedia.get(id);
     if (!filePath || !fs.existsSync(filePath)) return new Response('Not found', { status: 404 });
-    return net.fetch(pathToFileURL(filePath).toString());
+    const size = fs.statSync(filePath).size;
+    const range = parseByteRange(request.headers.get('range'), size);
+    if (!range) return new Response('Range Not Satisfiable', { status: 416, headers: { 'Content-Range': `bytes */${size}` } });
+    const { status, headers } = rangeResponseHeaders(filePath, range);
+    if (range.length <= 0) return new Response(null, { status, headers });
+    const stream = createReadStream(filePath, { start: range.start, end: range.end });
+    return new Response(Readable.toWeb(stream), { status, headers });
   });
 }
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
@@ -266,6 +290,16 @@ desktopUpdater = attachDesktopUpdater({
   publicConfig,
   scanUpdateForMalware,
   log
+});
+playerWindows = attachPlayerWindows({
+  BrowserWindow,
+  ipcMain,
+  getMainWindow: () => mainWindow,
+  requireAgeGate,
+  log
+});
+ipcMain.on('soul:playerCommand', (_e, command) => {
+  try { mainWindow?.webContents.send('soul:playerCommand', command); } catch {}
 });
 app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); if (config.ageGateAccepted === true) desktopUpdater.schedule(); }).catch(err => fatal('Eidovara initialization error', err));
 app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });

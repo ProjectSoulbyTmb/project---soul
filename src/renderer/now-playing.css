@@ -1,0 +1,437 @@
+/* Eidovara now-playing bar and expanded stage. Branded with product tokens, not a Spotify clone. */
+
+.eidovara-player {
+  position: fixed;
+  inset: auto 0 0 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.eidovara-player.is-active {
+  pointer-events: auto;
+}
+
+.eidovara-player .media-dock.now-playing-bar {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: auto;
+  max-height: none;
+}
+
+body.age-gated .eidovara-player {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+body.has-now-playing .workspace {
+  padding-bottom: 88px;
+}
+
+.now-playing-bar {
+  margin: 0 12px 12px;
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1.4fr) auto minmax(120px, 1.6fr) auto auto auto auto auto auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--nav-bar) 92%, var(--panel));
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  box-shadow: var(--shadow);
+  transform: translateY(120%);
+  opacity: 0;
+  transition: transform var(--motion) var(--ease), opacity var(--motion) var(--ease);
+}
+
+.eidovara-player.is-active .now-playing-bar {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.np-art {
+  width: 52px;
+  height: 52px;
+  border: 0;
+  padding: 0;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 35%, #101828), #101828);
+  color: var(--on-accent);
+  cursor: pointer;
+  position: relative;
+}
+
+.np-art canvas,
+.np-art span {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.np-art span {
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.03em;
+}
+
+.media-now {
+  min-width: 0;
+  display: grid;
+  cursor: pointer;
+}
+
+.media-now strong,
+.media-now small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-now small {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.np-transport {
+  display: flex;
+  gap: 4px;
+}
+
+.now-playing-bar button {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--btn-gray);
+  color: var(--text);
+  padding: 8px 12px;
+  cursor: pointer;
+  min-height: 36px;
+}
+
+#mediaPlayBtn {
+  background: var(--accent);
+  color: var(--on-accent);
+  min-width: 44px;
+  font-weight: 700;
+}
+
+.np-seek,
+.np-volume {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.np-seek input,
+.np-volume input {
+  width: 100%;
+  accent-color: var(--accent);
+}
+
+.np-volume {
+  width: 88px;
+}
+
+.now-playing-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 41;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  background: color-mix(in srgb, var(--bg) 72%, #000);
+  transform: translateY(10%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 280ms var(--ease), opacity 220ms var(--ease);
+}
+
+.eidovara-player.is-expanded .now-playing-stage {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.np-stage-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px 8px;
+}
+
+.np-stage-head button {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--btn-gray);
+  color: var(--text);
+  padding: 8px 14px;
+  min-height: 36px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.np-stage-main {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 320px);
+  gap: 16px;
+  padding: 8px 20px 24px;
+}
+
+.np-surface {
+  position: relative;
+  min-height: 0;
+  border-radius: var(--radius-2xl);
+  overflow: hidden;
+  background: #05070c;
+  display: grid;
+  place-items: center;
+}
+
+.np-audio-art {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 40%, #0b1020), #070b14 62%, #000);
+}
+
+.np-audio-art strong {
+  position: absolute;
+  inset: auto 24px 24px;
+  font-size: clamp(28px, 6vw, 64px);
+  letter-spacing: -0.04em;
+  color: #fff;
+}
+
+.np-surface video {
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 120px);
+  object-fit: contain;
+  background: #000;
+}
+
+.np-surface audio {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.np-surface[data-kind="audio"] video {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.np-surface[data-kind="video"] .np-audio-art {
+  opacity: 0;
+}
+
+.np-chrome {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 16px 18px 18px;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity var(--motion) var(--ease), transform var(--motion) var(--ease);
+}
+
+.np-surface.is-chrome-visible .np-chrome,
+.np-surface:focus-within .np-chrome {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.np-chrome button {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  min-height: 40px;
+  padding: 8px 14px;
+  cursor: pointer;
+}
+
+.np-side {
+  min-height: 0;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  background: var(--panel);
+  border-radius: var(--radius-2xl);
+  padding: 16px;
+  overflow: auto;
+}
+
+.np-side h3,
+.np-side h4 {
+  margin: 0;
+  font-size: var(--headline);
+  letter-spacing: -0.02em;
+}
+
+.np-side h4 {
+  font-size: var(--footnote);
+  color: var(--muted);
+  text-transform: none;
+}
+
+.np-side p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.np-queue {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.np-queue button {
+  width: 100%;
+  text-align: left;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.np-queue button.is-current,
+.np-queue button:hover {
+  background: var(--fill);
+}
+
+.np-handoff {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.np-handoff button {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--fill);
+  color: var(--text);
+  padding: 8px 12px;
+  min-height: 36px;
+  font-size: 13px;
+}
+
+@media (max-width: 860px) {
+  .now-playing-bar {
+    margin: 0 8px 8px;
+    grid-template-columns: 44px minmax(0, 1fr) auto auto auto;
+  }
+  .np-seek,
+  .np-volume,
+  #mediaSimilarBtn,
+  #mediaSpotifyBtn,
+  #mediaYouTubeBtn,
+  #mediaSourceBtn,
+  #mediaFavoriteBtn {
+    display: none;
+  }
+  .np-stage-main {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hidden { display: none !important; }
+
+.np-extras,
+.np-quality {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+.np-extras select,
+.np-quality select {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--btn-gray);
+  color: var(--text);
+  min-height: 36px;
+  padding: 0 10px;
+}
+
+.np-quality.is-empty {
+  display: none;
+}
+
+body.adult-mode #mediaPopOutBtn,
+body.adult-mode #mediaPipBtn,
+body.age-gated #mediaPopOutBtn,
+body.age-gated #mediaPipBtn {
+  display: none;
+}
+
+.np-honesty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.player-popout {
+  margin: 10px;
+  padding: 12px;
+  border-radius: var(--radius-xl);
+  background: color-mix(in srgb, var(--nav-bar) 70%, transparent);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  display: grid;
+  gap: 8px;
+  -webkit-app-region: drag;
+}
+
+.player-popout button,
+.player-popout video,
+.player-popout input {
+  -webkit-app-region: no-drag;
+}
+
+.player-popout video {
+  width: 100%;
+  max-height: 70vh;
+  object-fit: contain;
+  background: #000;
+  border-radius: var(--radius-md);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .now-playing-bar,
+  .now-playing-stage,
+  .np-chrome {
+    transition: none;
+    transform: none;
+  }
+  .eidovara-player:not(.is-active) .now-playing-bar {
+    opacity: 0;
+    visibility: hidden;
+  }
+  .eidovara-player:not(.is-expanded) .now-playing-stage {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
