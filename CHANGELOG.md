@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Research snippet sanitization no longer uses HTML-tag regular expressions (CodeQL `js/bad-html-filtering-regexp`). Script/style/noscript/iframe bodies are dropped with a character scanner; leftover `<` and `>` are stripped. Mixed-case `<SCRIPT>` and spaced `</script >` are covered by tests. Display remains `textContent` / `el()`, never `innerHTML` of fetched pages.
+
 ## v0.19.0
 
 - Beautiful consumer release on the land-all 0.18.3 kernel plus internet research: pin-able Dashboard tiles, local scratchpad, a timed quiet focus bar, kernel-backed palette/search (Ctrl+K / Ctrl+P), companion dock, first-run after 18+, grouped Settings, and official `https://api.eidovara.org`.
