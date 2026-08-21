@@ -2,11 +2,11 @@
 
 Updated: 2026-08-20
 
-## Core purpose — intact
+## Product purpose — intact and modular
 
-Soul remains the adaptive assistant personality inside Eidovara. Its protected identity, local continuity, reviewable memory, configurable tone/focus/autonomy, consent boundaries, and relationship model remain separate from the Eidovara product name and Soul Consciousness Studios publishing identity. User-authored memories and setup text are treated as untrusted data, not system authority.
+Eidovara is the modular Windows workspace; Soul remains its optional adaptive assistant personality. Applications, gaming controls, media, entertainment, appearance, backups, diagnostics, and updates remain useful without a connected model. Soul's protected identity, local continuity, reviewable memory, configurable tone/focus/autonomy, consent boundaries, and relationship model remain separate from the product and publishing identity. User-authored memories and setup text are treated as untrusted data, not system authority.
 
-## Working in v0.17.2
+## Working in v0.17.3
 
 | Area | Status | Evidence |
 | --- | --- | --- |
@@ -39,4 +39,4 @@ Soul remains the adaptive assistant personality inside Eidovara. Its protected i
 
 ## Release decision
 
-v0.17.2 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, or Authenticode-signed binary.
+v0.17.3 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, universally compatible application controller, or Authenticode-signed binary.

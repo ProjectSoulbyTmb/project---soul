@@ -14,12 +14,21 @@ async function response(url, options = {}) { const res = await fetch(secureUrl(u
 export async function checkForUpdate({ manifestUrl, currentVersion }) {
   if (!manifestUrl) return { configured: false, available: false, currentVersion };
   const res = await response(manifestUrl, { headers: { Accept: 'application/json', 'User-Agent': `Eidovara/${currentVersion}` } });
-  const manifest = await res.json();
+  const manifest = await boundedJson(res, 1024 * 1024, 'Update manifest');
   const version = String(manifest?.version || ''); const downloadUrl = secureUrl(manifest?.url).toString(); const sha256 = String(manifest?.sha256 || '').toUpperCase();
   if (!/^\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(version)) throw new Error('Update manifest has an invalid version.');
   if (!/^[A-F0-9]{64}$/.test(sha256)) throw new Error('Update manifest must contain a SHA-256 hash.');
   const extension = path.extname(new URL(downloadUrl).pathname).toLowerCase(); if (!['.exe', '.zip'].includes(extension)) throw new Error('Update package type is not allowed.');
   return { configured: true, available: compareVersions(version, currentVersion) > 0, currentVersion, version, downloadUrl, sha256, packageType: extension === '.zip' ? 'ready-folder-zip' : 'installer', notes: String(manifest.notes || '').slice(0, 4000) };
+}
+
+async function boundedJson(res, maxBytes, label) {
+  const declared = Number(res.headers?.get?.('content-length') || 0);
+  if (declared > maxBytes) throw new Error(`${label} is too large.`);
+  const bytes = Buffer.from(await res.arrayBuffer());
+  if (bytes.length > maxBytes) throw new Error(`${label} is too large.`);
+  try { return JSON.parse(bytes.toString('utf8')); }
+  catch { throw new Error(`${label} is not valid JSON.`); }
 }
 
 export async function downloadUpdate(update, directory, maxBytes = 400 * 1024 * 1024) {

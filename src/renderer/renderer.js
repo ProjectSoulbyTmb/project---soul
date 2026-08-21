@@ -47,6 +47,23 @@ $('#memoryForm').addEventListener('submit',async e=>{e.preventDefault();const v=
 $$('[data-command]').forEach(b=>b.addEventListener('click',async()=>{setView('chat');await send(b.dataset.command);}));
 $('#settingsForm').addEventListener('submit',async e=>{e.preventDefault();$('#settingsStatus').textContent='Saving…';try{settings=await window.soul.saveSettings({provider:$('#providerSelect').value,endpoint:$('#endpointInput').value.trim(),model:$('#modelInput').value.trim(),apiKey:$('#apiKeyInput').value,clearApiKey:$('#clearKeyInput').checked,searchApiKey:$('#searchApiKeyInput').value,clearSearchApiKey:$('#clearSearchKeyInput').checked,theme:{background:$('#themeBackground').value,panel:$('#themePanel').value,accent:$('#themeAccent').value,transparency:Number($('#themeTransparency').value),rgbEffects:$('#themeRgb').checked,gamingMode:$('#gamingModeInput').checked},companion:{avatarMode:$('#avatarMode').value,motion:$('#avatarMotion').value,voiceEnabled:$('#voiceEnabled').checked,voiceName:$('#voiceSelect').value,rate:Number($('#voiceRate').value),pitch:Number($('#voicePitch').value)}});$('#apiKeyInput').value='';$('#searchApiKeyInput').value='';$('#clearKeyInput').checked=false;$('#clearSearchKeyInput').checked=false;$('#settingsStatus').textContent='Settings saved.';applyTheme();applyCompanion();renderStatus();}catch(err){$('#settingsStatus').textContent=String(err?.message||err);}});
 $('#addAppBtn').addEventListener('click',async()=>{try{settings=await window.soul.addApplication();applyTheme();renderApps();$('#appsStatus').textContent='Application list updated.';}catch(err){$('#appsStatus').textContent=String(err?.message||err);}});
+$('#discoverAppsBtn').addEventListener('click',async()=>{
+  const grid=$('#discoveredAppsGrid');
+  try {
+    $('#appsStatus').textContent='Scanning Windows Start Menu shortcuts…';
+    const apps=await window.soul.discoverApplications();
+    grid.textContent='';
+    for(const app of apps){
+      const card=el('div','app-card'); card.append(el('strong','',app.name));
+      const add=el('button','secondary','Add'); add.type='button';
+      add.addEventListener('click',async()=>{try{settings=await window.soul.addDiscoveredApplication(app.id);renderApps();add.disabled=true;add.textContent='Added';}catch(err){$('#appsStatus').textContent=String(err?.message||err);}});
+      card.append(add); grid.append(card);
+    }
+    if(!apps.length) grid.append(el('div','empty','No Start Menu shortcuts were found. You can still choose a file manually.'));
+    $('#discoveredAppsCard').classList.remove('hidden');
+    $('#appsStatus').textContent=`Found ${apps.length} local application shortcuts.`;
+  } catch(err) { $('#appsStatus').textContent=String(err?.message||err); }
+});
 $('#gamingModeInput').addEventListener('change',async()=>{try{settings=await window.soul.saveSettings({provider:settings.provider,endpoint:settings.endpoint,model:settings.model,theme:{...(settings.theme||{}),gamingMode:$('#gamingModeInput').checked}});applyTheme();$('#appsStatus').textContent=$('#gamingModeInput').checked?'Gaming mode enabled.':'Gaming mode disabled.';}catch(err){$('#appsStatus').textContent=String(err?.message||err);}});
 $('#themeTransparency').addEventListener('input',()=>{$('#themeTransparencyValue').textContent=`${$('#themeTransparency').value}%`;});
 $('#companionAvatar').addEventListener('click',()=>{$('#avatarMode').value='hidden';$('#settingsStatus').textContent='Avatar hidden. Save Settings to keep this choice.';$('#companionAvatar').classList.add('mode-hidden');});

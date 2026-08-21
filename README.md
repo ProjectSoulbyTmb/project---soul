@@ -1,10 +1,10 @@
-# Eidovara v0.17.2 — Current Release
+# Eidovara v0.17.3 — Current Release
 
 ## Project statement
 
-Eidovara™ is a customizable digital media, entertainment, and desktop-assistant platform solely owned and created by Tyler Michael Bosworth and published under his intended business name, Soul Consciousness Studios™. It combines persistent local continuity, user-controlled memory, conversation, internet research, media playback, application launching, configurable autonomy, consent controls, backups, diagnostics, and verified updating in one Windows-oriented workspace.
+Eidovara™ is a customizable Windows workspace for applications, gaming, digital media, entertainment, research, accessibility, and personal assistance, solely owned and created by Tyler Michael Bosworth and published under his intended business name, Soul Consciousness Studios™. Soul is an optional adaptive assistant layer inside the wider product—not the only reason to use it. Eidovara combines media playback, application discovery and launching, appearance and performance controls, persistent local preferences, conversation, internet research, backups, diagnostics, and verified updating in one fluid workspace.
 
-The project goal is a broadly useful, user-directed desktop assistant while remaining accurate about its capabilities: Soul is software with a persistent self-model, not a human, a legal authority, or proof of phenomenal consciousness. Users remain responsible for lawful use in their jurisdiction.
+The project goal is a broadly useful, user-directed desktop environment whose modules evolve through reviewed releases. Soul is software with a persistent self-model, not a human, legal authority, or proof of phenomenal consciousness. Users remain responsible for lawful use in their jurisdiction.
 
 Eidovara by Soul Consciousness Studios
 
@@ -38,7 +38,7 @@ The local companion can be hidden or displayed as a lightweight 2D character or 
 
 Third-party neural voices and avatar runtimes are not silently bundled. The screened adapter roadmap and consent/license requirements are documented in [docs/COMPANION_MODELS.md](docs/COMPANION_MODELS.md). Public-repository privacy boundaries are documented in [docs/PUBLIC_REPOSITORY_POLICY.md](docs/PUBLIC_REPOSITORY_POLICY.md).
 
-The Apps & Gaming Hub lets each user select trusted Windows executables or shortcuts, keep a local application shelf, and launch games, OBS, editors, and media tools. Appearance controls persist custom background, panel, accent, opacity, and optional RGB effects. Low-overhead gaming mode disables decorative animation and blur while playing, and Diagnostics reports the active Chromium/GPU/media capabilities. Soul coordinates applications without injecting into or embedding third-party processes.
+The Apps & Gaming Hub lets each user select trusted Windows executables or shortcuts, keep a local application shelf, and ask Windows to launch them. This does not guarantee universal compatibility or grant control of the target application. Appearance controls persist custom background, panel, accent, opacity, and optional RGB effects. Low-overhead gaming mode disables decorative animation and blur while playing, and Diagnostics reports the active Chromium/GPU/media capabilities. Soul does not inject into or embed third-party processes. See [docs/WINDOWS_COMPATIBILITY.md](docs/WINDOWS_COMPATIBILITY.md).
 
 ## Start using Soul
 
@@ -80,5 +80,9 @@ npm start
 ## Security boundaries
 
 The renderer has no Node.js access. Electron context isolation and sandboxing are enabled. The preload API exposes only narrow IPC operations. Model calls occur in the main process. Navigation and pop-up creation are blocked. Adult Soul state is structurally gated by adult-status confirmation, explicit enablement, and current scoped consent; relationship initiative is never treated as consent.
+
+Security, dependency, licensing, and compatibility changes follow the reviewed release gates in [docs/MAINTENANCE_POLICY.md](docs/MAINTENANCE_POLICY.md). Soul adapts from explicit user preferences and feedback, with bounded provider context and local records; it does not silently rewrite its executable or install unreviewed extensions.
+
+First-party ownership boundaries and contribution controls are documented in [docs/CHAIN_OF_TITLE.md](docs/CHAIN_OF_TITLE.md). Public hosting permits viewing and forking through GitHub under its platform terms; it does not make Eidovara open source or transfer Tyler Michael Bosworth's ownership of qualifying original first-party material.
 
 Lawful consensual adult content remains controlled by the adult-status, enablement, and current-consent gates. Explicit requests to facilitate clearly illegal abuse, exploitation, violence, theft, fraud, trafficking, or unauthorized access are blocked and recorded in a local safety audit. Eidovara does not silently transmit conversations or accusations to third parties. Applicable law varies by location, and the software is not a substitute for qualified local legal advice or emergency services.

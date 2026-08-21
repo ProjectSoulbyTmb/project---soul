@@ -2,9 +2,11 @@ import { uid } from './schema.js';
 
 export function addMemory(state, content, opts = {}) {
   const now = new Date().toISOString();
+  const normalized = String(content || '').trim().slice(0, 4000);
+  if (!normalized) throw new Error('Memory cannot be empty.');
   const memory = {
     id: uid('mem'),
-    content: String(content).trim(),
+    content: normalized,
     kind: opts.kind || 'observation',
     source: opts.source || 'user',
     confidence: opts.confidence ?? 0.7,
@@ -25,6 +27,13 @@ export function addMemory(state, content, opts = {}) {
     }
   }
   state.memories.push(memory);
+  // Keep adaptation durable without allowing an unbounded local profile or
+  // remote-provider context surface. Older inactive records are discarded first.
+  if (state.memories.length > 2000) {
+    const active = state.memories.filter(item => item.active);
+    const inactive = state.memories.filter(item => !item.active);
+    state.memories = [...inactive.slice(-Math.max(0, 2000 - active.length)), ...active.slice(-2000)];
+  }
   state.audit.push({ at: now, type: 'memory.added', details: { id: memory.id, tags: memory.tags } });
   return memory;
 }

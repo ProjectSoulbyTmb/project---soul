@@ -1,5 +1,15 @@
 # Eidovara
 
+## v0.17.3
+
+- Bounded adaptive-memory and provider-context surfaces and rejected empty or oversized memory records.
+- Added a one-megabyte update-manifest limit before JSON parsing.
+- Added continuous smoke and dependency-license inventory checks to security automation.
+- Added reviewed maintenance, chain-of-title, and Windows compatibility policies.
+- Clarified contribution ownership, public-hosting rights, third-party application terms, and the limits of universal compatibility claims.
+- Added local, bounded Windows Start Menu application discovery with explicit user selection and no process injection.
+- Repositioned Eidovara as a modular Windows workspace with Soul as an optional assistant layer rather than the sole product focus.
+
 ## v0.17.2
 
 - Added a persistent entertainment taste engine for plays, skips, completions, favorites, and better similar-media prompts.

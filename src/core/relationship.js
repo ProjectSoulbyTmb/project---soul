@@ -23,6 +23,7 @@ export function updateRelationship(state, text) {
   }
   if (changes.length) {
     state.relationship.auditTrail.push({ at: now, changes });
+    if (state.relationship.auditTrail.length > 500) state.relationship.auditTrail = state.relationship.auditTrail.slice(-500);
     state.audit.push({ at: now, type: 'relationship.updated', details: { changes } });
   }
   return changes;
