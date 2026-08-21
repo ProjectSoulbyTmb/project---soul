@@ -114,7 +114,9 @@ test('localization locales share the expanded workspace keys and keep English fa
   for (const loc of ['en', 'es', 'fr', 'de']) {
     const start = src.indexOf(`${loc}: {`);
     assert.ok(start >= 0, loc);
-    const slice = src.slice(start, start + 3500);
+    const next = { en: 'es: {', es: 'fr: {', fr: 'de: {', de: 'let locale' }[loc];
+    const end = src.indexOf(next, start + 1);
+    const slice = src.slice(start, end === -1 ? src.length : end);
     for (const key of keys) assert.match(slice, new RegExp(`${key}:`), `${loc}.${key}`);
   }
   assert.match(src, /messages\.en\[key\]/);

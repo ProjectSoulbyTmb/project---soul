@@ -5,7 +5,7 @@ import { processLearning } from './learning.js';
 import { reflectOnGrowth } from './growth.js';
 import { updateRelationship } from './relationship.js';
 import { uid } from './schema.js';
-import { OfflineProvider } from '../providers/offline.js';
+import { OfflineProvider, detectOfflineIntent } from '../providers/offline.js';
 import { buildSystemContext } from '../providers/context.js';
 import { researchInternet } from '../providers/internet.js';
 import { entertainmentSummary, recordMediaEvent } from './entertainment.js';
@@ -108,7 +108,8 @@ export class SoulEngine {
     let internetError = null;
     let webResearch = null;
     if (!reply) {
-      if (this.state.assistant?.capabilities?.webResearch !== 'disabled') { try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); } }
+      const localWorkspace = new Set(['mood', 'favorites', 'gaming-ost', 'study-ost', 'surprise', 'focus', 'gaming', 'study', 'create', 'talk', 'hello', 'identity', 'memory', 'remember', 'thanks', 'reassure', 'growth']);
+      if (this.state.assistant?.capabilities?.webResearch !== 'disabled' && !localWorkspace.has(detectOfflineIntent(text))) { try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); } }
       const history = conv.messages.slice(-24).map(m => ({ role: m.role, content: m.content }));
       try {
         const researchContext = webResearch ? `\n\nCurrent internet research (cite the numbered source links and do not invent missing facts):\n${webResearch.context}` : '';
