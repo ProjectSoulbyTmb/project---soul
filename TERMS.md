@@ -2,7 +2,7 @@
 
 Last updated: August 21, 2026
 
-Product: Eidovara v0.19.1 Stable Alpha for Windows 10/11 x64.
+Product: Eidovara v1.0.0 Stable Alpha for Windows 10/11 x64.
 
 These product terms describe advertised use of the current release. They are **not legal advice**, a lawyer letterhead, a certification of compliance, or a substitute for qualified counsel. Mandatory consumer rights that applicable law does not allow to be waived remain unaffected. Use is also governed by [LICENSE](LICENSE). If these terms and LICENSE conflict on a permission, LICENSE controls.
 

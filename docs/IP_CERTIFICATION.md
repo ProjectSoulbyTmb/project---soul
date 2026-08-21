@@ -19,25 +19,25 @@ Machine-readable companion: [ip-certification.json](ip-certification.json).
 | Unregistered marks Eidovara™, Soul (feature name), Soul Consciousness Studios™ | Yes — ™ usage and TRADEMARKS.md | registered-mark symbol, USPTO serial, or federal registration |
 | Chain of title vs third-party layers | Yes — Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded | Ownership of those third-party layers |
 | Contributor / entity assignments | Templates exist and are **unsigned** | Any executed CLA or company assignment |
-| Advertised Windows installer v0.22.2 | Filename, measured SHA-256, Authenticode-**unsigned**, GitHub/Sigstore provenance | Microsoft certification, EV signing, SmartScreen pre-approval |
+| Advertised Windows installer v1.0.0 | Filename, measured SHA-256, Authenticode-**unsigned**, GitHub/Sigstore provenance | Microsoft certification, EV signing, SmartScreen pre-approval |
 | Source version 0.22.2 | `package.json` / Worker health / website helper | A claim that provenance is Authenticode signing |
 | Inbound GitHub patches | Policy: not accepted until private written assignment | Transfer of copyright by opening a PR |
 
-## Certified product record (source v0.22.2; live installer v0.22.2)
+## Certified product record (source v1.0.0; live installer v1.0.0)
 
 These facts match the published unsigned Windows installer plus this source cut. They are integrity facts, not a government certificate.
 
 | Field | Value |
 | --- | --- |
 | Product | Eidovara |
-| Source version | 0.22.2 |
-| Live advertised installer version | 0.22.2 |
+| Source version | 1.0.0 |
+| Live advertised installer version | 1.0.0 |
 | App id | `com.soulconsciousnessstudios.eidovara` |
 | Official platform | Windows 10/11 x64 |
-| Installer | `Eidovara-0.22.2-Windows-x64-Setup.exe` |
-| Size | 106,691,429 bytes (about 101.75 MiB) |
-| SHA-256 | `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE` |
-| Release tag | `v0.22.2` |
+| Installer | `Eidovara-v1.0.0-Windows-x64-Setup.exe` |
+| Size | 106,691,524 bytes (about 101.75 MiB) |
+| SHA-256 | `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675` |
+| Release tag | `v1.0.0` |
 | Authenticode | unsigned |
 | Build provenance | GitHub/Sigstore provenance available; not Authenticode |
 | Age | 18 or older |
@@ -45,8 +45,6 @@ These facts match the published unsigned Windows installer plus this source cut.
 | Payments | fail-closed; no live checkout |
 | Service default | `https://api.eidovara.org` (optional; conversations not sent) |
 | Public site | `https://eidovara.org/` |
-
-Do not retag `v0.22.2` or invent a different installer hash in this file.
 
 ## Instrument inventory
 
@@ -111,7 +109,7 @@ Status values used below:
 - treats the CLA or entity assignment as executed
 - stamps first-party JS with a third-party SPDX identifier
 - lists an inventory path that does not exist
-- invents a different v0.22.2 installer SHA-256 than the published desktop knowledge pack
+- invents a different v1.0.0 installer SHA-256 than the published desktop knowledge pack
 
 Passing tests certify **repository honesty and presence**, not a government grant of rights.
 

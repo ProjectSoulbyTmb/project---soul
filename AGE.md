@@ -17,4 +17,4 @@ Local confirmation is **not** independent identity verification, government ID c
 
 If you are under 18, stop and uninstall. Parents or guardians who find this software on a minor's device should remove it.
 
-This statement describes v0.19.1 behavior. It is not legal advice or a COPPA/age-assurance certification.
+This statement describes v1.0.0 behavior. It is not legal advice or a COPPA/age-assurance certification.

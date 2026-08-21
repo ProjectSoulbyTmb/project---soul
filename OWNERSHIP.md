@@ -4,7 +4,7 @@ Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available;
 
 This file is a **project record**, not a court judgment, signed assignment, government registration, or counsel opinion. **It is not legal advice.** A GitHub commit cannot make someone “safely” the owner of another party’s software or of user content.
 
-See [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) for the dated repository self-attestation (instrument inventory, v0.19.1 installer SHA, owner-only leftovers). That file is not a Copyright Office or USPTO registration.
+See [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) for the dated repository self-attestation (instrument inventory, v1.0.0 installer SHA, owner-only leftovers). That file is not a Copyright Office or USPTO registration.
 
 ## What is claimed
 

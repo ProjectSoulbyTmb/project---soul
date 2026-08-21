@@ -1,17 +1,65 @@
 <!doctype html>
 <!-- SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth -->
 <!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
-<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="description" content="Frequently asked questions for Eidovara v0.22.2: Windows download, full free Alpha, 18+, local-first use, research, media, updates, and assistance."><title>FAQ · Eidovara</title><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="site.css"><link rel="stylesheet" href="brand.css"><link rel="icon" type="image/png" href="eidovara-icon.png"></head>
-<body class="site" data-page="faq"><a class="skip-link" href="#main">Skip to content</a><header class="site-header site-chrome"><div class="site-header-inner"><a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button><nav id="site-nav" aria-label="Primary"><a href="./" data-nav="home">Home</a><a href="product.html" data-nav="product">Product</a><a href="assist.html" data-nav="assist">Assist</a><a href="help.html" data-nav="help">Help</a><a href="faq.html" data-nav="faq">FAQ</a><details class="nav-legal"><summary>Legal</summary><div class="nav-legal-menu"><a href="legal.html">Overview</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="security.html">Security</a></div></details><a href="status.html" data-nav="status">Status</a><a class="nav-cta" href="download.html" data-nav="download">Download</a></nav></div></header>
-<main id="main" class="site-main"><p class="eyebrow">Frequently asked · current release v0.22.2</p><h1 class="section-title">Straight answers for v0.22.2.</h1><p class="lead">These answers match the published Eidovara v0.22.2 Windows release and current website knowledge. They are not legal advice.</p><div class="faq faq-list">
-<details open><summary>What is Eidovara?</summary><p>A local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, internet research, backups, updates, persistent continuity, and optional Soul. Soul is optional software, not a consciousness claim.</p></details>
-<details><summary>How do I install Eidovara?</summary><p>Confirm you are 18 or older on the <a href="download.html">Download</a> page. The official installer is <code>Eidovara-0.22.2-Windows-x64-Setup.exe</code>, 106,691,524 bytes (about 101.75 MiB). SHA-256: <code>F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675</code>. It is Authenticode-unsigned. You can also build from source on Windows with <code>npm run dist:win:installer</code>.</p></details>
-<details><summary>Why does Windows warn me?</summary><p>The v0.22.2 installer is Authenticode-unsigned and Windows SmartScreen may warn. Verify the SHA-256 on the Download page and GitHub/Sigstore build provenance. Provenance is not Authenticode signing.</p></details>
-<details><summary>Is v0.22.2 free?</summary><p>Yes. v0.22.2 is currently a full free Alpha. Implemented workspace, compatible-provider, keyed research, media, backup, update, personalization, RGB, and linked-app capabilities are not blocked behind a paid entitlement. Payments, subscriptions, and checkout remain disabled.</p></details>
-<details><summary>Do I need the cloud?</summary><p>No. Core workspace functions and Offline Soul can operate without the official service. Online research, updates, provider connections, and user-directed online media require network access.</p></details>
-<details><summary>What online features are in v0.22.2?</summary><p>Explicit internet research with sanitized public sources, online health/status, media discovery/playback surfaces, update infrastructure, and optional provider connections. Network failures fall back to the local-first workspace where possible.</p></details>
-<details><summary>Is there a Linux, macOS, or iOS app?</summary><p>The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts remain development targets. Eidovara is not an iOS product.</p></details>
-<details><summary>Is the website helper Soul?</summary><p>No. Ask Eidovara is a product helper over a fixed knowledge pack. It is not Soul and does not store desktop conversation transcripts.</p></details>
-<details><summary>Who owns Eidovara?</summary><p>© 2026 Tyler Michael Bosworth. All rights reserved. The repository is source-available, not OSI open source. Soul Consciousness Studios is the intended publisher name only.</p></details>
-<details><summary>Why might the live website look older?</summary><p>The official site deploys from <code>docs/</code> on <code>main</code>. Browser or edge caches can briefly show an older deployment; current source and release wording should identify v0.22.2.</p></details>
-</div></main><footer class="site-footer site-end"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. Adults 18+.</span><span><a href="help.html">Help</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a></span></div></footer><script src="site.js" defer></script><script type="module" src="assist.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self' 'unsafe-inline'; style-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Eidovara v1.0.0 FAQ: age requirements, 18+ restrictions, source-available licensing, Soul layer, system requirements, and installation guidelines.">
+  <meta property="og:title" content="FAQ · Eidovara">
+  <meta property="og:description" content="Eidovara v1.0.0 FAQ: 18+ age gate, source-available licensing, Soul layer, system requirements, installation, and troubleshooting.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eidovara.org/faq.html">
+  <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
+  <link rel="canonical" href="https://eidovara.org/faq.html">
+  <title>FAQ · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body class="site" data-page="faq">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header site-chrome"><div class="site-header-inner"><a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button><nav id="site-nav" aria-label="Primary"><a href="./" data-nav="home">Home</a><a href="download.html" data-nav="download">Download</a><a href="product.html" data-nav="product">Product</a><a href="assist.html" data-nav="assist">Assist</a><a href="help.html" data-nav="help">Help</a><a href="status.html" data-nav="status">Status</a><details class="nav-legal"><summary>Legal</summary><div class="nav-legal-menu"><a href="legal.html">Overview</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="security.html">Security</a></div></nav></div></header>
+  <main id="main" class="site-main">
+    <p class="eyebrow download-studio-line"><img class="download-mark" src="eidovara-mark.png" width="48" height="48" alt="">Windows 10/11 x64 · v1.0.0 Stable Alpha · 18+</p>
+    <h1 class="section-title">Frequently asked questions</h1>
+    <section class="faq-category">
+      <h3>General</h3>
+      <dl>
+        <dt>What is Eidovara?</dt>
+        <dd>Eidovara v1.0.0 is a local-first Windows desktop workspace (Alpha release). It includes media, research, optional Soul layer, persistent continuity, custom themes, and gaming mode. 18+ restricted source-available software.</dd>
+        <dt>Is Eidovara free?</dt>
+        <dd>Yes, v1.0.0 is a free Alpha. No payments, checkout, or subscriptions are implemented. Features are included at no cost within the 18+ framework.</dd>
+        <dt>What does 18+ mean?</dt>
+        <dd>Eidovara includes adult-oriented features, media, and research capabilities. Users must confirm they are 18 or older to access the software. This gate applies across all touchpoints: LICENSE, TERMS.md, AGE.md, CLI, kernel, and desktop UI.</dd>
+      </dl>
+    </section>
+    <section class="faq-category">
+      <h3>Soul Layer</h3>
+      <dl>
+        <dt>What is the Soul layer?</dt>
+        <dd>Soul is an optional assistant layer with persistent continuity, configurable personality, voice/presence, research, media, and tool support. It is software, not a consciousness claim. Triple-gate: age + enablement + consent.</dd>
+        <dt>Can I disable Soul?</dt>
+        <dd>Yes, Soul is optional. You can use the workspace entirely without the Soul layer. The desktop interface and core features remain functional.</dd>
+        <dt>Is Soul a conscious entity?</dt>
+        <dd>No. Soul is explicitly software with no consciousness claims. The project document states: "Soul is software, not consciousness."</dd>
+      </dl>
+    </section>
+    <section class="faq-category">
+      <h3>Licensing and Legal</h3>
+      <dl>
+        <dt>What license is Eidovara under?</dt>
+        <dd>Eidovara v1.0.0 is source-available under LicenseRef-Eidovara-Source-Available-1.0. It is not open source and cannot be relicensed under MIT, Apache, GPL, BSD, or CC licenses. See the LICENSE file for full terms.</dd>
+        <dt>Can I modify and redistribute Eidovara?</dt>
+        <dd>Source-available means you can view and study the source code, but redistribution and modification are restricted under the LicenseRef-Eidovara-Source-Available-1.0 license. Open-source relicensing is prohibited.</dd>
+        <dt>Who owns Eidovara?</dt>
+        <dd>Eidovara is created and owned by Tyler Michael Bosworth, published under the intended business name Soul Consciousness Studios. Third-party software, services, models, marks, and media retain their respective ownership and licenses.</dd>
+      </dl>
+    </section>
+  </main>
+  <footer class="site-footer site-end"><div class="site-footer-inner"><span class="studio-line"><img class="studio-mark" src="soul-consciousness-studios-mark.png" alt="">© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. 18+.</span><span><a href="download.html">Download</a> · <a href="product.html">Product</a> · <a href="assist.html">Assist</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a></span></div></footer><script src="site.js" defer></script>
+</body></html>

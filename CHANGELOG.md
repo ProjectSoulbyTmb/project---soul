@@ -1,5 +1,7 @@
 # Eidovara
 
+## v1.0.0
+
 ## Unreleased
 
 ## v0.22.2

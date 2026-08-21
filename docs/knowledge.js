@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** Eidovara website helper knowledge pack for the current v0.22.2 release. Same answers for Pages and Worker. */
-export const ASSIST_VERSION = '0.22.2';
+/** Eidovara website helper knowledge pack for the current v1.0.0 release. Same answers for Pages and Worker. */
+export const ASSIST_VERSION = '1.0.0';
 export const MAX_ASSIST_QUERY = 800;
 export const MAX_ASSIST_BODY = 4096;
 export const STORAGE_KEY = 'eidovara.serviceBase';
@@ -9,9 +9,9 @@ export const DEFAULT_SERVICE_BASE = 'https://api.eidovara.org';
 export const ASSIST_MODES = ['help', 'download', 'legal'];
 
 const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
-const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe';
-const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/Eidovara-0.22.2-Windows-x64-Setup.exe';
-const INSTALLER_NAME = 'Eidovara-0.22.2-Windows-x64-Setup.exe';
+const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe';
+const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v1.0.0/Eidovara-v1.0.0-Windows-x64-Setup.exe';
+const INSTALLER_NAME = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
 const INSTALLER_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
 const INSTALLER_SIZE = '106,691,524 bytes (about 101.75 MiB)';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
@@ -39,7 +39,7 @@ export const ENTRIES = [
   },
   {
     id: 'download', modes: ['download', 'help'], tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'update', 'updates', 'auto-update'],
-    title: 'Download Windows v0.22.2',
+    title: 'Download Windows v1.0.0',
     reply: `The official download is ${INSTALLER_NAME}, an Authenticode-unsigned Windows 10/11 x64 NSIS installer from GitHub Releases. Size: ${INSTALLER_SIZE}. SHA-256: ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned asset: ${INSTALLER_PINNED}. Windows SmartScreen may warn. GitHub/Sigstore provenance records build origin but is not Authenticode signing.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: INSTALLER, label: INSTALLER_NAME }]
   },
@@ -57,13 +57,13 @@ export const ENTRIES = [
   },
   {
     id: 'payments', modes: ['help', 'legal', 'download'], tags: ['pay', 'payment', 'premium', 'checkout', 'stripe', 'paypal', 'gumroad', 'buy', 'price', 'subscription', 'card', 'pci', 'free'],
-    title: 'v0.22.2 is a full free Alpha',
-    reply: `v${ASSIST_VERSION} does not process payments and there is no live checkout or subscription. All currently implemented v0.22.2 capabilities are included in the free Alpha; no paid entitlement is required. Payment-card data is not accepted by the current service.`,
+    title: 'v1.0.0 is a full free Alpha',
+    reply: `v${ASSIST_VERSION} does not process payments and there is no live checkout or subscription. All currently implemented v1.0.0 capabilities are included in the free Alpha; no paid entitlement is required. Payment-card data is not accepted by the current service.`,
     links: [{ href: 'product.html', label: 'Product' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
     id: 'premium', modes: ['help'], tags: ['premium', 'free', 'edition', 'rgb', 'apps', 'unlimited', 'remote', 'model', 'search'],
-    title: 'Full free v0.22.2 release',
+    title: 'Full free v1.0.0 release',
     reply: `Eidovara v${ASSIST_VERSION} is currently a full free Alpha. Workspace, media, gaming mode, backups, updates, offline/local assistance, compatible remote-model endpoints, keyed research, RGB appearance, and linked-app capabilities are not blocked behind a paid entitlement. Older stored edition labels are retained only for compatibility.`,
     links: [{ href: 'product.html', label: 'Product' }]
   },

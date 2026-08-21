@@ -193,7 +193,7 @@
           `Base: ${base}`,
           `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
           `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
-          'This website never sends desktop conversations. v0.19.1 payments stay off. Check keeps polling; Clear stops.'
+          'This website never sends desktop conversations. v1.0.0 payments stay off. Check keeps polling; Clear stops.'
         ];
         failClosed(lines.join('\n'));
         stopStatusPoll();
