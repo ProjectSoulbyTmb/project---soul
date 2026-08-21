@@ -103,6 +103,13 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.equal(pay.legalAdvice, false);
   assert.equal(pay.transcripts, false);
   assert.equal(pay.paymentsEnabled, false);
+
+  const owner = answerAssist('Who owns Eidovara copyright?');
+  assert.equal(owner.ok, true);
+  assert.match(owner.reply, /Tyler Michael Bosworth/);
+  assert.match(owner.reply, /does not own Electron|Third-party stays third-party/);
+  assert.match(owner.reply, /not legal advice/);
+  assert.match(owner.reply, /unregistered/);
 });
 
 test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async () => {
