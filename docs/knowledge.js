@@ -143,7 +143,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['license', 'open', 'source-available', 'oss', 'copyright', 'evaluation'],
     title: 'Source-available, not open source',
-    reply: 'The repository uses the Eidovara Source-Available Evaluation License. That is not an OSI open-source license. Viewing the source does not transfer ownership or grant patent or trademark rights. Read LICENSE, TERMS, NOTICE, and AGE included with each release.',
+    reply: 'The repository uses the Eidovara Source-Available Evaluation License. That is not an OSI open-source license and is not MIT, Apache, or GPL. Viewing the source does not transfer ownership or grant patent or trademark rights. Read LICENSE, TERMS, NOTICE, OWNERSHIP, and AGE included with each release.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: SOURCE, label: 'GitHub' }]
   },
   {
