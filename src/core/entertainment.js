@@ -84,9 +84,9 @@ export function officialSearchHandoffs(query) {
   if (!q) return [];
   const encoded = encodeURIComponent(q);
   const items = [
-    { provider: 'YouTube', title: `YouTube search: ${q}`, url: `https://www.youtube.com/results?search_query=${encoded}` },
-    { provider: 'Spotify', title: `Spotify search: ${q}`, url: `https://open.spotify.com/search/${encoded}` },
-    { provider: 'Internet Archive', title: `Internet Archive search: ${q}`, url: `https://archive.org/search?query=${encoded}` }
+    { provider: 'YouTube', title: `YouTube search: ${q}`, url: `https://www.youtube.com/results?search_query=${encoded}`, description: 'Opens the official YouTube search page. Eidovara does not download or rip streams.' },
+    { provider: 'Spotify', title: `Spotify search: ${q}`, url: `https://open.spotify.com/search/${encoded}`, description: 'Opens the official Spotify search page. Eidovara does not download or rip streams.' },
+    { provider: 'Internet Archive', title: `Internet Archive search: ${q}`, url: `https://archive.org/search?query=${encoded}`, description: 'Opens the official Internet Archive search page. Eidovara does not download or rip catalog items.' }
   ];
   return items.filter(item => {
     if (item.provider === 'YouTube') return Boolean(httpsUrl(item.url, ['youtube.com']));

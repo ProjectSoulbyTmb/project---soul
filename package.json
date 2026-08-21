@@ -1,6 +1,6 @@
 {
   "name": "eidovara",
-  "version": "0.19.1",
+  "version": "0.19.2",
   "description": "Eidovara privacy-focused desktop assistant and media workspace.",
   "author": "Tyler Michael Bosworth, project creator and product director. Soul Consciousness Studios is the intended publisher name, not a formed IP-owning entity.",
   "license": "SEE LICENSE IN LICENSE",
@@ -97,8 +97,10 @@
       "license": "installer/EULA.txt",
       "installerIcon": "assets/branding/eidovara.ico",
       "uninstallerIcon": "assets/branding/eidovara.ico",
+      "include": "build/installer.nsh",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },

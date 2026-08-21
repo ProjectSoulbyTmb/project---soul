@@ -5,7 +5,7 @@ type: software
 authors:
   - family-names: Bosworth
     given-names: Tyler Michael
-version: 0.19.1
+version: 0.19.2
 date-released: 2026-08-21
 repository-code: "https://github.com/ProjectSoulbyTmb/project---soul"
 license: LicenseRef-Eidovara-Source-Available-1.0

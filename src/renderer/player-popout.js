@@ -13,7 +13,7 @@ function load(payload) {
   const audio = $('popAudio');
   audio.pause();
   video.pause();
-  if (!item?.url || !/^eidovara-media:|^https:/i.test(item.url) || /youtube\.com\/embed|spotify\.com\/embed/i.test(item.url)) {
+  if (!item?.url || !/^eidovara-media:|^eidovara-online:/i.test(item.url)) {
     $('popTitle').textContent = 'Nothing playing';
     return;
   }

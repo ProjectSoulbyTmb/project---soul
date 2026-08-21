@@ -125,6 +125,13 @@ test('packaging publishes GitHub latest.yml and ships electron-updater', () => {
   assert.match(read('src/renderer/renderer.js'), /action\.type==='open-updates'\|\|action\.type==='check-updates'/);
   assert.match(read('src/electron/auto-update.js'), /verifyUpdateCodeSignature/);
   assert.match(read('src/electron/auto-update.js'), /Authenticode-unsigned/);
+  assert.match(read('src/electron/auto-update.js'), /Download the Authenticode-unsigned/);
+  assert.match(read('src/electron/auto-update.js'), /quitAndInstall/);
+  assert.match(read('src/electron/auto-update.js'), /autoDownload = false/);
+  assert.doesNotMatch(read('src/electron/auto-update.js'), /shell\.openPath\(/);
+  assert.match(read('src/renderer/index.html'), /latest\.yml/);
+  const sha512Official = `${'C'.repeat(86)}==`;
+  assert.throws(() => parseLatestYml(`version: 0.19.1\npath: evil.exe\nsha512: ${sha512Official}\n`), /official Windows installer/i);
 });
 
 test('knowledge and workspace search expose Check for updates without auto-install', () => {
@@ -133,4 +140,5 @@ test('knowledge and workspace search expose Check for updates without auto-insta
   assert.match(knowledge, /verify its checksum, and apply it\. Builds are Authenticode-unsigned/);
   assert.match(read('src/core/layers.js'), /id: 'set-updates'/);
   assert.match(read('src/renderer/companion.js'), /companionCheckUpdatesBtn/);
+  assert.match(read('src/core/entertainment.js'), /does not download or rip/i);
 });

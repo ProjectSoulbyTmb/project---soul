@@ -28,7 +28,7 @@ export function defaultProfile(profileId = 'default') {
       protected: ['humility', 'consent', 'nonManipulation', 'truthfulness']
     },
     relationship: { style: 'balanced', temporaryInitiative: false, initiativeReason: null, establishedPreference: null, trust: 0.50, comfort: 0.50, auditTrail: [] },
-    assistant: { autonomy: 'balanced', initiativeEnabled: true, reflectionEnabled: true, identityDescription: 'persistent simulated continuity', ethicalFramework: ['lawfulness', 'human safety', 'consent', 'privacy', 'honesty', 'fairness', 'user autonomy'], preferences: { responseLength: 'balanced', tone: 'natural', focusMode: 'general', accessibility: '', language: 'en' }, capabilities: { webResearch: 'ask', appLaunch: 'confirm', mediaPlayback: 'confirm', memoryLearning: 'enabled' } },
+    assistant: { autonomy: 'balanced', initiativeEnabled: true, reflectionEnabled: true, identityDescription: 'persistent simulated continuity', ethicalFramework: ['lawfulness', 'human safety', 'consent', 'privacy', 'honesty', 'fairness', 'user autonomy'], preferences: { responseLength: 'balanced', tone: 'natural', focusMode: 'general', accessibility: '', language: 'en' }, capabilities: { webResearch: 'ask', appLaunch: 'confirm', mediaPlayback: 'confirm', onlineMedia: 'disabled', webGuest: 'disabled', memoryLearning: 'enabled' } },
     policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false, boundaries: [], revokedAt: null, consentScope: null, lawfulUseRequired: true, localSafetyReports: [] },
     setup: { completed: false, completedAt: null, categories: [], customNeeds: '', stream: { enabled: false, obsWebSocketUrl: 'ws://127.0.0.1:4455', goals: '' } },
     entertainment: { favorites: [], history: [], taste: {} },

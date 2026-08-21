@@ -1,11 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import path from 'node:path';
 import { createRequire } from 'node:module';
 import {
   autoCheckEnabled,
   checkForUpdate,
-  downloadUpdate,
   evaluateElectronUpdate,
   honestUpdateError,
   isPrerelease,
@@ -44,13 +42,12 @@ export function attachDesktopUpdater({
   requireAgeGate,
   publicConfig,
   scanUpdateForMalware,
-  shell,
   log = () => {}
 }) {
   const autoUpdater = loadAutoUpdater();
   let lastStatus = snapshot({ phase: 'idle', available: false, currentVersion: app.getVersion() });
   let pendingNsis = null;
-  let pendingManifest = null;
+  let pendingEval = null;
   let checking = false;
   let timers = [];
 
@@ -85,21 +82,18 @@ export function attachDesktopUpdater({
       const percent = Math.max(0, Math.min(100, Math.round(Number(progress?.percent) || 0)));
       emit({ phase: 'downloading', available: true, percent, error: '' });
     });
-    autoUpdater.on('update-downloaded', async (info) => {
+    autoUpdater.on('update-downloaded', info => {
       try {
         const evaluated = evaluateElectronUpdate(info, app.getVersion());
         if (!evaluated.available) {
           pendingNsis = null;
+          pendingEval = null;
           emit({ phase: 'current', available: false, version: evaluated.version, reason: evaluated.reason });
           return;
         }
         requireUpdateIntegrity(info);
-        const filePath = String(info?.downloadedFile || '');
-        if (filePath && typeof scanUpdateForMalware === 'function') {
-          const malwareScan = await scanUpdateForMalware(filePath);
-          if (malwareScan?.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not opened.');
-        }
-        pendingNsis = { info, evaluated, filePath };
+        pendingEval = evaluated;
+        pendingNsis = { info, evaluated, filePath: String(info?.downloadedFile || '') };
         emit({
           phase: 'ready',
           available: true,
@@ -108,21 +102,6 @@ export function attachDesktopUpdater({
           provider: 'electron-updater',
           error: ''
         });
-        const window = getMainWindow();
-        if (!window) return;
-        const answer = await dialog.showMessageBox(window, {
-          type: 'info',
-          buttons: ['Restart and install', 'Later'],
-          defaultId: 0,
-          cancelId: 1,
-          title: 'Eidovara update ready',
-          message: `Eidovara ${evaluated.version} is ready to install.`,
-          detail: 'The Windows installer was downloaded from GitHub Releases and checksum-verified. Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved.'
-        });
-        if (answer.response === 0) {
-          autoUpdater.autoInstallOnAppQuit = false;
-          autoUpdater.quitAndInstall(true, true);
-        }
       } catch (err) {
         pendingNsis = null;
         emit({ phase: 'error', available: false, error: honestUpdateError(err) });
@@ -139,6 +118,7 @@ export function attachDesktopUpdater({
     const evaluated = evaluateElectronUpdate(info, currentVersion);
     if (!evaluated.available) {
       pendingNsis = null;
+      pendingEval = null;
       return snapshot({
         phase: 'current',
         available: false,
@@ -149,10 +129,9 @@ export function attachDesktopUpdater({
         provider: 'electron-updater'
       });
     }
-    emit({ phase: 'downloading', available: true, version: evaluated.version, provider: 'electron-updater', percent: 0, error: '' });
-    void autoUpdater.downloadUpdate().catch(err => emit({ phase: 'error', available: false, error: honestUpdateError(err) }));
+    pendingEval = evaluated;
     return snapshot({
-      phase: 'downloading',
+      phase: pendingNsis?.filePath ? 'ready' : 'available',
       available: true,
       currentVersion,
       version: evaluated.version,
@@ -164,7 +143,6 @@ export function attachDesktopUpdater({
 
   async function checkManifest(currentVersion) {
     const update = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion });
-    pendingManifest = update?.available ? update : null;
     return snapshot({
       ...update,
       phase: update.available ? 'available' : 'current',
@@ -193,7 +171,6 @@ export function attachDesktopUpdater({
       }
       return emit(await checkManifest(currentVersion));
     } catch (err) {
-      pendingManifest = null;
       return emit({ phase: 'error', available: false, error: honestUpdateError(err), currentVersion, configured: Boolean(RELEASE_MANIFEST_URL) });
     } finally {
       checking = false;
@@ -203,43 +180,44 @@ export function attachDesktopUpdater({
   async function install() {
     requireAgeGate();
     const window = getMainWindow();
-    if (pendingNsis?.evaluated?.available && autoUpdater) {
-      const version = pendingNsis.evaluated.version;
-      const answer = await dialog.showMessageBox(window, {
+    if (!app.isPackaged || process.platform !== 'win32' || !autoUpdater) {
+      throw new Error('Packaged Windows builds install updates from GitHub Releases via electron-updater (latest.yml hash). Development builds have no installer channel. Eidovara does not download an arbitrary .exe and run it.');
+    }
+    if (!pendingEval?.available) await check({ force: true });
+    if (!pendingEval?.available) throw new Error('No update is available from GitHub Releases latest.yml.');
+    configureUpdater();
+    if (!pendingNsis?.filePath) {
+      const first = await dialog.showMessageBox(window, {
         type: 'question',
-        buttons: ['Restart and install', 'Cancel'],
+        buttons: ['Download update', 'Cancel'],
         defaultId: 0,
         cancelId: 1,
-        title: 'Install Eidovara update',
-        message: `Install Eidovara ${version}?`,
-        detail: 'The Windows installer was downloaded from GitHub Releases and checksum-verified (SHA-512 in latest.yml). Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved. Unsaved work in other apps is not closed by this prompt until you confirm.'
+        title: 'Download Eidovara update',
+        message: `Download Eidovara ${pendingEval.version}?`,
+        detail: 'Download the Authenticode-unsigned installer from the official GitHub Release. electron-updater verifies the latest.yml hash. This build is not Microsoft-signed. Windows SmartScreen may warn. Eidovara will ask again before installing and restarting. There is no custom download-any-exe path.'
       });
-      if (answer.response !== 0) return { cancelled: true };
-      autoUpdater.autoInstallOnAppQuit = false;
-      autoUpdater.quitAndInstall(true, true);
-      return { restarting: true, provider: 'electron-updater', version, unsigned: true };
+      if (first.response !== 0) return { cancelled: true };
+      emit({ phase: 'downloading', available: true, version: pendingEval.version, provider: 'electron-updater', percent: 0, error: '' });
+      await autoUpdater.downloadUpdate();
     }
-    if (!pendingManifest?.available) pendingManifest = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() });
-    if (!pendingManifest?.available) throw new Error('No update is available.');
-    requireUpdateIntegrity(pendingManifest);
-    const answer = await dialog.showMessageBox(window, {
+    const filePath = pendingNsis?.filePath || '';
+    if (filePath && typeof scanUpdateForMalware === 'function') {
+      const malwareScan = await scanUpdateForMalware(filePath);
+      if (malwareScan?.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not launched.');
+    }
+    const second = await dialog.showMessageBox(window, {
       type: 'question',
-      buttons: ['Download and open', 'Cancel'],
+      buttons: ['Restart and install', 'Later'],
       defaultId: 0,
       cancelId: 1,
       title: 'Install Eidovara update',
-      message: `Install Eidovara ${pendingManifest.version}?`,
-      detail: pendingManifest.packageType === 'ready-folder-zip'
-        ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction. Builds are Authenticode-unsigned.'
-        : 'The installer will be downloaded over HTTPS from GitHub Releases, verified with SHA-256, and opened. Builds are Authenticode-unsigned; Windows SmartScreen may warn.'
+      message: `Restart Eidovara to install ${pendingEval.version}?`,
+      detail: 'The Windows installer was downloaded from GitHub Releases and checksum-verified (SHA-512 in latest.yml). Setup overwrites the existing Eidovara program install. App data is kept. Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer.'
     });
-    if (answer.response !== 0) return { cancelled: true };
-    const downloaded = await downloadUpdate(pendingManifest, path.join(app.getPath('userData'), 'updates'));
-    const malwareScan = await scanUpdateForMalware(downloaded.path);
-    if (malwareScan?.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not opened.');
-    const error = await shell.openPath(downloaded.path);
-    if (error) throw new Error(error);
-    return { ...downloaded, malwareScan, launched: true, provider: 'github-manifest', unsigned: true };
+    if (second.response !== 0) return { cancelled: true, downloaded: true };
+    autoUpdater.autoInstallOnAppQuit = false;
+    autoUpdater.quitAndInstall(false, true);
+    return { restarting: true, launched: true, provider: 'electron-updater', version: pendingEval.version, unsigned: true };
   }
 
   function stop() {

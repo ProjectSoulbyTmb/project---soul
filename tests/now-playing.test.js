@@ -60,22 +60,24 @@ test('now-playing queue expands, loops, shuffles, and rates without vendor embed
   assert.match(officialSearchUrl('archive', 'Harbor'), /archive\.org\/search\?query=/);
 });
 
-test('quality menu appears only for real extra renditions and native URL is not a thumb', () => {
+test('quality menu appears only for real extra renditions on custom protocols', () => {
   const item = {
     type: 'video',
     title: 'Film',
-    url: 'https://upload.wikimedia.org/original.webm',
-    thumbUrl: 'https://upload.wikimedia.org/thumb.jpg',
+    url: 'eidovara-media://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/',
+    local: true,
     renditions: [
-      { id: '720', label: '720p', url: 'https://upload.wikimedia.org/720.webm' },
-      { id: 'native', label: 'Native', url: 'https://upload.wikimedia.org/original.webm', native: true }
+      { id: '720', label: '720p', url: 'eidovara-media://cccccccccccccccccccccccccccccccc/' },
+      { id: 'native', label: 'Native', url: 'eidovara-media://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/', native: true }
     ]
   };
-  assert.equal(nativePlaybackUrl(item), 'https://upload.wikimedia.org/original.webm');
+  assert.equal(nativePlaybackUrl(item), 'eidovara-media://bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb/');
   const choices = qualityChoices(item);
   assert.ok(choices.length >= 2);
-  assert.equal(selectedQualityUrl(item, '720'), 'https://upload.wikimedia.org/720.webm');
+  assert.equal(selectedQualityUrl(item, '720'), 'eidovara-media://cccccccccccccccccccccccccccccccc/');
   assert.deepEqual(qualityChoices({ type: 'audio', url: 'eidovara-media://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/' }), []);
+  assert.equal(isAllowedPlaybackUrl('https://upload.wikimedia.org/original.webm'), false);
+  assert.equal(isAllowedPlaybackUrl('eidovara-online://dddddddddddddddddddddddddddddddd/'), true);
   assert.equal(videoPresentationFlags().noDownscale, true);
   assert.equal(videoPresentationFlags().preload, 'auto');
   assert.equal(hardwareDecodePreferred({ hardwareAcceleration: true }), true);
@@ -110,14 +112,16 @@ test('sleep timer, media keys, space/escape, and sidecar captions stay first-par
   assert.match(LYRICS_UNAVAILABLE, /No licensed lyrics/);
 });
 
-test('player sources stay eidovara-media/https, never media-src self, embeds, Hi-Res logos, or ffmpeg', () => {
+test('player sources stay eidovara-media/eidovara-online, never media-src self, embeds, Hi-Res logos, or ffmpeg', () => {
   const files = [
     'src/renderer/index.html',
     'src/renderer/player.js',
     'src/renderer/now-playing.css',
     'src/electron/main.js',
     'src/electron/player-windows.js',
-    'src/core/now-playing.js'
+    'src/electron/guest-window.js',
+    'src/core/now-playing.js',
+    'src/core/online-media.js'
   ];
   for (const file of files) {
     const text = fs.readFileSync(file, 'utf8');
@@ -128,7 +132,8 @@ test('player sources stay eidovara-media/https, never media-src self, embeds, Hi
     assert.doesNotMatch(text, /workers\.dev/);
   }
   const html = fs.readFileSync('src/renderer/index.html', 'utf8');
-  assert.match(html, /media-src https: eidovara-media:/);
+  assert.match(html, /media-src eidovara-media: eidovara-online:/);
+  assert.doesNotMatch(html, /media-src https:/);
   assert.match(html, /id="eidovaraPlayer"/);
   assert.match(html, /id="mediaPopOutBtn"/);
   assert.match(fs.readFileSync('src/electron/main.js', 'utf8'), /LOCAL_MEDIA_SCHEME = 'eidovara-media'/);

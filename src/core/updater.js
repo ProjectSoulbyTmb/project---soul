@@ -124,6 +124,9 @@ export function parseLatestYml(text) {
     files: fileUrl || fileSha ? [{ url: fileUrl || filePath, sha512: fileSha || topSha }] : []
   };
   requireUpdateIntegrity(parsed);
+  if (!/^Eidovara-\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?-Windows-x64-Setup\.exe$/i.test(parsed.path)) {
+    throw new Error('latest.yml path is not the official Windows installer.');
+  }
   return parsed;
 }
 

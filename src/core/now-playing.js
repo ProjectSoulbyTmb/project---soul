@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 
 export const LOCAL_MEDIA_SCHEME = 'eidovara-media';
+export const ONLINE_MEDIA_SCHEME = 'eidovara-online';
 export const LYRICS_UNAVAILABLE = 'No licensed lyrics in-app';
 export const HANDOFF_CONFIRM = 'Opens in the browser. Eidovara does not play Spotify or YouTube in-app.';
 export const MEDIA_SESSION_ACTIONS = ['play', 'pause', 'previoustrack', 'nexttrack', 'seekto', 'stop'];
@@ -19,7 +20,7 @@ const BLOCKED_HOSTS = new Set([
   'open.spotify.com', 'embed.spotify.com', 'play.spotify.com', 'api.spotify.com',
   'accounts.spotify.com', 'spotify.com', 'www.spotify.com', 'spotifycdn.com', 'sdk.scdn.co'
 ]);
-const BLOCKED_EMBED = /youtube\.com\/embed|youtube-nocookie|\/\/youtu\.be\/|spotify\.com\/embed|open\.spotify\.com\/embed|sdk\.scdn\.co|spotify-web-playback|iframe_api|www\.youtube\.com\/iframe_api/i;
+const BLOCKED_EMBED = /youtube-nocookie|sdk\.scdn\.co|spotify-web-playback|iframe_api|www\.youtube\.com\/iframe_api/i;
 
 function hostnameOf(value) {
   try { return new URL(String(value || '')).hostname.toLowerCase(); } catch { return ''; }
@@ -100,10 +101,8 @@ export function isBlockedEmbedUrl(value) {
 export function isAllowedPlaybackUrl(value) {
   let parsed;
   try { parsed = new URL(String(value || '')); } catch { return false; }
-  if (parsed.protocol === `${LOCAL_MEDIA_SCHEME}:`) return true;
-  if (parsed.protocol !== 'https:') return false;
-  if (isBlockedEmbedUrl(parsed.href)) return false;
-  return true;
+  if (parsed.protocol === `${LOCAL_MEDIA_SCHEME}:` || parsed.protocol === `${ONLINE_MEDIA_SCHEME}:`) return true;
+  return false;
 }
 
 export function officialSearchUrl(platform, query) {
@@ -182,6 +181,7 @@ export function normalizePlaybackItem(input = {}) {
     title,
     sourceUrl,
     local: input.local === true,
+    remote: input.local !== true && /^eidovara-online:/i.test(url),
     artist: cleanText(input.artist, 200),
     mime: cleanText(input.mime, 80),
     width: Number.isFinite(Number(input.width)) ? Number(input.width) : 0,
@@ -197,6 +197,14 @@ export function setQueue(state, items, index = 0) {
   if (!queue.length) return { ...state, queue: [], index: -1, active: false, expanded: false, playing: false, poppedOut: false, pictureInPicture: false };
   const idx = ((Number(index) || 0) % queue.length + queue.length) % queue.length;
   return { ...state, queue, index: idx, active: true };
+}
+
+export function dropRemoteItems(state = {}) {
+  const queue = (state.queue || []).filter(item => item.local);
+  if (!queue.length) return { ...createNowPlayingState(state), poppedOut: false, pictureInPicture: false };
+  const current = state.queue?.[state.index];
+  const index = Math.max(0, queue.findIndex(item => item.url === current?.url));
+  return { ...state, queue, index, active: true, poppedOut: false, pictureInPicture: false };
 }
 
 export function appendQueue(state, items) {

@@ -185,7 +185,7 @@ test('no workers.dev host is compiled into the desktop kernel', () => {
   assert.match(read('src/renderer/index.html'), /placeholder="https:\/\/api\.eidovara\.org"/);
   assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
   assert.match(read('src/renderer/index.html'), /img-src 'self' data: https: eidovara-media:/);
-  assert.match(read('src/renderer/index.html'), /media-src https: eidovara-media:/);
+  assert.match(read('src/renderer/index.html'), /media-src eidovara-media: eidovara-online:/);
   assert.match(read('src/electron/preload.cjs'), /assistQuery:/);
   assert.match(read('src/core/modules.js'), /To add a module/);
   const html = read('src/renderer/index.html');

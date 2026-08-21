@@ -1,4 +1,4 @@
-# Eidovara v0.19.1
+# Eidovara v0.19.2
 
 Eidovara is a customizable Windows desktop workspace for applications, gaming, media, research, accessibility, and optional personal assistance. It is created and owned by Tyler Michael Bosworth and published under the intended business name Soul Consciousness Studios™.
 
@@ -36,7 +36,7 @@ Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices
 
 The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, `latest.yml` SHA-512 for the in-app updater, an SPDX SBOM, and GitHub build provenance. After 18+, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Settings can disable automatic checks. Builds stay Authenticode-unsigned.
 
-Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. Download `Eidovara-0.19.1-Windows-x64-Setup.exe` (~101.3 MiB) from GitHub Releases (SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`) and verify checksums plus provenance. No software can guarantee perfect security.
+Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. The live advertised download remains `Eidovara-0.19.1-Windows-x64-Setup.exe` (~101.3 MiB) from GitHub Releases (SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`) until a hashed `0.19.2` Setup.exe exists. No software can guarantee perfect security.
 
 ## Editions
 
@@ -54,7 +54,7 @@ npm run dist:win:installer
 
 `npm install` works. The repository also ships `pnpm-lock.yaml` (`packageManager` `pnpm@10.33.3`). Node 20 runs CLI, tests, and checks. Electron 43 (desktop `npm start` / Windows packaging) needs Node >= 22.12.0. A postinstall helper skips the Electron binary download on older Node instead of failing the whole install.
 
-The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
+The Windows installer is generated in `dist/`. Running Setup again overwrites an existing Eidovara program install for the same application ID: a running Eidovara window is closed first so files can be replaced. Local user data is not wiped. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 
 ## Rights and project records
 

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** Desktop product knowledge for the in-app Soul kernel (v0.19.1). Not the website helper. */
+/** Desktop product knowledge for the in-app Soul kernel (v0.19.2). Not the website helper. */
 
-export const DESKTOP_KNOWLEDGE_VERSION = '0.19.1';
+export const DESKTOP_KNOWLEDGE_VERSION = '0.19.2';
 export const INSTALLER_NAME = 'Eidovara-0.19.1-Windows-x64-Setup.exe';
 export const INSTALLER_SHA256 = '72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8';
 export const INSTALLER_SIZE = 'about 101.3 MiB';
@@ -20,7 +20,7 @@ const ENTRIES = {
   },
   unsigned: {
     title: 'Unsigned Windows build',
-    reply: 'This installation is Authenticode-unsigned on purpose for v0.19.1. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned.',
+    reply: 'This installation is Authenticode-unsigned on purpose for v0.19.2. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned.',
     actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'check-updates', label: 'Check for updates' }, { type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   payments: {
@@ -35,7 +35,7 @@ const ENTRIES = {
   },
   download: {
     title: 'You are already in the app',
-    reply: `This window is the installed Eidovara v0.19.1 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Soul does not fetch Setup.exe itself.`,
+    reply: `This window is the installed Eidovara v0.19.2 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Soul does not fetch Setup.exe itself.`,
     actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'check-updates', label: 'Check for updates' }]
   },
   platforms: {

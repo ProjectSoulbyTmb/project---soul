@@ -22,7 +22,7 @@ test('site and renderer load tokens without claiming Apple affiliation', () => {
   const app = read('src/renderer/index.html');
   assert.match(site, /href="tokens\.css"/);
   assert.match(app, /href="tokens\.css"/);
-  assert.match(app, /media-src https: eidovara-media:/);
+  assert.match(app, /media-src eidovara-media: eidovara-online:/);
   assert.doesNotMatch(app, /media-src [^"]*'self'/);
   assert.doesNotMatch(site, /Apple-designed|Apple Inc\.|official iOS app/i);
   assert.doesNotMatch(app, /Apple-designed|Apple Inc\.|official iOS app/i);

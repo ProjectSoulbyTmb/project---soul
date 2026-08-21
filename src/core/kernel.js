@@ -140,7 +140,7 @@ export const KERNEL_ACTION_TYPES = Object.freeze([
   'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
   'open-diagnostics', 'pick-local-media', 'discover-apps',
   'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
-  'open-external'
+  'open-external', 'play-online', 'open-guest'
 ]);
 
 function action(type, extra = {}) {
@@ -444,10 +444,13 @@ export function kernelPublicMeta(route) {
       hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
       snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
       label: String(item.label || '').slice(0, 80),
-      auto: item.type === 'open-external' ? false : Boolean(item.auto)
+      auto: item.type === 'open-external' ? false : Boolean(item.auto),
+      ...(item.catalog === true ? { catalog: true } : {})
     })).filter(item => item.type && (
       KERNEL_ACTION_TYPES.includes(item.type)
       || (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))
+      || (item.type === 'play-online' && /^https:\/\//i.test(item.url || ''))
+      || (item.type === 'open-guest' && /^https:\/\//i.test(item.url || ''))
     )) : [],
     soul: {
       enabled: Boolean(value.overlay?.enabled),

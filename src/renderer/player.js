@@ -3,6 +3,7 @@
 (function () {
   const $ = sel => document.querySelector(sel);
   const LOCAL = 'eidovara-media:';
+  const ONLINE = 'eidovara-online:';
   const RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
   const SLEEP = [0, 15, 30, 45, 60, 90];
   let queue = [];
@@ -37,14 +38,9 @@
   function allowedUrl(value) {
     const raw = String(value || '');
     if (!raw) return false;
-    if (/youtube\.com\/embed|youtube-nocookie|spotify\.com\/embed|sdk\.scdn\.co/i.test(raw)) return false;
     try {
       const url = new URL(raw);
-      if (url.protocol === LOCAL) return true;
-      if (url.protocol !== 'https:') return false;
-      const host = url.hostname.toLowerCase();
-      if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)spotify\.com$/.test(host)) return false;
-      return true;
+      return url.protocol === LOCAL || url.protocol === ONLINE;
     } catch {
       return false;
     }
@@ -195,19 +191,65 @@
       poppedOut = false;
     }
   }
-  function playMedia(items, at, opts = {}) {
+  async function playMedia(items, at, opts = {}) {
     const mode = window.eidovaraState?.assistant?.capabilities?.mediaPlayback || 'confirm';
     if (mode === 'disabled') {
       alert(t('mediaDisabled', 'Media playback is disabled in Soul behavior settings.'));
       return;
     }
-    const selected = items[at];
-    if (mode === 'confirm' && !opts.alreadyConfirmed) {
+    if (adultMode()) {
+      items = (items || []).filter(m => m?.local === true || String(m?.url || '').startsWith(LOCAL));
+    }
+    const selected = items[at] || items[0];
+    if (mode === 'confirm' && !opts.alreadyConfirmed && selected) {
       if (!window.confirm(`${t('mediaConfirm', 'Play this media in Eidovara:')} ${selected?.title || ''}`.trim())) return;
     }
-    queue = (items || []).filter(m => (m.type === 'audio' || m.type === 'video') && allowedUrl(m.url));
-    const start = Math.max(0, queue.indexOf(selected) === -1 ? 0 : queue.indexOf(selected));
-    loadMedia(start);
+    const prepared = [];
+    for (const item of items || []) {
+      if (!item || (item.type !== 'audio' && item.type !== 'video')) continue;
+      if (allowedUrl(item.url)) {
+        prepared.push(item);
+        continue;
+      }
+      if (!/^https:/i.test(item.url || '')) continue;
+      try {
+        const resolved = await window.soul.resolveOnlineMedia?.({ url: item.url, title: item.title, sourceUrl: item.sourceUrl || item.url });
+        if (resolved?.kind === 'catalog-handoff') {
+          if (window.confirm(`${t('catalogHandoff', 'This service can’t play inside Eidovara; it opens in your browser.')}\n${resolved.url || ''}`)) {
+            window.soul?.openExternal?.(resolved.url);
+          }
+          continue;
+        }
+        if (resolved?.url && allowedUrl(resolved.url)) prepared.push({ ...item, ...resolved });
+      } catch (err) {
+        alert(String(err?.message || err));
+      }
+    }
+    queue = prepared;
+    const start = Math.max(0, prepared.findIndex(m => m.url === selected?.url || m.sourceUrl === selected?.url || m.title === selected?.title));
+    loadMedia(start === -1 ? 0 : start);
+  }
+  async function handleEnginePlayback(onlinePlayback) {
+    if (!onlinePlayback) return;
+    if (onlinePlayback.kind === 'catalog-handoff') {
+      if (window.confirm(`${t('catalogHandoff', 'This service can’t play inside Eidovara; it opens in your browser.')}\n${onlinePlayback.url || ''}`)) {
+        window.soul?.openExternal?.(onlinePlayback.url);
+      }
+      return;
+    }
+    if (onlinePlayback.kind !== 'playable') return;
+    await playMedia([{ type: onlinePlayback.type || 'audio', title: onlinePlayback.hostname || 'Online media', url: onlinePlayback.sourceUrl, sourceUrl: onlinePlayback.sourceUrl }], 0, { alreadyConfirmed: true });
+  }
+  function dropRemoteQueue() {
+    queue = queue.filter(item => item.local === true || String(item.url || '').startsWith(LOCAL));
+    if (!queue.length) {
+      index = -1;
+      setActive(false);
+      window.soul.dockPlayer?.();
+      return;
+    }
+    if (index >= queue.length) index = 0;
+    loadMedia(index, false);
   }
   function ended() {
     mediaSignal('complete');
@@ -291,6 +333,8 @@
     loadMedia,
     currentPlayer,
     currentItem,
+    handleEnginePlayback,
+    dropRemoteQueue,
     queue: () => queue.slice()
   };
   window.eidovaraPlayMedia = playMedia;
@@ -390,6 +434,7 @@
   $('#audioPlayer')?.addEventListener('pause', paint);
   $('#videoPlayer')?.addEventListener('pause', paint);
   window.soul?.onPlayerDocked?.(() => { poppedOut = false; paint(); });
+  window.soul?.onOnlineStopped?.(() => { dropRemoteQueue(); });
   window.soul?.onPlayerCommand?.(command => {
     if (command === 'previous') loadMedia(index - 1);
     if (command === 'next') loadMedia(index + 1);
