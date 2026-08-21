@@ -55,7 +55,7 @@ const catalog = [
   {
     id: 'workspace-research',
     title: 'Research',
-    summary: 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.',
+    summary: 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links.',
     intents: ['research'],
     commands: ['search the internet', 'research online'],
     workspace: 'research',

@@ -103,12 +103,26 @@ function researchReply(webResearch, locale) {
     fr: `\n\nJ’ai aussi trouvé ${webResearch.media.length} média(s) demandé(s) ci-dessous.`,
     de: `\n\nUnten sind ${webResearch.media.length} angeforderte Medienresultate.`
   }[locale]) : '';
+  const handoffLines = (webResearch.handoffs || []).map(item => `${item.provider}: ${item.url}`).join('\n');
+  const handoffs = handoffLines ? ({
+    en: `\n\nOfficial search links (browser handoff, not in-app players):\n${handoffLines}`,
+    es: `\n\nEnlaces de búsqueda oficiales (navegador, no reproductores internos):\n${handoffLines}`,
+    fr: `\n\nLiens de recherche officiels (navigateur, pas de lecteurs intégrés) :\n${handoffLines}`,
+    de: `\n\nOffizielle Suchlinks (Browser-Übergabe, keine In-App-Player):\n${handoffLines}`
+  }[locale]) : '';
+  const localTitles = (webResearch.local || []).map(item => item.title).filter(Boolean).join(', ');
+  const local = localTitles ? ({
+    en: `\n\nLocal library: ${localTitles}. Play matching files in Eidovara.`,
+    es: `\n\nBiblioteca local: ${localTitles}. Reproduce los coincidentes en Eidovara.`,
+    fr: `\n\nBibliothèque locale : ${localTitles}. Lisez les correspondances dans Eidovara.`,
+    de: `\n\nLokale Bibliothek: ${localTitles}. Passende Dateien in Eidovara wiedergeben.`
+  }[locale]) : '';
   const honest = webResearch.disclaimer || HONEST_RESEARCH_COPY;
   return {
-    en: `I looked up public pages for “${webResearch.query}” after you asked. ${honest}\n\n${lines}${media}`,
-    es: `Busqué fuentes públicas de internet para “${webResearch.query}.” ${honest}\n\n${lines}${media}`,
-    fr: `J’ai cherché des sources internet publiques pour « ${webResearch.query} ». ${honest}\n\n${lines}${media}`,
-    de: `Ich habe öffentliche Internetquellen zu „${webResearch.query}“ durchsucht. ${honest}\n\n${lines}${media}`
+    en: `I looked up public pages for “${webResearch.query}” after you asked. ${honest}\n\n${lines}${media}${handoffs}${local}`,
+    es: `Busqué fuentes públicas de internet para “${webResearch.query}.” ${honest}\n\n${lines}${media}${handoffs}${local}`,
+    fr: `J’ai cherché des sources internet publiques pour « ${webResearch.query} ». ${honest}\n\n${lines}${media}${handoffs}${local}`,
+    de: `Ich habe öffentliche Internetquellen zu „${webResearch.query}“ durchsucht. ${honest}\n\n${lines}${media}${handoffs}${local}`
   }[locale];
 }
 
@@ -214,16 +228,19 @@ export function composeOfflineReply({ input, state, webResearch, mediaDiscovery 
     const policy = state?.assistant?.capabilities?.webResearch || 'ask';
     return pack(locale, mode, { en: 'I can research on an explicit request using public sources, with citations. I will not invent missing facts.', es: 'Puedo investigar con una petición explícita en fuentes públicas, con citas. No inventaré hechos faltantes.', fr: 'Je peux rechercher sur demande explicite via des sources publiques, avec citations. Je n’invente pas les faits manquants.', de: 'Ich recherchiere auf ausdrückliche Bitte in öffentlichen Quellen mit Zitaten. Fehlende Fakten erfinde ich nicht.' }[locale], [
       { en: 'Ask: “Search the internet for …” plus the topic. Pictures, audio, or video need those words in the request.', es: 'Pide: “Search the internet for …” más el tema. Fotos, audio o video necesitan esas palabras en la petición.', fr: 'Demandez : « Search the internet for … » plus le sujet. Images, audio ou vidéo exigent ces mots.', de: 'Fragen Sie: „Search the internet for …“ plus Thema. Bilder, Audio oder Video brauchen diese Wörter.' }[locale],
-      policy === 'disabled' ? { en: 'Web research is currently disabled in Soul behavior settings.', es: 'La investigación web está desactivada en el comportamiento de Soul.', fr: 'La recherche web est actuellement désactivée dans le comportement de Soul.', de: 'Webrecherche ist in den Soul-Verhaltenseinstellungen deaktiviert.' }[locale] : { en: 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open. A Premium Brave key is a local test gate, not a live payment unlock.', es: 'Consulta web pública cuando lo pides. No es un índice de todo internet. Wikipedia/Wikimedia, búsqueda con clave opcional y páginas que abres. La clave Brave Premium es una prueba local, no un cobro.', fr: 'Consultation web publique après votre demande. Pas un index de tout internet. Wikipedia/Wikimedia, recherche optionnelle avec clé, et pages que vous ouvrez. La clé Brave Premium est un test local, pas un paiement.', de: 'Öffentliche Websuche nach Ihrer Bitte. Kein Gesamtindex des Internets. Wikipedia/Wikimedia, optionale Schlüsselsuche und Seiten, die Sie öffnen. Der Premium-Brave-Schlüssel ist ein lokaler Test, keine Live-Zahlung.' }[locale],
+      policy === 'disabled' ? { en: 'Web research is currently disabled in Soul behavior settings.', es: 'La investigación web está desactivada en el comportamiento de Soul.', fr: 'La recherche web est actuellement désactivée dans le comportement de Soul.', de: 'Webrecherche ist in den Soul-Verhaltenseinstellungen deaktiviert.' }[locale] : { en: 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. A Premium Brave key is a local test gate, not a live payment unlock.', es: 'Consulta web pública cuando lo pides. No es un índice de todo internet. Wikipedia/Wikimedia, Internet Archive, búsqueda con clave opcional, páginas que abres y enlaces oficiales de YouTube/Spotify/Archive. La clave Brave Premium es una prueba local, no un cobro.', fr: 'Consultation web publique après votre demande. Pas un index de tout internet. Wikipedia/Wikimedia, Internet Archive, recherche optionnelle avec clé, pages que vous ouvrez, et liens YouTube/Spotify/Archive. La clé Brave Premium est un test local, pas un paiement.', de: 'Öffentliche Websuche nach Ihrer Bitte. Kein Gesamtindex des Internets. Wikipedia/Wikimedia, Internet Archive, optionale Schlüsselsuche, geöffnete Seiten und offizielle YouTube/Spotify/Archive-Links. Der Premium-Brave-Schlüssel ist ein lokaler Test, keine Live-Zahlung.' }[locale],
       { en: 'Name the question, time bound if any, and whether you need images or a playable clip.', es: 'Nombra la pregunta, el límite temporal si hay, y si necesitas imágenes o un clip.', fr: 'Nommez la question, la borne temporelle, et si vous voulez des images ou un clip.', de: 'Nennen Sie die Frage, zeitliche Grenze und ob Bilder oder ein Clip nötig sind.' }[locale]
     ], { en: 'I need a specific topic before I can search. What should I look up?', es: 'Necesito un tema concreto antes de buscar. ¿Qué consulto?', fr: 'Il me faut un sujet précis avant de chercher. Que dois-je consulter ?', de: 'Ich brauche ein konkretes Thema vor der Suche. Wonach soll ich sehen?' }[locale]);
   }
 
   if (['mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise'].includes(intent)) {
+    const localHits = (mediaDiscovery?.local || []).map(item => item.title).filter(Boolean);
+    const providers = (mediaDiscovery?.handoffs || []).map(item => item.provider).filter(Boolean);
     return pack(locale, mode, mix.idea, [
       mix.seeds.length ? { en: `Seeds from your local taste: ${mix.seeds.join(', ')}.`, es: `Semillas de tu gusto local: ${mix.seeds.join(', ')}.`, fr: `Graines de vos goûts locaux : ${mix.seeds.join(', ')}.`, de: `Ansätze aus Ihrem lokalen Geschmack: ${mix.seeds.join(', ')}.` }[locale] : { en: 'No local taste yet — play or favorite something in Entertainment, or open one local file.', es: 'Aún no hay gusto local. Reproduce o marca un favorito, o abre un archivo local.', fr: 'Pas encore de goût local — lisez ou favoritez un média, ou ouvrez un fichier local.', de: 'Noch kein lokaler Geschmack — etwas abspielen oder favorisieren, oder eine lokale Datei öffnen.' }[locale],
       mix.skipped.length ? { en: `Recently skipped (I’ll avoid pushing these): ${mix.skipped.slice(0, 3).join(', ')}.`, es: `Omitidos recientemente (no insistiré): ${mix.skipped.slice(0, 3).join(', ')}.`, fr: `Récemment ignorés (je n’insisterai pas) : ${mix.skipped.slice(0, 3).join(', ')}.`, de: `Kürzlich übersprungen (kein Nachschieben): ${mix.skipped.slice(0, 3).join(', ')}.` }[locale] : '',
-      mix.handoff,
+      localHits.length ? { en: `Local library matches (play in Eidovara): ${localHits.join(', ')}.`, es: `Coincidencias de la biblioteca local (reproducir en Eidovara): ${localHits.join(', ')}.`, fr: `Correspondances locales (lecture dans Eidovara) : ${localHits.join(', ')}.`, de: `Lokale Treffer (Wiedergabe in Eidovara): ${localHits.join(', ')}.` }[locale] : '',
+      providers.length ? { en: `Official HTTPS searches: ${providers.join(', ')}. Eidovara does not fetch their HTML or inject into other players.`, es: `Búsquedas HTTPS oficiales: ${providers.join(', ')}. Eidovara no descarga su HTML ni inyecta otros reproductores.`, fr: `Recherches HTTPS officielles : ${providers.join(', ')}. Eidovara ne récupère pas leur HTML et n’injecte pas d’autres lecteurs.`, de: `Offizielle HTTPS-Suchen: ${providers.join(', ')}. Eidovara lädt deren HTML nicht und injiziert keine anderen Player.` }[locale] : mix.handoff,
       { en: 'Use the dock to queue, favorite, and run Similar. Local paths are not stored in taste records.', es: 'Usa el reproductor para cola, favoritos y Similar. Las rutas locales no se guardan en el gusto.', fr: 'Utilisez le dock pour file, favoris et Similar. Les chemins locaux ne sont pas stockés dans le goût.', de: 'Dock für Warteschlange, Favoriten und Similar. Lokale Pfade landen nicht in den Geschmacksdaten.' }[locale]
     ], { en: 'Tell me a mood word or a title to lock the next queue.', es: 'Dime una palabra de ánimo o un título para fijar la siguiente cola.', fr: 'Donnez un mot d’humeur ou un titre pour caler la prochaine file.', de: 'Nennen Sie ein Stimmungswort oder einen Titel für die nächste Warteschlange.' }[locale]);
   }

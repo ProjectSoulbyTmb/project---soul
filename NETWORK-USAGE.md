@@ -22,7 +22,7 @@ Network access is user-directed except the official GitHub update-manifest check
 | Optional desktop `POST /v1/assist` | After 18+: pasted HTTPS base in Settings **and** Soul-online opt-in **and** the per-message send checkbox (all default off) | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
 | Optional desktop helper `POST /v1/assist` | User pastes a Worker HTTPS base **and** enables **Allow one-shot Worker helper** (default off), then checks **Ask the Worker helper** on one send | The typed query only (about 32 KiB bound). Conversations, memories, and chat history stay local. Transcripts are not stored. |
 | `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
-| Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
+| Spotify, YouTube, or Internet Archive official search | User clicks a media-dock button or an official search chip in companion, Research, or Entertainment (constructed HTTPS search URLs; Eidovara does not fetch those sites’ HTML or inject into their apps) | Search terms, IP address, platform cookies/account state |
 
 No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Empty/default Settings → Eidovara service resolves to `https://api.eidovara.org`. If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.18.3; the app never enables live checkout from a remote flag.
 
@@ -42,7 +42,7 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Optional website `GET`/`POST /v1/assist` after a pasted HTTPS base
 - Optional desktop `POST /v1/assist` after a pasted HTTPS base, Soul-online opt-in, and a per-message send checkbox (default off; Assist is not Soul)
 - Optional desktop `POST /v1/assist` only after pasted HTTPS base **and** explicit helper opt-in (default off); conversations are not sent
-- Spotify/YouTube official HTTPS search links (no stream ripping)
+- Spotify/YouTube/Internet Archive official HTTPS search chips (constructed search URLs; no HTML scrape, no stream ripping, no player injection)
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure
 

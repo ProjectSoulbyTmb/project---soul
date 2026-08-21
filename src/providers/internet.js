@@ -4,7 +4,7 @@ import { officialSearchHandoffs } from '../core/entertainment.js';
 const AGENT = 'Eidovara/0.18 (desktop research client)';
 export const PAGE_BYTE_LIMIT = 512 * 1024;
 export const PAGE_TIMEOUT_MS = 15_000;
-export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.';
+export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.';
 const HANDOFF_HOSTS = ['youtube.com', 'youtu.be', 'spotify.com'];
 const ARCHIVE_HOSTS = ['archive.org'];
 const RAW_DROP_TAGS = new Set(['script', 'style', 'noscript', 'iframe', 'object', 'embed', 'textarea', 'xmp', 'noembed', 'noframes']);
@@ -617,9 +617,12 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
   const pageSources = await attachPageExtracts(sources, pageUrls, pageFetch);
   sources.unshift(...pageSources);
   if (!sources.length && !media.length) {
-    const first = lookupErrors[0];
-    if (first) throw classifyLookupError(new Error(first));
-    throw new Error('No usable internet results were returned. The workspace is still available.');
+    const pastedHandoffs = userUrls.filter(isHandoffOnlyHost);
+    if (!pastedHandoffs.length) {
+      const first = lookupErrors[0];
+      if (first) throw classifyLookupError(new Error(first));
+      throw new Error('No usable internet results were returned. The workspace is still available.');
+    }
   }
   const handoffs = officialSearchHandoffs(query || 'media');
   for (const href of userUrls.filter(isHandoffOnlyHost)) {

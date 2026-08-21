@@ -91,7 +91,7 @@
         <div class="dashboard-grid" id="dashboardGrid"></div><div class="quick-grid" id="dashboardQuick"><button data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button><button data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button><button data-quick="Create a study plan and quiz me." data-i18n="study">Study</button><button data-quick="Help me start a creative project." data-i18n="create">Create</button><button data-quick="Search the internet for current information I need." data-i18n="research">Research</button><button data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button></div></section>
 
       <section class="view panel-view" id="researchView">
-        <div class="panel-head"><div><h2 data-i18n="researchTitle">Research</h2><p id="researchLead" data-i18n="researchLead">Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.</p></div></div>
+        <div class="panel-head"><div><h2 data-i18n="researchTitle">Research</h2><p id="researchLead" data-i18n="researchLead">Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.</p></div></div>
         <form class="settings-card research-form" id="researchForm">
           <label data-i18n="researchTopicLabel">Topic or HTTPS page<input id="researchQuery" maxlength="1000" placeholder="Saturn, or https://example.com/article" autocomplete="off" /></label>
           <div class="settings-actions"><button type="submit" data-i18n="researchLookup">Look up</button></div>
@@ -189,7 +189,7 @@
           <label class="check"><input type="checkbox" id="clearKeyInput" /> Clear stored API key</label>
           <label>Broad web-search key (Premium)<input id="searchApiKeyInput" type="password" autocomplete="off" placeholder="Brave Search API key; leave blank to keep" /></label>
           <label class="check"><input type="checkbox" id="clearSearchKeyInput" /> Clear stored web-search key</label>
-          <p class="settings-help">Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open. Free never applies a stored Brave key. Brave remains a Premium local testing gate, not a live payment unlock. Local models stay on loopback; pasted /api/chat or /chat/completions paths are not doubled. Lookups stay in the desktop process — the renderer does not fetch.</p>
+          <p class="settings-help">Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Free never applies a stored Brave key. Brave remains a Premium local testing gate, not a live payment unlock. Local models stay on loopback; pasted /api/chat or /chat/completions paths are not doubled. Lookups stay in the desktop process — the renderer does not fetch YouTube or Spotify HTML.</p>
           <p class="settings-status" id="premiumFieldsNote"></p>
           <div class="appearance-fields"><label>Background color<input id="themeBackground" type="color" value="#000000" /></label><label>Panel color<input id="themePanel" type="color" value="#1c1c1e" /></label><label>Accent color<input id="themeAccent" type="color" value="#0a84ff" /></label></div>
           <label>Window surface opacity <span id="themeTransparencyValue">96%</span><input id="themeTransparency" type="range" min="65" max="100" value="96" /></label>
@@ -262,6 +262,7 @@
     <video id="videoPlayer" controls preload="metadata"></video>
     <button type="button" id="mediaSpotifyBtn">Spotify</button>
     <button type="button" id="mediaYouTubeBtn">YouTube</button>
+    <button type="button" id="mediaArchiveBtn">Archive</button>
     <button type="button" id="mediaSourceBtn">Source</button>
     <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
   </section>
@@ -300,12 +301,12 @@
         <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed on this OS. Optional Worker <code>/v1/assist</code> is off unless you opt in; it is not Soul and never receives conversation history.</p>
       </div>
       <div class="legal-panel hidden" id="legalTermsPanel">
-        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia plus optional keyed search and HTTPS pages you open. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify buttons open official HTTPS searches and do not rip streams.</p>
+        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify/Archive chips open official HTTPS searches and do not rip streams or inject into other players.</p>
         <p>Adult Mode stays off unless age-of-majority confirmation, enablement, and current revocable consent are all active. User-supplied media and apps remain your responsibility. Full terms ship as TERMS.md with the release.</p>
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
         <p>Local-first: conversations, memories, settings, safety records, linked-app shortcuts, Adult Mode state, and the 18+ flag stay on this device. No owner-operated accounts, telemetry, or analytics.</p>
-        <p>What can leave: public web lookup after you ask (Wikipedia/Wikimedia terms, optional keyed search, and HTTPS pages you open — not a full-internet index); optional pasted model endpoints; official GitHub update checks; Spotify/YouTube HTTPS searches you click; Eidovara service health/config/status after you confirm age (default https://api.eidovara.org, overridable in Settings); optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
+        <p>What can leave: public web lookup after you ask (Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, and HTTPS pages you open — not a full-internet index); optional pasted model endpoints; official GitHub update checks; Spotify/YouTube/Archive HTTPS search chips you click; Eidovara service health/config/status after you confirm age (default https://api.eidovara.org, overridable in Settings); optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
       </div>
       <div class="legal-panel hidden" id="legalAgePanel">
         <p>You must be 18 or older. Declining this gate exits the app. Adult Mode is a separate triple gate. Local confirmation is not independent identity verification and is not a child-safety certification.</p>
