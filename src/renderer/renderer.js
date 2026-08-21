@@ -77,7 +77,7 @@ function renderResearch(target,research){
   const remote=Boolean(research.fetchedAt);
   const panel=el('div','research-panel');
   panel.append(el('div','research-title',`${remote?t('researchResults','Internet results'):t('discoveryTitle','Local library & official searches')} · ${fmt(research.fetchedAt)||t('localNow','this device')}`));
-  panel.append(el('p','research-copy',research.disclaimer||t('researchCopy','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.')));
+  panel.append(el('p','research-copy',research.disclaimer||t('researchCopy','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.')));
   for(const s of research.sources||[]){
     const row=el('article','research-source research-card');
     row.append(el('strong','',s.title||''));
@@ -313,6 +313,8 @@ async function send(text, opts={}){
       if(res.kernel?.intent==='research' || res.kernel?.view==='research') setView('research');
       else setView('dashboard');
       $('#companionInput')?.focus();
+    } else if(res.kernel?.intent==='research' || res.kernel?.view==='research') {
+      setView('research');
     }
   }catch(err){
     $('#typing')?.remove();

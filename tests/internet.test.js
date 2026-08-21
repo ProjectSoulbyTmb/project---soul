@@ -80,9 +80,9 @@ test('hostname checks use URL.hostname, not substring includes', () => {
 
 test('snippet sanitization strips markup and does not keep script text as HTML', () => {
   const dirty = '<script>alert(1)</script><img src=x onerror=alert(1)>Sixth &amp; planet';
-  assert.equal(sanitizeSnippet(dirty), 'alert(1) Sixth & planet');
-  assert.doesNotMatch(sanitizeSnippet(dirty), /<script|<img/);
-  assert.equal(readableExtract('<title>Keep</title><p>Hello <b>world</b></p><script>steal()</script>'), 'Keep Hello world steal()');
+  assert.equal(sanitizeSnippet(dirty), 'Sixth & planet');
+  assert.doesNotMatch(sanitizeSnippet(dirty), /<script|<img|onerror/);
+  assert.equal(readableExtract('<title>Keep</title><p>Hello <b>world</b></p><script>steal()</script>'), 'Keep Hello world');
   assert.match(HONEST_RESEARCH_COPY, /Public web lookup after you ask/);
   assert.match(HONEST_RESEARCH_COPY, /Not a full-internet index/);
   assert.doesNotMatch(HONEST_RESEARCH_COPY, /indexed the whole internet|crawler|every website/i);
