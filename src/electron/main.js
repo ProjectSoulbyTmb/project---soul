@@ -20,6 +20,8 @@ const allowedLocalMedia = new Map();
 protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
+let linuxRuntime = { disableSandbox: false, disableGpu: false };
+applyLinuxRuntimeFlags();
 let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
@@ -206,7 +208,16 @@ function createWindow() {
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
-    mainWindow.once('ready-to-show', () => mainWindow.show());
+    const reveal = () => { if (mainWindow && !mainWindow.isDestroyed() && !mainWindow.isVisible()) mainWindow.show(); };
+    mainWindow.once('ready-to-show', reveal);
+    mainWindow.webContents.on('did-finish-load', () => {
+      reveal();
+      if (process.env.EIDOVARA_PROBE === '1') {
+        mainWindow.webContents.executeJavaScript(`(async()=>{const wait=ms=>new Promise(r=>setTimeout(r,ms));for(let i=0;i<40;i+=1){const overlay=document.getElementById('ageGateOverlay');const visible=Boolean(overlay)&&!overlay.classList.contains('hidden');if(visible||i===39)return{title:document.title,ageGateVisible:visible,ageGateText:document.getElementById('ageGateTitle')?.textContent||'',acceptLabel:document.getElementById('ageGateAcceptBtn')?.textContent||'',workspace:Boolean(document.getElementById('chatView'))};await wait(100);}})()`)
+          .then(probe => { console.log(`EIDOVARA_PROBE ${JSON.stringify(probe)}`); setTimeout(() => app.quit(), 250); })
+          .catch(err => { console.error('EIDOVARA_PROBE_ERROR', err); setTimeout(() => app.quit(), 250); });
+      }
+    });
     mainWindow.on('closed', () => { allowedLocalMedia.clear(); mainWindow = null; });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
@@ -216,6 +227,22 @@ function createWindow() {
     if (process.platform === 'linux') log(`Linux Chromium runtime: sandbox=${linuxRuntime.disableSandbox ? 'disabled' : 'enabled'} gpu=${linuxRuntime.disableGpu ? 'disabled' : 'enabled'}`);
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html')).catch(err => fatal('Eidovara interface error', err));
   } catch (err) { fatal('Eidovara startup error', err); }
+}
+
+function applyLinuxRuntimeFlags() {
+  // Windows packaged runtime is unchanged. Linux only disables Chromium sandbox/GPU when this host cannot provide them.
+  if (process.platform !== 'linux') return;
+  linuxRuntime = inspectLinuxHost({
+    platform: process.platform,
+    uid: typeof process.getuid === 'function' ? process.getuid() : -1,
+    env: process.env,
+    execPath: process.execPath
+  });
+  if (linuxRuntime.disableSandbox) app.commandLine.appendSwitch('no-sandbox');
+  if (linuxRuntime.disableGpu) {
+    app.disableHardwareAcceleration();
+    app.commandLine.appendSwitch('disable-gpu');
+  }
 }
 
 function registerLocalMediaProtocol() {

@@ -56,6 +56,8 @@ npm run dist:win:installer
 
 `npm install` works. The repository also ships `pnpm-lock.yaml` (`packageManager` `pnpm@10.33.3`). Node 20 runs CLI, tests, and checks. Electron 43 (desktop `npm start` / Windows packaging) needs Node >= 22.12.0. A postinstall helper skips the Electron binary download on older Node instead of failing the whole install.
 
+`run-gui.bat` and `run-cli.bat` install dependencies if needed and launch the documented Windows desktop or terminal app. Official CI uses `pnpm install --frozen-lockfile` with the committed lockfile. Linux and macOS development hosts can use `./run-gui.sh` or `./run-cli.sh`; on Linux, Chromium sandbox and GPU are reduced only when the host cannot provide them.
+
 The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 
 ## Rights and project records

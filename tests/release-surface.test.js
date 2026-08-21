@@ -65,3 +65,15 @@ test('advertised Free surface confirms launches and media, and does not hard-cod
   assert.match(read('NETWORK-USAGE.md'), /en\.wikipedia\.org/);
   assert.match(read('README.md'), /Premium RGB effects/);
 });
+
+test('documented Windows launchers invoke the cli script and current version', () => {
+  assert.match(read('run-cli.bat'), /npm run cli/);
+  assert.match(read('run-gui.bat'), /Eidovara v0\.18\.2/);
+  assert.match(read('package.json'), /"cli": "node src\/cli\.js"/);
+  assert.match(read('src/electron/main.js'), /process\.platform !== 'linux'\) return/);
+  assert.match(read('src/electron/main.js'), /disableHardwareAcceleration/);
+  assert.match(read('src/electron/linux-runtime.js'), /chrome-sandbox/);
+  const workspace = read('pnpm-workspace.yaml');
+  assert.match(workspace, /electron: true/);
+  assert.match(workspace, /electron-winstaller: true/);
+});
