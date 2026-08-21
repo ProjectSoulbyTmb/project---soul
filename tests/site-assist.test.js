@@ -34,6 +34,7 @@ test('public site exposes nav, legal, assist, and 404 pages', () => {
     assert.match(page, /product\.html/, file);
     assert.match(page, /download\.html/, file);
     assert.match(page, /assist\.html/, file);
+    assert.match(page, /faq\.html/, file);
     assert.match(page, /status\.html/, file);
     assert.match(page, /terms\.html/, file);
     assert.match(page, /privacy\.html/, file);
@@ -51,6 +52,10 @@ test('public site exposes nav, legal, assist, and 404 pages', () => {
   assert.match(read('docs/faq.html') + read('docs/help.html'), /18\+|unsigned|Worker|helper/i);
   assert.match(read('docs/download.html'), /id="ageConfirm"/);
   assert.match(read('docs/status.html'), /id="statusBase"/);
+  assert.match(read('docs/robots.txt'), /Sitemap:/);
+  assert.match(read('docs/sitemap.xml'), /faq\.html/);
+  assert.match(read('docs/index.html'), /rel="canonical"/);
+  assert.match(read('docs/index.html'), /projectsoulbytmb\.github\.io\/project---soul\//);
 });
 
 test('site CSP allows only same-origin scripts and no unsafe-inline/eval', () => {

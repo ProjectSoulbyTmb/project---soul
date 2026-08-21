@@ -108,6 +108,13 @@ Those components remain governed by their own licenses and terms. This
 license does not expand or restrict rights granted directly by their
 respective owners. See THIRD_PARTY_NOTICES.md.
 
+Runtime destinations that Eidovara may contact after user action
+(Wikipedia/Wikimedia, optional Brave Search, GitHub releases, optional
+user-pasted HTTPS model providers, optional Cloudflare Worker
+health/config/status/assist endpoints, and Spotify/YouTube search
+handoffs) remain under those services' terms. This license does not
+enable neural TTS, VRM, OBS control, or live payment processing.
+
 Publishing this repository on a hosting service is also subject to that
 service's terms, including rights the host needs to operate (for example
 viewing and forking through GitHub). This license restricts additional use
