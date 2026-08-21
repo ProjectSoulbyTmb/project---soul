@@ -31,7 +31,7 @@ A public GitHub repository also carries GitHub's platform terms allowing viewing
 
 Copyright protects qualifying original expression, not the underlying idea, method, system, name, title, or algorithm. Patent inventorship depends on the claims of an application. Trademark rights depend on lawful use and distinctiveness and require clearance; this file is a recordkeeping control, not legal registration or a legal opinion.
 
-Inbound copyrightable work is not first-party until a privately executed assignment. [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) is an unsigned template only.
+Inbound copyrightable work is not first-party until a privately executed assignment. [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) is an unsigned template only. A GitHub pull request or fork does not create joint authorship or trademark rights, and does not permit relicensing first-party material as open source. First-party JavaScript in `src/` and `docs/` carries SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers matching LICENSE.
 
 ## First-party schedule (claim, not registration)
 

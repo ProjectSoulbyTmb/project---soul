@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { JsonStore } from './store.js';
 import { addMemory, forgetMemory } from './memory.js';
 import { applyPolicyCommand, adultAllowed, assessRequestSafety } from './policy.js';

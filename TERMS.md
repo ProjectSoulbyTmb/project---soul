@@ -12,7 +12,7 @@ Eidovara is restricted to users who are **18 years of age or older**. Adult Mode
 
 ## 2. Source-available, not open source
 
-The public repository is source-available for lawful evaluation under the Eidovara Source-Available Evaluation License. That is **not** an OSI open-source license and is not MIT, Apache, or GPL. Viewing the source does not grant rights to copy, modify, redistribute, sublicense, or create competing products. No patent, trademark, or trade-secret license is granted except the narrow run-and-evaluate permission in LICENSE.
+The public repository is source-available for lawful evaluation under the Eidovara Source-Available Evaluation License (`LicenseRef-Eidovara-Source-Available-1.0`). That is **not** an OSI open-source license and is not MIT, Apache, or GPL. Viewing, forking, or cloning the source does not grant rights to copy, modify, redistribute, sublicense, relicense as open source, or create competing products. A GitHub fork remains under LICENSE; it is not a donation of first-party rights. No patent, trademark, or trade-secret license is granted except the narrow run-and-evaluate permission in LICENSE.
 
 Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original first-party Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name and does not own this IP unless a signed assignment to a formed entity exists. Electron, Chromium, Node.js, Windows, Wikimedia content, and user-created content remain their owners' property. See [OWNERSHIP.md](OWNERSHIP.md). This document is not legal advice, a court judgment, or a government registration.
 

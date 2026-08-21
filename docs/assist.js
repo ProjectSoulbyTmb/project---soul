@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { answerAssist, STORAGE_KEY, safePublicHref } from './knowledge.js';
 
 const suffixes = ['/health', '/v1/config', '/v1/status', '/v1/assist'];

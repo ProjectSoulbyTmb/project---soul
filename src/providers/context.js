@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { activeMemories } from '../core/memory.js';
 export function buildSystemContext(state) {
   const dataLine = value => String(value || '').replace(/[\r\n]+/g, ' ').slice(0, 1000);

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { defaultKernelState, migrateKernel } from './kernel.js';
 
 export const CURRENT_SCHEMA_VERSION = 18;

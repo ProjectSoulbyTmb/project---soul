@@ -1,12 +1,16 @@
 * @ProjectSoulbyTmb
 /.github/ @ProjectSoulbyTmb
 /src/ @ProjectSoulbyTmb
+/docs/ @ProjectSoulbyTmb
 /assets/branding/ @ProjectSoulbyTmb
+/package.json @ProjectSoulbyTmb
 /LICENSE @ProjectSoulbyTmb
 /NOTICE.md @ProjectSoulbyTmb
 /COPYRIGHT.txt @ProjectSoulbyTmb
 /OWNERSHIP.md @ProjectSoulbyTmb
 /TERMS.md @ProjectSoulbyTmb
+/PRIVACY.md @ProjectSoulbyTmb
+/SECURITY.md @ProjectSoulbyTmb
 /CONTRIBUTING.md @ProjectSoulbyTmb
 /LEGAL_NOTICES.md @ProjectSoulbyTmb
 /AUTHORS.md @ProjectSoulbyTmb
@@ -17,3 +21,6 @@
 /docs/COPYRIGHT.md @ProjectSoulbyTmb
 /docs/TRADEMARK_FILING.md @ProjectSoulbyTmb
 /docs/BRAND_GUIDE.md @ProjectSoulbyTmb
+/docs/IP_PROTECTION.md @ProjectSoulbyTmb
+/docs/COPYRIGHT_ASSET_REGISTER.md @ProjectSoulbyTmb
+/docs/PUBLIC_REPOSITORY_POLICY.md @ProjectSoulbyTmb

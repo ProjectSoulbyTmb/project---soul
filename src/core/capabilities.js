@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 export function mediaPlaybackDecision(capability, { alreadyConfirmed = false } = {}) {
   const mode = ['disabled', 'confirm', 'enabled'].includes(capability) ? capability : 'confirm';
   if (mode === 'disabled') return { allowed: false, needsConfirm: false, mode };

@@ -24,7 +24,7 @@ This is a common-law trademark claim, not a claim of federal registration or a c
 
 ## Permitted factual reference
 
-The names may be used factually to identify an unmodified official release or describe compatibility (for example, "this file works with the official Eidovara Windows installer"). They may not be used in a product, company, domain, account, modified distribution, advertising, or endorsement claim without prior written permission.
+The names may be used factually to identify an unmodified official release or describe compatibility (for example, "this file works with the official Eidovara Windows installer"). They may not be used in a product, company, domain, account, modified distribution, advertising, or endorsement claim without prior written permission. Opening a GitHub issue, pull request, or fork does not grant the submitter trademark rights in Eidovara, Soul, or Soul Consciousness Studios and does not make the submitter a co-owner of those marks.
 
 Do not:
 
