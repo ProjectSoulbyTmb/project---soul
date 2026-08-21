@@ -31,8 +31,10 @@ Network access is user-directed except for the official update-manifest check:
 | User-pasted HTTPS `/chat/completions` endpoint | You send a chat while Compatible/Premium is selected | Conversation context, model name, credential if you stored one |
 | GitHub official release channel | Startup or manual update check; user-approved installer download | App version via user agent, IP address; installer bytes after you confirm |
 | Spotify or YouTube HTTPS search | You click those media buttons | Current track search text; the destination site may set its own cookies |
-| Optional Eidovara service `/health`, `/v1/config`, `/v1/status` | After 18+ confirmation: launch check, Settings **Connect**, or local admin **Test service** after you paste a base URL | No conversations or payment data; health/config/status JSON only |
+| Optional Eidovara service `/v1/health` (fallback `/health`), `/v1/config`, `/v1/status` | After 18+ confirmation: launch check, Settings **Connect**, or local admin **Test service** after you paste a base URL | No conversations or payment data; health/config/status JSON only |
 | Optional website helper `/v1/assist` | You paste an HTTPS Worker base on the public site | The typed question and mode. Desktop conversation history is refused. Transcripts are not stored. |
+| Optional desktop helper `/v1/assist` | You paste a Worker HTTPS base **and** enable **Allow one-shot Worker helper** (default off), then tick **Ask the Worker helper** on one send | The typed question and mode only (about 32 KiB). Conversations, memories, and chat history stay local. Transcripts are not stored. Assist is not Soul. |
+| Optional desktop `/v1/assist` | You paste an HTTPS base in Settings, enable Soul online (default off), and check send for that message | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
 
 A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payments stay fail-closed (`paymentsEnabled` remains false). Payment environment variables for the optional Worker are intended to stay empty in v0.18.2. No Worker host is compiled into the app.
 

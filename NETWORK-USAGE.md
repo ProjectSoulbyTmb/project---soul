@@ -15,8 +15,10 @@ Network access is user-directed except the official GitHub update-manifest check
 | `api.search.brave.com` | Explicit web/image request when a Premium Brave Search key is configured | Search terms, API credential, IP address |
 | User-configured local model (`127.0.0.1` / `localhost` / `::1`, typically Ollama `/api/chat`) | User sends a conversation while Local is selected | Conversation context and selected model on loopback |
 | User-configured Premium HTTPS `/chat/completions` endpoint | User sends a conversation while Compatible is selected | Conversation context, selected model, credential when required |
-| Configured Eidovara service `GET /health`, `GET /v1/config`, `GET /v1/status` | After 18+ confirmation: launch retry, Settings **Connect**, or Ctrl+A **Test service** | No conversations or payment data; health/config/status JSON only |
+| Configured Eidovara service `GET /v1/health` (fallback `GET /health`), `GET /v1/config`, `GET /v1/status` | After 18+ confirmation: launch retry, Settings **Connect**, or Ctrl+A **Test service** | No conversations or payment data; health/config/status JSON only |
 | Optional website helper `GET`/`POST /v1/assist` | Visitor pastes an HTTPS Worker base on the public site (Status / Assist); knowledge-pack questions only | The typed question and mode. Desktop conversation history is refused. Transcripts are not stored. |
+| Optional desktop `POST /v1/assist` | After 18+: pasted HTTPS base in Settings **and** Soul-online opt-in **and** the per-message send checkbox (all default off) | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
+| Optional desktop helper `POST /v1/assist` | User pastes a Worker HTTPS base **and** enables **Allow one-shot Worker helper** (default off), then checks **Ask the Worker helper** on one send | The typed query only (about 32 KiB bound). Conversations, memories, and chat history stay local. Transcripts are not stored. |
 | `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
 | Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
 
@@ -32,8 +34,10 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - User-pasted HTTPS (or loopback) model providers
 - Premium Brave Search with a user-supplied key
 - Official GitHub update checks and user-approved downloads
-- Optional Worker `GET /health`, `/v1/config`, `/v1/status` after a pasted HTTPS base
+- Optional Worker `GET /v1/health` (and `GET /health`), `/v1/config`, `/v1/status` after a pasted HTTPS base
 - Optional website `GET`/`POST /v1/assist` after a pasted HTTPS base
+- Optional desktop `POST /v1/assist` after a pasted HTTPS base, Soul-online opt-in, and a per-message send checkbox (default off; Assist is not Soul)
+- Optional desktop `POST /v1/assist` only after pasted HTTPS base **and** explicit helper opt-in (default off); conversations are not sent
 - Spotify/YouTube official HTTPS search links (no stream ripping)
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure

@@ -8,11 +8,12 @@ This dependency-free Cloudflare Worker supplies public health, status, store con
 
 | Client | Endpoints | Rules |
 | --- | --- | --- |
-| Desktop Settings **Connect**, launch after 18+, Ctrl+A **Test service** | GET `/health`, GET `/v1/config`, GET `/v1/status` | HTTPS except loopback. Pasted bases strip `/health` `/v1/config` `/v1/status` `/v1/assist`. Conversations are not sent. Fetch failure stays Offline Soul. `paymentsEnabled` is always false. |
+| Desktop Settings **Connect**, launch after 18+, Ctrl+A **Test service** | GET `/health`, GET `/v1/config`, GET `/v1/status` (also GET `/v1/health`) | HTTPS except loopback. Pasted bases strip `/health` `/v1/config` `/v1/status` `/v1/assist` `/v1/health`. Conversations are not sent on Connect. Fetch failure stays Offline Soul. `paymentsEnabled` is always false. |
+| Desktop composer **Ask the Worker helper** | Optional POST `/v1/assist` after a pasted HTTPS base **and** Settings **Allow one-shot Worker helper** (default off) | Typed query only (~32 KiB). Chat history, memories, and conversations stay local. Assist is not Soul. |
 | GitHub Pages Ask Eidovara | Optional POST `/v1/assist` after a pasted HTTPS base | Works offline from `docs/knowledge.js` with no URL. Same allowlisted pack as this Worker. GET `/v1/assist` is metadata or `?q=`. |
 | GitHub Pages Status | Optional GET `/health` and GET `/v1/status` after a pasted HTTPS base | Fail-closed with no URL — no request is sent. |
 
-Neither client compiles a `workers.dev` host. Desktop never calls `/v1/assist`.
+Neither client compiles a `workers.dev` host. Desktop calls `/v1/assist` only after explicit helper opt-in (default off).
 
 ## Free deployment
 

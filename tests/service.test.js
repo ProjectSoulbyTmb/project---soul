@@ -9,6 +9,7 @@ import {
   checkoutEnabledFromRemoteConfig,
   httpsOnlyUrl,
   SERVICE_HEALTH_PATH,
+  SERVICE_HEALTH_V1_PATH,
   SERVICE_CONFIG_PATH,
   SERVICE_STATUS_PATH,
   SERVICE_ASSIST_PATH
@@ -31,6 +32,7 @@ test('service URL requires HTTPS except loopback and strips health/config/status
   assert.equal(normalizeServiceUrl(''), '');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/health'), 'https://eidovara-api.example.workers.dev');
+  assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/health'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/config/'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/status'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/assist'), 'https://eidovara-api.example.workers.dev');
@@ -44,6 +46,7 @@ test('service URL requires HTTPS except loopback and strips health/config/status
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/health?x=1'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/?q=1'), 'https://eidovara-api.example.workers.dev');
   assert.equal(serviceRequestUrl('https://eidovara-api.example.workers.dev/?q=1', SERVICE_HEALTH_PATH), 'https://eidovara-api.example.workers.dev/health');
+  assert.equal(serviceRequestUrl('https://eidovara-api.example.workers.dev/v1/health?x=1', SERVICE_HEALTH_V1_PATH), 'https://eidovara-api.example.workers.dev/v1/health');
 });
 
 test('service request URLs do not double-append official paths', () => {
@@ -52,8 +55,9 @@ test('service request URLs do not double-append official paths', () => {
   assert.equal(serviceRequestUrl('https://api.example.test/v1/status', SERVICE_STATUS_PATH), 'https://api.example.test/v1/status');
   assert.equal(serviceRequestUrl('https://api.example.test', SERVICE_HEALTH_PATH), 'https://api.example.test/health');
   assert.equal(serviceRequestUrl('https://api.example.test/v1/assist', SERVICE_ASSIST_PATH), 'https://api.example.test/v1/assist');
-  assert.doesNotMatch(read('src/core/service.js'), /serviceRequestUrl\([^)]*SERVICE_ASSIST_PATH/);
-  assert.doesNotMatch(read('src/electron/main.js'), /\/v1\/assist/);
+  assert.match(read('src/core/soul-online.js'), /SERVICE_ASSIST_PATH|\/v1\/assist/);
+  assert.match(read('src/electron/main.js'), /soul:assistQuery/);
+  assert.doesNotMatch(read('src/electron/main.js'), /dreambot333\.workers\.dev/);
 });
 
 test('remote config is fail-closed for checkout even if a future payload lied', () => {
@@ -97,6 +101,7 @@ test('fetch failure leaves the workspace offline-OK and never enables payments',
   assert.match(snapshot.error, /network down|unreachable|Offline Soul/i);
   assert.deepEqual(seen.sort(), [
     'https://eidovara-api.example.workers.dev/health',
+    'https://eidovara-api.example.workers.dev/v1/health',
     'https://eidovara-api.example.workers.dev/v1/config',
     'https://eidovara-api.example.workers.dev/v1/status'
   ].sort());
@@ -195,6 +200,7 @@ test('Worker status endpoint is public GET and fail-closed', async () => {
   assert.equal(body.conversationsStored, false);
   assert.equal(body.localFirst, true);
   assert.ok(body.endpoints.includes('/health'));
+  assert.ok(body.endpoints.includes('/v1/health'));
   assert.ok(body.endpoints.includes('/v1/config'));
   assert.ok(body.endpoints.includes('/v1/status'));
   assert.ok(body.endpoints.includes('/v1/assist'));
