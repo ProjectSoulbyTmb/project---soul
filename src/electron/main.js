@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -12,6 +12,11 @@ import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const LOCAL_MEDIA_SCHEME = 'eidovara-media';
+const allowedLocalMedia = new Map();
+protocol.registerSchemesAsPrivileged([
+  { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
+]);
 let mainWindow, engine, logPath, configPath;
 let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1, adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 } };
 let pendingUpdate = null;
@@ -81,7 +86,7 @@ function createWindow() {
   try {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
-    engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default', codec: protectedStorageCodec() }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
+    engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default', codec: protectedStorageCodec() }), provider: makeProvider(), internetOptions: { searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' } });
     mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.18.0', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#0b1020', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
@@ -96,9 +101,19 @@ function createWindow() {
   } catch (err) { fatal('Eidovara startup error', err); }
 }
 
+function registerLocalMediaProtocol() {
+  protocol.handle(LOCAL_MEDIA_SCHEME, async request => {
+    let id = '';
+    try { id = new URL(request.url).hostname; } catch { return new Response('Bad request', { status: 400 }); }
+    if (!/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
+    const filePath = allowedLocalMedia.get(id);
+    if (!filePath || !fs.existsSync(filePath)) return new Response('Not found', { status: 404 });
+    return net.fetch(pathToFileURL(filePath).toString());
+  });
+}
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
 process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
-app.whenReady().then(createWindow).catch(err => fatal('Eidovara initialization error', err));
+app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).catch(err => fatal('Eidovara initialization error', err));
 app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
@@ -178,7 +193,7 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.encryptedSearchApiKey = safeStorage.encryptString(incoming.searchApiKey).toString('base64');
   }
   if (incoming?.clearSearchApiKey) config.encryptedSearchApiKey = '';
-  saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: getSearchApiKey() }); return publicConfig();
+  saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }); return publicConfig();
 });
 ipcMain.handle('soul:diagnostics', async () => ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: engine.snapshot().policy.localSafetyReports?.length || 0 }));
 ipcMain.handle('soul:openDataFolder', () => shell.openPath(app.getPath('userData')));
@@ -189,7 +204,10 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   const extension = path.extname(filePath).toLowerCase();
   const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
   if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
-  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: pathToFileURL(filePath).toString(), sourceUrl: '', local: true };
+  const id = crypto.randomBytes(16).toString('hex');
+  allowedLocalMedia.clear();
+  allowedLocalMedia.set(id, filePath);
+  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
 });
 ipcMain.handle('soul:createBackup', () => engine.createBackup());
 ipcMain.handle('soul:listBackups', () => engine.listBackups());

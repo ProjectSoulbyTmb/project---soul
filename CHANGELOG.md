@@ -8,6 +8,7 @@
 - Presents the age-of-majority warning only when Adult Soul is accessed, while keeping enablement and consent separate.
 - Clarifies minor restrictions, professional-advice limits, mandatory consumer rights, payment status, media rights, and third-party boundaries.
 - Adds persisted English, Spanish, French, and German interface foundations and assistant-language preferences with English fallback.
+- Makes the desktop workspace usable offline: Soul answers setup roles, dashboard starters, entertainment mixes, and Windows launcher/media checklists instead of a generic listener; local media plays through a gated protocol; internet research stays request-driven.
 
 ## v0.17.12
 

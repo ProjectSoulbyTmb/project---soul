@@ -28,3 +28,15 @@ test('public claims retain alpha and unsigned boundaries', () => {
   assert.match(read('README.md'), /Authenticode-unsigned/);
   assert.match(read('LEGAL_NOTICES.md'), /age 18 or older/);
 });
+
+test('Windows local media uses a gated protocol instead of raw file URLs', () => {
+  const main = read('src/electron/main.js');
+  const html = read('src/renderer/index.html');
+  assert.match(main, /LOCAL_MEDIA_SCHEME = 'eidovara-media'/);
+  assert.match(main, /allowedLocalMedia/);
+  assert.match(main, /protocol\.registerSchemesAsPrivileged/);
+  assert.match(html, /media-src https: eidovara-media:/);
+  assert.doesNotMatch(html, /media-src [^"]*'self'/);
+  assert.match(read('package.json'), /"cli": "node src\/cli\.js"/);
+  assert.match(read('src/cli.js'), /await engine\.respond/);
+});

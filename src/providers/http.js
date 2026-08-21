@@ -1,4 +1,8 @@
 function trimSlash(s) { return String(s || '').replace(/\/+$/, ''); }
+function providerUrl(endpoint, suffix) {
+  const base = trimSlash(endpoint);
+  return base.endsWith(suffix) ? base : `${base}${suffix}`;
+}
 
 function validatedEndpoint(endpoint, { localOnly = false } = {}) {
   const url = new URL(String(endpoint || ''));
@@ -13,7 +17,7 @@ export async function callCompatibleProvider({ endpoint, apiKey, model, messages
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(`${validatedEndpoint(endpoint)}/chat/completions`, {
+    const res = await fetch(providerUrl(validatedEndpoint(endpoint), '/chat/completions'), {
       method: 'POST', signal: controller.signal,
       redirect: 'error',
       headers: { 'Content-Type': 'application/json', ...(apiKey ? { Authorization: `Bearer ${apiKey}` } : {}) },
@@ -32,7 +36,7 @@ export async function callLocalProvider({ endpoint = 'http://127.0.0.1:11434', m
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res = await fetch(`${validatedEndpoint(endpoint, { localOnly: true })}/api/chat`, {
+    const res = await fetch(providerUrl(validatedEndpoint(endpoint, { localOnly: true }), '/api/chat'), {
       method: 'POST', signal: controller.signal,
       redirect: 'error',
       headers: { 'Content-Type': 'application/json' },

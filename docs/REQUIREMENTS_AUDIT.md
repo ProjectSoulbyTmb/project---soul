@@ -10,7 +10,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| Conversation and Soul personality | Working | Offline provider, optional local/compatible providers, persistent conversations and context tests. |
+| Conversation and Soul personality | Working | Offline provider uses setup roles, tone/length/language, memories, and workspace checklists; optional local/compatible providers; persistent conversations and context tests. |
 | Memory and restart continuity | Working | Atomic JSON persistence, migrations, corrupt-state recovery, backup/restore, restart tests. |
 | Safety, consent, and lawful-use boundaries | Working within documented scope | Illegal facilitation block/report locally; adult mode gates and revocable consent; no automatic external reporting claim. |
 | Application age gate and adult avatar profile | Working within documented scope | App-wide local 18+ confirmation; Adult Mode requires local age of majority, enablement, and consent; bounded fictional-avatar profile controls. No photorealistic or anatomical model engine is bundled. |
