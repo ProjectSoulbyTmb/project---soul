@@ -1,5 +1,11 @@
 # Eidovara
 
+## v0.17.6
+
+- Removed the public hard-coded administrator credential.
+- Added first-run, per-installation administrator password enrollment with a random salt and scrypt hash.
+- Clarified that the local Premium edition selector is an owner testing override, not payment authorization.
+
 ## v0.17.5
 
 - Fixed the Entertainment navigation title and enforced the user's disabled media-playback preference at every player entry point.

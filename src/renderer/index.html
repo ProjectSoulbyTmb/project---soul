@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https:; media-src https:; connect-src 'none'; object-src 'none'" />
-  <title>Eidovara v0.17.5</title>
+  <title>Eidovara v0.17.6</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="gaming.css" />
   <link rel="stylesheet" href="internet.css" />
@@ -14,7 +14,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand-row">
         <div class="soul-mark" aria-hidden="true"><span></span></div>
-        <div><strong>Eidovara</strong><small>v0.17.5 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
+        <div><strong>Eidovara</strong><small>v0.17.6 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
       </div>
       <button class="new-chat" id="newChatBtn">＋ New conversation</button>
       <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
@@ -149,15 +149,16 @@
   </section>
   <div class="setup-overlay hidden" id="adminOverlay" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
     <form class="setup-dialog admin-dialog" id="adminLoginForm">
-      <div><h1 id="adminTitle">Private administration</h1><p>Local access only. This session automatically locks after 15 minutes.</p></div>
+      <div><h1 id="adminTitle">Private administration</h1><p id="adminLoginHelp">Local access only. This session automatically locks after 15 minutes.</p></div>
       <label class="setup-field">Administrator password<input id="adminPassword" type="password" autocomplete="current-password" maxlength="200" /></label>
       <p class="settings-status" id="adminLoginStatus"></p>
-      <div class="setup-actions"><button type="button" class="secondary" id="adminCancelBtn">Cancel</button><button type="submit">Unlock</button></div>
+      <div class="setup-actions"><button type="button" class="secondary" id="adminCancelBtn">Cancel</button><button type="submit" id="adminLoginButton">Unlock</button></div>
     </form>
     <form class="setup-dialog admin-dialog hidden" id="adminPanelForm">
       <div><h1>Platform administration</h1><p>Edition testing and commerce configuration stay private to this local admin session.</p></div>
       <div class="dashboard-grid"><div class="dashboard-card"><small>Eidovara Free</small><strong>Core assistant, memory, media, backups, updates, and 3 apps</strong></div><div class="dashboard-card"><small>Eidovara Premium</small><strong>Everything, remote providers, broad search, and unlimited apps</strong></div></div>
-      <label class="setup-field">Active edition<select id="adminEdition"><option value="free">Eidovara Free</option><option value="premium">Eidovara Premium</option></select></label>
+      <label class="setup-field">Local test edition override<select id="adminEdition"><option value="free">Eidovara Free</option><option value="premium">Eidovara Premium</option></select></label>
+      <small>This local control is for owner testing and does not verify a purchase or subscription. Production entitlements require a signed server response.</small>
       <label class="setup-field">Secure store / payment page<input id="adminStoreUrl" type="url" maxlength="1000" placeholder="https://your-store.example/upgrade" /></label>
       <label class="setup-field">Soul HTTPS service<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" /></label>
       <p>Checkout must be hosted by an HTTPS payment provider. Soul never collects card numbers, security codes, or payment certificates.</p>

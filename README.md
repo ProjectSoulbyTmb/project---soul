@@ -1,4 +1,4 @@
-# Eidovara v0.17.5 — Current Release
+# Eidovara v0.17.6 — Current Release
 
 ## Project statement
 
@@ -16,7 +16,7 @@ Tyler Michael Bosworth is identified in the project record as the sole creator a
 
 Eidovara Free is a complete everyday release with unlimited conversations, offline and local-model assistance, core memory, built-in public research, media playback, backups, updates, personalization, and up to three linked Windows applications. Eidovara Premium includes everything and enables compatible remote model endpoints, broad keyed web search, unlimited linked applications, and premium appearance modules.
 
-The private local administration panel opens with Ctrl+A. Edition and store configuration are verified in the privileged process, sessions expire after 15 minutes, repeated password failures are rate-limited, and the password is not present in renderer files or logs. A configured store link must use HTTPS and opens in the system browser; Soul does not collect payment-card data.
+The private local administration panel opens with Ctrl+A. On first use, the owner creates a unique per-installation password; only a salted memory-hard hash is stored. Edition and store configuration are verified in the privileged process, sessions expire after 15 minutes, and repeated password failures are rate-limited. The local edition selector is explicitly a testing override, not proof of payment. A configured store link must use HTTPS and opens in the system browser; Soul does not collect payment-card data.
 
 The public project site is prepared in `docs/` for free GitHub Pages hosting. A real Premium checkout still requires the owner to create an account and product with a hosted payment provider, complete its identity/business checks, and paste the resulting HTTPS Payment Link into the private admin panel.
 

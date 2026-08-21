@@ -14,8 +14,6 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let mainWindow, engine, logPath, configPath;
 let config = { provider: 'offline', endpoint: '', model: '', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1 } };
 let pendingUpdate = null;
-const ADMIN_SALT = 'eidovara-admin-v1';
-const ADMIN_PASSWORD_HASH = '095c7f5e5913f03b51b86d6d1280099679062338e663bbc64c8488fcdafd1f49';
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
 
@@ -30,6 +28,13 @@ function saveConfig() { atomicReplace(configPath, JSON.stringify(config, null, 2
 function getApiKey() { if (!config.encryptedApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedApiKey, 'base64')) : ''; } catch { return ''; } }
 function getSearchApiKey() { if (!config.encryptedSearchApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedSearchApiKey, 'base64')) : ''; } catch { return ''; } }
 function entitlement() { return config.edition === 'premium' ? 'premium' : 'free'; }
+function adminConfigured() { return Boolean(config.admin?.salt && config.admin?.hash); }
+function deriveAdminHash(password, salt) { return crypto.scryptSync(String(password), Buffer.from(salt, 'base64'), 32).toString('hex'); }
+function validateNewAdminPassword(password) {
+  const value = String(password || '');
+  if (value.length < 12 || value.length > 200) throw new Error('Use an administrator password between 12 and 200 characters.');
+  return value;
+}
 function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
@@ -43,7 +48,7 @@ function createWindow() {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
     engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default' }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.5', backgroundColor: '#0b1020', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.6', backgroundColor: '#0b1020', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
@@ -75,10 +80,11 @@ ipcMain.handle('soul:selectConversation', (_e, id) => engine.selectConversation(
 ipcMain.handle('soul:deleteConversation', (_e, id) => engine.deleteConversation(String(id)));
 ipcMain.handle('soul:getSettings', () => publicConfig());
 ipcMain.handle('soul:adminLogin', (_e, password) => {
+  if (!adminConfigured()) throw new Error('Create an administrator password for this installation first.');
   const now = Date.now();
   if (now < adminLockedUntil) throw new Error(`Too many attempts. Try again in ${Math.ceil((adminLockedUntil - now) / 1000)} seconds.`);
-  const actual = crypto.scryptSync(String(password || ''), ADMIN_SALT, 32);
-  const expected = Buffer.from(ADMIN_PASSWORD_HASH, 'hex');
+  const actual = Buffer.from(deriveAdminHash(password, config.admin.salt), 'hex');
+  const expected = Buffer.from(config.admin.hash, 'hex');
   if (actual.length !== expected.length || !crypto.timingSafeEqual(actual, expected)) {
     failedAdminAttempts += 1;
     if (failedAdminAttempts >= 5) { adminLockedUntil = now + 60_000; failedAdminAttempts = 0; }
@@ -89,7 +95,16 @@ ipcMain.handle('soul:adminLogin', (_e, password) => {
   log('Local administrator session opened.');
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
-ipcMain.handle('soul:adminStatus', () => ({ authorized: adminAuthorized(), expiresAt: adminAuthorized() ? new Date(adminSessionUntil).toISOString() : null, edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl }));
+ipcMain.handle('soul:adminConfigure', (_e, password) => {
+  if (adminConfigured()) throw new Error('The administrator password is already configured. Sign in to administer this installation.');
+  const value = validateNewAdminPassword(password);
+  const salt = crypto.randomBytes(16).toString('base64');
+  config.admin = { salt, hash: deriveAdminHash(value, salt), algorithm: 'scrypt-v1' };
+  saveConfig(); adminSessionUntil = Date.now() + ADMIN_SESSION_MS;
+  log('Local administrator password configured.');
+  return { configured: true, authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
+});
+ipcMain.handle('soul:adminStatus', () => ({ configured: adminConfigured(), authorized: adminAuthorized(), expiresAt: adminAuthorized() ? new Date(adminSessionUntil).toISOString() : null, edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl }));
 ipcMain.handle('soul:adminSave', (_e, incoming) => {
   requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';
   if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }
