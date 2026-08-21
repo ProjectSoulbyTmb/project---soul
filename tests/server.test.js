@@ -23,3 +23,20 @@ test('server health is stateless and sends hardened headers', async () => {
   assert.match(res.headers.get('strict-transport-security'), /max-age=/);
   assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
 });
+
+test('server config advertises 18+ source-available Windows alpha with payments off', async () => {
+  const res = await worker.fetch(new Request('https://api.example.test/v1/config'), {});
+  const body = await res.json();
+  assert.equal(res.status, 200);
+  assert.equal(body.paymentsEnabled, false);
+  assert.equal(body.ageRestricted, true);
+  assert.equal(body.minimumAge, 18);
+  assert.equal(body.authenticodeSigned, false);
+  assert.equal(body.openSource, false);
+  assert.equal(body.premium, 'local-admin-testing-only');
+  assert.deepEqual(body.officialPlatforms, ['windows-10-11-x64']);
+  assert.equal(body.store.stripe, '');
+  assert.equal(body.store.paypal, '');
+  assert.equal(body.store.gumroad, '');
+  assert.match(body.terms, /18 or older/);
+});

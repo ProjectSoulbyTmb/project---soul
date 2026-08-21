@@ -2,7 +2,8 @@
 
 ## v0.18.0
 
-- Applies an iOS Human Interface–inspired visual pass to the website and desktop renderer: shared design tokens, large titles, grouped inset cards, system light/dark materials, and restrained system-blue controls. Not an Apple product; uses the system font stack rather than licensed SF Pro files.
+- Tightens legal app-usage copy and gates for the Windows-first Stable Alpha: TERMS.md, AGE.md, PRIVACY.md, website terms/privacy/age pages, installer EULA, Worker `/v1/config`, and an in-app Legal overlay. Source-available (not OSI open source); 18+ confirmation is required before desktop IPC and CLI product commands; Adult Mode remains a triple gate with revocable consent. No live payments, no Authenticode claim, no Apple/iOS product identity, no bundled neural TTS/VRM/MakeHuman/OBS websocket.
+- Applies a system-inspired visual pass to the website and desktop renderer: shared design tokens, large titles, grouped inset cards, system light/dark materials, and restrained system-blue controls. Not an Apple product and not an iOS/iPhone app; uses the system font stack rather than licensed SF Pro files.
 - Added gated, local-only body-shape controls and optional non-photorealistic presentation for Soul's explicitly fictional adult avatar; settings remain unavailable unless legal-adult status, Adult Soul, and current consent are active.
 
 - Adds consolidated release legal notices and displays the source-available license during Windows installation.

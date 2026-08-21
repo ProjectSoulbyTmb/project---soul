@@ -4,11 +4,12 @@ import fs from 'node:fs';
 
 const read = file => fs.readFileSync(file, 'utf8');
 
-test('website and desktop share identical iOS-inspired tokens', () => {
+test('website and desktop share identical system tokens', () => {
   const docs = read('docs/tokens.css');
   const app = read('src/renderer/tokens.css');
   assert.equal(docs, app);
-  assert.match(docs, /-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI Variable"/);
+  assert.match(docs, /-apple-system, BlinkMacSystemFont, "Segoe UI Variable"/);
+  assert.doesNotMatch(docs, /"SF Pro Text"|"SF Pro Display"/);
   assert.match(docs, /--tint: #007aff/);
   assert.match(docs, /prefers-color-scheme: dark/);
   assert.doesNotMatch(docs, /Apple Inc|SwiftUI|SF Symbols\.otf/i);

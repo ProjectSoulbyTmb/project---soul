@@ -4,6 +4,8 @@ Eidovara 0.18.0 is packaged with Electron 43.4.1 (MIT) and its Chromium/Node.js 
 
 The MIT-licensed `rcedit` build tool is used only during Windows packaging to apply the approved icon to the executable. It is a development dependency and is not exposed as an application capability.
 
-References or links to Windows, DirectX, NVIDIA, OBS, Spotify, YouTube, GitHub, Cloudflare, Stripe, PayPal, Gumroad, Brave Search, Wikimedia, or other services describe compatibility or optional user-directed integrations. They do not imply sponsorship, endorsement, partnership, certification, or transfer of trademark rights.
+References or links to Windows, DirectX, NVIDIA, OBS, Spotify, YouTube, GitHub, Cloudflare, Stripe, PayPal, Gumroad, Brave Search, Wikimedia, Apple, or other services describe compatibility or optional user-directed integrations. They do not imply sponsorship, endorsement, partnership, certification, or transfer of trademark rights. Eidovara is not an iOS, iPhone, or Apple product.
+
+Speech output uses voices already installed on Windows. Neural TTS packs, VRM, MakeHuman, and OBS websocket clients are not redistributed in v0.18.0. YouTube and Spotify controls open official HTTPS searches and do not download protected streams.
 
 Eidovara does not redistribute commercial media catalogs or bypass platform access controls. Users and distributors must comply with third-party licenses, API terms, media rights, and service policies.
