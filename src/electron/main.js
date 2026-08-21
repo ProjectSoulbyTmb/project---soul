@@ -13,7 +13,7 @@ import { JsonStore } from '../core/store.js';
 import { defaultProfile } from '../core/schema.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT, normalizeProviderEndpoint } from '../providers/http.js';
-import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
+import { fetchServiceSnapshot, fetchServiceLiveness, createServiceHeartbeat, shouldRunServiceHeartbeat, servicePresenceLabel, SERVICE_PRESENCE_ONLINE, SERVICE_PRESENCE_RECONNECTING, SERVICE_PRESENCE_OFFLINE, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 import { attachDesktopUpdater } from './auto-update.js';
 import { attachPlayerWindows } from './player-windows.js';
@@ -31,7 +31,7 @@ const allowedLocalMedia = new Map();
 protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
-let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false, overlayManager = null;
+let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false, overlayManager = null, serviceHeartbeat = null;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
 let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, autoCheckUpdates: true, desktop: defaultDesktopChrome(), overlays: defaultOverlayLayout(), overlayRecents: [] };
@@ -194,11 +194,24 @@ function startKernelHeartbeat() {
 function publicServiceUrl() { try { return resolveServiceBase(config.serviceUrl); } catch { return ''; } }
 function publicServiceStatus() {
   const stored = config.serviceStatus && typeof config.serviceStatus === 'object' ? config.serviceStatus : {};
+  const configured = Boolean(publicServiceUrl());
+  const online = stored.online === true;
+  const reconnecting = stored.reconnecting === true || (configured && !online && stored.presence === SERVICE_PRESENCE_RECONNECTING);
+  const presence = servicePresenceLabel({
+    ageGateAccepted: config.ageGateAccepted === true,
+    configured,
+    online,
+    reconnecting
+  });
   return {
-    configured: Boolean(publicServiceUrl()),
-    online: stored.online === true,
+    configured,
+    online,
+    reconnecting: presence === SERVICE_PRESENCE_RECONNECTING,
+    presence,
     paymentsEnabled: false,
     checkoutEnabled: false,
+    conversationsStored: false,
+    conversationsSent: false,
     service: String(stored.service || '').slice(0, 100),
     version: String(stored.version || '').slice(0, 40),
     website: httpsOnlyUrl(stored.website),
@@ -206,6 +219,76 @@ function publicServiceStatus() {
     lastCheckedAt: String(stored.lastCheckedAt || ''),
     localFirst: true
   };
+}
+function pushServiceStatus() {
+  const status = publicServiceStatus();
+  try { mainWindow?.webContents.send('soul:serviceStatus', status); } catch {}
+  if (tray) {
+    try {
+      tray.setToolTip(status.presence === SERVICE_PRESENCE_ONLINE || status.presence === SERVICE_PRESENCE_RECONNECTING
+        ? `Eidovara · ${status.presence}`
+        : 'Eidovara');
+    } catch {}
+  }
+  return status;
+}
+function applyStoredServiceSnapshot(snapshot, { reconnecting } = {}) {
+  const previous = config.serviceStatus && typeof config.serviceStatus === 'object' ? config.serviceStatus : {};
+  const configured = snapshot.configured === true || Boolean(publicServiceUrl());
+  const online = snapshot.online === true;
+  const retrying = reconnecting === true || snapshot.reconnecting === true || (configured && !online && snapshot.skipped !== true);
+  const presence = servicePresenceLabel({
+    ageGateAccepted: config.ageGateAccepted === true,
+    configured,
+    online,
+    reconnecting: retrying
+  });
+  config.serviceStatus = {
+    configured,
+    online,
+    reconnecting: presence === SERVICE_PRESENCE_RECONNECTING,
+    presence,
+    paymentsEnabled: false,
+    checkoutEnabled: false,
+    conversationsStored: false,
+    conversationsSent: false,
+    service: String(snapshot.service || previous.service || '').slice(0, 100),
+    version: String(snapshot.version || previous.version || '').slice(0, 40),
+    website: httpsOnlyUrl(snapshot.website || previous.website),
+    error: String(snapshot.error || '').slice(0, 300),
+    lastCheckedAt: snapshot.lastCheckedAt || new Date().toISOString(),
+    localFirst: true
+  };
+  saveConfig();
+  return pushServiceStatus();
+}
+function stopServiceHeartbeat() {
+  try { serviceHeartbeat?.stop(); } catch {}
+}
+function ensureServiceHeartbeat({ immediate = false, online } = {}) {
+  if (!serviceHeartbeat) {
+    serviceHeartbeat = createServiceHeartbeat({
+      getContext: () => ({
+        ageGateAccepted: config.ageGateAccepted === true,
+        base: publicServiceUrl()
+      }),
+      probe: ({ base }) => fetchServiceLiveness({ base }),
+      onStatus: snapshot => {
+        applyStoredServiceSnapshot(snapshot);
+      }
+    });
+  }
+  if (config.ageGateAccepted !== true || !shouldRunServiceHeartbeat({ ageGateAccepted: true, base: publicServiceUrl() })) {
+    stopServiceHeartbeat();
+    applyStoredServiceSnapshot({ configured: false, online: false, skipped: true, presence: SERVICE_PRESENCE_OFFLINE });
+    return;
+  }
+  serviceHeartbeat.start({ immediate, online });
+}
+async function bootServiceHeartbeat() {
+  if (config.ageGateAccepted !== true) return;
+  try { await checkEidovaraService(); } catch {}
+  ensureServiceHeartbeat({ immediate: false, online: config.serviceStatus?.online === true });
 }
 function publicConfig() {
   const companion = { ...(config.companion || {}) };
@@ -266,6 +349,7 @@ function ensureTray() {
       { label: 'Quit', click: () => { quitting = true; app.quit(); } }
     ]));
     tray.on('click', () => showMainWindow());
+    pushServiceStatus();
   } catch (err) {
     log('Tray unavailable', err);
     tray = null;
@@ -278,20 +362,9 @@ function destroyTray() {
 function requireAgeGate() { if (config.ageGateAccepted !== true) throw new Error('Eidovara is restricted to users age 18 or older. Confirm age and accept the terms to continue.'); }
 async function checkEidovaraService() {
   const snapshot = await fetchServiceSnapshot({ base: publicServiceUrl() });
-  config.serviceStatus = {
-    configured: snapshot.configured === true,
-    online: snapshot.online === true,
-    paymentsEnabled: false,
-    checkoutEnabled: false,
-    service: String(snapshot.service || '').slice(0, 100),
-    version: String(snapshot.version || '').slice(0, 40),
-    website: snapshot.website || '',
-    error: String(snapshot.error || '').slice(0, 300),
-    lastCheckedAt: snapshot.lastCheckedAt || new Date().toISOString(),
-    localFirst: true
-  };
-  saveConfig();
-  return { ...snapshot, paymentsEnabled: false, checkoutEnabled: false, serviceUrl: publicServiceUrl(), serviceStatus: publicServiceStatus() };
+  applyStoredServiceSnapshot(snapshot, { reconnecting: snapshot.configured === true && snapshot.online !== true });
+  ensureServiceHeartbeat({ immediate: false, online: snapshot.online === true });
+  return { ...snapshot, paymentsEnabled: false, checkoutEnabled: false, conversationsSent: false, serviceUrl: publicServiceUrl(), serviceStatus: publicServiceStatus() };
 }
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
@@ -326,7 +399,10 @@ function createWindow() {
   try {
     loadConfig();
     registerCompanionImage();
-    if (config.ageGateAccepted === true) ensureEngine();
+    if (config.ageGateAccepted === true) {
+      ensureEngine();
+      void bootServiceHeartbeat();
+    }
     mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.19.1', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
@@ -342,7 +418,10 @@ function createWindow() {
     mainWindow.on('closed', () => {
       allowedLocalMedia.clear();
       mainWindow = null;
-      if (!(config.desktop?.trayStay === true && process.platform === 'win32')) overlayManager?.closeAll?.();
+      if (!(config.desktop?.trayStay === true && process.platform === 'win32')) {
+        overlayManager?.closeAll?.();
+        stopServiceHeartbeat();
+      }
     });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
@@ -416,7 +495,7 @@ app.whenReady().then(() => {
   createWindow();
   if (config.ageGateAccepted === true) desktopUpdater?.schedule?.();
 }).catch(err => fatal('Eidovara initialization error', err));
-app.on('before-quit', () => { quitting = true; overlayManager?.closeAll?.(); destroyTray(); releaseStayAwake(); });
+app.on('before-quit', () => { quitting = true; stopServiceHeartbeat(); overlayManager?.closeAll?.(); destroyTray(); releaseStayAwake(); });
 app.on('window-all-closed', () => {
   allowedLocalMedia.clear();
   if (process.platform !== 'darwin' && !(config.desktop?.trayStay === true && process.platform === 'win32' && !quitting)) app.quit();
@@ -448,7 +527,7 @@ ipcMain.handle('soul:newConversation', () => { requireAgeGate(); return ensureEn
 ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return ensureEngine().selectConversation(String(id)); });
 ipcMain.handle('soul:deleteConversation', (_e, id) => { requireAgeGate(); return ensureEngine().deleteConversation(String(id)); });
 ipcMain.handle('soul:getSettings', () => publicConfig());
-ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); ensureEngine(); desktopUpdater?.schedule?.(); return publicConfig(); });
+ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); ensureEngine(); desktopUpdater?.schedule?.(); void bootServiceHeartbeat(); return publicConfig(); });
 ipcMain.handle('soul:declineAgeGate', () => { overlayManager?.closeAll(); setImmediate(() => app.quit()); return true; });
 ipcMain.handle('soul:adminLogin', (_e, password) => {
   requireAgeGate();
@@ -490,6 +569,7 @@ ipcMain.handle('soul:adminSave', (_e, incoming) => {
     config.storeUrl = '';
   }
   config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); log(`Administrator changed local edition to ${config.edition}.`);
+  void bootServiceHeartbeat();
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });

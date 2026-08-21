@@ -243,12 +243,14 @@ function applyEditionGates(){ const premium=settings?.edition==='premium'; const
 function applyServiceIndicator(status){
   const snapshot=status||settings?.serviceStatus||{};
   const configured=Boolean(settings?.serviceUrl)||snapshot.configured===true;
-  const online=configured&&snapshot.online===true;
+  const presence=servicePresenceText(snapshot);
+  const online=presence==='Online';
+  const reconnecting=presence==='Reconnecting';
   const label=$('#serviceLabel'); const dot=$('#serviceDot');
-  if(label) label.textContent=online?'Service online':configured?'Service offline':'Service idle';
-  if(dot){dot.classList.toggle('online',online);dot.classList.toggle('offline',configured&&!online);dot.classList.toggle('idle',!configured);}
+  if(label) label.textContent=online?'Service online':reconnecting?'Service reconnecting':configured?'Service offline':'Service idle';
+  if(dot){dot.classList.toggle('online',online);dot.classList.toggle('reconnecting',reconnecting);dot.classList.toggle('offline',configured&&!online&&!reconnecting);dot.classList.toggle('idle',!configured);}
   const urlField=$('#serviceUrlInput'); if(urlField&&settings?.serviceUrl!==undefined) urlField.value=settings.serviceUrl||'';
-  const onlineValue=$('#serviceOnlineValue'); if(onlineValue) onlineValue.textContent=online?'Online':configured?'Offline':'Not configured';
+  const onlineValue=$('#serviceOnlineValue'); if(onlineValue) onlineValue.textContent=presence;
   const last=$('#serviceLastSeenValue'); if(last) last.textContent=snapshot.lastCheckedAt?new Date(snapshot.lastCheckedAt).toLocaleString():'Never';
   const site=$('#serviceWebsiteValue'); if(site) site.textContent=snapshot.website||'None from config';
   const pay=$('#servicePaymentsValue'); if(pay) pay.textContent='off';
@@ -257,9 +259,18 @@ function applyServiceIndicator(status){
   if(note){
     if(!configured) note.textContent='Using the official service default (https://api.eidovara.org). Offline Soul stays fully usable if that host is down.';
     else if(online) note.textContent=`${snapshot.service||'Eidovara'} ${snapshot.version||''} connected. Checkout stays off. Conversations stay local. Assist stays opt-in.`.replace(/\s+/g,' ').trim();
+    else if(reconnecting) note.textContent=snapshot.error||'Reconnecting to the Eidovara service. Offline Soul continues locally.';
     else note.textContent=snapshot.error||'Eidovara service is unreachable. Offline Soul continues locally.';
   }
   window.eidovaraCompanion?.refresh?.();
+}
+function servicePresenceText(snapshot){
+  const status=snapshot||settings?.serviceStatus||{};
+  const presence=String(status.presence||'');
+  if(presence==='Online'||presence==='Reconnecting'||presence==='Offline') return presence;
+  if(status.online===true) return 'Online';
+  if(status.reconnecting===true) return 'Reconnecting';
+  return 'Offline';
 }
 function renderStatus(){ const premium=settings?.edition==='premium'; $('#modePill').textContent=`${state.policy.mode==='adult'?'Adult Soul':'Standard Soul'} · ${premium?'Premium':'Free'}`; const labels={offline:'Soul Offline',local:'Local model',compatible:'Connected model'}; $('#providerLabel').textContent=labels[settings?.provider]||'Offline'; const kernelLive=Boolean(settings?.ageGateAccepted); const kLabel=$('#kernelLabel'), kDot=$('#kernelDot'); if(kLabel) kLabel.textContent=kernelLive?'Soul ready':'Soul waiting'; if(kDot){kDot.classList.toggle('live',kernelLive);kDot.classList.toggle('idle',!kernelLive);} $('#editionTitle').textContent=premium?'Eidovara Premium':'Eidovara Free'; $('#editionDescription').textContent=premium?'The locally implemented Premium feature gates are enabled for testing on this installation.':'Core workspace features with offline/local models, memory, media, backups, updates, and up to three linked apps.'; $('#upgradeBtn').classList.toggle('hidden',premium||!settings?.storeUrl); applyEditionGates(); applyServiceIndicator(); }
 const SYSTEM_THEME_VALUES=new Set(['#080c16','#101828','#8f7cff','#000000','#1c1c1e','#0a84ff','#f2f2f7','#ffffff','#007aff']);
@@ -361,7 +372,7 @@ function renderDashboard(){
     {label:t('dashMedia','Entertainment'), value:taste?`${taste} taste signals`:'none yet', next:t('nextEntertainment','Open Entertainment'), run:()=>setView('entertainment')},
     {label:t('dashResearch','Research'), value:latestResearch()?.query || t('researchIdle','no lookup yet'), next:t('nextResearch','Open Research'), run:()=>setView('research')},
     {label:t('dashPrivacy','Workspace'), value:settings?.provider==='offline'?t('offlineFirst','offline-first'):t('connectedProvider','connected provider'), next:t('nextSettings','Open settings'), run:()=>setView('settings')},
-    {label:'Eidovara service', value:settings?.serviceStatus?.online?'Online':settings?.serviceUrl?'Offline':'Not attached', next:'Open service settings', run:()=>{setView('settings');$('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'});}},
+    {label:'Eidovara service', value:servicePresenceText(), next:'Open service settings', run:()=>{setView('settings');$('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'});}},
     {label:t('dashBackups','Backups'), value:String(backupCount), next:t('nextBackup','Create a backup'), run:()=>{setView('settings');$('#backupSection')?.scrollIntoView({behavior:'smooth',block:'center'});}},
     {label:t('dashHealth','Diagnostics'), value:settings?.encryptionAvailable?'OS-protected':'local files', next:t('nextDiagnostics','Show diagnostics'), run:()=>{setView('settings');$('#diagnosticsBtn').click();}}
   ];
@@ -420,11 +431,12 @@ function renderCompanionPanel(){
     ? t('companionSoulOn','Soul is a software self-model on this device — not a claim of consciousness.')
     : t('companionSoulOff','Optional Soul setup is off. This companion is not Soul and is not conscious.'));
   const attached=Boolean(settings?.serviceUrl);
-  const online=Boolean(settings?.serviceStatus?.online);
+  const presence=servicePresenceText();
   if(sub){
-    if(!attached) sub.textContent=t('companionOffline','Local-only. Conversations stay on this PC. Service not attached.');
-    else if(!online) sub.textContent=t('companionServiceDown','Local-only. Attached service is unreachable; the workspace still works.');
-    else sub.textContent=t('companionServiceIdle','Local conversations. Service is health/status only — chat is not sent.');
+    if(presence==='Online') sub.textContent=t('companionServiceIdle','Local conversations. Service is health/status only — chat is not sent.');
+    else if(presence==='Reconnecting') sub.textContent=t('companionServiceReconnecting','Reconnecting to the Eidovara service. Offline Soul continues locally.');
+    else if(attached) sub.textContent=t('companionServiceDown','Local-only. Attached service is unreachable; the workspace still works.');
+    else sub.textContent=t('companionOffline','Local-only. Conversations stay on this PC. Service not attached.');
   }
   log.textContent='';
   const messages=(activeConversation()?.messages||[]).slice(-8);
@@ -953,19 +965,28 @@ $('#adminAdultStandardBtn')?.addEventListener('click',()=>adminAdultCommand('sta
 $('#adminOpenAdultSoulBtn')?.addEventListener('click',()=>{$('#adminOverlay').classList.add('hidden');setView('adultSoul');});
 $('#adminOpenAdultMediaBtn')?.addEventListener('click',()=>{$('#adminOverlay').classList.add('hidden');setView('entertainment');$('#adultMediaDesk')?.scrollIntoView({block:'start'});});
 let serviceRetryTimer=0;
+if(typeof window.soul?.onServiceStatus==='function'){
+  window.soul.onServiceStatus(payload=>{
+    if(!settings) settings={};
+    settings.serviceStatus=payload||{};
+    window.eidovaraSettings=settings;
+    applyServiceIndicator(payload);
+    try{renderDashboard();}catch{}
+  });
+}
 async function refreshServiceStatus(silent=false){
   if(!settings?.ageGateAccepted) return;
   try{
     const result=await window.soul.checkService();
     settings=await window.soul.getSettings();
     settings.serviceStatus=result.serviceStatus||result;
+    window.eidovaraSettings=settings;
     applyServiceIndicator(result);
     renderDashboard();
     clearTimeout(serviceRetryTimer);
-    if(result.configured&&!result.online) serviceRetryTimer=setTimeout(()=>refreshServiceStatus(true),8000);
   }catch(err){
     if(!silent&&$('#serviceStatusText')) $('#serviceStatusText').textContent=String(err?.message||err);
-    applyServiceIndicator({configured:Boolean(settings?.serviceUrl),online:false,paymentsEnabled:false,error:String(err?.message||err)});
+    applyServiceIndicator({configured:Boolean(settings?.serviceUrl),online:false,reconnecting:Boolean(settings?.serviceUrl),presence:settings?.serviceUrl?'Reconnecting':'Offline',paymentsEnabled:false,error:String(err?.message||err)});
   }
 }
 async function connectEidovaraService(){
@@ -974,10 +995,10 @@ async function connectEidovaraService(){
     const result=await window.soul.connectService({serviceUrl:$('#serviceUrlInput').value.trim()});
     settings=await window.soul.getSettings();
     settings.serviceStatus=result.serviceStatus||result;
+    window.eidovaraSettings=settings;
     applyServiceIndicator(result);
     renderDashboard();
     clearTimeout(serviceRetryTimer);
-    if(result.configured&&!result.online) serviceRetryTimer=setTimeout(()=>refreshServiceStatus(true),8000);
   }catch(err){$('#serviceStatusText').textContent=String(err?.message||err);}
 }
 $('#serviceForm').addEventListener('submit',async e=>{e.preventDefault();await connectEidovaraService();});

@@ -87,7 +87,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['connect', 'worker', 'service', 'health', 'config', 'status', 'settings', 'url', 'https', 'offline'],
     title: 'Connect service in Settings',
-    reply: 'After the 18+ gate, Settings → Eidovara service (or Ctrl+A Test service) uses https://api.eidovara.org by default. Paste another HTTPS base to override; empty/default resolves to that official host. The desktop app calls /health, /v1/config, and /v1/status only. Conversations are not sent. No workers.dev host is compiled in. If the service is down, Free / Offline Soul and the workspace keep working.',
+    reply: 'After the 18+ gate, Settings → Eidovara service (or Ctrl+A Test service) uses https://api.eidovara.org by default. Paste another HTTPS base to override; empty/default resolves to that official host. Connect calls /health, /v1/config, and /v1/status only. After that the desktop keeps a live Online / Reconnecting / Offline status with /health and /v1/status from the main process. Conversations are not sent. No workers.dev host is compiled in. If the service is down, Free / Offline Soul and the workspace keep working.',
     links: [{ href: 'faq.html', label: 'FAQ' }, { href: 'status.html', label: 'Status' }]
   },
   {

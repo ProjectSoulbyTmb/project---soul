@@ -84,7 +84,7 @@
     const url = new URL(raw);
     if (url.username || url.password) throw new Error('Service URL must not include credentials.');
     if (url.protocol !== 'https:') throw new Error('Service URL must use HTTPS.');
-    const suffixes = ['/health', '/v1/config', '/v1/status', '/v1/assist'];
+    const suffixes = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
     let path = String(url.pathname || '').replace(/\/+$/, '');
     for (const suffix of suffixes) {
       const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -104,7 +104,33 @@
     const failClosed = message => {
       if (out) out.textContent = message;
     };
-    failClosed('Official default is https://api.eidovara.org. Override with another HTTPS base if you operate one. Check calls /health and /v1/status. Conversations are not sent. No workers.dev host is compiled in.');
+    failClosed('Official default is https://api.eidovara.org. Override with another HTTPS base if you operate one. Check calls /health and /v1/status and keeps polling until you Clear. Conversations are not sent. No workers.dev host is compiled in.');
+
+    let statusPollTimer = 0;
+    let statusFailCount = 0;
+    const stopStatusPoll = () => {
+      if (statusPollTimer) {
+        clearTimeout(statusPollTimer);
+        statusPollTimer = 0;
+      }
+    };
+    const nextPollDelay = (failed) => {
+      if (!failed) return 25000 + Math.floor(Math.random() * 5000);
+      let backoff = 4000;
+      for (let i = 0; i < statusFailCount; i += 1) {
+        if (backoff >= 64000) {
+          backoff = 64000;
+          break;
+        }
+        backoff *= 2;
+      }
+      return backoff + Math.floor(Math.random() * 5000);
+    };
+    const presenceOf = (online, failed) => {
+      if (online) return 'Online';
+      if (failed) return 'Reconnecting';
+      return 'Offline';
+    };
 
     const saveBase = event => {
       event.preventDefault();
@@ -122,22 +148,25 @@
     save?.addEventListener('click', saveBase);
     clear?.addEventListener('click', event => {
       event.preventDefault();
+      stopStatusPoll();
+      statusFailCount = 0;
       if (input) input.value = OFFICIAL_SERVICE_BASE;
       writeStoredBase('');
-      failClosed('Cleared override. Default https://api.eidovara.org. Check to probe /health and /v1/status. Ask Eidovara stays on this page until you save a base.');
+      failClosed('Cleared override. Default https://api.eidovara.org. Check to probe /health and /v1/status. Polling stopped. Ask Eidovara stays on this page until you save a base.');
     });
-    probe?.addEventListener('click', async event => {
-      event.preventDefault();
+    const runProbe = async ({ fromPoll } = {}) => {
       let base = '';
       try { base = normalizeBase(input?.value || readStoredBase() || OFFICIAL_SERVICE_BASE); } catch (error) {
+        stopStatusPoll();
         failClosed(error.message || 'Invalid service URL.');
         return;
       }
       if (!base) {
+        stopStatusPoll();
         failClosed('No valid HTTPS service base. Fail closed — nothing was fetched.');
         return;
       }
-      failClosed(`Checking ${base} …`);
+      if (!fromPoll) failClosed(`Checking ${base} …`);
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 8000);
       const boundedJson = async res => {
@@ -155,18 +184,33 @@
         ]);
         const health = await boundedJson(healthRes);
         const status = await boundedJson(statusRes);
+        const online = healthRes.ok && statusRes.ok && (health.status === 'ok' || health.online === true) && (status.status === 'ok' || status.online === true);
+        if (online) statusFailCount = 0;
+        else statusFailCount += 1;
+        const presence = presenceOf(online, !online);
         const lines = [
+          `Presence: ${presence}`,
           `Base: ${base}`,
           `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
           `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
-          'This website never sends desktop conversations. v0.19.1 payments stay off.'
+          'This website never sends desktop conversations. v0.19.1 payments stay off. Check keeps polling; Clear stops.'
         ];
         failClosed(lines.join('\n'));
+        stopStatusPoll();
+        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(!online));
       } catch (error) {
-        failClosed(`Unreachable (${error.name === 'AbortError' ? 'timeout' : (error.message || 'fetch failed')}). Fail closed. Offline Soul and this website still work.`);
+        statusFailCount += 1;
+        failClosed(`Presence: Reconnecting\nUnreachable (${error.name === 'AbortError' ? 'timeout' : (error.message || 'fetch failed')}). Fail closed. Offline Soul and this website still work.`);
+        stopStatusPoll();
+        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(true));
       } finally {
         clearTimeout(timer);
       }
+    };
+    probe?.addEventListener('click', async event => {
+      event.preventDefault();
+      statusFailCount = 0;
+      await runProbe({ fromPoll: false });
     });
   }
 })();

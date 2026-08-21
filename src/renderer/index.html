@@ -372,7 +372,7 @@
         </div>
         <form class="settings-card settings-group" id="serviceForm">
           <h3 id="settings-service">Eidovara service</h3>
-          <p class="settings-help">Official default is <code>https://api.eidovara.org</code>. Paste another HTTPS base to override. Conversations stay on this PC. If the host is down, Offline Soul keeps working. Assist is not Soul and stays off unless you tick the box below.</p>
+          <p class="settings-help">Official default is <code>https://api.eidovara.org</code>. Paste another HTTPS base to override. After 18+, the main process keeps a live Online / Reconnecting / Offline status with GET <code>/health</code> and <code>/v1/status</code> (Connect also uses <code>/v1/config</code>). Conversations stay on this PC. If the host is down, Offline Soul keeps working. Assist is not Soul and stays off unless you tick the box below.</p>
           <label>Service URL<input id="serviceUrlInput" type="url" maxlength="1000" placeholder="https://api.eidovara.org" autocomplete="off" /></label>
           <label class="check assist-opt"><input type="checkbox" id="assistOptIn" /> Allow optional Worker helper (<code>/v1/assist</code>). Default off. Sends one question you choose — never this conversation.</label>
           <div class="settings-actions"><button type="submit">Save URL</button><button type="button" class="secondary" id="serviceConnectBtn">Connect</button><button type="button" class="secondary hidden" id="serviceSiteBtn">Open site</button></div>
