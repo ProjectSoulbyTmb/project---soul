@@ -183,8 +183,8 @@ test('media-src is never self or https and piracy tool names stay out', () => {
   assert.match(main, /nodeIntegration: false/);
   assert.match(main, /sandbox: true/);
   assert.match(preload, /resolveOnlineMedia/);
-  assert.match(renderer, /eidovara-media:/);
-  assert.match(renderer, /eidovara-online:/);
+  assert.match(renderer, /LOCAL_MEDIA_SCHEME = 'eidovara-media'/);
+  assert.match(renderer, /ONLINE_MEDIA_SCHEME = 'eidovara-online'/);
   assert.doesNotMatch(renderer, /player\.src\s*=\s*['"]https:/);
   const scanned = [
     'src/core/online-media.js',

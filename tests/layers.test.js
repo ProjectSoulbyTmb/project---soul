@@ -103,13 +103,14 @@ test('focus session start/stop tracks remaining time and does not claim process 
   assert.equal(isFocusStartCommand('Plan a focused session for my current priority.'), false);
   const dir = tmp();
   const s = make(dir);
-  const start = '2026-08-21T10:00:00.000Z';
+  const startMs = Date.now() - 10 * 60 * 1000;
+  const start = new Date(startMs).toISOString();
   const kernel = s.startFocusSession({ minutes: 25, label: 'Ship palette', at: start });
   assert.equal(kernel.workspace.focus.active, true);
   assert.equal(kernel.workspace.focus.durationMs, 25 * 60 * 1000);
-  const remain = focusRemainingMs(kernel.workspace.focus, Date.parse('2026-08-21T10:10:00.000Z'));
+  const remain = focusRemainingMs(kernel.workspace.focus, startMs + 10 * 60 * 1000);
   assert.equal(remain, 15 * 60 * 1000);
-  const stopped = s.stopFocusSession({ at: '2026-08-21T10:12:00.000Z' });
+  const stopped = s.stopFocusSession({ at: new Date(startMs + 12 * 60 * 1000).toISOString() });
   assert.equal(stopped.workspace.focus.active, false);
   const live = s.startFocusSession({ minutes: 5, at: start });
   assert.match(JSON.stringify(s.snapshot().audit.filter(item => String(item.type || '').startsWith('workspace.focus'))), /killsOtherProcesses":false/);
