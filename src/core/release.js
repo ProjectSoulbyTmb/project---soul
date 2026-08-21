@@ -8,8 +8,8 @@
 export const SOURCE_VERSION = '0.22.2';
 export const LIVE_INSTALLER_VERSION = '0.22.2';
 export const INSTALLER_NAME = `Eidovara-${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`;
-export const INSTALLER_SHA256 = 'A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE';
-export const INSTALLER_SIZE_BYTES = 106691429;
+export const INSTALLER_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
+export const INSTALLER_SIZE_BYTES = 106691524;
 export const INSTALLER_SIZE = 'about 101.75 MiB';
 export const INSTALLER_LATEST_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`;
 export const INSTALLER_PINNED_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`;
