@@ -30,12 +30,16 @@ jobs:
           node-version: 22
       - uses: pnpm/action-setup@v4
       - run: pnpm install --frozen-lockfile
-      - run: pnpm test
+      - name: Test renderer packaging contract
+        run: node --test tests/renderer-packaging.test.js
       - run: pnpm run check
       - run: pnpm run smoke
       - run: pnpm run release:configure
       - name: Build Windows installer
         run: pnpm run dist:win:installer
+      - name: Installed-app renderer and launch smoke test
+        shell: pwsh
+        run: ./scripts/windows-install-smoke.ps1
       - name: Require updater metadata
         shell: pwsh
         run: if (-not (Test-Path dist/latest.yml)) { throw 'electron-builder did not write dist/latest.yml. GitHub publish config must stay so tagged releases emit updater files. No GH_TOKEN is committed.' }
