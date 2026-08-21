@@ -12,8 +12,8 @@ const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/la
 const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe';
 const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/Eidovara-0.22.2-Windows-x64-Setup.exe';
 const INSTALLER_NAME = 'Eidovara-0.22.2-Windows-x64-Setup.exe';
-const INSTALLER_SHA256 = 'A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE';
-const INSTALLER_SIZE = '106,691,429 bytes (about 101.75 MiB)';
+const INSTALLER_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
+const INSTALLER_SIZE = '106,691,524 bytes (about 101.75 MiB)';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
 const SITE = 'https://eidovara.org/';
 
