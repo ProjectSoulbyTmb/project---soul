@@ -13,6 +13,8 @@ test('release exposes and persists the application-wide 18+ gate', () => {
   assert.match(preload, /acceptAgeGate/);
   assert.match(renderer, /ageGateOverlay/);
   assert.match(html, /I confirm I am 18 or older/);
+  assert.match(html, /ageGateTermsCheck/);
+  assert.match(main, /function requireAgeGate/);
 });
 
 test('adult avatar controls require every adult gate and revocation clears presentation', () => {

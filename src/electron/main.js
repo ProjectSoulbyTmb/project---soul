@@ -75,6 +75,7 @@ function validateNewAdminPassword(password) {
   return value;
 }
 function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en', ageGateAccepted: config.ageGateAccepted === true, apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function requireAgeGate() { if (config.ageGateAccepted !== true) throw new Error('Eidovara is restricted to users age 18 or older. Confirm age and accept the terms to continue.'); }
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
@@ -118,20 +119,21 @@ app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).ca
 app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('soul:send', async (_e, m) => { const result = await engine.respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
+ipcMain.handle('soul:send', async (_e, m) => { requireAgeGate(); const result = await engine.respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
 ipcMain.handle('soul:snapshot', () => engine.snapshot());
-ipcMain.handle('soul:recordMedia', (_e, input) => engine.recordMedia(input));
-ipcMain.handle('soul:entertainment', () => engine.entertainment());
-ipcMain.handle('soul:reset', () => engine.reset());
-ipcMain.handle('soul:remember', (_e, c) => engine.remember(String(c || '').slice(0, 1000)));
-ipcMain.handle('soul:forget', (_e, x) => engine.forget(String(x || '').slice(0, 1000)));
-ipcMain.handle('soul:newConversation', () => engine.newConversation());
-ipcMain.handle('soul:selectConversation', (_e, id) => engine.selectConversation(String(id)));
-ipcMain.handle('soul:deleteConversation', (_e, id) => engine.deleteConversation(String(id)));
+ipcMain.handle('soul:recordMedia', (_e, input) => { requireAgeGate(); return engine.recordMedia(input); });
+ipcMain.handle('soul:entertainment', () => { requireAgeGate(); return engine.entertainment(); });
+ipcMain.handle('soul:reset', () => { requireAgeGate(); return engine.reset(); });
+ipcMain.handle('soul:remember', (_e, c) => { requireAgeGate(); return engine.remember(String(c || '').slice(0, 1000)); });
+ipcMain.handle('soul:forget', (_e, x) => { requireAgeGate(); return engine.forget(String(x || '').slice(0, 1000)); });
+ipcMain.handle('soul:newConversation', () => { requireAgeGate(); return engine.newConversation(); });
+ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return engine.selectConversation(String(id)); });
+ipcMain.handle('soul:deleteConversation', (_e, id) => { requireAgeGate(); return engine.deleteConversation(String(id)); });
 ipcMain.handle('soul:getSettings', () => publicConfig());
-ipcMain.handle('soul:acceptAgeGate', () => { config.ageGateAccepted = true; saveConfig(); return publicConfig(); });
+ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); return publicConfig(); });
 ipcMain.handle('soul:declineAgeGate', () => { setImmediate(() => app.quit()); return true; });
 ipcMain.handle('soul:adminLogin', (_e, password) => {
+  requireAgeGate();
   if (!adminConfigured()) throw new Error('Create an administrator password for this installation first.');
   const now = Date.now();
   if (now < adminLockedUntil) throw new Error(`Too many attempts. Try again in ${Math.ceil((adminLockedUntil - now) / 1000)} seconds.`);
@@ -148,6 +150,7 @@ ipcMain.handle('soul:adminLogin', (_e, password) => {
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminConfigure', (_e, password) => {
+  requireAgeGate();
   if (adminConfigured()) throw new Error('The administrator password is already configured. Sign in to administer this installation.');
   const value = validateNewAdminPassword(password);
   const salt = crypto.randomBytes(16).toString('base64');
@@ -156,9 +159,9 @@ ipcMain.handle('soul:adminConfigure', (_e, password) => {
   log('Local administrator password configured.');
   return { configured: true, authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
-ipcMain.handle('soul:adminStatus', () => ({ configured: adminConfigured(), authorized: adminAuthorized(), expiresAt: adminAuthorized() ? new Date(adminSessionUntil).toISOString() : null, edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl }));
+ipcMain.handle('soul:adminStatus', () => { requireAgeGate(); return ({ configured: adminConfigured(), authorized: adminAuthorized(), expiresAt: adminAuthorized() ? new Date(adminSessionUntil).toISOString() : null, edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl }); });
 ipcMain.handle('soul:adminSave', (_e, incoming) => {
-  requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';
+  requireAgeGate(); requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';
   if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }
   const storeUrl = String(incoming?.storeUrl || '').trim().slice(0, 1000);
   if (storeUrl && new URL(storeUrl).protocol !== 'https:') throw new Error('The store link must use HTTPS.');
@@ -168,8 +171,9 @@ ipcMain.handle('soul:adminSave', (_e, incoming) => {
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
-ipcMain.handle('soul:checkService', async () => { const base = publicConfig().serviceUrl; if (!base) return { configured: false }; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 5000); try { const res = await fetch(`${base}/health`, { signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }); if (!res.ok) throw new Error(`Service returned HTTP ${res.status}.`); const raw = await res.text(); if (Buffer.byteLength(raw) > 32_768) throw new Error('Service response is too large.'); const body = JSON.parse(raw); return { configured: true, online: body?.status === 'ok', service: String(body?.service || '').slice(0, 100), version: String(body?.version || '').slice(0, 40) }; } finally { clearTimeout(timer); } });
+ipcMain.handle('soul:checkService', async () => { requireAgeGate(); const base = publicConfig().serviceUrl; if (!base) return { configured: false }; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 5000); try { const res = await fetch(`${base}/health`, { signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }); if (!res.ok) throw new Error(`Service returned HTTP ${res.status}.`); const raw = await res.text(); if (Buffer.byteLength(raw) > 32_768) throw new Error('Service response is too large.'); const body = JSON.parse(raw); return { configured: true, online: body?.status === 'ok', service: String(body?.service || '').slice(0, 100), version: String(body?.version || '').slice(0, 40) }; } finally { clearTimeout(timer); } });
 ipcMain.handle('soul:saveSettings', (_e, incoming) => {
+  requireAgeGate();
   const provider = ['offline','local','compatible'].includes(incoming?.provider) ? incoming.provider : 'offline';
   if (entitlement() === 'free' && provider === 'compatible') throw new Error('Remote model endpoints are a Premium feature. Eidovara Free supports offline and local models.');
   config.provider = provider;
@@ -196,9 +200,10 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   if (incoming?.clearSearchApiKey) config.encryptedSearchApiKey = '';
   saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }); return publicConfig();
 });
-ipcMain.handle('soul:diagnostics', async () => ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: engine.snapshot().policy.localSafetyReports?.length || 0 }));
-ipcMain.handle('soul:openDataFolder', () => shell.openPath(app.getPath('userData')));
+ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: engine.snapshot().policy.localSafetyReports?.length || 0 }); });
+ipcMain.handle('soul:openDataFolder', () => { requireAgeGate(); return shell.openPath(app.getPath('userData')); });
 ipcMain.handle('soul:selectLocalMedia', async () => {
+  requireAgeGate();
   const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Open local media in Eidovara', properties: ['openFile'], filters: [{ name: 'Audio and video', extensions: ['mp3','m4a','aac','wav','flac','ogg','opus','mp4','m4v','webm','mov','mkv'] }] });
   if (chosen.canceled || !chosen.filePaths[0]) return null;
   const filePath = path.resolve(chosen.filePaths[0]);
@@ -210,14 +215,15 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   allowedLocalMedia.set(id, filePath);
   return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
 });
-ipcMain.handle('soul:createBackup', () => engine.createBackup());
-ipcMain.handle('soul:listBackups', () => engine.listBackups());
-ipcMain.handle('soul:restoreBackup', (_e, name) => engine.restoreBackup(String(name || '')));
-ipcMain.handle('soul:configureSetup', (_e, input) => engine.configureSetup(input));
-ipcMain.handle('soul:configureAssistant', (_e, input) => engine.configureAssistant(input));
+ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return engine.createBackup(); });
+ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return engine.listBackups(); });
+ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return engine.restoreBackup(String(name || '')); });
+ipcMain.handle('soul:configureSetup', (_e, input) => { requireAgeGate(); return engine.configureSetup(input); });
+ipcMain.handle('soul:configureAssistant', (_e, input) => { requireAgeGate(); return engine.configureAssistant(input); });
 ipcMain.handle('soul:openExternal', (_e, value) => { const url = new URL(String(value || '')); if (url.protocol !== 'https:') throw new Error('Only secure web links can be opened.'); return shell.openExternal(url.toString()); });
-ipcMain.handle('soul:checkForUpdates', async () => { pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
+ipcMain.handle('soul:checkForUpdates', async () => { requireAgeGate(); pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
 ipcMain.handle('soul:installUpdate', async () => {
+  requireAgeGate();
   if (!pendingUpdate?.available) pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() });
   if (!pendingUpdate.available) throw new Error('No update is available.');
   const answer = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: ['Download and open', 'Cancel'], defaultId: 0, cancelId: 1, title: 'Install Eidovara update', message: `Install Eidovara ${pendingUpdate.version}?`, detail: pendingUpdate.packageType === 'ready-folder-zip' ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction.' : 'The installer will be downloaded over HTTPS, verified with SHA-256, and opened.' });
@@ -227,9 +233,10 @@ ipcMain.handle('soul:installUpdate', async () => {
   if (malwareScan.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not opened.');
   const error = await shell.openPath(downloaded.path); if (error) throw new Error(error); return { ...downloaded, malwareScan, launched: true };
 });
-ipcMain.handle('soul:addApplication', async () => { if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.'); const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Eidovara', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
-ipcMain.handle('soul:discoverApplications', () => discoverStartMenuApplications().map(({ id, name }) => ({ id, name })));
+ipcMain.handle('soul:addApplication', async () => { requireAgeGate(); if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.'); const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Eidovara', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
+ipcMain.handle('soul:discoverApplications', () => { requireAgeGate(); return discoverStartMenuApplications().map(({ id, name }) => ({ id, name })); });
 ipcMain.handle('soul:addDiscoveredApplication', (_e, id) => {
+  requireAgeGate();
   if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.');
   const entry = discoverStartMenuApplications().find(item => item.id === String(id));
   if (!entry || !fs.existsSync(entry.path)) throw new Error('That discovered application is no longer available.');
@@ -238,6 +245,7 @@ ipcMain.handle('soul:addDiscoveredApplication', (_e, id) => {
   saveConfig(); return publicConfig();
 });
 ipcMain.handle('soul:launchApplication', async (_e, id) => {
+  requireAgeGate();
   const entry = (config.apps || []).find(x => x.id === String(id));
   if (!entry || !fs.existsSync(entry.path)) throw new Error('Application is unavailable or has moved.');
   const answer = await dialog.showMessageBox(mainWindow, {
@@ -254,7 +262,7 @@ ipcMain.handle('soul:launchApplication', async (_e, id) => {
   if (error) throw new Error(error);
   return { launched: true };
 });
-ipcMain.handle('soul:removeApplication', (_e, id) => { config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
+ipcMain.handle('soul:removeApplication', (_e, id) => { requireAgeGate(); config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
 
 function cryptoId(value) { return crypto.createHash('sha256').update(String(value).toLowerCase()).digest('base64url'); }
 

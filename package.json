@@ -53,6 +53,8 @@
       "LICENSE",
       "NOTICE.md",
       "PRIVACY.md",
+      "TERMS.md",
+      "AGE.md",
       "LEGAL_NOTICES.md",
       "SECURITY.md",
       "THIRD_PARTY_NOTICES.md",
@@ -80,7 +82,7 @@
     },
     "nsis": {
       "artifactName": "Eidovara-${version}-Windows-${arch}-Setup.${ext}",
-      "license": "LICENSE",
+      "license": "installer/EULA.txt",
       "installerIcon": "assets/branding/eidovara.ico",
       "uninstallerIcon": "assets/branding/eidovara.ico",
       "oneClick": false,
