@@ -147,6 +147,26 @@ test('explicit research fetches Wikipedia and a user HTTPS page, never Assist or
   }
 });
 
+test('researchInternet uses fetchImpl instead of the global fetch', async () => {
+  let globalCalled = 0;
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => { globalCalled += 1; throw new Error('global fetch must not run'); };
+  try {
+    const r = await researchInternet('Search the internet for Saturn', {
+      fetchImpl: async url => {
+        const href = String(url);
+        if (isWikipediaHost(href)) return jsonOk({ pages: [{ title: 'Saturn', description: 'Sixth planet', extract: 'Sixth', fullurl: 'https://en.wikipedia.org/wiki/Saturn' }] });
+        if (isArchiveHost(href)) return jsonOk({ response: { docs: [] } });
+        return jsonOk({ query: { pages: {} } });
+      }
+    });
+    assert.equal(r.sources[0].title, 'Saturn');
+    assert.equal(globalCalled, 0);
+  } finally {
+    globalThis.fetch = original;
+  }
+});
+
 test('Brave keyed search still requires an explicit request and is not a live payment unlock', async () => {
   assert.equal(premiumFeatureAllowed('free', 'searchKey'), false);
   assert.equal(premiumFeatureAllowed('premium', 'searchKey'), true);
@@ -171,6 +191,8 @@ test('Brave keyed search still requires an explicit request and is not a live pa
     assert.equal(r.sources[0].url, 'https://example.com/report');
     assert.equal(r.sources[0].hostname, 'example.com');
     assert.ok(seen.some(url => isBraveHost(url)));
+    const gated = await researchInternet('Tell me about fusion', { searchApiKey: 'secret' });
+    assert.equal(gated, null);
     const main = fs.readFileSync('src/electron/main.js', 'utf8');
     assert.match(main, /searchApiKey: entitlement\(\) === 'premium' \? getSearchApiKey\(\) : ''/);
     assert.doesNotMatch(main, /checkout.*searchApiKey|searchApiKey.*payment/i);
@@ -185,17 +207,28 @@ test('offline, timeout, and blocked hosts fail closed while the workspace keeps 
   globalThis.fetch = async () => { throw Object.assign(new Error('fetch failed'), { name: 'TypeError' }); };
   try {
     await assert.rejects(() => researchInternet('Search the internet for Saturn'), /unavailable \(offline or blocked\)|workspace is still available/i);
+    const s = new SoulEngine({ store: new JsonStore({ dataDir: tmp() }), provider: new OfflineProvider() });
+    const r = await s.respond('Search the internet for Saturn');
+    assert.match(r.internetError || r.reply, /unavailable|timed out|No usable internet|workspace is still available/i);
+    assert.ok(r.state.conversations[0].messages.length >= 2);
+    assert.equal(r.kernel.intent, 'research');
+    assert.ok(r.kernel.actions.some(item => item.view === 'research'));
+    const focus = await s.respond('Plan a focused session for my current priority.');
+    assert.match(focus.reply, /focused session|25–50/i);
   } finally {
     globalThis.fetch = original;
   }
-  const s = new SoulEngine({ store: new JsonStore({ dataDir: tmp() }), provider: new OfflineProvider() });
-  const r = await s.respond('Search the internet for Saturn');
-  assert.match(r.internetError || r.reply, /unavailable|timed out|No usable internet|workspace is still available/i);
-  assert.ok(r.state.conversations[0].messages.length >= 2);
-  assert.equal(r.kernel.intent, 'research');
-  assert.ok(r.kernel.actions.some(item => item.view === 'research'));
-  const focus = await s.respond('Plan a focused session for my current priority.');
-  assert.match(focus.reply, /focused session|25–50/i);
+  await assert.rejects(
+    () => fetchPublicPage('https://example.com/slow', {
+      timeoutMs: 30,
+      fetchImpl: (_url, init) => new Promise((_, reject) => {
+        init?.signal?.addEventListener('abort', () => {
+          reject(Object.assign(new Error('aborted'), { name: 'AbortError' }));
+        });
+      })
+    }),
+    /timed out|workspace is still available/i
+  );
 });
 
 test('research path does not compile workers.dev or renderer innerHTML of fetched pages', () => {
