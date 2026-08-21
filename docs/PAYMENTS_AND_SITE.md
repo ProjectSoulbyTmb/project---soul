@@ -10,14 +10,15 @@ Do not commit API tokens, Wrangler credentials, signing keys, payment secrets, o
 | --- | --- |
 | Source | `main` is v0.22.2. |
 | Windows release | GitHub Release `v0.22.2`, installer `Eidovara-0.22.2-Windows-x64-Setup.exe`. |
-| Installer size | 106,691,429 bytes (about 101.75 MiB). |
-| Installer SHA-256 | `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`. |
+| Installer size | 106,691,524 bytes (about 101.75 MiB). |
+| Installer SHA-256 | `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`. |
 | Signing | Authenticode-unsigned. GitHub/Sigstore provenance is available and is not Authenticode. |
+| Edition | Full free v0.22.2 Alpha; no paid entitlement is required for implemented features. |
 | Official website | `https://eidovara.org/`, Cloudflare Pages project `eidovara`, source `docs/`. |
 | GitHub Pages mirror | `https://projectsoulbytmb.github.io/project---soul/`, same `docs/` from `main`. |
 | Official service default | `https://api.eidovara.org`. |
 | Worker contract | `/health`, `/v1/health`, `/v1/config`, `/v1/status`, `/v1/assist`; fail closed otherwise. |
-| Payments | Disabled. No live checkout or automatic Premium entitlement. |
+| Payments | Disabled. No live checkout, subscription, or paid entitlement. |
 
 ## 1. Website publication
 
@@ -28,7 +29,7 @@ Source is `docs/` on `main`.
 - Manual Cloudflare Pages fallback: `npx wrangler pages deploy docs --project-name=eidovara --branch=main`.
 - Do not add `docs/CNAME`; the public hostname is owned by the Cloudflare Pages zone, not GitHub Pages.
 - Keep `eidovara.org` (website) and `api.eidovara.org` (service) separate.
-- Website updates are not complete until Home, Product, Download, Assist, Help, FAQ, Status, legal pages, `docs/knowledge.js`, and the live service payload all agree on the same release facts.
+- Website updates are not complete until Home, Product, Download, Assist, Help, FAQ, Status, legal pages, `docs/knowledge.js`, and the live service payload all agree on the same v0.22.2 release facts.
 
 If a live browser still shows older data after `main` is correct, check the actual Cloudflare deployment and edge/browser cache before changing correct source files.
 
@@ -37,8 +38,8 @@ If a live browser still shows older data after `main` is correct, check the actu
 - Primary: `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe`
 - Pinned: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/Eidovara-0.22.2-Windows-x64-Setup.exe`
 - Release page: `https://github.com/ProjectSoulbyTmb/project---soul/releases/tag/v0.22.2`
-- Size: 106,691,429 bytes (about 101.75 MiB)
-- SHA-256: `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`
+- Size: 106,691,524 bytes (about 101.75 MiB)
+- SHA-256: `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`
 - Platform: Windows 10/11 x64, 18+
 - Status: Authenticode-unsigned; Windows SmartScreen may warn
 
@@ -46,9 +47,7 @@ Users should download the Setup.exe from GitHub Releases and verify the measured
 
 ## 3. Release workflow
 
-`.github/workflows/release-windows.yml` builds Windows releases on `windows-latest`, runs automated tests/checks/smoke tests, packages NSIS, produces updater metadata, checksums, SBOM, release evidence, and provenance, then publishes assets for a matching `v*` release path.
-
-Never move an existing release tag after changing release bytes. The next release gets a new version/tag and a new measured checksum.
+`.github/workflows/release-windows.yml` builds Windows releases on `windows-latest`, runs automated tests/checks/smoke tests, packages NSIS, runs an installed-app smoke test, produces updater metadata, checksums, SBOM, release evidence, and provenance, then publishes assets only for a matching `v*` tag. Published assets are immutable; an existing tag must not be reused to replace release bytes.
 
 Local Windows build fallback:
 
@@ -83,7 +82,7 @@ Deploy from `server/` with a secure local/CI Cloudflare credential:
 npx wrangler deploy
 ```
 
-The current health/config/status payload must identify source/release `0.22.2` and the current installer `Eidovara-0.22.2-Windows-x64-Setup.exe`. Redeploy after `server/worker.js` changes so production does not drift behind git.
+The current health/config/status payload must identify source/release `0.22.2` and installer `Eidovara-0.22.2-Windows-x64-Setup.exe`, size `106691524`, and SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`. Redeploy after `server/worker.js` changes so production does not drift behind git.
 
 Do not put Cloudflare API tokens in source, workflow inputs, issues, logs, or public documentation.
 
@@ -95,9 +94,10 @@ It must match the current release facts:
 
 - version `0.22.2`
 - installer `Eidovara-0.22.2-Windows-x64-Setup.exe`
-- size 106,691,429 bytes (about 101.75 MiB)
-- SHA-256 `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`
+- size 106,691,524 bytes (about 101.75 MiB)
+- SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`
 - Authenticode-unsigned status
+- full free v0.22.2 Alpha status
 - local-first architecture
 - current research/media/update/provider capabilities
 - no live payment processing
@@ -116,11 +116,11 @@ Cloudflare Pages project `eidovara` serves `eidovara.org`.
 
 If `www.eidovara.org` is desired, configure it in Cloudflare DNS/Pages rather than adding a GitHub Pages CNAME file.
 
-## 7. Payments and Premium
+## 7. Payments and editions
 
-Payments remain off in v0.22.2. Do not claim PCI certification, live subscription entitlement, automatic paid unlock, or active checkout.
+Payments remain off in v0.22.2. The current v0.22.2 Alpha is a full free release, and implemented capabilities are not blocked behind a paid entitlement. Older stored edition labels are compatibility data only and must not disable those features.
 
-If payments are introduced later, prefer provider-hosted checkout so Eidovara does not handle raw card data. Before selling, publish final pricing, license scope, refund/cancellation policy, support contact, privacy notice, tax treatment, and entitlement/revocation behavior. Keep provider secrets outside the repository.
+If payments are introduced in a future version, prefer provider-hosted checkout so Eidovara does not handle raw card data. Before selling, publish final pricing, license scope, refund/cancellation policy, support contact, privacy notice, tax treatment, and entitlement/revocation behavior. Keep provider secrets outside the repository.
 
 ## 8. Honest cannot-ship / not-yet-claimed
 
@@ -128,7 +128,7 @@ Do not fake these in product copy:
 
 - Authenticode signing until a valid signing identity is available
 - official signed Linux/macOS releases until actually built/tested/published
-- live payments or automatic Premium entitlement until actually implemented
+- live payments or subscriptions until actually implemented
 - government copyright/trademark/patent registrations unless issued
 - scientific claims of consciousness or sentience
 - capabilities not bundled or verified in the current release
@@ -154,4 +154,4 @@ Before calling a release fully live, verify the same version/installer facts acr
 - live `eidovara.org`
 - live `api.eidovara.org` health/config/status
 
-Historical release sections may document older versions as history; current-release statements must not identify an older release as live.
+Historical release sections may document older versions as history; current-release statements must identify v0.22.2 until a later version is formally published.
