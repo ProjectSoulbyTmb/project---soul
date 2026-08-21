@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Fluid in-app media player: a persistent Eidovara now-playing bar (artwork, title, transport, seek, volume) stays available after local or public HTTPS playback, even when you leave Entertainment. Expand opens a full stage with video surface, queue, and an honest empty lyrics slot (“No licensed lyrics in-app”). Collapse uses transform/opacity; `prefers-reduced-motion` skips the slides. Spotify and YouTube remain confirmed official HTTPS searches in the browser — not in-process playback, embeds, or DRM rips. App CSP is still `media-src https: eidovara-media:` (never `media-src 'self'`). Tags `v0.18.0`–`v0.19.0` were not moved.
 - Companion coverage: dock and conversation share one kernel; nav/intents reach dashboard, conversation, apps (confirm-launch + discover), entertainment (mood/favorites/watch/OST/surprise + local media), memory (review/add/forget), identity/Adult Mode, settings (provider/theme/service/updates/backups/customization), help/legal, diagnostics, research (explicit internet only), focus/study/create/gaming checklists, and accessibility. Every named next step ships a working chip. Suggested “what can you do here?” follows the current view. Optional Soul is not faked when setup is off. `/v1/assist` still requires opt-in.
 
 ## v0.19.0

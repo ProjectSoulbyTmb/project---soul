@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="gaming.css" />
   <link rel="stylesheet" href="internet.css" />
+  <link rel="stylesheet" href="now-playing.css" />
   <link rel="stylesheet" href="companion.css" />
   <link rel="stylesheet" href="layers.css" />
 </head>
@@ -123,9 +124,9 @@
             <header class="companion-head">
               <div>
                 <h3 id="companionPanelTitle" data-i18n="companionPanelTitle">Workspace companion</h3>
-                <p id="companionSub" class="companion-sub" data-i18n="companionLead">Local answers. Conversations stay on this PC. Ctrl+/ to focus.</p>
-              </div>
-              <p id="companionSoulStatus" class="companion-soul is-off" role="status"></p>
+      <p id="companionSub" class="companion-sub" data-i18n="companionLead">Local answers. Conversations stay on this PC. Ctrl+/ to focus.</p>
+            </div>
+            <p id="companionSoulStatus" class="companion-soul is-off" role="status"></p>
             </header>
             <div class="companion-actions" id="companionQuickActions" role="toolbar" aria-label="Companion quick actions">
               <button type="button" data-companion-nav="apps" data-i18n="companionApps">Apps</button>
@@ -135,6 +136,7 @@
               <button type="button" data-companion-nav="status" data-i18n="companionStatus">Status</button>
               <button type="button" data-companion-ask="What can this workspace do?" data-i18n="companionHelp">Help</button>
             </div>
+            <div class="companion-chips" id="companionNowPlaying" aria-label="Now playing"></div>
             <div class="companion-log" id="companionLog" aria-live="polite"></div>
             <div id="companionFollowups" class="companion-followups"></div>
             <p class="composer-note" data-i18n="companionNote">Composer is on the Soul dock. Local only · Assist is not Soul · no live payments</p>
@@ -166,6 +168,7 @@
         <p class="soul-online-copy" id="soulOnlineCopy">Online helper off. Local kernel stays the source of truth.</p>
         <div class="soul-module-list" id="soulModuleChips" aria-label="Feature modules"></div>
         <div class="soul-action-list" id="soulQuickActions" aria-label="Custom quick actions"></div>
+        <div class="companion-chips" id="soulNowPlaying" aria-label="Now playing"></div>
         <p class="companion-error hidden" id="companionError" role="status"></p>
         <form class="companion-form" id="companionForm">
           <label class="visually-hidden" for="companionInput" data-i18n="companionAskLabel">Ask Soul</label>
@@ -186,7 +189,7 @@
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
-      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, queue helpers, and lawful platform handoff — Spotify, YouTube, and Internet Archive stay official HTTPS searches.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div></section>
+      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local files play in the Eidovara now-playing bar (expand for video). Spotify, YouTube, and Internet Archive stay official HTTPS searches in the browser — they are not played in-app.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive buttons confirm, then open official searches in your system browser. Opens in the browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, embed those players, or imply affiliation.</p></div></section>
 
       <section class="view panel-view" id="memoryView">
         <div class="panel-head"><div><h2>Memory</h2><p>Durable facts and preferences Soul can carry across conversations.</p></div></div>
@@ -302,20 +305,66 @@
       <div class="setup-actions"><button type="button" class="secondary hidden" id="cancelSetupBtn" data-i18n="cancel">Cancel</button><button type="submit" data-i18n="saveContinue">Save and continue</button></div>
     </form>
   </div>
-  <section class="media-dock hidden" id="mediaDock" aria-label="Soul media player">
-    <div class="media-now"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small></div>
-    <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
-    <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
-    <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
-    <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
-    <button type="button" id="mediaSimilarBtn">Similar</button>
-    <audio id="audioPlayer" controls preload="metadata"></audio>
-    <video id="videoPlayer" controls preload="metadata"></video>
-    <button type="button" id="mediaSpotifyBtn">Spotify</button>
-    <button type="button" id="mediaYouTubeBtn">YouTube</button>
-    <button type="button" id="mediaSourceBtn">Source</button>
-    <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
-  </section>
+  <div class="eidovara-player is-idle" id="mediaDock" data-expanded="false" aria-hidden="true">
+    <div class="now-playing-stage" id="nowPlayingStage" role="dialog" aria-modal="true" aria-labelledby="mediaStageTitle" aria-hidden="true" inert>
+      <div class="np-stage-head">
+        <h2 data-i18n="playerStageTitle">Eidovara player</h2>
+        <button type="button" class="np-collapse" id="mediaCollapseBtn" data-i18n="playerCollapse">Collapse player</button>
+      </div>
+      <div class="np-stage-main">
+        <div class="np-surface is-chrome-visible" id="mediaSurface" data-kind="audio">
+          <div class="np-audio-art" id="mediaStageArt" aria-hidden="true"><strong></strong></div>
+          <video id="videoPlayer" preload="metadata" playsinline></video>
+          <audio id="audioPlayer" preload="metadata"></audio>
+          <div class="np-chrome" id="mediaStageChrome">
+            <button type="button" id="mediaStagePrevBtn" aria-label="Previous media">⏮</button>
+            <button type="button" id="mediaStagePlayBtn" aria-label="Play or pause">▶</button>
+            <button type="button" id="mediaStageNextBtn" aria-label="Next media">⏭</button>
+            <label class="np-seek"><span class="visually-hidden" data-i18n="playerSeek">Seek</span><span id="mediaStageTime">0:00</span><input id="mediaStageSeek" type="range" min="0" max="0" value="0" step="0.1" /><span id="mediaStageDuration">0:00</span></label>
+            <label class="np-volume"><span class="visually-hidden" data-i18n="playerVolume">Volume</span><input id="mediaStageVolume" type="range" min="0" max="1" step="0.01" value="1" /></label>
+          </div>
+        </div>
+        <aside class="np-side">
+          <h3 id="mediaStageTitle">Nothing playing</h3>
+          <p id="mediaStageMeta"></p>
+          <h4 data-i18n="playerQueue">Up next</h4>
+          <ul class="np-queue" id="mediaQueueList"></ul>
+          <h4 data-i18n="playerRecents">Recent on this device</h4>
+          <p id="mediaRecents"></p>
+          <h4 data-i18n="playerLyricsHeading">Lyrics</h4>
+          <p id="mediaLyrics" data-i18n="playerLyrics">No licensed lyrics in-app</p>
+          <div class="np-handoff">
+            <button type="button" id="mediaStageSpotifyBtn" data-i18n="playerSpotify">Spotify search</button>
+            <button type="button" id="mediaStageYouTubeBtn" data-i18n="playerYouTube">YouTube search</button>
+          </div>
+        </aside>
+      </div>
+    </div>
+    <section class="now-playing-bar" id="nowPlayingBar" role="region" aria-label="Eidovara now playing">
+      <button type="button" class="np-art" id="mediaArtBtn" aria-label="Expand player">
+        <canvas id="mediaArtCanvas" width="80" height="80" hidden></canvas>
+        <span id="mediaArtFallback" aria-hidden="true">E</span>
+      </button>
+      <div class="media-now">
+        <strong id="mediaTitle">Nothing playing</strong>
+        <small id="mediaKind"></small>
+      </div>
+      <div class="np-transport">
+        <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
+        <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
+        <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
+      </div>
+      <label class="np-seek"><span class="visually-hidden" data-i18n="playerSeek">Seek</span><span id="mediaTime">0:00</span><input id="mediaSeek" type="range" min="0" max="0" value="0" step="0.1" /><span id="mediaDuration">0:00</span></label>
+      <label class="np-volume"><span class="visually-hidden" data-i18n="playerVolume">Volume</span><input id="mediaVolume" type="range" min="0" max="1" step="0.01" value="1" /></label>
+      <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
+      <button type="button" id="mediaSimilarBtn">Similar</button>
+      <button type="button" id="mediaSpotifyBtn" data-i18n="playerSpotify">Spotify search</button>
+      <button type="button" id="mediaYouTubeBtn" data-i18n="playerYouTube">YouTube search</button>
+      <button type="button" id="mediaSourceBtn">Source</button>
+      <button type="button" id="mediaExpandBtn" aria-label="Expand player">▴</button>
+      <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
+    </section>
+  </div>
   <div class="setup-overlay hidden" id="adminOverlay" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
     <form class="setup-dialog admin-dialog" id="adminLoginForm">
       <div><h1 id="adminTitle">Private administration</h1><p id="adminLoginHelp">Local access only. This session automatically locks after 15 minutes.</p></div>
@@ -391,13 +440,15 @@
         <div><dt>Enter</dt><dd>Send a message to Soul</dd></div>
         <div><dt>Shift+Enter</dt><dd>New line in the composer</dd></div>
         <div><dt>Hold 🎙</dt><dd>Dictate on this PC. No neural TTS is bundled.</dd></div>
-        <div><dt>Esc</dt><dd>Close a dialog</dd></div>
+        <div><dt>Space</dt><dd>Play or pause local media when you are not typing</dd></div>
+        <div><dt>Esc</dt><dd>Collapse the expanded player, or close a dialog</dd></div>
       </dl>
       <p class="truth-note">Click the Soul face or type in the right dock to ask locally. Launching an app still asks you to confirm. Assist stays off until you enable it.</p>
       <div class="setup-actions"><button type="button" class="secondary" id="shortcutCloseBtn">Close</button></div>
     </div>
   </div>
   <script src="localization.js"></script>
+  <script src="now-playing.js"></script>
   <script src="renderer.js"></script>
   <script src="companion.js"></script>
   <script src="workspace-layers.js"></script>

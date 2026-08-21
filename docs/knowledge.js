@@ -111,7 +111,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['media', 'music', 'video', 'entertainment', 'spotify', 'youtube', 'queue', 'playback'],
     title: 'Media and entertainment',
-    reply: 'Play user-selected local files and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube HTTPS searches. Playback can require confirmation. YouTube and Spotify buttons do not rip streams. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v0.19.0.',
+    reply: 'Play user-selected local files in the Eidovara now-playing bar (expand for video). Properly sourced public HTTPS audio or video can play in-app. Official Spotify/YouTube HTTPS searches open in the browser after you confirm — those products are not embedded and streams are not ripped. Playback can require confirmation. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v0.19.0.',
     links: [{ href: 'product.html', label: 'Product' }]
   },
   {

@@ -119,7 +119,7 @@ test('mix briefing prefers favorites and keeps HTTPS handoff copy', () => {
 
 test('localization locales share the expanded workspace keys and keep English fallback', () => {
   const src = fs.readFileSync('src/renderer/localization.js', 'utf8');
-  const keys = ['roleAccess', 'emptyAppsTitle', 'mixHelper', 'diagLead', 'noBackups', 'dashBackups', 'openLocalMedia', 'behaviorSaved', 'companionTitle', 'companionEmpty', 'companionNote', 'researchTitle', 'researchLead', 'dashResearch', 'nextResearch', 'handoffNote', 'paletteTitle', 'scratchTitle', 'focusQuiet'];
+  const keys = ['roleAccess', 'emptyAppsTitle', 'mixHelper', 'diagLead', 'noBackups', 'dashBackups', 'openLocalMedia', 'behaviorSaved', 'companionTitle', 'companionEmpty', 'companionNote', 'researchTitle', 'researchLead', 'dashResearch', 'nextResearch', 'handoffNote', 'paletteTitle', 'scratchTitle', 'focusQuiet', 'playerLyrics', 'playerHandoffConfirm', 'companionNowPlaying', 'sessionLibrary'];
   for (const loc of ['en', 'es', 'fr', 'de']) {
     const start = src.indexOf(`${loc}: {`);
     assert.ok(start >= 0, loc);
@@ -137,4 +137,14 @@ test('localization locales share the expanded workspace keys and keep English fa
   assert.match(html, /id="soulDock"/);
   assert.match(html, /id="companionForm"/);
   assert.match(html, /id="dashboardQuick"/);
+  assert.match(html, /id="nowPlayingBar"/);
+  assert.match(html, /id="nowPlayingStage"/);
+  assert.match(html, /id="entertainmentLibrary"/);
+  assert.match(html, /id="entertainmentDiscovery"/);
+  assert.match(html, /id="companionNowPlaying"/);
+  assert.match(html, /now-playing\.css/);
+  const renderer = fs.readFileSync('src/renderer/renderer.js', 'utf8');
+  assert.match(renderer, /window\.eidovaraNowPlaying/);
+  assert.match(renderer, /window\.eidovaraPlayMedia/);
+  assert.doesNotMatch(renderer, /player\.src\s*=/);
 });

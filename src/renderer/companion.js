@@ -132,7 +132,27 @@
       }
       if (!actions.children.length) actions.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('soulNoActions', 'Add a custom quick action in Settings.') }));
     }
+    renderNowPlayingChip();
     renderKernelSettings();
+  }
+
+  function renderNowPlayingChip() {
+    const snap = window.eidovaraNowPlaying?.snapshot?.();
+    for (const id of ['companionNowPlaying', 'soulNowPlaying']) {
+      const host = $(`#${id}`);
+      if (!host) continue;
+      host.textContent = '';
+      if (!snap?.active) continue;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = snap.playing ? t('companionPause', 'Pause') : t('companionNowPlaying', 'Now playing');
+      b.addEventListener('click', () => {
+        if (snap.playing) window.eidovaraNowPlaying.pause();
+        else if (typeof window.eidovaraNowPlaying.togglePlay === 'function') window.eidovaraNowPlaying.togglePlay();
+        else window.eidovaraNowPlaying.resume?.();
+      });
+      host.append(b);
+    }
   }
 
   function renderKernelSettings() {
@@ -419,6 +439,8 @@
       log.scrollTop = log.scrollHeight;
     }
   };
+
+  window.addEventListener('eidovara:now-playing', () => renderNowPlayingChip());
 
   $('#companionForm')?.addEventListener('submit', e => {
     e.preventDefault();

@@ -400,6 +400,7 @@ test('first-party legal stack is kept; third-party brands are not product names'
     'README.md', 'CHANGELOG.md', 'docs/index.html', 'docs/product.html', 'docs/download.html',
     'docs/assist.html', 'docs/help.html', 'docs/faq.html', 'docs/status.html',
     'src/renderer/localization.js', 'src/renderer/renderer.js', 'src/renderer/companion.js',
+    'src/renderer/now-playing.js', 'src/core/now-playing.js',
     'src/core/modules.js', 'src/core/engine.js', 'src/core/schema.js'
   ];
   for (const file of productSurfaces) {
