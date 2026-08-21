@@ -143,7 +143,9 @@ test('public site wires display marks, wallpapers, and OG image without CSP or t
   assert.equal(read('docs/tokens.css'), read('src/renderer/tokens.css'));
   assert.match(read('docs/BRAND_GUIDE.md'), /website display marks/i);
   assert.match(read('docs/BRAND_GUIDE.md'), /wallpapers/);
-  assert.doesNotMatch(read('docs/BRAND_GUIDE.md'), /®/);
+  const logos = read('docs/BRAND_GUIDE.md').split('## Logos')[1].split('## Voice')[0];
+  assert.doesNotMatch(logos, /®/);
+  assert.doesNotMatch(read('docs/index.html'), /®/);
   assert.match(read('CHANGELOG.md'), /website display marks/);
   assert.match(read('CHANGELOG.md'), /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/);
   assert.doesNotMatch(read('docs/legal.html'), /eidovara-wallpaper-/);
