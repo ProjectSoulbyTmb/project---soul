@@ -136,37 +136,90 @@ export function kernelView(state, runtime) {
   };
 }
 
+export const KERNEL_ACTION_TYPES = Object.freeze([
+  'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
+  'open-diagnostics', 'pick-local-media', 'discover-apps',
+  'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
+  'open-external'
+]);
+
 function action(type, extra = {}) {
   return { type, auto: false, ...extra };
 }
 
-export function actionsForIntent(intent, overlay = {}) {
+function soulStep(overlay) {
+  return overlay.enabled
+    ? action('open-view', { view: 'identity', label: 'Soul identity' })
+    : action('open-setup', { label: 'Optional Soul setup' });
+}
+
+export function actionsForIntent(intent, overlay = {}, view = '') {
   switch (intent) {
     case 'apps':
-      return [action('open-view', { view: 'apps', label: 'Open Apps & Gaming', auto: true })];
+      return [
+        action('open-view', { view: 'apps', label: 'Open Apps & Gaming', auto: true }),
+        action('discover-apps', { label: 'Discover installed apps' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' })
+      ];
     case 'entertainment':
+      return [
+        action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
     case 'mood':
     case 'favorites':
     case 'watch':
     case 'gaming-ost':
     case 'study-ost':
     case 'surprise':
-      return [action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: intent === 'entertainment' })];
+      return [
+        action('open-view', { view: 'entertainment', label: 'Open Entertainment' }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
+    case 'local-media':
+      return [
+        action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
     case 'memory':
+    case 'remember':
+    case 'forget':
       return [action('open-view', { view: 'memory', label: 'Open Memory', auto: true })];
-    case 'identity':
     case 'identity-panel':
-      return [action('open-view', { view: 'identity', label: 'Identity & consent', auto: true })];
+      return [action('open-view', { view: 'identity', label: 'Identity & consent', auto: true }), soulStep(overlay)];
+    case 'identity':
+      return [action('open-view', { view: 'identity', label: 'Identity & consent' }), soulStep(overlay)];
     case 'settings':
-      return [action('open-view', { view: 'settings', label: 'Open Settings', auto: true })];
+      return [
+        action('open-view', { view: 'settings', label: 'Open Settings', auto: true }),
+        action('open-service', { label: 'Service settings' }),
+        action('open-updates', { label: 'Software updates' })
+      ];
+    case 'theme':
+      return [action('open-view', { view: 'settings', panel: 'settingsForm', label: 'Theme & language', auto: true })];
+    case 'backups':
+      return [action('open-view', { view: 'settings', panel: 'backupSection', label: 'Open backups', auto: true })];
+    case 'updates':
+      return [action('open-updates', { label: 'Software updates', auto: true })];
+    case 'service':
+      return [action('open-service', { label: 'Service settings', auto: true })];
     case 'status':
       return [action('open-diagnostics', { label: 'Show diagnostics', auto: true }), action('open-service', { label: 'Service settings' })];
     case 'setup':
-      return [action('open-setup', { label: 'Assistant setup', auto: true })];
+      return [action('open-setup', { label: overlay.enabled ? 'Adjust Soul setup' : 'Optional Soul setup', auto: true })];
     case 'accessibility':
-      return [action('open-view', { view: 'settings', label: 'Accessibility settings', auto: true })];
+      return [action('open-view', { view: 'settings', panel: 'assistantBehaviorForm', label: 'Accessibility settings', auto: true })];
     case 'presence':
-      return [action('open-view', { view: 'settings', label: 'Presence & voice', auto: true })];
+      return [action('open-view', { view: 'settings', panel: 'kernelCustomizeForm', label: 'Presence & voice', auto: true })];
+    case 'dashboard':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Open Dashboard', auto: true }),
+        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' }),
+        soulStep(overlay)
+      ];
+    case 'conversation':
+      return [action('open-view', { view: 'chat', label: 'Open conversation', auto: true })];
     case 'focus':
       return [
         action('open-view', { view: 'dashboard', label: 'Open Dashboard' }),
@@ -187,21 +240,96 @@ export function actionsForIntent(intent, overlay = {}) {
     case 'study':
     case 'create':
     case 'talk':
-      return [action('open-view', { view: 'dashboard', label: 'Stay on workspace' })];
+    case 'reassure':
+    case 'growth':
+      return [
+        action('open-view', { view: 'chat', label: 'Open conversation' }),
+        action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-view', { view: 'memory', label: 'Memory' })
+      ];
+    case 'hello':
+    case 'thanks':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-view', { view: 'chat', label: 'Conversation' }),
+        soulStep(overlay)
+      ];
     case 'gaming':
-      return [action('open-view', { view: 'apps', label: 'Apps & Gaming' })];
+      return [
+        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('discover-apps', { label: 'Discover installed apps' }),
+        action('open-setup', { label: overlay.enabled ? 'Adjust roles' : 'Optional Soul setup' })
+      ];
     case 'research':
       return [
         action('open-view', { view: 'research', label: 'Open Research', auto: true }),
-        action('open-view', { view: 'chat', label: 'Open conversation' })
+        action('open-view', { view: 'chat', label: 'Open conversation' }),
+        action('open-legal', { legal: 'privacy', label: 'Privacy notice' })
       ];
+    case 'here':
+      return suggestionsForView(view, overlay);
     default: {
       const entry = knowledgeEntry(intent);
       if (entry?.actions?.length) return entry.actions.map(item => action(item.type, item));
-      return overlay.enabled
-        ? [action('open-view', { view: 'identity', label: 'Soul identity' })]
-        : [action('open-setup', { label: 'Optional Soul setup' })];
+      return [soulStep(overlay), action('open-view', { view: 'dashboard', label: 'Dashboard' }), action('open-view', { view: 'apps', label: 'Apps & Gaming' })];
     }
+  }
+}
+
+export function suggestionsForView(view, overlay = {}) {
+  const current = String(view || 'dashboard');
+  switch (current) {
+    case 'apps':
+      return [
+        action('discover-apps', { label: 'Discover installed apps' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' }),
+        action('open-view', { view: 'settings', label: 'Settings' })
+      ];
+    case 'entertainment':
+      return [
+        action('pick-local-media', { label: 'Open local media' }),
+        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('open-view', { view: 'chat', label: 'Conversation' })
+      ];
+    case 'memory':
+      return [
+        action('open-view', { view: 'memory', label: 'Review memory' }),
+        action('open-view', { view: 'chat', label: 'Conversation' }),
+        action('open-view', { view: 'identity', label: 'Identity & consent' })
+      ];
+    case 'identity':
+      return [
+        action('open-view', { view: 'identity', label: 'Identity & Adult Mode' }),
+        soulStep(overlay),
+        action('open-legal', { legal: 'age', label: 'Age 18+ notice' })
+      ];
+    case 'settings':
+      return [
+        action('open-service', { label: 'Service settings' }),
+        action('open-updates', { label: 'Software updates' }),
+        action('open-view', { view: 'settings', panel: 'backupSection', label: 'Backups' }),
+        action('open-diagnostics', { label: 'Diagnostics' })
+      ];
+    case 'chat':
+      return [
+        action('open-view', { view: 'memory', label: 'Memory' }),
+        action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-legal', { legal: 'privacy', label: 'Privacy' })
+      ];
+    case 'research':
+      return [
+        action('open-view', { view: 'research', label: 'Open Research' }),
+        action('open-view', { view: 'chat', label: 'Conversation' }),
+        action('open-legal', { legal: 'privacy', label: 'Privacy' })
+      ];
+    default:
+      return [
+        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' }),
+        action('open-view', { view: 'memory', label: 'Memory' }),
+        action('open-view', { view: 'settings', label: 'Settings' }),
+        soulStep(overlay)
+      ];
   }
 }
 
@@ -226,10 +354,11 @@ export function soulOverlay(state = {}) {
   };
 }
 
-export function routeKernel(input, state, runtime = createRuntimeRegistry()) {
+export function routeKernel(input, state, runtime = createRuntimeRegistry(), { view } = {}) {
   const text = String(input || '');
   const overlay = soulOverlay(state);
   const kernel = migrateKernel(state?.kernel);
+  const currentView = String(view || '').slice(0, 40);
   const custom = matchCustomAction(text, kernel.registry.customActions);
   if (custom) {
     const intent = custom.intent || classifyWorkspaceIntent(custom.command);
@@ -244,7 +373,8 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry()) {
       action: custom,
       overlay,
       knowledgeReply: null,
-      usedKnowledge: false
+      usedKnowledge: false,
+      actions: actionsForIntent(intent, overlay, currentView)
     };
   }
   const workspace = classifyWorkspaceIntent(text);
@@ -259,7 +389,7 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry()) {
   const entry = productIntent ? knowledgeEntry(productIntent) : null;
   const usedKnowledge = Boolean(enabled && entry?.reply && (intent === 'general' || shouldUseKnowledgeReply(intent) || productIntent));
   const routedIntent = productIntent && (intent === 'general' || shouldUseKnowledgeReply(intent)) ? productIntent : intent;
-  const actions = actionsForIntent(routedIntent, overlay).map(item => {
+  const actions = actionsForIntent(routedIntent, overlay, currentView).map(item => {
     if (item.type === 'start-focus' && isFocusStartCommand(text)) return { ...item, auto: true };
     if (item.type === 'capture-scratch' && isScratchCaptureCommand(text)) return { ...item, auto: true };
     return item;
@@ -269,7 +399,7 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry()) {
     moduleId: mod?.id || null,
     enabled,
     source: usedKnowledge ? 'knowledge' : 'workspace',
-    view: mod?.ui?.view || (routedIntent === 'palette' || routedIntent === 'search' || routedIntent === 'cheatsheet' ? 'dashboard' : 'chat'),
+    view: routedIntent === 'here' ? (currentView || 'dashboard') : (mod?.ui?.view || (routedIntent === 'palette' || routedIntent === 'search' || routedIntent === 'cheatsheet' ? 'dashboard' : 'chat')),
     action: null,
     overlay,
     knowledgeReply: usedKnowledge ? entry.reply : null,
@@ -308,13 +438,19 @@ export function kernelPublicMeta(route) {
       type: String(item.type || ''),
       view: item.view || undefined,
       legal: item.legal || undefined,
+      panel: item.panel || undefined,
+      minutes: item.minutes || undefined,
       url: item.url ? String(item.url).slice(0, 500) : undefined,
       hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
       snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
       label: String(item.label || '').slice(0, 80),
       catalog: item.catalog === true ? true : undefined,
       auto: item.type === 'open-external' ? false : Boolean(item.auto)
-    })).filter(item => item.type && (item.type !== 'open-external' || /^https:\/\//i.test(item.url || ''))) : [],
+    })).filter(item => item.type && (
+      KERNEL_ACTION_TYPES.includes(item.type)
+      || (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))
+      || (item.type === 'play-online' && /^https:\/\//i.test(item.url || ''))
+    )) : [],
     soul: {
       enabled: Boolean(value.overlay?.enabled),
       name: value.overlay?.enabled ? String(value.overlay?.name || 'Soul') : null,

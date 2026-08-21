@@ -269,6 +269,7 @@
   function mediaSignal(event, item = currentItem()) {
     if (!item || !['audio', 'video'].includes(item.type)) return;
     window.soul?.recordMedia?.({ event, type: item.type, title: item.title, sourceUrl: item.sourceUrl }).catch(() => {});
+    window.eidovaraChrome?.recordMedia?.(item);
   }
 
   function applySrc(el, url) {
@@ -573,7 +574,6 @@
   $('#mediaLoopBtn')?.addEventListener('click', () => { loop = !loop; updateTransport(); });
   $('#mediaShuffleBtn')?.addEventListener('click', () => { shuffle = !shuffle; updateTransport(); });
   $('#mediaRate')?.addEventListener('change', e => applyRate(e.currentTarget.value));
-  $('#mediaSleep')?.addEventListener('change', e => setSleep(e.currentTarget.value));
   $('#mediaFullscreenBtn')?.addEventListener('click', () => {
     const video = $('#videoPlayer');
     if (currentItem()?.type !== 'video' || !video) return;
@@ -644,6 +644,7 @@
     applyAdultLock,
     handleEnginePlayback,
     currentPlayer,
+    currentItem,
     snapshot,
     isAllowedPlaybackUrl,
     officialSearchUrl

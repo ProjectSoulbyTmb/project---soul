@@ -13,6 +13,8 @@ const assistantPayload = (extra = {}) => {
 
 function activeConversation(){ return state?.conversations?.find(c=>c.id===state.activeConversationId) || state?.conversations?.[0]; }
 function fmt(ts){ try{return new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date(ts));}catch{return '';} }
+function currentView(){ return Object.keys(views).find(name=>views[name]?.classList.contains('active')) || 'dashboard'; }
+function reducedMotion(){ return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches); }
 function setView(name){
   if(!views[name])return;
   Object.values(views).forEach(v=>v.classList.remove('active'));
@@ -20,7 +22,9 @@ function setView(name){
   $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]);
   $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
   if(innerWidth<861) $('#sidebar').classList.remove('open');
+  window.eidovaraCompanion?.renderFollowups?.(name);
   if(name==='research') renderResearchView();
+  window.eidovaraChrome?.recordView?.(name);
 }
 function el(tag, cls, text){ const n=document.createElement(tag); if(cls)n.className=cls; if(text!==undefined)n.textContent=text; return n; }
 function latestResearch(){
@@ -62,12 +66,29 @@ function appendKernelActions(target, actions){
 }
 function runKernelAction(action){
   if(!action||!action.type)return;
-  if(action.type==='open-view'&&action.view) setView(action.view);
-  else if(action.type==='open-legal'&&typeof window.eidovaraShowLegal==='function') window.eidovaraShowLegal(action.legal||'about');
+  const smooth=reducedMotion()?'auto':'smooth';
+  if(action.type==='open-view'&&action.view){
+    setView(action.view);
+    if(action.panel){
+      const node=document.getElementById(action.panel);
+      node?.scrollIntoView({behavior:smooth,block:'center'});
+      node?.querySelector?.('input, select, textarea, button')?.focus?.();
+    }
+    if(action.view==='dashboard') $('#companionInput')?.focus();
+    if(action.view==='chat') $('#messageInput')?.focus();
+  }
+  else if(action.type==='open-legal') showLegal(action.legal||'about');
   else if(action.type==='open-setup') openSetup(true);
   else if(action.type==='open-diagnostics'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
-  else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'}); }
-  else if(action.type==='open-updates'){ setView('settings'); $('#checkUpdateBtn')?.focus(); }
+  else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:smooth,block:'center'}); $('#serviceUrlInput')?.focus(); }
+  else if(action.type==='open-updates'){ setView('settings'); $('#checkUpdateBtn')?.scrollIntoView({behavior:smooth,block:'center'}); $('#checkUpdateBtn')?.focus(); }
+  else if(action.type==='pick-local-media'){ setView('entertainment'); $('#openLocalMediaBtn')?.click(); }
+  else if(action.type==='discover-apps'){ setView('apps'); $('#discoverAppsBtn')?.click(); }
+  else if(action.type==='start-focus'){ window.eidovaraLayers?.startFocus?.(action.minutes || 25, action.label); }
+  else if(action.type==='stop-focus'){ window.eidovaraLayers?.stopFocus?.(); }
+  else if(action.type==='capture-scratch'){ window.eidovaraLayers?.captureScratch?.(); }
+  else if(action.type==='open-palette'){ openPalette(); }
+  else if(action.type==='open-cheatsheet'){ openShortcutSheet(); }
   else if(action.type==='open-external'&&action.url) openResearchLink(action.url, action.label, { catalog: action.catalog });
   else if(action.type==='play-online'&&action.url) playMedia([{ type: action.mediaType || 'audio', title: action.title, url: action.url, sourceUrl: action.url }], 0, { alreadyConfirmed: true });
 }
@@ -80,7 +101,7 @@ async function openAdmin(){const status=await window.soul.adminStatus();$('#admi
 function renderConversations(){ const list=$('#conversationList'); list.textContent=''; const onlyOne=(state.conversations||[]).length<=1; for(const c of state.conversations){ const row=el('button','conversation'+(c.id===state.activeConversationId?' active':'')); row.type='button'; const label=el('span','label',c.title||'Conversation'); const del=el('button','delete','×'); del.type='button'; del.title='Delete conversation'; del.hidden=onlyOne; del.disabled=onlyOne; del.addEventListener('click',async e=>{e.stopPropagation(); if(state.conversations.length<=1)return; state=await window.soul.deleteConversation(c.id); renderAll();}); row.append(label,del); row.addEventListener('click',async()=>{state=await window.soul.selectConversation(c.id); renderAll();setView('chat');}); list.append(row); } }
 function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>openResearchLink(url));return a;}
 function currentPlayer(){return window.eidovaraNowPlaying?.currentPlayer?.();}
-function mediaSignal(event,item){if(!item||!['audio','video'].includes(item.type))return;window.soul.recordMedia({event,type:item.type,title:item.title,sourceUrl:item.sourceUrl}).catch(()=>{});}
+function mediaSignal(event,item){if(!item||!['audio','video'].includes(item.type))return;window.soul.recordMedia({event,type:item.type,title:item.title,sourceUrl:item.sourceUrl}).catch(()=>{});window.eidovaraChrome?.recordMedia?.(item);}
 function playMedia(items,index,opts={}){return window.eidovaraNowPlaying?.play?.(items,index,opts);}
 function renderResearch(target,research){
   if(!research)return;
@@ -268,13 +289,7 @@ function companionActionButton(action){
   return b;
 }
 function applyCompanionAction(action){
-  if(!action||!action.type)return;
-  if(action.type==='open-view'&&action.view){ if(action.view==='dashboard'){ setView('dashboard'); $('#companionInput')?.focus(); } else setView(action.view); }
-  else if(action.type==='open-legal') showLegal(action.legal||'about');
-  else if(action.type==='open-setup') openSetup(true);
-  else if(action.type==='open-diagnostics'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
-  else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'}); }
-  else if(action.type==='open-updates'){ setView('settings'); $('#checkUpdateBtn')?.scrollIntoView({behavior:'smooth',block:'center'}); }
+  runKernelAction(action);
 }
 function applyCompanionResult(res,{applyAuto=false}={}){
   lastCompanion=res?.companion||lastCompanion;
@@ -353,7 +368,7 @@ function renderEntertainment(){
     else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
   }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';if($('#onlineMediaPolicy'))$('#onlineMediaPolicy').checked=c.onlineMedia==='enabled';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';if($('#onlineMediaPolicy'))$('#onlineMediaPolicy').checked=c.onlineMedia==='enabled';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -374,11 +389,12 @@ async function send(text, opts={}){
   }
   const askAssist=$('#assistThisMessage')?.checked===true || (surface==='companion' && $('#companionAssistThis')?.checked===true);
   try{
-    const res=await window.soul.send(text);
+    const res=await window.soul.send(text, { view: currentView() });
     state=res.state;
     lastCompanion=res.companion||lastCompanion;
     renderAll();
     window.eidovaraCompanion?.applyKernelActions?.(res.kernel?.actions);
+    window.eidovaraCompanion?.syncHistory?.();
     const replies=(activeConversation()?.messages||[]).filter(x=>x.role==='assistant');
     if(surface!=='companion') speakSoul(replies.at(-1)?.content);
     if(res.providerError){
@@ -576,6 +592,8 @@ const PALETTE_COMMANDS = [
   { id:'modules', title:'Modules', hint:'Local feature toggles', run:()=>jumpSettings('#kernelCustomizeForm') },
   { id:'behavior', title:'Soul behavior', hint:'Tone, research, media confirm', run:()=>jumpSettings('#assistantBehaviorForm') },
   { id:'backups', title:'Backups', hint:'Local snapshots', run:()=>jumpSettings('#backupSection') },
+  { id:'chrome', title:'Desktop chrome', hint:'Tray, on-top, Windows open-at-login', run:()=>jumpSettings('#desktopChromeForm') },
+  { id:'notices', title:'In-app notices', hint:'Local events, not OS spam', run:()=>window.eidovaraChrome?.openNotices?.() },
   { id:'legal', title:'About & legal', hint:'18+, unsigned, no payments', run:()=>showLegal('about') },
   { id:'shortcuts', title:'Keyboard shortcuts', hint:'Ctrl+/', run:()=>openShortcutSheet() }
 ];
@@ -738,6 +756,7 @@ window.eidovaraShowLegal=showLegal;
 window.eidovaraOpenPalette=openPalette;
 window.eidovaraOpenShortcutSheet=openShortcutSheet;window.eidovaraRenderDashboard=renderDashboard;
 window.eidovaraRenderAll=renderAll;
+window.eidovaraActiveConversation=()=>activeConversation()?.messages||[];
 window.eidovaraReloadState=async()=>{state=await window.soul.snapshot();renderAll();};
 $('#legalAboutBtn').addEventListener('click',()=>showLegal('about'));
 $$('#legalOverlay [data-legal]').forEach(b=>b.addEventListener('click',()=>showLegal(b.dataset.legal)));

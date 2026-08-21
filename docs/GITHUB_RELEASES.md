@@ -12,12 +12,12 @@ Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x
 ```powershell
 git checkout main
 git pull origin main
-git tag v0.19.0
-git push origin v0.19.0
+git tag v0.19.1
+git push origin v0.19.1
 ```
 
 3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer`, writes the update manifest and evidence, and publishes `Eidovara-${version}-Windows-x64-Setup.exe` to the GitHub Release. Users download that `.exe`; they do not extract a ZIP.
-4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button. Current SHA-256: `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. Size about 101.3 MiB.
+4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button. Current SHA-256: `F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310`. Size about 101.3 MiB.
 
 Do not reuse a release tag after changing its files. Increment the version and create a new tag so installed applications can compare versions safely.
 
