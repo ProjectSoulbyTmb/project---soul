@@ -121,17 +121,25 @@
       failClosed(`Checking ${base} …`);
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 8000);
+      const boundedJson = async res => {
+        const maxBytes = 32768;
+        const declared = Number(res.headers.get('content-length') || 0);
+        if (declared > maxBytes) return {};
+        const raw = await res.text();
+        if (raw.length > maxBytes) return {};
+        try { return JSON.parse(raw); } catch { return {}; }
+      };
       try {
         const [healthRes, statusRes] = await Promise.all([
           fetch(`${base}/health`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }),
           fetch(`${base}/v1/status`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } })
         ]);
-        const health = await healthRes.json().catch(() => ({}));
-        const status = await statusRes.json().catch(() => ({}));
+        const health = await boundedJson(healthRes);
+        const status = await boundedJson(statusRes);
         const lines = [
           `Base: ${base}`,
           `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
-          `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
+          `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
           'This website never sends desktop conversations. v0.18.0 payments stay off.'
         ];
         failClosed(lines.join('\n'));

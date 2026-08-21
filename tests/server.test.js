@@ -19,6 +19,8 @@ test('server health is stateless and sends hardened headers', async () => {
   const res = await worker.fetch(new Request('https://api.test/health'));
   const body = await res.json();
   assert.equal(body.status, 'ok');
+  assert.equal(body.checkoutEnabled, false);
+  assert.equal(body.conversationsStored, false);
   assert.equal(res.headers.get('x-frame-options'), 'DENY');
   assert.match(res.headers.get('strict-transport-security'), /max-age=/);
   assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);

@@ -94,6 +94,8 @@ test('site assist and Worker share desktop path-strip and fail-closed fetch rule
   assert.match(assist, /redirect: 'error'/);
   assert.match(site, /redirect: 'error'/);
   assert.match(service, /redirect: 'error'/);
+  assert.match(assist, /32768/);
+  assert.match(site, /32768/);
   assert.match(worker, /checkoutEnabled: false/);
   assert.match(worker, /conversationsStored: false/);
   assert.doesNotMatch(assist, /dreambot333\.workers\.dev/);
