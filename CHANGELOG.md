@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Companion and conversation turns run public web lookup during `engine.respond` after an explicit internet/web/online request — not only the Research panel. Wikipedia/Wikimedia, optional Internet Archive catalog search, optional Premium Brave key (local testing gate, not a live payment unlock), and a bounded HTTPS fetch of a user-provided or result URL (https only, no credentials, redirects refused, size/timeout caps). The assistant reply cites sanitized titles, snippets, and hostnames. Source chips in the companion log confirm, then use `openExternal`. Readable text extracts stay sanitized (`textContent`, never raw `innerHTML`). Honest copy: public lookup after you ask, not a full-internet index. Fail closed on offline/timeout/blocked host; the workspace keeps working. This path does not call `/v1/assist` unless the existing Assist opt-in is already on and the user asked Assist. Assist is not Soul.
+
 ## v0.18.3
 
 - Professional consumer polish on the running desktop app and public site: after 18+, one Dashboard start path (Soul vs Assist), grouped Settings with short help, Ctrl+K jump list, Ctrl+/ cheatsheet, and Ctrl+A still away from text fields. Empty states, errors, and success copy stay plain language. Confirm-to-launch is unchanged. Age 18+, unsigned Windows, and no live payments stay visible without all-caps spam.

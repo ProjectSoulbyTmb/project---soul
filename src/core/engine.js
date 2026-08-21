@@ -7,9 +7,9 @@ import { updateRelationship } from './relationship.js';
 import { uid } from './schema.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { buildSystemContext } from '../providers/context.js';
-import { researchInternet } from '../providers/internet.js';
-import { entertainmentSummary, recordMediaEvent } from './entertainment.js';
-import { isExplicitInternetRequest } from './workspace.js';
+import { researchInternet, researchOpenActions, citeResearchInReply } from '../providers/internet.js';
+import { entertainmentSummary, recordMediaEvent, discoverMedia, mergeMediaDiscovery } from './entertainment.js';
+import { isExplicitInternetRequest, isMediaDiscoveryRequest } from './workspace.js';
 import {
   configureKernelState,
   createRuntimeRegistry,
@@ -18,6 +18,7 @@ import {
   kernelHeartbeat,
   kernelPublicMeta,
   kernelView,
+  researchResultActions,
   routeKernel,
   startKernelSession
 } from './kernel.js';
@@ -160,35 +161,53 @@ export class SoulEngine {
     let providerError = null;
     let internetError = null;
     let webResearch = null;
+    let mediaDiscovery = null;
     if (!reply && route.enabled === false && route.moduleId) {
       reply = disabledModuleReply(route, locale);
     }
     if (!reply && route.knowledgeReply) reply = route.knowledgeReply;
     if (!reply) {
-      if (route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text)) {
+      const wantRemote = route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text);
+      if (wantRemote) {
         try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); }
+      }
+      if (wantRemote || isMediaDiscoveryRequest(text) || webResearch) {
+        mediaDiscovery = discoverMedia(text, {
+          entertainment: this.state.entertainment,
+          localLibrary: this.internetOptions?.localLibrary,
+          query: webResearch?.query
+        });
+        if (webResearch) webResearch = mergeMediaDiscovery(webResearch, mediaDiscovery);
       }
       const history = conv.messages.slice(-24).map(m => ({ role: m.role, content: m.content }));
       try {
         const researchContext = webResearch ? `\n\nCurrent internet research (cite the numbered source links and do not invent missing facts):\n${webResearch.context}` : '';
-        reply = await this.provider.reply({ input: text, state: this.state, webResearch, messages: [{ role: 'system', content: buildSystemContext(this.state) + researchContext }, ...history] });
+        const discoveryContext = !webResearch && mediaDiscovery ? `\n\nLocal library and official search links (cite these; do not invent streams or inject into other players):\n${mediaDiscovery.context}` : '';
+        reply = await this.provider.reply({ input: text, state: this.state, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, messages: [{ role: 'system', content: buildSystemContext(this.state) + researchContext + discoveryContext }, ...history] });
       } catch (err) {
         providerError = String(err?.message || err);
         const fallback = new OfflineProvider();
-        reply = await fallback.reply({ input: text, state: this.state, messages: history });
+        reply = await fallback.reply({ input: text, state: this.state, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, messages: history });
         reply += `\n\n(Model connection unavailable; continuing in offline mode.)`;
       }
     }
     if (!policyReply) {
       reply = applyPhrasing(reply, this.state.kernel?.registry?.phrasing, locale);
+      reply = citeResearchInReply(reply, webResearch || mediaDiscovery, internetError);
     }
 
+    const displayResearch = webResearch || mediaDiscovery;
+    const kernelActions = route.intent === 'research'
+      ? [...researchResultActions(webResearch || {}, route.overlay).filter(item => item.type !== 'open-external'), ...researchOpenActions(displayResearch)]
+      : [...(route.actions || []), ...researchOpenActions(mediaDiscovery && !webResearch ? mediaDiscovery : null)];
+    const kernel = kernelPublicMeta({ ...route, actions: kernelActions, view: route.intent === 'research' ? 'research' : route.view });
+    if (webResearch) kernel.webLookup = true;
     const done = new Date().toISOString();
-    conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch });
+    conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, actions: kernel.actions });
     conv.updatedAt = done;
-    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId } });
+    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId, webLookup: Boolean(webResearch) } });
     if (this.state.audit.length > 5000) this.state.audit = this.state.audit.slice(-5000);
     this.store.save(this.state);
-    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, kernel: kernelPublicMeta(route), adultAllowed: adultAllowed(this.state), state: this.snapshot() };
+    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, kernel, adultAllowed: adultAllowed(this.state), state: this.snapshot() };
   }
 }

@@ -7,6 +7,8 @@ const LOCAL_WORKSPACE_INTENTS = new Set([
 
 export { LOCAL_WORKSPACE_INTENTS };
 
+export const MEDIA_DISCOVERY_INTENTS = new Set(['mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise']);
+
 export function isExplicitInternetRequest(input) {
   const text = String(input || '');
   if (!text.trim()) return false;
@@ -15,6 +17,16 @@ export function isExplicitInternetRequest(input) {
     || /\b(?:internet|web|online)\s+(?:search|research)\b/i.test(text)
     || /\b(?:from|on)\s+(?:the\s+)?(?:internet|web|online)\b/i.test(text)
     || /\bsearch the (?:internet|web)\b/i.test(text)
+  );
+}
+
+export function isMediaDiscoveryRequest(input) {
+  const text = String(input || '');
+  if (!text.trim()) return false;
+  if (MEDIA_DISCOVERY_INTENTS.has(classifyWorkspaceIntent(text))) return true;
+  return (
+    /\b(?:youtube|spotify|internet\s+archive|archive\.org)\b/i.test(text)
+    || /\b(?:play|find|search|look\s*up|show|queue|listen)\b[\s\S]{0,100}\b(?:music|songs?|track|tracks|video|videos?|soundtrack|audio|mix)\b/i.test(text)
   );
 }
 

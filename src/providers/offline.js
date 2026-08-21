@@ -1,6 +1,7 @@
 import { activeMemories } from '../core/memory.js';
 import { mixBriefing } from '../core/entertainment.js';
 import { classifyWorkspaceIntent } from '../core/workspace.js';
+import { HONEST_RESEARCH_COPY } from './internet.js';
 
 export { classifyWorkspaceIntent as detectOfflineIntent };
 
@@ -91,22 +92,27 @@ function accessHint(state, locale) {
 }
 
 function researchReply(webResearch, locale) {
-  const lines = (webResearch.sources || []).slice(0, 4).map((source, index) => `${index + 1}. ${source.title} — ${source.description}\n${source.url}`).join('\n\n');
+  const lines = (webResearch.sources || []).slice(0, 4).map((source, index) => {
+    const host = source.hostname ? ` (${source.hostname})` : '';
+    const extract = source.extract && source.extract !== source.description ? `\n${source.extract}` : '';
+    return `${index + 1}. ${source.title}${host} — ${source.description}${extract}\n${source.url}`;
+  }).join('\n\n');
   const media = webResearch.media?.length ? ({
     en: `\n\nI also found ${webResearch.media.length} requested media result${webResearch.media.length === 1 ? '' : 's'} below.`,
     es: `\n\nTambién encontré ${webResearch.media.length} resultado(s) de medios solicitados abajo.`,
     fr: `\n\nJ’ai aussi trouvé ${webResearch.media.length} média(s) demandé(s) ci-dessous.`,
     de: `\n\nUnten sind ${webResearch.media.length} angeforderte Medienresultate.`
   }[locale]) : '';
+  const honest = webResearch.disclaimer || HONEST_RESEARCH_COPY;
   return {
-    en: `I searched public internet sources for “${webResearch.query}.”\n\n${lines}${media}`,
-    es: `Busqué fuentes públicas de internet para “${webResearch.query}.”\n\n${lines}${media}`,
-    fr: `J’ai cherché des sources internet publiques pour « ${webResearch.query} ».\n\n${lines}${media}`,
-    de: `Ich habe öffentliche Internetquellen zu „${webResearch.query}“ durchsucht.\n\n${lines}${media}`
+    en: `I looked up public pages for “${webResearch.query}” after you asked. ${honest}\n\n${lines}${media}`,
+    es: `Busqué fuentes públicas de internet para “${webResearch.query}.” ${honest}\n\n${lines}${media}`,
+    fr: `J’ai cherché des sources internet publiques pour « ${webResearch.query} ». ${honest}\n\n${lines}${media}`,
+    de: `Ich habe öffentliche Internetquellen zu „${webResearch.query}“ durchsucht. ${honest}\n\n${lines}${media}`
   }[locale];
 }
 
-export function composeOfflineReply({ input, state, webResearch } = {}) {
+export function composeOfflineReply({ input, state, webResearch, mediaDiscovery } = {}) {
   const locale = localeOf(state);
   const mode = (phrasingOf(state).brevity || 0) >= 70 ? 'concise' : lengthOf(state);
   const tone = toneOf(state);
@@ -208,7 +214,7 @@ export function composeOfflineReply({ input, state, webResearch } = {}) {
     const policy = state?.assistant?.capabilities?.webResearch || 'ask';
     return pack(locale, mode, { en: 'I can research on an explicit request using public sources, with citations. I will not invent missing facts.', es: 'Puedo investigar con una petición explícita en fuentes públicas, con citas. No inventaré hechos faltantes.', fr: 'Je peux rechercher sur demande explicite via des sources publiques, avec citations. Je n’invente pas les faits manquants.', de: 'Ich recherchiere auf ausdrückliche Bitte in öffentlichen Quellen mit Zitaten. Fehlende Fakten erfinde ich nicht.' }[locale], [
       { en: 'Ask: “Search the internet for …” plus the topic. Pictures, audio, or video need those words in the request.', es: 'Pide: “Search the internet for …” más el tema. Fotos, audio o video necesitan esas palabras en la petición.', fr: 'Demandez : « Search the internet for … » plus le sujet. Images, audio ou vidéo exigent ces mots.', de: 'Fragen Sie: „Search the internet for …“ plus Thema. Bilder, Audio oder Video brauchen diese Wörter.' }[locale],
-      policy === 'disabled' ? { en: 'Web research is currently disabled in Soul behavior settings.', es: 'La investigación web está desactivada en el comportamiento de Soul.', fr: 'La recherche web est actuellement désactivée dans le comportement de Soul.', de: 'Webrecherche ist in den Soul-Verhaltenseinstellungen deaktiviert.' }[locale] : { en: 'Without a Premium search key, results come from Wikipedia and Wikimedia. A configured key can widen that.', es: 'Sin clave Premium, los resultados vienen de Wikipedia y Wikimedia. Una clave configurada puede ampliarlos.', fr: 'Sans clé Premium, les résultats viennent de Wikipedia et Wikimedia. Une clé peut élargir cela.', de: 'Ohne Premium-Suchschlüssel kommen Ergebnisse von Wikipedia und Wikimedia. Ein konfigurierter Schlüssel kann das erweitern.' }[locale],
+      policy === 'disabled' ? { en: 'Web research is currently disabled in Soul behavior settings.', es: 'La investigación web está desactivada en el comportamiento de Soul.', fr: 'La recherche web est actuellement désactivée dans le comportement de Soul.', de: 'Webrecherche ist in den Soul-Verhaltenseinstellungen deaktiviert.' }[locale] : { en: 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open. A Premium Brave key is a local test gate, not a live payment unlock.', es: 'Consulta web pública cuando lo pides. No es un índice de todo internet. Wikipedia/Wikimedia, búsqueda con clave opcional y páginas que abres. La clave Brave Premium es una prueba local, no un cobro.', fr: 'Consultation web publique après votre demande. Pas un index de tout internet. Wikipedia/Wikimedia, recherche optionnelle avec clé, et pages que vous ouvrez. La clé Brave Premium est un test local, pas un paiement.', de: 'Öffentliche Websuche nach Ihrer Bitte. Kein Gesamtindex des Internets. Wikipedia/Wikimedia, optionale Schlüsselsuche und Seiten, die Sie öffnen. Der Premium-Brave-Schlüssel ist ein lokaler Test, keine Live-Zahlung.' }[locale],
       { en: 'Name the question, time bound if any, and whether you need images or a playable clip.', es: 'Nombra la pregunta, el límite temporal si hay, y si necesitas imágenes o un clip.', fr: 'Nommez la question, la borne temporelle, et si vous voulez des images ou un clip.', de: 'Nennen Sie die Frage, zeitliche Grenze und ob Bilder oder ein Clip nötig sind.' }[locale]
     ], { en: 'I need a specific topic before I can search. What should I look up?', es: 'Necesito un tema concreto antes de buscar. ¿Qué consulto?', fr: 'Il me faut un sujet précis avant de chercher. Que dois-je consulter ?', de: 'Ich brauche ein konkretes Thema vor der Suche. Wonach soll ich sehen?' }[locale]);
   }

@@ -25,8 +25,10 @@ Network access is user-directed except for the official update-manifest check:
 
 | Leaves the device | When | What is sent |
 | --- | --- | --- |
-| Wikipedia / Wikimedia | Explicit internet, web, or online research request | Search terms, IP address, application user agent |
-| Brave Search (Premium test gate) | Explicit research **and** a user-supplied key while Premium testing is on | Search terms, API credential, IP address |
+| Wikipedia / Wikimedia | Explicit internet, web, or online research request from the companion, conversation, or Research panel | Search terms, IP address, application user agent |
+| Internet Archive | Explicit internet/web/online research request | Search terms, IP address, application user agent |
+| User-provided or result HTTPS page | Explicit research that includes an HTTPS URL, or a bounded in-app text extract | URL request, IP address, application user agent. No credentials. Redirects refused. |
+| Brave Search (Premium test gate) | Explicit research **and** a user-supplied key while Premium testing is on. Not a live payment unlock. | Search terms, API credential, IP address |
 | User-pasted local model endpoint (loopback) | You send a chat while Local is selected | Conversation context and model name on loopback |
 | User-pasted HTTPS `/chat/completions` endpoint | You send a chat while Compatible/Premium is selected | Conversation context, model name, credential if you stored one |
 | GitHub official release channel | Startup or manual update check; user-approved installer download | App version via user agent, IP address; installer bytes after you confirm |

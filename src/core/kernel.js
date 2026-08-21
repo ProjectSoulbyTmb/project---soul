@@ -156,7 +156,10 @@ export function actionsForIntent(intent, overlay = {}) {
     case 'gaming':
       return [action('open-view', { view: 'apps', label: 'Apps & Gaming' })];
     case 'research':
-      return [action('open-view', { view: 'chat', label: 'Open conversation' })];
+      return [
+        action('open-view', { view: 'research', label: 'Open Research', auto: true }),
+        action('open-view', { view: 'chat', label: 'Open conversation' })
+      ];
     default: {
       const entry = knowledgeEntry(intent);
       if (entry?.actions?.length) return entry.actions.map(item => action(item.type, item));
@@ -231,6 +234,23 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry()) {
   };
 }
 
+export function researchResultActions(webResearch = {}, overlay = {}) {
+  const actions = actionsForIntent('research', overlay);
+  for (const source of (webResearch?.sources || []).slice(0, 6)) {
+    if (!source?.url || !/^https:\/\//i.test(source.url)) continue;
+    const host = String(source.hostname || '').slice(0, 80);
+    const title = String(source.title || host || 'Source').slice(0, 60);
+    actions.push(action('open-external', {
+      url: source.url,
+      hostname: host,
+      snippet: String(source.description || source.extract || '').slice(0, 180),
+      label: host ? `${title} · ${host}`.slice(0, 80) : title,
+      auto: false
+    }));
+  }
+  return actions;
+}
+
 export function kernelPublicMeta(route) {
   const value = route && typeof route === 'object' ? route : {};
   return {
@@ -244,9 +264,12 @@ export function kernelPublicMeta(route) {
       type: String(item.type || ''),
       view: item.view || undefined,
       legal: item.legal || undefined,
+      url: item.url ? String(item.url).slice(0, 500) : undefined,
+      hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
+      snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
       label: String(item.label || '').slice(0, 80),
-      auto: Boolean(item.auto)
-    })).filter(item => item.type) : [],
+      auto: item.type === 'open-external' ? false : Boolean(item.auto)
+    })).filter(item => item.type && (item.type !== 'open-external' || /^https:\/\//i.test(item.url || ''))) : [],
     soul: {
       enabled: Boolean(value.overlay?.enabled),
       name: value.overlay?.enabled ? String(value.overlay?.name || 'Soul') : null,
@@ -256,7 +279,8 @@ export function kernelPublicMeta(route) {
     },
     localOnly: true,
     network: false,
-    conversationsSent: false
+    conversationsSent: false,
+    webLookup: false
   };
 }
 

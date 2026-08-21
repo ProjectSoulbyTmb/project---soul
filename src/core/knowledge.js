@@ -28,7 +28,7 @@ const ENTRIES = {
   },
   premium: {
     title: 'Free vs Premium',
-    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research after an explicit internet/web/online request, and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v0.18.3.',
+    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public web lookup after an explicit internet/web/online request (not a full-internet index: Wikipedia/Wikimedia plus optional keyed search and pages you open), and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. Brave is not a live payment unlock. No live checkout unlocks Premium in v0.18.3.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   },
   download: {
@@ -72,7 +72,7 @@ const ENTRIES = {
   },
   privacy: {
     title: 'Privacy pointers',
-    reply: 'This is not legal advice. Conversations, memories, settings, and the 18+ flag stay on this device. No owner-operated accounts or telemetry. What can leave: explicit Wikipedia/Wikimedia research, optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /v1/health /v1/config /v1/status after you paste a service URL, and optional /v1/assist only after a separate opt-in. Conversations are not sent by default. No payment-card collection.',
+    reply: 'This is not legal advice. Conversations, memories, settings, and the 18+ flag stay on this device. No owner-operated accounts or telemetry. What can leave: public web lookup after you ask (Wikipedia/Wikimedia, optional keyed search, and HTTPS pages you open — not a full-internet index), optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /v1/health /v1/config /v1/status after you paste a service URL, and optional /v1/assist only after a separate opt-in. Conversations are not sent by default. No payment-card collection.',
     actions: [{ type: 'open-legal', legal: 'privacy', label: 'Privacy notice' }]
   },
   status: {
@@ -87,7 +87,7 @@ const ENTRIES = {
   },
   offline: {
     title: 'Offline workspace',
-    reply: 'Free / Offline Soul and this workspace work with no cloud URL. Profiles, conversations, memories, and backups stay in the Windows application-data directory. Explicit internet/web/online research is the exception, and only after you ask. If a connected model endpoint fails, replies fall back to offline mode. The kernel stays the source of truth even when a Worker is attached.',
+    reply: 'Free / Offline Soul and this workspace work with no cloud URL. Profiles, conversations, memories, and backups stay in the Windows application-data directory. Public web lookup after you ask is the exception — not a full-internet index — and only after an explicit internet/web/online request. If a connected model endpoint fails, replies fall back to offline mode. The kernel stays the source of truth even when a Worker is attached.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   }
 };

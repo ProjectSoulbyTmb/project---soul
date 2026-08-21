@@ -11,8 +11,51 @@
   color: var(--muted);
   font-weight: 600;
 }
-.research-source { display: grid; gap: 3px; }
-.research-source small { color: var(--muted); line-height: 1.4; }
+.research-copy {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.research-card {
+  border-radius: var(--radius-lg);
+  background: var(--fill-tertiary);
+  padding: 12px;
+  display: grid;
+  gap: 6px;
+}
+.research-card strong { font-size: 15px; letter-spacing: -0.02em; }
+.research-host {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+.research-snippet, .research-extract {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.research-extract { color: var(--muted); }
+.research-form { margin: 0 0 16px; display: grid; gap: 10px; }
+.research-results { display: grid; gap: 12px; }
+.kernel-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+.kernel-chip {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--btn-gray);
+  color: var(--text);
+  padding: 8px 12px;
+  cursor: pointer;
+  min-height: 36px;
+  font-weight: 600;
+  font-size: 12px;
+}
 .web-link {
   border: 0;
   background: transparent;

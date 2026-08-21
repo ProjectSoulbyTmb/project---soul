@@ -10,9 +10,11 @@ Network access is user-directed except the official GitHub update-manifest check
 
 | Destination | Trigger | Data sent |
 | --- | --- | --- |
-| `en.wikipedia.org` | Explicit internet/web/online research request | Search terms, IP address, application user agent |
+| `en.wikipedia.org` | Explicit internet/web/online research request from the companion, conversation, or Research panel | Search terms, IP address, application user agent |
 | `commons.wikimedia.org` and `upload.wikimedia.org` | Explicit image/audio/video request or playback | Search terms or media URL request, IP address, application user agent |
-| `api.search.brave.com` | Explicit web/image request when a Premium Brave Search key is configured | Search terms, API credential, IP address |
+| `archive.org` | Explicit internet/web/online research request (public catalog search, not a crawl of the whole internet) | Search terms, IP address, application user agent |
+| User-provided or result HTTPS page | Explicit research request that includes an HTTPS URL, or a bounded readable extract of a result URL | URL request, IP address, application user agent. No credentials. Redirects refused. |
+| `api.search.brave.com` | Explicit web/image request when a Premium Brave Search key is configured (local testing gate, not a live payment unlock) | Search terms, API credential, IP address |
 | User-configured local model (`127.0.0.1` / `localhost` / `::1`, typically Ollama `/api/chat`) | User sends a conversation while Local is selected | Conversation context and selected model on loopback |
 | User-configured Premium HTTPS `/chat/completions` endpoint | User sends a conversation while Compatible is selected | Conversation context, selected model, credential when required |
 | Configured Eidovara service `GET /v1/health` (fallback `GET /health`), `GET /v1/config`, `GET /v1/status` | After 18+ confirmation: launch retry, Settings **Connect**, or Ctrl+A **Test service**. Default base `https://api.eidovara.org`; paste another HTTPS base to override | No conversations or payment data; health/config/status JSON only |
@@ -31,6 +33,8 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 **Allowed to document and keep using (already implemented):**
 
 - Explicit Wikipedia/Wikimedia research
+- Internet Archive catalog search after an explicit internet/web/online request
+- Bounded HTTPS page fetch (user-provided or result URL) after that same explicit request
 - User-pasted HTTPS (or loopback) model providers
 - Premium Brave Search with a user-supplied key
 - Official GitHub update checks and user-approved downloads

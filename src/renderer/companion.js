@@ -245,6 +245,7 @@
     applyKernelActions(actions) {
       for (const item of actions || []) {
         if (!item.auto) continue;
+        if (item.type === 'open-external') continue;
         if (item.type === 'open-view' && item.view && typeof window.eidovaraSetView === 'function') window.eidovaraSetView(item.view);
         if (item.type === 'open-setup' && typeof window.eidovaraOpenSetup === 'function') window.eidovaraOpenSetup(true);
         if (item.type === 'open-diagnostics') $('#diagnosticsBtn')?.click();
@@ -259,17 +260,55 @@
         }
       }
     },
-    noteExchange(userText, reply, extra) {
+    noteExchange(userText, reply, extra, payload) {
       const log = $('#companionLog');
       if (!log) return;
       log.textContent = '';
-      if (!userText && !reply) {
+      const research = payload?.research || payload?.webResearch || null;
+      const actions = Array.isArray(payload) ? payload : (payload?.actions || []);
+      if (!userText && !reply && !research) {
         log.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('companionEmpty', 'Ask from this dock. Local kernel answers on this PC. Assist is not Soul.') }));
         return;
       }
       if (userText) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn', textContent: userText }));
       if (reply) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn assistant', textContent: reply }));
+      if (research?.sources?.length) {
+        const heading = document.createElement('p');
+        heading.className = 'companion-research-note';
+        heading.textContent = research.disclaimer || t('companionResearchNote', 'Public lookup after you asked — not a full-internet index.');
+        log.append(heading);
+        for (const source of research.sources.slice(0, 6)) {
+          const row = document.createElement('div');
+          row.className = 'companion-research-source';
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'kernel-chip';
+          const host = source.hostname || '';
+          btn.textContent = host ? `${source.title || host} · ${host}` : (source.title || 'Open source');
+          btn.addEventListener('click', () => {
+            if (typeof window.eidovaraOpenResearch === 'function') window.eidovaraOpenResearch(source.url, source.title);
+            else window.eidovaraRunAction?.({ type: 'open-external', url: source.url, label: source.title });
+          });
+          const snip = document.createElement('small');
+          snip.textContent = source.description || source.extract || '';
+          row.append(btn, snip);
+          log.append(row);
+        }
+      } else if (actions.length) {
+        const chips = document.createElement('div');
+        chips.className = 'kernel-chips';
+        for (const action of actions) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'kernel-chip';
+          b.textContent = action.label || action.type;
+          b.addEventListener('click', () => window.eidovaraRunAction?.(action));
+          chips.append(b);
+        }
+        log.append(chips);
+      }
       if (extra) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn', textContent: extra }));
+      log.scrollTop = log.scrollHeight;
     }
   };
 
