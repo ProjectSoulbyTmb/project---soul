@@ -28,7 +28,7 @@ jobs:
       - run: pnpm run smoke
       - run: pnpm run release:configure
       - name: Build Windows installer
-        run: pnpm exec electron-builder --win nsis --x64
+        run: pnpm run dist:win:installer
       - run: pnpm run release:manifest
       - run: pnpm run release:evidence
       - name: Sign build provenance

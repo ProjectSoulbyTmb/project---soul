@@ -1,5 +1,9 @@
 # Eidovara
 
+## v0.17.9
+
+- Corrected the installer-only GitHub Actions build invocation after the v0.17.8 packaging job failed.
+
 ## v0.17.8
 
 - Changed official GitHub releases from an extractable ready-folder ZIP to a standard Windows setup installer.
