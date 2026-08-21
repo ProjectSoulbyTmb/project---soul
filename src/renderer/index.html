@@ -120,8 +120,8 @@
       <section class="view panel-view" id="settingsView">
         <form class="settings-card" id="serviceForm">
           <h3>Eidovara service</h3>
-          <p>Attach this installation to the official online Eidovara service for health, status, and public config. Conversations stay on this PC. If the service is down, Offline Soul and the workspace keep working. HTTPS is required except loopback. Your Worker is not a cloud mind. Assist is not Soul.</p>
-          <label>Service URL<input id="serviceUrlInput" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" autocomplete="off" /></label>
+          <p>Default service base is <code>https://api.eidovara.org</code> (health, status, and public config only). Empty/default resolves there; paste another HTTPS base to override. Conversations stay on this PC. If the service is down, Offline Soul and the workspace keep working. HTTPS is required except loopback. Your Worker is not a cloud mind. Assist is not Soul. No <code>workers.dev</code> host is compiled in.</p>
+          <label>Service URL<input id="serviceUrlInput" type="url" maxlength="1000" placeholder="https://api.eidovara.org" autocomplete="off" /></label>
           <label class="check assist-opt"><input type="checkbox" id="assistOptIn" /> Allow optional Worker helper (<code>/v1/assist</code>). Default off. Sends one question you choose — never this conversation.</label>
           <div class="settings-actions"><button type="submit">Save URL</button><button type="button" class="secondary" id="serviceConnectBtn">Connect</button><button type="button" class="secondary hidden" id="serviceSiteBtn">Open site</button></div>
           <p class="settings-status" id="serviceStatusText"></p>
@@ -229,7 +229,7 @@
       <label class="setup-field">Local test edition override<select id="adminEdition"><option value="free">Eidovara Free</option><option value="premium">Eidovara Premium</option></select></label>
       <small>This local control is for owner testing and does not verify a purchase or subscription. Production entitlements require a signed server response.</small>
       <label class="setup-field">Secure store / payment page<input id="adminStoreUrl" type="url" maxlength="1000" placeholder="https://your-store.example/upgrade" /></label>
-      <label class="setup-field">Soul HTTPS service<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" /></label>
+      <label class="setup-field">Soul HTTPS service<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://api.eidovara.org" /></label>
       <p>Checkout must be hosted by an HTTPS payment provider. Soul never collects card numbers, security codes, or payment certificates.</p>
       <p class="settings-status" id="adminPanelStatus"></p>
       <div class="setup-actions"><button type="button" class="secondary" id="adminStoreBtn">Open store</button><button type="button" class="secondary" id="adminServiceBtn">Test service</button><button type="button" class="secondary" id="adminLockBtn">Lock</button><button type="submit">Save</button></div>
@@ -256,7 +256,7 @@
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
         <p>Local-first: conversations, memories, settings, safety records, linked-app shortcuts, Adult Mode state, and the 18+ flag stay on this device. No owner-operated accounts, telemetry, or analytics.</p>
-        <p>What can leave: explicit Wikipedia/Wikimedia research terms; optional pasted model endpoints; official GitHub update checks; Spotify/YouTube HTTPS searches you click; optional Eidovara service health/config/status after you confirm age and paste a URL in Settings; optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
+        <p>What can leave: explicit Wikipedia/Wikimedia research terms; optional pasted model endpoints; official GitHub update checks; Spotify/YouTube HTTPS searches you click; Eidovara service health/config/status after you confirm age (default https://api.eidovara.org, overridable in Settings); optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
       </div>
       <div class="legal-panel hidden" id="legalAgePanel">
         <p>You must be 18 or older. Declining this gate exits the app. Adult Mode is a separate triple gate. Local confirmation is not independent identity verification and is not a child-safety certification.</p>

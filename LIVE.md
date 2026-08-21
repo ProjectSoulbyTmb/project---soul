@@ -12,7 +12,7 @@ This is an operator note, not a consumer marketing page. It does not claim Authe
 | Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Custom hostname `https://api.eidovara.org`. Redeploy with `npx wrangler deploy` from `server/` after Worker `version` changes. Health JSON version is `0.18.2`. `WEBSITE_URL` is `https://eidovara.org/`. |
 | Windows installer | Tag `v0.18.2` publishes unsigned `Eidovara-0.18.2-Windows-x64-Setup.exe` (~101.3 MiB). Primary site CTA is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe`. Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.2/Eidovara-0.18.2-Windows-x64-Setup.exe`. SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. Tags `v0.18.0` and `v0.18.1` already exist and must not be force-moved. |
 
-Desktop app id stays `com.soulconsciousnessstudios.eidovara`. No `workers.dev` host is compiled into the Electron app or public site JS. Paste the HTTPS Worker **base** into Settings → Eidovara service (or Ctrl+A Test service) and, optionally, the website Status / Ask Eidovara fields.
+Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service (or Ctrl+A Test service) still accepts another HTTPS base as an override; empty/default resolves to the official host. No `workers.dev` host is compiled into the Electron app or public site JS. Ask Eidovara `/v1/assist` stays paste/save-only. Conversations are not sent.
 
 ## Official site (HTTPS eidovara.org)
 
@@ -47,13 +47,13 @@ GitHub Pages mirror (same `docs/` from `main`):
 
 `www.eidovara.org` is added on the Pages project but still pending a proxied CNAME `www` → `eidovara.pages.dev` (DNS write is owner-only for this API token).
 
-Ask Eidovara works from `docs/knowledge.js` with no Worker URL. Status and optional `/v1/assist` stay fail-closed until a visitor pastes an HTTPS base.
+Ask Eidovara works from `docs/knowledge.js` with no Worker URL. Status prefills `https://api.eidovara.org` for `/health` and `/v1/status`. Optional `/v1/assist` stays fail-closed until a visitor saves an HTTPS base.
 
 ## Worker contract
 
 `server/worker.js` must stay compatible with `src/core/service.js` and `docs/assist.js`:
 
-- Desktop Connect / launch / Ctrl+A Test service: GET `/health`, `/v1/config`, `/v1/status` (HTTPS except loopback). Conversations are not sent.
+- Desktop Connect / launch / Ctrl+A Test service: GET `/health`, `/v1/config`, `/v1/status` (HTTPS except loopback). Default base `https://api.eidovara.org`. Conversations are not sent.
 - Website helper: optional POST `/v1/assist` after a pasted base. GET `/v1/assist` is metadata or `?q=`. Does not accept `history` / `messages` / `conversations`.
 - `/v1/config` keeps `paymentsEnabled: false`, `checkoutEnabled: false`, `authenticodeSigned: false`, `minimumAge: 18`, empty store URLs.
 - Other methods/paths: 405 / 404.
@@ -65,7 +65,7 @@ Operator paste example (not baked into the app or public JS): see [docs/PAYMENTS
 Git cannot finish these:
 
 1. **Dependency graph** — Settings → Code security → enable Dependency graph (`https://github.com/ProjectSoulbyTmb/project---soul/settings/security_analysis`). Keep `.github/workflows/dependency-review.yml` at `fail-on-severity: moderate`. Do not weaken it.
-2. **Paste Worker base** — After `npx wrangler deploy` from `server/`, paste the HTTPS Worker **base** into Settings → Eidovara service. Operator custom hostname already exists for the API; still do not hard-code that host in the app or public JS.
+2. **Official API default** — Desktop already defaults to `https://api.eidovara.org`. After `npx wrangler deploy` from `server/`, Connect / launch / Test service hit that host unless overridden. Do not compile a `workers.dev` host. Ask Eidovara `/v1/assist` still needs a saved HTTPS base.
 3. **www.eidovara.org DNS** — Apex `eidovara.org` is already a Cloudflare Pages custom domain. `www` does not resolve. Owner click: Cloudflare Dashboard → Pages → `eidovara` → Custom domains → add `www.eidovara.org` if needed, and DNS CNAME `www` → `eidovara.pages.dev` (proxied). Do not point GitHub Pages at this hostname (no `docs/CNAME`).
 4. **Authenticode certificate** — Official advertised installers stay unsigned until the owner obtains a code-signing identity outside this repository. Do not claim Microsoft certification.
 5. **Live payments / company filings** — remain cannot-ship. Do not enable live checkout.

@@ -147,6 +147,8 @@ test('18+ snapshot stays a default profile until the engine starts after the gat
   assert.match(read('src/electron/main.js'), /function requireAgeGate/);
   assert.match(read('src/electron/main.js'), /if \(config\.ageGateAccepted === true\) ensureEngine\(\)/);
   assert.match(read('src/electron/main.js'), /acceptAgeGate[\s\S]*ensureEngine\(\)/);
+  assert.match(read('src/electron/main.js'), /from '\.\.\/core\/engine\.js'/);
+  assert.match(read('src/electron/main.js'), /function publicServiceUrl/);
   assert.doesNotMatch(read('src/electron/main.js'), /from '\.\.\/core\/ensureEngine\(\)\.js'/);
 });
 
@@ -172,7 +174,7 @@ test('no workers.dev host is compiled into the desktop kernel', () => {
     assert.doesNotMatch(read(file), /dreambot333\.workers\.dev/);
   }
   assert.doesNotMatch(read('src/electron/main.js'), /workers\.dev/);
-  assert.match(read('src/renderer/index.html'), /placeholder="https:\/\/eidovara-api\.example\.workers\.dev"/);
+  assert.match(read('src/renderer/index.html'), /placeholder="https:\/\/api\.eidovara\.org"/);
   assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
   assert.match(read('src/renderer/index.html'), /img-src 'self' data: https: eidovara-media:/);
   assert.match(read('src/renderer/index.html'), /media-src https: eidovara-media:/);

@@ -43,7 +43,7 @@ const ENTRIES = {
   },
   connect: {
     title: 'Optional service',
-    reply: 'Settings → Eidovara service can attach an HTTPS base you paste. The desktop then GETs /v1/health (and /health), /v1/config, and /v1/status. An extra opt-in (off by default) can POST a single question to /v1/assist — never the conversation transcript. No Worker host is compiled into the app. Your Worker is not a cloud mind. Assist is not Soul. If nothing is pasted, or the service is down, this workspace keeps working offline.',
+    reply: 'Settings → Eidovara service defaults to https://api.eidovara.org. Empty/default still resolves there; paste another HTTPS base to override. The desktop then GETs /v1/health (and /health), /v1/config, and /v1/status. An extra opt-in (off by default) can POST a single question to /v1/assist — never the conversation transcript. No workers.dev host is compiled into the app. Your Worker is not a cloud mind. Assist is not Soul. If the service is down, this workspace keeps working offline.',
     actions: [{ type: 'open-service', label: 'Service settings' }]
   },
   hosted: {

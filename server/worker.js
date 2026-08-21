@@ -80,7 +80,7 @@ export default {
     if (request.method !== 'GET') return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, OPTIONS' });
     if (url.pathname === '/health' || url.pathname === '/v1/health') return response(publicPayload(), 200, { 'cache-control': 'public, max-age=30' });
     if (url.pathname === '/v1/status') return response(publicPayload({
-      pages: 'Official site is https://eidovara.org (Cloudflare Pages from docs/). GitHub Pages publishes the same docs/ on main. No Worker URL is compiled into the site.',
+      pages: 'Official site is https://eidovara.org (Cloudflare Pages from docs/). Official API is https://api.eidovara.org. GitHub Pages publishes the same docs/ on main. No workers.dev host is compiled into the app or public JS.',
       releases: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest',
       installer: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe',
       assist: '/v1/assist knowledge-only, no transcripts'

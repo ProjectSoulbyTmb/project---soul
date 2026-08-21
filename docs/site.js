@@ -62,6 +62,8 @@
   const statusForm = doc.querySelector('#statusForm');
   if (statusForm) initStatus(statusForm);
 
+  const OFFICIAL_SERVICE_BASE = 'https://api.eidovara.org';
+
   function readStoredBase() {
     try { return String(localStorage.getItem('eidovara.serviceBase') || '').trim(); } catch { return ''; }
   }
@@ -96,11 +98,11 @@
     const clear = form.querySelector('#statusClear');
     const probe = form.querySelector('#statusProbe');
     const stored = readStoredBase();
-    if (input && stored) input.value = stored;
+    if (input) input.value = stored || OFFICIAL_SERVICE_BASE;
     const failClosed = message => {
       if (out) out.textContent = message;
     };
-    failClosed('Not configured. This site is Cloudflare Pages (eidovara.org) with a GitHub Pages mirror; Windows downloads come from GitHub Releases. No Worker URL is compiled in. Paste an HTTPS base only if you operate one — otherwise no request is sent.');
+    failClosed('Official default is https://api.eidovara.org. Override with another HTTPS base if you operate one. Check calls /health and /v1/status. Conversations are not sent. No workers.dev host is compiled in.');
 
     const saveBase = event => {
       event.preventDefault();
@@ -108,8 +110,8 @@
         const base = normalizeBase(input?.value || '');
         writeStoredBase(base);
         failClosed(base
-          ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent.`
-          : 'Cleared. Fail closed — no service request will be sent.');
+          ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent. Ask Eidovara may use this base for /v1/assist.`
+          : 'Cleared. Default https://api.eidovara.org. Ask Eidovara stays on this page until you save a base.');
       } catch (error) {
         failClosed(error.message || 'Invalid service URL.');
       }
@@ -118,22 +120,21 @@
     save?.addEventListener('click', saveBase);
     clear?.addEventListener('click', event => {
       event.preventDefault();
-      if (input) input.value = '';
+      if (input) input.value = OFFICIAL_SERVICE_BASE;
       writeStoredBase('');
-      failClosed('Cleared. eidovara.org + GitHub Pages mirror + GitHub Releases only. Fail closed — no service request will be sent.');
+      failClosed('Cleared override. Default https://api.eidovara.org. Check to probe /health and /v1/status. Ask Eidovara stays on this page until you save a base.');
     });
     probe?.addEventListener('click', async event => {
       event.preventDefault();
       let base = '';
-      try { base = normalizeBase(input?.value || readStoredBase()); } catch (error) {
+      try { base = normalizeBase(input?.value || readStoredBase() || OFFICIAL_SERVICE_BASE); } catch (error) {
         failClosed(error.message || 'Invalid service URL.');
         return;
       }
       if (!base) {
-        failClosed('No service base configured. Fail closed — nothing was fetched. eidovara.org, GitHub Pages, and Releases do not require a Worker.');
+        failClosed('No valid HTTPS service base. Fail closed — nothing was fetched.');
         return;
       }
-      writeStoredBase(base);
       failClosed(`Checking ${base} …`);
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 8000);

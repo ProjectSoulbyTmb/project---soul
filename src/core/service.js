@@ -10,6 +10,8 @@ export const SERVICE_HEALTH_V1_PATH = '/v1/health';
 export const SERVICE_CONFIG_PATH = '/v1/config';
 export const SERVICE_STATUS_PATH = '/v1/status';
 export const SERVICE_ASSIST_PATH = '/v1/assist';
+/** Official first-party custom hostname for Worker eidovara-api. HTTPS origin only; callers append paths. */
+export const DEFAULT_EIDOVARA_SERVICE_BASE = 'https://api.eidovara.org';
 const STRIP_SUFFIXES = [SERVICE_HEALTH_V1_PATH, SERVICE_HEALTH_PATH, SERVICE_CONFIG_PATH, SERVICE_STATUS_PATH, SERVICE_ASSIST_PATH];
 
 export function normalizeServiceUrl(value) {
@@ -29,6 +31,11 @@ export function normalizeServiceUrl(value) {
     path = trimSlash(path.replace(new RegExp(`${escaped}$`, 'i'), ''));
   }
   return trimSlash(`${url.origin}${path}`);
+}
+
+export function resolveServiceBase(value) {
+  const raw = String(value || '').trim();
+  return normalizeServiceUrl(raw || DEFAULT_EIDOVARA_SERVICE_BASE);
 }
 
 export function serviceRequestUrl(base, suffix) {

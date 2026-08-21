@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
   normalizeServiceUrl,
+  resolveServiceBase,
   serviceRequestUrl,
   fetchServiceSnapshot,
   sanitizeRemoteConfig,
@@ -12,7 +13,8 @@ import {
   SERVICE_HEALTH_V1_PATH,
   SERVICE_CONFIG_PATH,
   SERVICE_STATUS_PATH,
-  SERVICE_ASSIST_PATH
+  SERVICE_ASSIST_PATH,
+  DEFAULT_EIDOVARA_SERVICE_BASE
 } from '../src/core/service.js';
 import worker from '../server/worker.js';
 
@@ -27,6 +29,46 @@ function jsonResponse(payload, { ok = true, status = 200 } = {}) {
     arrayBuffer: async () => body
   };
 }
+
+test('empty settings resolve to the official api.eidovara.org default and remain overridable', () => {
+  assert.equal(DEFAULT_EIDOVARA_SERVICE_BASE, 'https://api.eidovara.org');
+  assert.equal(resolveServiceBase(''), DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(resolveServiceBase('   '), DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(resolveServiceBase(DEFAULT_EIDOVARA_SERVICE_BASE), DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(resolveServiceBase('https://api.eidovara.org/health'), DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(resolveServiceBase('https://api.eidovara.org/v1/assist?q=1'), DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(resolveServiceBase('https://override.example/v1/status'), 'https://override.example');
+  assert.equal(normalizeServiceUrl(DEFAULT_EIDOVARA_SERVICE_BASE), DEFAULT_EIDOVARA_SERVICE_BASE);
+  const official = new URL(DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(official.protocol, 'https:');
+  assert.equal(official.pathname, '/');
+  assert.equal(official.search, '');
+  assert.equal(official.hash, '');
+  assert.equal(official.username, '');
+  assert.equal(official.password, '');
+  assert.doesNotMatch(DEFAULT_EIDOVARA_SERVICE_BASE, /workers\.dev/i);
+  assert.doesNotMatch(read('src/core/service.js'), /[a-z0-9.-]+\.workers\.dev/i);
+});
+
+test('resolved official default drives snapshot URLs without a live network call', async () => {
+  const seen = [];
+  const snapshot = await fetchServiceSnapshot({
+    base: resolveServiceBase(''),
+    fetchImpl: async url => {
+      seen.push(url);
+      throw new Error('network down');
+    }
+  });
+  assert.equal(snapshot.configured, true);
+  assert.equal(snapshot.online, false);
+  assert.equal(snapshot.paymentsEnabled, false);
+  assert.deepEqual(seen.sort(), [
+    'https://api.eidovara.org/health',
+    'https://api.eidovara.org/v1/health',
+    'https://api.eidovara.org/v1/config',
+    'https://api.eidovara.org/v1/status'
+  ].sort());
+});
 
 test('service URL requires HTTPS except loopback and strips health/config/status paths', () => {
   assert.equal(normalizeServiceUrl(''), '');
@@ -207,13 +249,18 @@ test('Worker status endpoint is public GET and fail-closed', async () => {
   assert.equal((await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'POST' }), {})).status, 405);
 });
 
-test('desktop binds through a persisted service setting, not a baked-in workers.dev URL', () => {
+test('desktop binds through the baked official default, overridable, never a workers.dev host', () => {
   const main = read('src/electron/main.js');
   const renderer = read('src/renderer/renderer.js');
   const html = read('src/renderer/index.html');
   const preload = read('src/electron/preload.cjs');
+  const service = read('src/core/service.js');
   assert.match(main, /fetchServiceSnapshot/);
   assert.match(main, /normalizeServiceUrl/);
+  assert.match(main, /resolveServiceBase/);
+  assert.match(main, /function publicServiceUrl/);
+  assert.match(main, /from '\.\.\/core\/engine\.js'/);
+  assert.doesNotMatch(main, /from '\.\.\/core\/ensureEngine\(\)\.js'/);
   assert.match(main, /requireAgeGate\(\)/);
   assert.match(main, /soul:connectService/);
   assert.match(main, /httpsOnlyUrl/);
@@ -223,12 +270,14 @@ test('desktop binds through a persisted service setting, not a baked-in workers.
   assert.match(html, /id="serviceConnectBtn"/);
   assert.match(html, /id="serviceLabel"/);
   assert.match(html, /paymentsEnabled/);
+  assert.match(html, /placeholder="https:\/\/api\.eidovara\.org"/);
+  assert.match(html, /https:\/\/api\.eidovara\.org/);
   assert.match(renderer, /refreshServiceStatus/);
   assert.match(renderer, /connectService/);
-  assert.doesNotMatch(main, /dreambot333\.workers\.dev/);
-  assert.doesNotMatch(renderer, /dreambot333\.workers\.dev/);
-  assert.doesNotMatch(html, /dreambot333\.workers\.dev/);
-  assert.doesNotMatch(read('src/core/service.js'), /dreambot333\.workers\.dev/);
+  assert.match(service, /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
+  for (const text of [main, renderer, html, preload, service]) {
+    assert.doesNotMatch(text, /[a-z0-9.-]+\.workers\.dev/i);
+  }
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
   assert.match(html, /media-src https: eidovara-media:/);
 });

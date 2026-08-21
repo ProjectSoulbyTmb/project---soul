@@ -8,9 +8,9 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Public status for eidovara.org (Cloudflare Pages) and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
+  <meta name="description" content="Public status for eidovara.org (Cloudflare Pages) and GitHub Releases. Official API default is https://api.eidovara.org for /health and /v1/status. Override with another HTTPS base. Fail closed on invalid URLs.">
   <meta property="og:title" content="Status · Eidovara">
-  <meta property="og:description" content="Public status for eidovara.org (Cloudflare Pages) and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
+  <meta property="og:description" content="Public status for eidovara.org (Cloudflare Pages) and GitHub Releases. Official API default is https://api.eidovara.org for /health and /v1/status. Override with another HTTPS base. Fail closed on invalid URLs.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://eidovara.org/status.html">
   <meta property="og:image" content="https://eidovara.org/eidovara-icon.png">
@@ -51,13 +51,13 @@
   </header>
   <main id="main" class="site-main">
     <p class="eyebrow">Public surfaces</p>
-    <h1 class="section-title">Pages and Releases first. Worker only if you paste one.</h1>
-    <p class="lead">Official hostname is <a href="https://eidovara.org/">eidovara.org</a> (Cloudflare Pages project <code>eidovara</code> from the same <code>docs/</code>). GitHub Pages remains a mirror. No Worker host is compiled in. If no HTTPS service base is saved, this page fails closed and sends no request.</p>
+    <h1 class="section-title">Pages and Releases first. Official API default is api.eidovara.org.</h1>
+    <p class="lead">Official hostname is <a href="https://eidovara.org/">eidovara.org</a> (Cloudflare Pages project <code>eidovara</code> from the same <code>docs/</code>). GitHub Pages remains a mirror. The Status field defaults to <code>https://api.eidovara.org</code>. Paste another HTTPS base to override. No <code>workers.dev</code> host is compiled in. Invalid URLs fail closed.</p>
     <div class="status-panel panel">
-      <p class="status-default">Not configured. Cloudflare Pages publishes eidovara.org. Windows downloads come from GitHub Releases. Paste an HTTPS base only if you operate a Worker — otherwise no request is sent.</p>
+      <p class="status-default">Cloudflare Pages publishes eidovara.org. Windows downloads come from GitHub Releases. The official Worker custom hostname is prefilled. Override only if you operate another HTTPS base.</p>
       <form id="statusForm">
-        <label for="statusBase">Optional service base (HTTPS)</label>
-        <input id="statusBase" name="base" type="url" maxlength="200" autocomplete="off" spellcheck="false" placeholder="https://eidovara-api.example.workers.dev">
+        <label for="statusBase">Service base (HTTPS)</label>
+        <input id="statusBase" name="base" type="url" maxlength="200" autocomplete="off" spellcheck="false" value="https://api.eidovara.org" placeholder="https://api.eidovara.org">
         <div class="status-actions">
           <button type="submit" id="statusSave">Save locally</button>
           <button type="button" id="statusProbe">Check service</button>

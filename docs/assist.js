@@ -1,4 +1,4 @@
-import { answerAssist, STORAGE_KEY, safePublicHref } from './knowledge.js';
+import { answerAssist, STORAGE_KEY, DEFAULT_SERVICE_BASE, safePublicHref } from './knowledge.js';
 
 const suffixes = ['/health', '/v1/config', '/v1/status', '/v1/assist'];
 
@@ -136,7 +136,7 @@ function mount() {
   const tools = el('details', { className: 'assist-service' });
   tools.append(
     el('summary', { text: 'Optional online service (paste HTTPS base)' }),
-    el('p', { className: 'assist-hint', text: 'Leave empty to stay on this page. Do not paste secrets. Same pattern as desktop Settings → Eidovara service. No workers.dev host is built in.' }),
+    el('p', { className: 'assist-hint', text: 'Leave empty to stay on this page. Saving a base may POST /v1/assist for this question only. Desktop chat is never sent. Official default for desktop health/status is https://api.eidovara.org. No workers.dev host is built in.' }),
     el('label', { className: 'assist-label', text: 'Service base' }),
   );
   const serviceInput = el('input', {
@@ -144,7 +144,7 @@ function mount() {
     type: 'url',
     maxlength: '200',
     autocomplete: 'off',
-    placeholder: 'https://eidovara-api.example.workers.dev',
+    placeholder: DEFAULT_SERVICE_BASE,
     spellcheck: 'false'
   });
   const serviceSave = el('button', { className: 'btn-gray assist-service-save', type: 'button', text: 'Save locally' });
