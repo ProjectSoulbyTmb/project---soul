@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Download Eidovara unsigned Windows 10/11 x64 Stable Alpha. Adults 18+. Or build with npm run dist:win:installer.">
+  <meta property="og:title" content="Download Eidovara for Windows">
+  <meta property="og:description" content="Authenticode-unsigned Stable Alpha for adults 18+. Verify SHA-256 and GitHub provenance.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/download.html">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/download.html">
+  <title>Download · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body data-page="download">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <p class="eyebrow">Windows 10/11 x64 · Authenticode-unsigned · 18+</p>
+      <h1>Get the desktop app, not a web account.</h1>
+      <p class="lead">Eidovara is a local-first Windows desktop workspace. Confirm you are 18 or older before using the download links. There is no live checkout. Linux and macOS scripts are not official products.</p>
+    </section>
+    <section class="download-gate" aria-labelledby="age-gate-title">
+      <h2 id="age-gate-title">Adult gate</h2>
+      <p class="muted">If you are under 18, leave this page and do not install Eidovara. Read <a href="age.html">Age 18+</a> and <a href="terms.html">Terms</a> first. Local confirmation is not independent identity verification.</p>
+      <input class="age-gate" type="checkbox" id="ageConfirm">
+      <label class="age-gate-label" for="ageConfirm">I confirm I am 18 or older and I accept the product terms for this unsigned Windows Alpha.</label>
+      <div class="download-actions actions" id="downloadActions">
+        <a class="primary btn-filled" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest" aria-disabled="true">Download Windows Alpha (18+)</a>
+        <a class="btn-gray" href="https://github.com/ProjectSoulbyTmb/project---soul">View source</a>
+      </div>
+      <p class="muted">The installer is Authenticode-unsigned. Windows SmartScreen may warn. Verify SHA-256 (<code>SHA256SUMS.txt</code>) and GitHub/Sigstore provenance. Provenance is not Authenticode.</p>
+    </section>
+    <section>
+      <h2 class="section-title">If no Setup.exe is listed</h2>
+      <p class="lead">Build on Windows 10/11 x64 from the source-available repository:</p>
+      <div class="legal-card"><p><code>npm install</code><br><code>npm run dist:win:installer</code></p><p class="muted">The installer is generated in <code>dist/</code>. Node 20 runs tests; Electron 43 packaging needs Node &gt;= 22.12.0.</p></div>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="help.html">Help</a> · <a href="legal.html">Legal</a> · <a href="age.html">Age 18+</a> · <a href="terms.html">Terms</a> · <a href="security.html">Security</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>

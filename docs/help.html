@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Eidovara help: install, age 18+, Connect service, offline Soul, payments off, unsigned Windows.">
+  <meta property="og:title" content="Eidovara Help / FAQ">
+  <meta property="og:description" content="Install the Windows Alpha, confirm 18+, and use Free / Offline Soul without a Worker.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/help.html">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/help.html">
+  <title>Help · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body data-page="help">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <p class="eyebrow">Help / FAQ · v0.18.0</p>
+      <h1>Install, connect, and stay local-first.</h1>
+      <p class="lead">This FAQ matches advertised Eidovara limits. Ask Eidovara in the corner uses the same facts. It is not legal advice.</p>
+    </section>
+    <section class="faq">
+      <details open>
+        <summary>How do I install Eidovara?</summary>
+        <p class="muted">Use GitHub Releases for <code>Eidovara-*-Windows-x64-Setup.exe</code> when published, or on Windows run <code>npm run dist:win:installer</code>. Adults 18+ only. Official platform is Windows 10/11 x64.</p>
+      </details>
+      <details>
+        <summary>What is the age gate?</summary>
+        <p class="muted">You must be 18 or older. Setup shows an 18+ notice. The desktop app blocks use until you confirm age and accept the Terms. The CLI needs <code>--i-am-18-or-older</code> or a stored confirmation. Local confirmation is not independent identity verification.</p>
+      </details>
+      <details>
+        <summary>How do I Connect a service in Settings?</summary>
+        <p class="muted">After the 18+ gate, Settings → Eidovara service (or Ctrl+A Test service). Paste an HTTPS base. The app calls <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code> only. Conversations are not sent. No Worker URL is compiled into the app. If the service is down, the local workspace still works.</p>
+      </details>
+      <details>
+        <summary>Does Offline Soul need the internet?</summary>
+        <p class="muted">No. Free / Offline Soul works with no cloud URL. Conversations stay on the PC. Explicit internet/web/online research is optional and only after you ask.</p>
+      </details>
+      <details>
+        <summary>Can I pay for Premium here?</summary>
+        <p class="muted">No. Payments are off. v0.18.0 does not sell Premium. There is no live checkout. Premium can be tested locally with Ctrl+A; that is not payment or PCI processing.</p>
+      </details>
+      <details>
+        <summary>Why is the installer unsigned?</summary>
+        <p class="muted">Official advertised builds are Authenticode-unsigned. SmartScreen may warn. Verify SHA-256 and GitHub provenance. Provenance is not Authenticode. There is no official Linux or macOS product.</p>
+      </details>
+      <details>
+        <summary>Is this website Soul?</summary>
+        <p class="muted">No. This site explains and distributes the Windows app. Ask Eidovara is a website helper over a knowledge pack, not desktop Soul and not a consciousness claim.</p>
+      </details>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="legal.html">Legal</a> · <a href="terms.html">Terms</a> · <a href="privacy.html">Privacy</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>

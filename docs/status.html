@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https://*.workers.dev; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Eidovara public status: GitHub Pages and GitHub Releases. Optional Worker fetch only after you paste an HTTPS base.">
+  <meta property="og:title" content="Eidovara status">
+  <meta property="og:description" content="Pages + Releases by default. No workers.dev host is compiled into this site.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/status.html">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/status.html">
+  <title>Status · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body data-page="status">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <section class="hero">
+      <p class="eyebrow">Public surfaces · fail closed</p>
+      <h1>Pages and Releases, without a baked-in API.</h1>
+      <p class="lead">Default status does not call a Worker. This website is GitHub Pages. Windows downloads come from GitHub Releases. Conversations stay on the PC. Payments stay off.</p>
+    </section>
+    <section class="status-panel">
+      <h2>Always true without a service URL</h2>
+      <ul>
+        <li>Site: <a href="https://projectsoulbytmb.github.io/project---soul/">GitHub Pages (<code>docs/</code>)</a></li>
+        <li>Download: <a href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">GitHub Releases latest</a></li>
+        <li>Product: local-first Windows desktop app, 18+, Authenticode-unsigned</li>
+        <li>No <code>workers.dev</code> host is compiled into this page as a required API</li>
+      </ul>
+    </section>
+    <section class="status-panel" aria-labelledby="optional-service">
+      <h2 id="optional-service">Optional service check</h2>
+      <p class="muted">Paste an HTTPS base if you operate a Worker. Same pattern as desktop Settings → Eidovara service. Saved only in this browser’s localStorage. If empty, nothing is fetched.</p>
+      <form id="statusForm">
+        <label for="statusBase">Service base</label>
+        <input id="statusBase" type="url" maxlength="200" autocomplete="off" placeholder="https://eidovara-api.example.workers.dev" spellcheck="false">
+        <div class="status-actions">
+          <button type="button" id="statusSave">Save locally</button>
+          <button type="button" id="statusProbe">Check service</button>
+          <button type="button" id="statusClear">Clear</button>
+        </div>
+      </form>
+      <pre id="statusOut" role="status"></pre>
+    </section>
+  </main>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="legal.html">Legal</a> · <a href="download.html">Download</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>
