@@ -56,7 +56,7 @@ test('public site exposes nav, legal, assist, and 404 pages', () => {
   assert.match(read('docs/robots.txt'), /Sitemap:/);
   assert.match(read('docs/sitemap.xml'), /faq\.html/);
   assert.match(read('docs/index.html'), /rel="canonical"/);
-  assert.match(read('docs/index.html'), /projectsoulbytmb\.github\.io\/project---soul\//);
+  assert.match(read('docs/index.html'), /https:\/\/eidovara\.org\//);
 });
 
 test('site CSP allows only same-origin scripts and no unsafe-inline/eval', () => {
@@ -161,6 +161,8 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.equal(pages.ok, true);
   assert.match(pages.reply, /main/);
   assert.match(pages.reply, /merged to main|merge/i);
+  assert.match(pages.reply, /eidovara\.org/);
+  assert.match(pages.reply, /Cloudflare Pages/);
 });
 
 test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async () => {
@@ -237,5 +239,5 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));
   assert.match(read('docs/assist.js'), /safePublicHref\(link\.href\)/);
   assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
-  assert.match(read('docs/404.html'), /<base href="https:\/\/projectsoulbytmb\.github\.io\/project---soul\/">/);
+  assert.match(read('docs/404.html'), /<base href="https:\/\/eidovara\.org\/">/);
 });

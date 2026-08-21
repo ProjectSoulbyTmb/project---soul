@@ -12,7 +12,7 @@ const INSTALLER_NAME = 'Eidovara-0.18.2-Windows-x64-Setup.exe';
 const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
 const INSTALLER_SIZE = 'about 101.3 MiB';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
-const SITE = 'https://projectsoulbytmb.github.io/project---soul/';
+const SITE = 'https://eidovara.org/';
 
 export const ENTRIES = [
   {
@@ -170,9 +170,9 @@ export const ENTRIES = [
   {
     id: 'pages-publish',
     modes: ['help'],
-    tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing'],
+    tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing', 'eidovara', 'cloudflare', 'domain', 'www'],
     title: 'Live GitHub Pages publishes from main',
-    reply: 'The public site is GitHub Pages publishing docs/ from the main branch. Product, Download, Assist, Help, FAQ, Status, and Legal pages are live at the github.io URL after PR #10 merged to main. pages.yml deploys docs/ on push to main; do not retarget Pages at a feature branch. This helper cannot change GitHub settings.',
+    reply: 'The official consumer site is https://eidovara.org (Cloudflare Pages project eidovara deploying the same docs/ folder). GitHub Pages also publishes docs/ from the main branch at the github.io URL after PR #10 merged to main. pages.yml deploys docs/ on push to main; do not retarget Pages at a feature branch. www.eidovara.org has no DNS record until the owner adds a CNAME. This helper cannot change GitHub or Cloudflare DNS settings.',
     links: [{ href: './', label: 'Home' }, { href: 'status.html', label: 'Status' }]
   },
   {
@@ -204,7 +204,7 @@ export const ENTRIES = [
     modes: ['help', 'legal'],
     tags: ['helper', 'chatbot', 'widget', 'ask', 'website', 'assist', 'faq'],
     title: 'Website helper',
-    reply: 'Ask Eidovara on this site is a website helper over a fixed knowledge pack from the README, Terms, Age, Privacy, and download/runbook facts. It is not Soul, not conscious, and not legal advice. It needs no API key on GitHub Pages. If you paste an optional Worker base in Status or this sheet, the same allowlisted answers can be served from POST /v1/assist. Transcripts are not stored. Desktop conversation history is never sent.',
+    reply: 'Ask Eidovara on this site is a website helper over a fixed knowledge pack from the README, Terms, Age, Privacy, and download/runbook facts. It is not Soul, not conscious, and not legal advice. It needs no API key on eidovara.org or GitHub Pages. If you paste an optional Worker base in Status or this sheet, the same allowlisted answers can be served from POST /v1/assist. Transcripts are not stored. Desktop conversation history is never sent.',
     links: [{ href: 'assist.html', label: 'Assist' }, { href: 'faq.html', label: 'FAQ' }]
   },
   {
@@ -212,7 +212,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['status', 'pages', 'outage', 'uptime', 'releases'],
     title: 'Public status',
-    reply: `Default public surfaces are GitHub Pages for this site and the official unsigned Windows installer on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). No Worker URL is compiled into the site. The Status page can fetch /health and /v1/status only after you paste an HTTPS service base (saved in localStorage). If no URL is configured, it fails closed and does not call a host.`,
+    reply: `Default public surfaces are https://eidovara.org (Cloudflare Pages) plus the GitHub Pages github.io mirror, and the official unsigned Windows installer on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). No Worker URL is compiled into the site. The Status page can fetch /health and /v1/status only after you paste an HTTPS service base (saved in localStorage). If no URL is configured, it fails closed and does not call a host.`,
     links: [{ href: 'status.html', label: 'Status' }, { href: 'download.html', label: 'Download (18+)' }]
   },
   {

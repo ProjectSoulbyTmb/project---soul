@@ -25,7 +25,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
-| Website | Live on github.io from `main` | Complete `docs/` marketing site (Home, Product, Download, Assist, Help, FAQ, Status, Legal, 404, robots/sitemap, Ask Eidovara). GitHub Pages publishes `docs/` from `main` via `pages.yml` (HTTPS). Live `https://projectsoulbytmb.github.io/project---soul/` is the product-surface site after PR #10 merged. |
+| Website | Live on eidovara.org plus github.io from `main` | Complete `docs/` marketing site (Home, Product, Download, Assist, Help, FAQ, Status, Legal, 404, robots/sitemap, Ask Eidovara). Cloudflare Pages project `eidovara` serves `https://eidovara.org/`. GitHub Pages also publishes `docs/` from `main` via `pages.yml` (HTTPS). Mirror: `https://projectsoulbytmb.github.io/project---soul/`. Do not add `docs/CNAME`. |
 | Public Windows download | Working | Primary CTA is `releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe` (official unsigned NSIS `.exe`, ~101.3 MiB, 18+ gate on Download). SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. `/releases/latest` remains the notes/checksums page. Source repo is secondary. Tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. `v0.18.0` and `v0.18.1` remain published and must not be moved. |
 | Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+; website assist is paste-only; not required to run the app; not hard-coded. Redeploy with `npx wrangler deploy` after merge so the live Worker does not drift. Neural TTS/VRM/OBS/live payments stay documented only. |
 
@@ -43,7 +43,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | --- | --- |
 | Automatic paid Premium activation | Payment account, signed webhooks, D1/KV entitlement store, server signing key, activation UI, cancellation/refund tests. |
 | Stable public API | Select or keep a Cloudflare `workers.dev` account subdomain, deploy `server/worker.js` with Wrangler, paste the HTTPS base into Settings → Eidovara service, monitor `/health`. Not auto-deployed from this repository. |
-| Branded permanent domain | Register an available domain in Tyler Michael Bosworth's account and maintain renewals/security controls. |
+| Branded permanent domain | Apex `eidovara.org` is live on Cloudflare Pages. Owner still needs DNS for `www.eidovara.org` (CNAME `www` → `eidovara.pages.dev`) and must keep renewals/security controls. |
 | Authenticode reputation | Obtain an organization/individual code-signing certificate or trusted signing service; current release is explicitly unsigned. |
 | Native neural voice/model packs | Pin exact runtimes/assets only after per-model license, provenance, consent, hash, and sandbox review. |
 | Real 3D imported characters | Add a reviewed VRM renderer and asset permission flow; current 3D option is CSS-styled, not a skeletal 3D model engine. |
