@@ -76,6 +76,8 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   const version = JSON.parse(read('package.json')).version;
   const installerName = `Eidovara-${version}-Windows-x64-Setup.exe`;
   const installerUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${installerName}`;
+  const pinnedUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${version}/${installerName}`;
+  const sha = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
   const latest = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
   const repoRoot = /^https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/?$/i;
   const isInstallerHref = href => href === installerUrl
@@ -88,11 +90,15 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   assert.ok(primary, 'download page has a primary button');
   assert.equal(primary[1], installerUrl);
   assert.match(downloadPage, new RegExp(installerName.replace(/\./g, '\\.')));
-  assert.match(downloadPage, /EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711/);
+  assert.match(downloadPage, new RegExp(sha));
+  assert.match(downloadPage, new RegExp(pinnedUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(downloadPage, /101\.3 MiB/);
   assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.match(downloadPage, /id="ageConfirm"/);
+  assert.match(downloadPage, /aria-disabled="true"/);
   assert.match(downloadPage, /Authenticode-unsigned/);
   assert.doesNotMatch(downloadPage, /certified by Microsoft|Authenticode-signed|EV-signed installer|SmartScreen-preapproved by Microsoft/i);
+  assert.doesNotMatch(downloadPage, /A7221E77/);
 
   const home = read('docs/index.html');
   const homeDownloadPrimary = [...home.matchAll(/<a class="primary[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)]
@@ -101,7 +107,19 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   assert.ok(homeDownloadPrimary.some(([, href]) => href === 'download.html'), 'home primary download CTA must use the 18+ Download page');
   for (const [, href, text] of homeDownloadPrimary) {
     assert.equal(repoRoot.test(href), false, `home primary "${text.trim()}" must not be the repo root`);
+    assert.equal(/\.exe$/i.test(href), false, `home primary "${text.trim()}" must not skip the 18+ gate`);
   }
+  assert.match(home, new RegExp(sha));
+  assert.match(home, /unsigned Stable Alpha/);
+
+  const status = read('docs/status.html');
+  assert.match(status, /href="download\.html"/);
+  assert.doesNotMatch(status, /href="[^"]+\.exe"/);
+
+  const faq = read('docs/faq.html');
+  assert.doesNotMatch(faq, /href="https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/[^"]+\.exe"/);
+  assert.match(faq, new RegExp(installerName.replace(/\./g, '\\.')));
+  assert.match(faq, new RegExp(sha));
 
   const readme = read('README.md');
   assert.match(readme, new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
@@ -111,10 +129,14 @@ test('primary download CTAs point at the official Windows installer .exe, not on
 
   const knowledge = read('docs/knowledge.js');
   assert.match(knowledge, new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
-  assert.match(knowledge, /EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711/);
-  assert.match(read('docs/faq.html'), new RegExp(installerName.replace(/\./g, '\\.')));
+  assert.match(knowledge, new RegExp(pinnedUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(knowledge, new RegExp(sha));
   assert.match(read('docs/help.html'), new RegExp(installerName.replace(/\./g, '\\.')));
+  assert.match(read('docs/help.html'), new RegExp(sha));
+  assert.match(read('docs/security.html'), new RegExp(sha));
+  assert.match(read('docs/product.html'), new RegExp(sha));
   assert.match(read('LIVE.md'), new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(read('LIVE.md'), new RegExp(sha));
   assert.match(read('src/renderer/index.html'), new RegExp(installerName.replace(/\./g, '\\.')));
 });
 

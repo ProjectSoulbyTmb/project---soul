@@ -7,8 +7,10 @@ export const ASSIST_MODES = ['help', 'download', 'legal'];
 
 const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
 const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe';
+const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.2/Eidovara-0.18.2-Windows-x64-Setup.exe';
 const INSTALLER_NAME = 'Eidovara-0.18.2-Windows-x64-Setup.exe';
 const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
+const INSTALLER_SIZE = 'about 101.3 MiB';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
 const SITE = 'https://projectsoulbytmb.github.io/project---soul/';
 
@@ -42,8 +44,8 @@ export const ENTRIES = [
     modes: ['download', 'help'],
     tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'certified'],
     title: 'Download Windows Alpha',
-    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. Source-available fallback: npm run dist:win:installer on Windows.`,
-    links: [{ href: INSTALLER, label: INSTALLER_NAME }, { href: 'download.html', label: 'Download page (18+)' }]
+    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} (${INSTALLER_SIZE}) from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned tag asset: ${INSTALLER_PINNED}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. Source-available fallback: npm run dist:win:installer on Windows.`,
+    links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: INSTALLER, label: INSTALLER_NAME }]
   },
   {
     id: 'source',
@@ -51,15 +53,15 @@ export const ENTRIES = [
     tags: ['source', 'build', 'npm', 'dist', 'clone', 'compile', 'from'],
     title: 'Build from source',
     reply: 'The advertised download is the official unsigned Setup.exe, not a git clone. If you still want source on Windows 10/11 x64, run npm install, then npm run dist:win:installer. Linux and macOS packaging scripts are development targets, not official products. The license is source-available, not open source.',
-    links: [{ href: SOURCE, label: 'Source repository' }, { href: INSTALLER, label: INSTALLER_NAME }]
+    links: [{ href: SOURCE, label: 'Source repository' }, { href: 'download.html', label: 'Official installer (18+)' }]
   },
   {
     id: 'unsigned',
     modes: ['download', 'help', 'legal'],
     tags: ['unsigned', 'authenticode', 'smartscreen', 'sign', 'certificate', 'checksum', 'sha', 'certified', 'microsoft'],
     title: 'Unsigned Windows build',
-    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for v0.18.2, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Download ${INSTALLER_NAME} from the official GitHub Releases asset, then verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
-    links: [{ href: 'security.html', label: 'Security' }, { href: INSTALLER, label: INSTALLER_NAME }]
+    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for v0.18.2, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Confirm 18+ on the Download page, then get ${INSTALLER_NAME} (${INSTALLER_SIZE}) from the official GitHub Releases asset and verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
+    links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: 'security.html', label: 'Security' }]
   },
   {
     id: 'payments',
@@ -210,8 +212,8 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['status', 'pages', 'outage', 'uptime', 'releases'],
     title: 'Public status',
-    reply: `Default public surfaces are GitHub Pages for this site and the official unsigned Windows installer on GitHub Releases (${INSTALLER_NAME}). No Worker URL is compiled into the site. The Status page can fetch /health and /v1/status only after you paste an HTTPS service base (saved in localStorage). If no URL is configured, it fails closed and does not call a host.`,
-    links: [{ href: 'status.html', label: 'Status' }, { href: INSTALLER, label: INSTALLER_NAME }]
+    reply: `Default public surfaces are GitHub Pages for this site and the official unsigned Windows installer on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). No Worker URL is compiled into the site. The Status page can fetch /health and /v1/status only after you paste an HTTPS service base (saved in localStorage). If no URL is configured, it fails closed and does not call a host.`,
+    links: [{ href: 'status.html', label: 'Status' }, { href: 'download.html', label: 'Download (18+)' }]
   },
   {
     id: 'forbidden-features',
@@ -375,4 +377,4 @@ export function assistMeta() {
   };
 }
 
-export { RELEASES, INSTALLER, INSTALLER_NAME, INSTALLER_SHA256, SOURCE, SITE, REFUSALS };
+export { RELEASES, INSTALLER, INSTALLER_PINNED, INSTALLER_NAME, INSTALLER_SHA256, INSTALLER_SIZE, SOURCE, SITE, REFUSALS };

@@ -4,11 +4,12 @@
 
 - Desktop no longer constructs a Soul profile before the in-app 18+ gate; `soul:openExternal` is age-gated; Wikipedia/Wikimedia result URLs must match wiki/wikimedia hostnames.
 - Home and Status funnel installer clicks through the Download 18+ checkbox. Nested GitHub Pages 404s keep site CSS via `<base href>`.
+- Marketing site lists installer size (~101.3 MiB), pinned `v0.18.2` asset URL, and SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711` on public pages. FAQ no longer skips the 18+ gate with a raw `.exe` href.
 
 ## v0.18.2
 
 - New unsigned Windows installer: `package.json` / Worker health / website-helper version is `0.18.2`. App id stays `com.soulconsciousnessstudios.eidovara`. Tags `v0.18.0` and `v0.18.1` already exist and were not moved.
-- Primary public download is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe` (the NSIS `.exe`, not the source repository). Secondary repo link remains. Authenticode-unsigned; not Microsoft-certified. SHA-256 is published as `SHA256SUMS.txt` on the GitHub Release after the Windows job.
+- Primary public download is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe` (the NSIS `.exe`, about 101.3 MiB, not the source repository). Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.2/Eidovara-0.18.2-Windows-x64-Setup.exe`. SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. Secondary repo link remains. Authenticode-unsigned; not Microsoft-certified. GitHub/Sigstore provenance is not Authenticode.
 - Includes the v0.18.1 proof/fix and download-CTA work already on `main`: CLI 18+ gate before profile create, service/provider query-string strip, helper HTTPS-only links, official Setup.exe CTAs.
 
 ## v0.18.1

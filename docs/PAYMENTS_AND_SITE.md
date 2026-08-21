@@ -51,8 +51,9 @@ Source: `docs/`. Live URL: `https://projectsoulbytmb.github.io/project---soul/`.
 ## 2. Public Windows download (GitHub Releases)
 
 - User-facing installer (primary): `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe`
+- Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.2/Eidovara-0.18.2-Windows-x64-Setup.exe`
 - Release notes / checksums: `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest`
-- Official advertised artifact: Authenticode-**unsigned** Windows 10/11 x64 NSIS `Setup.exe`, 18+. Not Microsoft-certified, EV-signed, or SmartScreen-preapproved. SHA-256 is published as `SHA256SUMS.txt` on the GitHub Release. SmartScreen may warn. Users should verify checksums and GitHub/Sigstore provenance. There is no Authenticode claim. We cannot Authenticode-sign until the owner provides a certificate.
+- Official advertised artifact: Authenticode-**unsigned** Windows 10/11 x64 NSIS `Setup.exe`, 18+, about 101.3 MiB. Not Microsoft-certified, EV-signed, or SmartScreen-preapproved. SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711` (also `SHA256SUMS.txt` on the GitHub Release). SmartScreen may warn. Users should verify checksums and GitHub/Sigstore provenance. There is no Authenticode claim. We cannot Authenticode-sign until the owner provides a certificate.
 - Cloning the GitHub source repository is a secondary fallback (`npm run dist:win:installer` on Windows), not the primary download. Linux/macOS scripts are development targets, not official products.
 - CI: `.github/workflows/release-windows.yml` runs on `windows-latest` for `v*` tags (publish) and `workflow_dispatch` (unsigned artifacts on a branch). It sets `CSC_IDENTITY_AUTO_DISCOVERY=false` and does **not** produce a signed installer. GitHub build provenance is not Authenticode.
 - Local Windows build is always valid: `npm run dist:win:installer` then attach files per `docs/GITHUB_RELEASES.md` if Actions cannot run.

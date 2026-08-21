@@ -4,7 +4,7 @@ cd /d "%~dp0"
 title Eidovara Launcher
 
 echo ========================================
-echo             Eidovara v0.18.0
+echo             Eidovara v0.18.2
 echo ========================================
 echo.
 where node >nul 2>nul

@@ -115,8 +115,17 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
   assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
   assert.match(download.reply, /Eidovara-0\.18\.2-Windows-x64-Setup\.exe/);
+  assert.match(download.reply, /EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711/);
+  assert.match(download.reply, /101\.3 MiB/);
+  assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
   assert.ok((download.links || []).some(link => String(link.href || '').endsWith('.exe') || String(link.href || '').includes('/releases/latest')));
   assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
+  assert.match(read('docs/download.html'), /id="ageConfirm"/);
+  assert.match(read('docs/download.html'), /aria-disabled="true"/);
+  assert.match(read('docs/index.html'), /href="download\.html"/);
+  assert.doesNotMatch(read('docs/status.html'), /href="[^"]+\.exe"/);
+  assert.doesNotMatch(read('docs/faq.html'), /href="https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/[^"]+\.exe"/);
+  assert.doesNotMatch(read('docs/knowledge.js'), /A7221E77/);
 
   const certified = answerAssist('Do you have a certified Windows installer from Microsoft?', { mode: 'download' });
   assert.equal(certified.ok, true);

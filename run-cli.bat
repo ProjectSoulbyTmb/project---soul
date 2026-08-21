@@ -1,7 +1,7 @@
 @echo off
 cd /d "%~dp0"
 title Eidovara CLI
-echo Eidovara v0.18.0 command-line Soul
+echo Eidovara v0.18.2 command-line Soul
 where node >nul 2>nul
 if errorlevel 1 (
   echo ERROR: Node.js was not found. Install Node.js 20 or newer, then try again.
