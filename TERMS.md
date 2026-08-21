@@ -51,7 +51,7 @@ Soul is a software assistant with a persistent local self-model. It is not a hum
 
 Eidovara is not affiliated with, endorsed by, or a product of Apple Inc., Microsoft Corporation, GitHub, OpenJS Foundation, Spotify, YouTube, OBS, Wikimedia, Brave, or other named vendors. It is **not** an iOS, iPhone, or iPad product. The interface uses a system font stack and does **not** require licensed SF Pro files.
 
-Eidovara™ and Soul Consciousness Studios™ are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
+Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (the software self-model feature name) and Soul Consciousness Studios (intended publisher name) are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
 
 ## 7. Platform, signing, and export
 

@@ -148,7 +148,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['license', 'open', 'source-available', 'oss', 'copyright', 'evaluation'],
     title: 'Source-available, not open source',
-    reply: 'The repository uses the Eidovara Source-Available Evaluation License. That is not an OSI open-source license and is not MIT, Apache, or GPL. Viewing the source does not transfer ownership or grant patent or trademark rights. Read LICENSE, TERMS, NOTICE, OWNERSHIP, and AGE included with each release.',
+    reply: 'The repository uses the Eidovara Source-Available Evaluation License. That is not an OSI open-source license and is not MIT, Apache, or GPL. Viewing the source does not transfer ownership or grant patent or trademark rights. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Read LICENSE, TERMS, NOTICE, OWNERSHIP, TRADEMARKS, and AGE included with each release.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: SOURCE, label: 'GitHub' }]
   },
   {
@@ -156,7 +156,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
     title: 'First-party owner',
-    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. Pull requests do not transfer copyright until a privately executed assignment. The contributor CLA and entity assignment files are unsigned templates only; this repository does not contain executed copies. This is not legal advice, a court judgment, or a government registration.',
+    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. Pull requests do not transfer copyright until a privately executed assignment. Sign privately; posting a PR is not assignment. The contributor CLA and entity assignment files are unsigned templates only; this repository does not contain executed copies. This is not legal advice, a court judgment, or a government registration.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {

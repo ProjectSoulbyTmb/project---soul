@@ -1,0 +1,52 @@
+# Trademark filing checklist (not filed)
+
+This is an **owner checklist** for a possible later filing at the [United States Patent and Trademark Office](https://www.uspto.gov) and, if relevant, other offices. It is **not legal advice**, not a clearance opinion, and **not a trademark application**.
+
+**No trademark application is filed by this commit.** This repository has no USPTO serial number, no registration number, and no ® claim. Publishing TRADEMARKS.md does not file anything.
+
+Claimant of the unregistered marks: **Tyler Michael Bosworth**. Intended publisher name: **Soul Consciousness Studios** (not automatically an owner entity).
+
+## Marks under consideration (unregistered)
+
+| Mark | How it is used today | Honesty note |
+| --- | --- | --- |
+| Eidovara | Product name for the Windows desktop assistant | Coined product name; still unregistered |
+| Soul | Software self-model **feature** name inside Eidovara | Ordinary English word; likely a narrower and harder claim |
+| Soul Consciousness Studios | Intended publisher / brand-house name | Not a formed company until state formation + assignment |
+
+Use: "Eidovara is a trademark of Tyler Michael Bosworth (unregistered)." Do not use ®.
+
+## Before anyone files
+
+1. **Retain a U.S. trademark attorney.** Identification of goods/services, class choice, specimens, and likelihood-of-confusion analysis are professional work. This file cannot substitute.
+2. **Search.** A preliminary exact-word internet search is a knockout screen only. Before filing, search USPTO (TESS / Trademark Search), relevant state trademark and business-name databases, common-law web use, domains, app stores, software directories, and any foreign markets where sales are planned. Compare sound, appearance, meaning, translation, and commercial impression in **related** goods/services, not only identical names. Preserve dated queries and results privately. See [TRADEMARK_CLEARANCE_LOG.md](TRADEMARK_CLEARANCE_LOG.md) and [NAME_CLEARANCE.md](NAME_CLEARANCE.md).
+3. **Decide the applicant.** File in the name of whoever actually owns the mark. Until a formed entity exists **and** a signed assignment is executed, that is Tyler Michael Bosworth personally—not "Soul Consciousness Studios" as a company.
+4. **Decide the filing basis** with counsel (use in commerce vs. intent-to-use). Do not declare use in commerce that has not occurred. Do not declare dates you cannot prove.
+5. **Specimens.** For downloadable software, USPTO typically expects a specimen showing the mark as used on the goods or in a manner that creates an association with the software (for example a screenshot of the app title bar / About screen, or a download page that displays the mark in connection with the installer). A LICENSE file alone is often a poor specimen. Do not fabricate screenshots that misstate registration.
+6. **International.** USPTO registration is United States-only. Madrid Protocol / foreign offices are separate, need local advice, and are not started by this commit.
+
+## Classes often discussed for software (attorney must confirm)
+
+These Nice / USPTO class numbers are **starting points**, not a filing:
+
+| Class | Typical identification theme | Relevance to Eidovara as of v0.18.2 |
+| --- | --- | --- |
+| **9** | Downloadable computer software | Closest fit for the advertised Windows desktop app |
+| **42** | Software as a service; providing temporary use of online software | **Not** the current product: there is no hosted Soul account; Assist is not Soul; the Worker is optional and fail-closed |
+| **41** | Education / entertainment services | Only if counsel finds a real services offering; do not stretch |
+
+Do **not** copy another company's identification of goods word-for-word. Do **not** claim live payment processing, neural TTS, VRM, or iOS apps that this product does not ship. Overbroad identifications invite refusal or later fraud-on-the-office risk.
+
+"Soul" as a standalone Class 9 mark may face descriptiveness, genericness, or crowded-field objections. Counsel should advise whether to file Soul at all, file it only as a feature used *with* Eidovara, or skip it.
+
+## What this repository still does not do
+
+- File TEAS / TEAS Plus / TEAS Standard
+- Pay USPTO fees
+- Appoint an attorney of record
+- Submit a specimen
+- Respond to an office action
+- Record an assignment
+- Authorize ®
+
+After a registration **issues** for identified goods/services, ® may be used **for those goods/services**. Until then, ™ only. See [TRADEMARKS.md](../TRADEMARKS.md) and [BRAND_GUIDE.md](BRAND_GUIDE.md).

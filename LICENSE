@@ -25,6 +25,15 @@ Except for the narrow permissions stated below, no copyright, patent,
 trademark, trade-secret, or other intellectual-property license is
 granted, whether expressly, by implication, estoppel, or otherwise.
 
+No patent license is granted. This LICENSE is not a patent, a patent
+application, or a covenant not to sue. Viewing or running the software
+does not license any patent claims Tyler Michael Bosworth may later file.
+
+No trademark license is granted. Permission to view or run the software
+does not include permission to use Eidovara, Soul (as the name of
+Eidovara's software self-model feature), Soul Consciousness Studios, or
+related branding as a mark. See TRADEMARKS.md.
+
 2. Limited permission
 
 You may view this repository, download an official unmodified release, and run
@@ -45,7 +54,7 @@ Without prior written permission from Tyler Michael Bosworth, you may not:
   improve a competing product or service;
 - remove or alter ownership, copyright, provenance, security, or attribution
   notices;
-- use the Eidovara or Soul Consciousness Studios names, marks, or
+- use the Eidovara, Soul, or Soul Consciousness Studios names, marks, or
   branding in a way that suggests endorsement, affiliation, or ownership; or
 - use the software for unlawful activity or in violation of third-party rights.
 
@@ -53,11 +62,13 @@ Without prior written permission from Tyler Michael Bosworth, you may not:
 
 The project does not accept source code, documentation, artwork, models, voices,
 or other copyrightable contributions without advance written approval. No issue,
-suggestion, patch, pull request, or other submission transfers ownership. Material
-will be incorporated only after Tyler Michael Bosworth and the contributor execute
-a separate written assignment or other agreement appropriate to that material.
-Unsolicited material may be declined or closed without incorporation. Platform
-terms governing material posted to a hosting service remain independently applicable.
+suggestion, patch, pull request, or other submission transfers ownership.
+Posting a pull request is not assignment. Material will be incorporated only
+after Tyler Michael Bosworth and the contributor execute a separate written
+assignment (the unsigned template is docs/CONTRIBUTOR_ASSIGNMENT.md) or other
+agreement appropriate to that material. Unsolicited material may be declined
+or closed without incorporation. Platform terms governing material posted to
+a hosting service remain independently applicable.
 
 5. Third-party material
 
@@ -66,7 +77,7 @@ Microsoft Windows, Wikipedia/Wikimedia content, user-created content, or
 other third-party software, services, marks, fonts, models, or media.
 Those components remain governed by their own licenses and terms. This
 license does not expand or restrict rights granted directly by their
-respective owners. See THIRD_PARTY_NOTICES.md.
+respective owners. See THIRD_PARTY_NOTICES.md and NOTICE.md.
 
 Runtime destinations that Eidovara may contact after user action
 (Wikipedia/Wikimedia, optional Brave Search, GitHub releases, optional

@@ -14,7 +14,10 @@ fs.writeFileSync(path.join('dist', 'CODE-SIGNING-STATUS.txt'), `Eidovara ${pkg.v
 const privacy = { schemaVersion: 1, product: 'Eidovara', version: pkg.version, declarationType: 'self-declared-and-build-attested', telemetry: false, advertising: false, automaticExternalSafetyReporting: false, localConversationStorage: true, secretsExposedToRenderer: false, updater: { automaticCheck: true, downloadRequiresUserApproval: true, httpsRequired: true, sha256Required: true }, documents: ['PRIVACY.md', 'TERMS.md', 'AGE.md', 'SECURITY.md', 'LEGAL_NOTICES.md', 'OWNERSHIP.md', 'docs/NETWORK_USAGE.md'] };
 fs.writeFileSync(path.join('dist', 'PRIVACY-DECLARATION.json'), `${JSON.stringify(privacy, null, 2)}\n`, 'utf8');
 fs.copyFileSync('PRIVACY.md', path.join('dist', 'PRIVACY.md')); fs.copyFileSync('TERMS.md', path.join('dist', 'TERMS.md')); fs.copyFileSync('AGE.md', path.join('dist', 'AGE.md')); fs.copyFileSync('LEGAL_NOTICES.md', path.join('dist', 'LEGAL-NOTICES.md')); fs.copyFileSync('SECURITY.md', path.join('dist', 'SECURITY.md')); fs.copyFileSync(path.join('docs', 'NETWORK_USAGE.md'), path.join('dist', 'NETWORK-USAGE.md'));
-for (const name of ['LICENSE','NOTICE.md','OWNERSHIP.md','AUTHORS.md','TRADEMARKS.md','THIRD_PARTY_NOTICES.md']) fs.copyFileSync(name, path.join('dist', name));
+for (const name of ['LICENSE','NOTICE.md','COPYRIGHT.txt','OWNERSHIP.md','AUTHORS.md','TRADEMARKS.md','THIRD_PARTY_NOTICES.md']) fs.copyFileSync(name, path.join('dist', name));
 fs.copyFileSync(path.join('docs', 'BRAND_ASSET_POLICY.md'), path.join('dist', 'BRAND-ASSET-POLICY.md'));
 fs.copyFileSync(path.join('docs', 'COPYRIGHT_ASSET_REGISTER.md'), path.join('dist', 'COPYRIGHT-ASSET-REGISTER.md'));
+fs.copyFileSync(path.join('docs', 'COPYRIGHT.md'), path.join('dist', 'COPYRIGHT.md'));
+fs.copyFileSync(path.join('docs', 'TRADEMARK_FILING.md'), path.join('dist', 'TRADEMARK-FILING.md'));
+fs.copyFileSync(path.join('docs', 'BRAND_GUIDE.md'), path.join('dist', 'BRAND-GUIDE.md'));
 console.log(`Release evidence created for ${files.length} files.`);

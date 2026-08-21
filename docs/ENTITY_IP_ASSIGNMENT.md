@@ -6,7 +6,9 @@ Soul Consciousness Studios is currently an **intended publisher name**, not a fo
 
 This file is a blank form for that future step. It is **not** a signed agreement, not evidence that an entity has been formed, and not a USPTO or Copyright Office filing. **Do not commit completed copies to this public repository.** This template is not legal advice.
 
-See [COMPANY_FORMATION.md](COMPANY_FORMATION.md).
+**Sign privately.** State formation paperwork is not this assignment. Publishing this template does not transfer IP.
+
+See [COMPANY_FORMATION.md](COMPANY_FORMATION.md) and [CHAIN_OF_TITLE.md](CHAIN_OF_TITLE.md).
 
 ---
 
@@ -14,23 +16,42 @@ See [COMPANY_FORMATION.md](COMPANY_FORMATION.md).
 
 **Effective date:** [YYYY-MM-DD, on or after formation]
 
+**Governing law / venue (complete with counsel):** [State / country], [courts]
+
+**Consideration:** Assignor acknowledges [describe: equity / $1.00 / other], the sufficiency of which Assignor acknowledges.
+
 **Assignor:** Tyler Michael Bosworth, an individual.
 
-**Assignee:** [Legal entity name], a [LLC / corporation] formed under the laws of [State] on [formation date] (“Company”).
+**Assignee (“Company”) — complete only after formation:**
+
+| Field | Complete privately |
+| --- | --- |
+| Legal entity name | [Legal entity name — do not treat “Soul Consciousness Studios” as formed unless it is] |
+| Entity type | [LLC / corporation / other] |
+| Formation jurisdiction | [State / country] |
+| Formation date | [YYYY-MM-DD] |
+| File / SOS number | [if issued] |
+| EIN | [if issued; do not commit to git] |
+| Principal address | [address] |
+| Authorized signatory / title | [name, title] |
 
 **Excluded property:** Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created content, and all other third-party or public-domain material; any rights Assignor does not own; and [list other exclusions].
 
 ### 1. Assigned first-party rights
 
-Assignor assigns to Company all of Assignor’s right, title, and interest in qualifying original first-party Eidovara expression and in the claimed unregistered marks Eidovara™ and Soul Consciousness Studios™, including associated first-party brand assets listed in the project copyright asset register, together with related goodwill, solely to the extent Assignor owns them as of the effective date.
+Assignor assigns to Company all of Assignor’s right, title, and interest in qualifying original first-party Eidovara expression and in the claimed unregistered marks Eidovara, Soul (as used for Eidovara’s software self-model feature), and Soul Consciousness Studios, including associated first-party brand assets listed in the project copyright asset register, together with related goodwill, solely to the extent Assignor owns them as of the effective date.
 
 This assignment does not create registrations, patents, or clearance. Company takes the rights subject to the public Eidovara Source-Available Evaluation License and TERMS already granted to users, GitHub’s then-applicable terms for the public repository, and third-party licenses.
 
 ### 2. Further assurances
 
-Assignor will execute documents reasonably requested to evidence or record this assignment, at Company’s expense, without representing that any government office will accept them.
+Assignor will execute documents reasonably requested to evidence or record this assignment (including optional recordation at the U.S. Copyright Office or USPTO if counsel later files there), at Company’s expense, without representing that any government office will accept them. This clause does not file those recordations.
 
-### 3. Signatures (leave blank in the repository)
+### 3. No public-repo execution
+
+Completing placeholders in a git commit, opening a pull request, or merging to `main` is not execution. **Sign privately** on a paper or qualified electronic original stored outside this repository.
+
+### 4. Signatures (leave blank in the repository)
 
 This public file has **no signatures**.
 
@@ -46,7 +67,7 @@ Leave this exhibit blank in the public repository. On a private original, attach
 
 - Qualifying original Eidovara source, tests, and first-party documentation authored by Assignor
 - First-party brand assets listed in the project copyright asset register (with hashes as of the effective date)
-- Claimed unregistered marks Eidovara™ and Soul Consciousness Studios™, solely to the extent Assignor owns them
+- Claimed unregistered marks Eidovara, Soul (feature name), and Soul Consciousness Studios, solely to the extent Assignor owns them
 
 **Still excluded:** Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created content, and all other third-party or public-domain material.
 

@@ -25,8 +25,8 @@ This operational checklist is not legal advice.
 
 ## Other protection
 
-- Evaluate federal trademark registration for Eidovara and Soul Consciousness Studios.
-- Evaluate U.S. Copyright Office registration for qualifying source-code versions and visual assets.
+- Evaluate federal trademark registration for Eidovara and, with counsel, whether Soul or Soul Consciousness Studios should be filed at all. The checklist in `docs/TRADEMARK_FILING.md` is **not** a filing.
+- Evaluate U.S. Copyright Office registration for qualifying source-code versions and visual assets at copyright.gov. `docs/COPYRIGHT.md` is a notice-and-checklist only; this repository is **not** registered.
 - Use written confidentiality and invention-assignment agreements before sharing unpublished development with contractors or collaborators. An unsigned contributor template is `docs/CONTRIBUTOR_ASSIGNMENT.md`; do not treat it as signed, and do not commit executed copies here.
 - If a formed company should own pre-formation rights, execute a private assignment (`docs/ENTITY_IP_ASSIGNMENT.md` is an unsigned template). Formation alone does not transfer IP.
 - Obtain a commercial code-signing certificate through a verified legal person or business; never publish its private key.
