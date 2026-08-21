@@ -13,7 +13,17 @@ function load(payload) {
   const audio = $('popAudio');
   audio.pause();
   video.pause();
-  if (!item?.url || !/^eidovara-media:|^https:/i.test(item.url) || /youtube\.com\/embed|spotify\.com\/embed/i.test(item.url)) {
+  const href = (() => {
+    try {
+      const parsed = new URL(item.url);
+      if (parsed.protocol !== 'eidovara-media:' && parsed.protocol !== 'https:') return '';
+      if (/youtube\.com\/embed|spotify\.com\/embed/i.test(parsed.href)) return '';
+      return parsed.href;
+    } catch {
+      return '';
+    }
+  })();
+  if (!href) {
     $('popTitle').textContent = 'Nothing playing';
     return;
   }
@@ -25,7 +35,7 @@ function load(payload) {
   if (item.type !== 'video') video.removeAttribute('src');
   else audio.removeAttribute('src');
   player.preload = 'auto';
-  player.src = item.url;
+  player.src = href;
   player.playbackRate = Number(payload.rate) || 1;
   player.play().catch(() => {});
 }

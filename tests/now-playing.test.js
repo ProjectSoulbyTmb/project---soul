@@ -131,6 +131,10 @@ test('player sources stay eidovara-media/https, never media-src self, embeds, Hi
   assert.match(html, /media-src https: eidovara-media:/);
   assert.match(html, /id="eidovaraPlayer"/);
   assert.match(html, /id="mediaPopOutBtn"/);
+  const player = fs.readFileSync('src/renderer/player.js', 'utf8');
+  assert.doesNotMatch(player, /player\.src\s*=\s*e\.target\.value/);
+  assert.match(player, /function mediaHref/);
+  assert.match(player, /function qualityHref/);
   assert.match(fs.readFileSync('src/electron/main.js', 'utf8'), /LOCAL_MEDIA_SCHEME = 'eidovara-media'/);
   assert.match(fs.readFileSync('src/electron/main.js', 'utf8'), /parseByteRange/);
   assert.doesNotMatch(fs.readFileSync('src/electron/main.js', 'utf8'), /disableHardwareAcceleration\(/);

@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Fluid now-playing bar with expand stage, frameless glass Pop out / Dock (hidden in Adult Mode and before 18+), native HD playback (no default downscale, hardware decode when Chromium GPU is on, HTTP Range seek), quality menu only for real extra renditions, rate/loop/shuffle, sidecar vtt/srt, sleep timer, fullscreen, media keys via Media Session, and Chromium output picker when `setSinkId` exists. No Spotify/YouTube embeds, DRM rip, Hi-Res logos, or ffmpeg.
+- Fluid now-playing bar with expand stage, frameless glass Pop out / Dock (hidden in Adult Mode and before 18+), native HD playback (no default downscale, hardware decode when Chromium GPU is on, HTTP Range seek), quality menu only for real extra renditions, rate/loop/shuffle, sidecar vtt/srt, sleep timer, fullscreen, media keys via Media Session, and Chromium output picker when `setSinkId` exists. Media URLs are applied from parsed `https:` / `eidovara-media:` hrefs in memory, not by copying a quality-menu DOM value onto `player.src` (CodeQL `js/xss-through-dom`). No Spotify/YouTube embeds, DRM rip, Hi-Res logos, or ffmpeg.
 - Desktop automatic updater: after 18+, Eidovara can check GitHub Releases for a newer Windows NSIS installer, verify `latest.yml` SHA-512 via electron-updater, download in the background, and apply only after Restart and install. Authenticode-unsigned. Auto-check can be turned off.
 - Music, watch, and mood requests surface the local entertainment library (play in Eidovara through `eidovara-media:`, never `media-src 'self'`) plus official YouTube, Spotify, and Internet Archive HTTPS search chips. Eidovara does not scrape those sites’ HTML, rip streams, or inject into Spotify, iTunes, VLC, or Windows Media Player.
 

@@ -35,19 +35,32 @@
     return currentItem()?.type === 'video' ? $('#videoPlayer') : $('#audioPlayer');
   }
   function allowedUrl(value) {
+    return Boolean(mediaHref(value));
+  }
+  function mediaHref(value) {
     const raw = String(value || '');
-    if (!raw) return false;
-    if (/youtube\.com\/embed|youtube-nocookie|spotify\.com\/embed|sdk\.scdn\.co/i.test(raw)) return false;
+    if (!raw) return '';
+    if (/youtube\.com\/embed|youtube-nocookie|spotify\.com\/embed|sdk\.scdn\.co/i.test(raw)) return '';
     try {
       const url = new URL(raw);
-      if (url.protocol === LOCAL) return true;
-      if (url.protocol !== 'https:') return false;
+      if (url.protocol === LOCAL) return url.href;
+      if (url.protocol !== 'https:') return '';
       const host = url.hostname.toLowerCase();
-      if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)spotify\.com$/.test(host)) return false;
-      return true;
+      if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)spotify\.com$/.test(host)) return '';
+      return url.href;
     } catch {
-      return false;
+      return '';
     }
+  }
+  function setPlayerSrc(player, value) {
+    const href = mediaHref(value);
+    if (!player || !href) return false;
+    player.src = href;
+    return true;
+  }
+  function qualityHref(item, id) {
+    const choice = qualityChoices(item).find(entry => entry.id === String(id || ''));
+    return choice ? mediaHref(choice.url) : '';
   }
   function qualityChoices(item) {
     const native = item?.url;
@@ -82,22 +95,24 @@
     wrap?.classList.remove('is-empty');
     for (const choice of choices) {
       const opt = document.createElement('option');
-      opt.value = choice.url;
+      opt.value = choice.id;
       opt.textContent = choice.label;
       sel.append(opt);
     }
-    sel.value = item.url;
+    const current = choices.find(entry => entry.url === item.url);
+    sel.value = current?.id || choices[0].id;
   }
   function fillCaptions(item, player) {
     if (!player) return;
     [...player.querySelectorAll('track')].forEach(node => node.remove());
     for (const track of item?.captions || []) {
-      if (!allowedUrl(track.url)) continue;
+      const href = mediaHref(track.url);
+      if (!href) continue;
       const node = document.createElement('track');
       node.kind = track.kind || 'subtitles';
       node.label = track.label || 'Captions';
       node.srclang = track.srclang || 'und';
-      node.src = track.url;
+      node.src = href;
       player.append(node);
     }
   }
@@ -176,7 +191,7 @@
     surface?.setAttribute('data-kind', item.type);
     player.preload = 'auto';
     player.preservesPitch = true;
-    player.src = item.url;
+    if (!setPlayerSrc(player, item.url)) return;
     player.playbackRate = rate;
     fillCaptions(item, player);
     fillQuality(item);
@@ -359,9 +374,10 @@
   $('#mediaQuality')?.addEventListener('change', e => {
     const item = currentItem();
     const player = currentPlayer();
-    if (!item || !player || !allowedUrl(e.target.value)) return;
+    const href = qualityHref(item, e.target.value);
+    if (!item || !player || !href) return;
     const time = player.currentTime || 0;
-    player.src = e.target.value;
+    player.src = href;
     player.currentTime = time;
     player.play().catch(() => {});
   });
