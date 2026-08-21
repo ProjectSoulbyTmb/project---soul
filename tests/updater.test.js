@@ -121,6 +121,16 @@ test('packaging publishes GitHub latest.yml and ships electron-updater', () => {
   assert.match(read('src/renderer/index.html'), /Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it\. Builds are Authenticode-unsigned\./);
   assert.match(read('src/renderer/index.html'), /id="autoCheckUpdates"/);
   assert.match(read('src/renderer/index.html'), /id="companionCheckUpdatesBtn"/);
+  assert.match(read('src/renderer/index.html'), /data-companion-nav="updates"/);
+  assert.match(read('src/renderer/renderer.js'), /action\.type==='open-updates'\|\|action\.type==='check-updates'/);
   assert.match(read('src/electron/auto-update.js'), /verifyUpdateCodeSignature/);
   assert.match(read('src/electron/auto-update.js'), /Authenticode-unsigned/);
+});
+
+test('knowledge and workspace search expose Check for updates without auto-install', () => {
+  const knowledge = read('src/core/knowledge.js');
+  assert.match(knowledge, /type: 'check-updates'/);
+  assert.match(knowledge, /verify its checksum, and apply it\. Builds are Authenticode-unsigned/);
+  assert.match(read('src/core/layers.js'), /id: 'set-updates'/);
+  assert.match(read('src/renderer/companion.js'), /companionCheckUpdatesBtn/);
 });
