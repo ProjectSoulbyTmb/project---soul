@@ -411,7 +411,7 @@ function createWindow() {
     registerCompanionImage();
     if (config.ageGateAccepted === true) ensureEngine();
     if (config.ageGateAccepted === true) void bootServiceHeartbeat();
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.22.2', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: `Eidovara v${app.getVersion()}`, icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
@@ -436,7 +436,10 @@ function createWindow() {
     mainWindow.webContents.on('will-attach-webview', e => e.preventDefault());
     mainWindow.webContents.on('did-fail-load', (_e, code, desc, url) => fatal('Eidovara failed to load', new Error(`${code}: ${desc} (${url})`)));
     mainWindow.webContents.on('render-process-gone', (_e, details) => fatal('Eidovara renderer stopped', new Error(JSON.stringify(details))));
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html')).catch(err => fatal('Eidovara interface error', err));
+    const packagedRenderer = path.join(process.resourcesPath, 'renderer', 'index.html');
+    const rendererEntry = app.isPackaged ? packagedRenderer : path.join(__dirname, '../renderer/index.html');
+    if (!fs.existsSync(rendererEntry)) throw new Error(`Renderer entry is missing: ${rendererEntry}`);
+    mainWindow.loadFile(rendererEntry).catch(err => fatal('Eidovara interface error', err));
   } catch (err) { fatal('Eidovara startup error', err); }
 }
 
