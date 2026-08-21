@@ -147,6 +147,14 @@ export const ENTRIES = [
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: SOURCE, label: 'GitHub' }]
   },
   {
+    id: 'ownership',
+    modes: ['legal', 'help'],
+    tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
+    title: 'First-party owner',
+    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. Pull requests do not transfer copyright until a privately executed assignment. This is not legal advice, a court judgment, or a government registration.',
+    links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
+  },
+  {
     id: 'terms',
     modes: ['legal'],
     tags: ['terms', 'acceptable', 'criminal', 'unauthorized', 'use', 'legal'],
