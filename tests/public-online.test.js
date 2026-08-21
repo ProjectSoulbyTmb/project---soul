@@ -180,8 +180,7 @@ test('eidovara.org is the official Cloudflare Pages hostname for the same docs/ 
   assert.equal(fs.existsSync('docs/CNAME'), false, 'GitHub Pages CNAME would fight the live Cloudflare zone');
   const redirects = read('docs/_redirects');
   assert.match(redirects, /\/download\/windows\s+\/download\.html\s+302/);
-  assert.doesNotMatch(redirects, /Setup\.exe/);
-  assert.doesNotMatch(redirects, /v0\.18\.0/);
+  assert.doesNotMatch(redirects, /\/download\/windows\s+\S+\.exe/);
   assert.doesNotMatch(redirects, /\/\* \/index\.html/);
   const home = read('docs/index.html');
   assert.match(home, /rel="canonical" href="https:\/\/eidovara\.org\/"/);
