@@ -107,6 +107,16 @@
     "portable": {
       "artifactName": "Eidovara-${version}-Windows-${arch}-Portable.${ext}"
     },
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true,
+      "loadBrowserProcessSpecificV8Snapshot": false,
+      "grantFileProtocolExtraPrivileges": false
+    },
     "afterPack": "scripts/after-pack.cjs",
     "linux": {
       "target": [

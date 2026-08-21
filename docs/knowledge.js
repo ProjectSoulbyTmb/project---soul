@@ -207,7 +207,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['privacy', 'telemetry', 'analytics', 'leave', 'network', 'conversation'],
     title: 'Privacy pointers',
-    reply: 'This is not legal advice. There are no owner-operated accounts, telemetry, advertising identifiers, or cloud memory. What can leave the machine: explicit Wikipedia/Wikimedia research, optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, and optional /health /v1/config /v1/status after you paste a service base. Conversations are not sent to the Worker. No payment-card collection.',
+    reply: 'This is not legal advice. There are no owner-operated accounts, telemetry, advertising identifiers, or cloud memory. What can leave the machine: explicit Wikipedia/Wikimedia research, optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /health /v1/config /v1/status after Connect (default https://api.eidovara.org), and optional /v1/assist only after helper opt-in. Conversations are not sent by default. Assist is not Soul. No payment-card collection. Payments stay fail-closed.',
     links: [{ href: 'privacy.html', label: 'Privacy notice' }]
   },
   {
@@ -215,7 +215,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['security', 'sandbox', 'csp', 'vulnerability', 'sbom', 'checksum'],
     title: 'Security pointers',
-    reply: 'The desktop renderer is sandboxed and isolated from Node.js. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance. Installers are not Authenticode-signed. Report vulnerabilities through the repository private advisory channel when available; do not post exploits or credentials in public issues. No software is guaranteed perfectly secure.',
+    reply: 'The desktop renderer is sandboxed and isolated from Node.js. Workspace CSP uses media-src https: eidovara-media: and connect-src none. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance. Installers are Authenticode-unsigned. The public repository runs CodeQL, OpenSSF Scorecards, Dependabot, a license inventory, and a prohibited-secret scan. Dependency graph and private vulnerability reporting still need owner clicks; this helper cannot enable them. Report vulnerabilities through the repository private advisory channel when the owner has enabled it; do not post exploits or credentials in public issues. No software is guaranteed perfectly secure.',
     links: [{ href: 'security.html', label: 'Security center' }]
   },
   {
@@ -239,7 +239,7 @@ export const ENTRIES = [
     modes: ['help', 'legal'],
     tags: ['tts', 'neural', 'vrm', 'obs', 'makehuman', 'consciousness', 'vr'],
     title: 'What v0.19.1 does not include',
-    reply: 'v0.19.1 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode is a separate triple gate and stays off by default.',
+    reply: 'v0.19.1 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode is a separate triple gate and stays off by default. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields).',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'licensing.html', label: 'Licensing' }]
   }
 ];

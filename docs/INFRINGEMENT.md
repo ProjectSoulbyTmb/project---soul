@@ -12,7 +12,7 @@ If you believe someone is copying first-party Eidovara source, marks, or brand a
 
 Do not attach exploits, credentials, private keys, or personal data.
 
-Official DMCA takedown notices aimed at GitHub-hosted content must follow [GitHub’s DMCA process](https://docs.github.com/en/site-policy/content-removal-policies/dmca-takedown-policy). A GitHub issue is not a substitute for that process.
+Official DMCA takedown notices aimed at GitHub-hosted content must follow [GitHub’s DMCA process](https://docs.github.com/en/site-policy/content-removal-policies/dmca-takedown-policy). A GitHub issue is not a substitute for that process. This project has **not** designated a registered DMCA agent with the U.S. Copyright Office; do not invent an agent number. Use GitHub’s published process for GitHub-hosted content.
 
 ## Third-party claims against this repository
 

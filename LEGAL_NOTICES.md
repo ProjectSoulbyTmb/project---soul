@@ -16,7 +16,7 @@ Users are responsible for applicable law, account authority, media rights, appli
 
 ## Adult Mode
 
-Adult Mode is off by default and unavailable to minors. Access requires the user to have reached the age of majority where located, explicitly enable Adult Soul, and provide current revocable consent. Local confirmation is not independent age or identity verification. Optional avatar presentation is limited to Soul's fictional, clearly adult, non-photorealistic avatar. Minor or age-ambiguous sexual content, real-person/deepfake nudity, nonconsensual or exploitative content, trafficking, coercion, and unlawful content are prohibited. A setting never makes content legal in a jurisdiction.
+Adult Mode is off by default and unavailable to minors. Access requires the user to have reached the age of majority where located, explicitly enable Adult Soul, and provide current revocable consent. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields). Local confirmation is not independent age or identity verification. Optional avatar presentation is limited to Soul's fictional, clearly adult, non-photorealistic avatar. Minor or age-ambiguous sexual content, real-person/deepfake nudity, nonconsensual or exploitative content, trafficking, coercion, and unlawful content are prohibited. A setting never makes content legal in a jurisdiction.
 
 ## Privacy, security, and commerce
 

@@ -31,6 +31,7 @@ const allowedLocalMedia = new Map();
 protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
+if (typeof app.enableSandbox === 'function') app.enableSandbox();
 let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false, overlayManager = null;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);

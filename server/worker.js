@@ -17,6 +17,8 @@ const JSON_HEADERS = {
   'x-frame-options': 'DENY',
   'referrer-policy': 'no-referrer',
   'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+  'cross-origin-resource-policy': 'cross-origin',
+  'cross-origin-opener-policy': 'same-origin',
   ...CORS
 };
 const ENDPOINTS = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
