@@ -40,16 +40,21 @@ export function addMemory(state, content, opts = {}) {
 
 export function forgetMemory(state, idOrText) {
   const now = new Date().toISOString();
+  const needle = String(idOrText || '').trim();
+  if (!needle) return 0;
   let count = 0;
+  const lower = needle.toLowerCase();
   for (const memory of state.memories) {
-    if (memory.id === idOrText || memory.content.toLowerCase().includes(String(idOrText).toLowerCase())) {
+    const idHit = memory.id === needle;
+    const textHit = needle.length >= 3 && memory.content.toLowerCase().includes(lower);
+    if (idHit || textHit) {
       memory.active = false;
       memory.forgottenAt = now;
       memory.updatedAt = now;
       count += 1;
     }
   }
-  state.audit.push({ at: now, type: 'memory.forgotten', details: { idOrText, count } });
+  state.audit.push({ at: now, type: 'memory.forgotten', details: { idOrText: needle, count } });
   return count;
 }
 

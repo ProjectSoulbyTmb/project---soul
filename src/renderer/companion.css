@@ -1,0 +1,239 @@
+/* Soul companion dock and first-party presence. Decorative chrome — not a living figure. */
+.soul-dock {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px 12px 18px;
+  border-left: var(--hairline) solid var(--separator);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  overflow: auto;
+}
+.soul-dock h2 {
+  margin: 0;
+  font-size: var(--footnote);
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.soul-presence {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-height: 168px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  background: var(--fill-tertiary);
+  display: grid;
+  place-items: center;
+}
+.soul-presence[data-look="orb"] {
+  background: radial-gradient(circle at 34% 28%, #fff 0 6%, var(--accent) 40%, #12233f 78%);
+}
+.soul-presence[data-look="hologram"] {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 6px, color-mix(in srgb, var(--accent) 22%, transparent) 7px),
+    linear-gradient(180deg, color-mix(in srgb, var(--accent) 35%, #000), #041018);
+  background-size: 100% 120px, 100% 100%;
+  animation: soul-scan 4.5s linear infinite;
+}
+@keyframes soul-scan {
+  to { background-position: 0 120px, 0 0; }
+}
+.soul-presence[data-look="ambient"] {
+  background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--accent) 55%, transparent), var(--panel) 70%);
+}
+.soul-presence[data-look="silhouette"] {
+  background: linear-gradient(180deg, var(--panel2), var(--panel));
+}
+.soul-presence[data-look="pulse"] {
+  background: #05070c;
+}
+.soul-presence[data-look="local-image"] {
+  background: var(--fill);
+}
+.soul-presence-figure {
+  width: 42%;
+  height: 62%;
+  border-radius: 46% 46% 42% 42%;
+  background: color-mix(in srgb, var(--accent) 55%, #fff);
+  opacity: 0.85;
+  pointer-events: none;
+}
+.soul-presence[data-look="silhouette"] .soul-presence-figure {
+  background: #111;
+  opacity: 0.88;
+  border-radius: 48% 48% 40% 40%;
+}
+.soul-presence[data-look="hologram"] .soul-presence-figure {
+  background: color-mix(in srgb, var(--accent) 40%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 50%, transparent);
+}
+.soul-presence canvas,
+.soul-presence img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.soul-presence .presence-empty {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+.soul-heartbeat,
+.soul-online-copy {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.soul-heartbeat strong,
+.soul-online-copy strong {
+  color: var(--text);
+  font-weight: 600;
+}
+.soul-module-list,
+.soul-action-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.soul-module-list button,
+.soul-action-list button {
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: 6px 10px;
+  background: var(--fill);
+  font-size: 12px;
+}
+.soul-module-list button[aria-pressed="false"] { opacity: 0.45; }
+.soul-dock-empty {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.companion-sub,
+.presence-caption {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--muted);
+}
+.companion-log {
+  display: grid;
+  gap: 8px;
+  max-height: 160px;
+  overflow: auto;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.companion-log .companion-turn {
+  margin: 0;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  background: var(--fill);
+}
+.companion-log .companion-turn.assistant {
+  background: color-mix(in srgb, var(--accent) 12%, var(--fill));
+}
+.companion-error {
+  margin: 0;
+  font-size: 12px;
+  color: #c4314b;
+}
+.companion-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px 40px;
+  gap: 6px;
+  align-items: end;
+}
+.companion-form textarea {
+  resize: none;
+  min-height: 44px;
+  max-height: 96px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  padding: 10px 12px;
+  background: var(--fill);
+  color: var(--text);
+  font: inherit;
+}
+.companion-form button,
+.voice-input {
+  min-height: 40px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--fill);
+  color: var(--text);
+}
+.voice-input.listening {
+  background: color-mix(in srgb, var(--accent) 35%, var(--fill));
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+.soul-presence[data-look="ribbon"] {
+  background:
+    linear-gradient(115deg, transparent 18%, color-mix(in srgb, var(--accent) 55%, transparent) 42%, transparent 66%),
+    linear-gradient(180deg, var(--panel2), var(--panel));
+}
+.soul-presence[data-look="hidden"] {
+  display: none;
+}
+.soul-presence[hidden] { display: none; }
+.kernel-customize {
+  display: grid;
+  gap: 12px;
+}
+.kernel-modules {
+  display: grid;
+  gap: 8px;
+}
+.kernel-modules label {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 13px;
+}
+.phrasing-grid {
+  display: grid;
+  gap: 8px;
+}
+.assist-opt {
+  margin-top: 8px;
+}
+.composer-assist {
+  grid-column: 1 / -1;
+  font-size: 12px;
+  color: var(--muted);
+}
+@media (max-width: 1100px) {
+  .soul-dock {
+    border-left: 0;
+    border-top: var(--hairline) solid var(--separator);
+    max-height: 240px;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .soul-presence { width: 88px; height: 88px; max-height: 88px; aspect-ratio: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .soul-presence-figure,
+  .soul-presence[data-look="hologram"] { animation: none !important; }
+}

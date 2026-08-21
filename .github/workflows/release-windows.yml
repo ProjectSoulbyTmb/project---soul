@@ -1,8 +1,12 @@
+# Builds an Authenticode-unsigned Windows NSIS installer on windows-latest.
+# v* tags publish a GitHub Release. workflow_dispatch on a branch only uploads
+# unsigned artifacts. This workflow does not Authenticode-sign Setup.exe.
 name: Release Windows
 
 on:
   push:
     tags: ['v*']
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -20,8 +24,6 @@ jobs:
         with:
           node-version: 22
       - uses: pnpm/action-setup@v4
-        with:
-          version: 10
       - run: pnpm install --frozen-lockfile
       - run: pnpm test
       - run: pnpm run check
@@ -32,7 +34,7 @@ jobs:
       - run: pnpm run release:manifest
       - run: pnpm run release:evidence
       - name: Sign build provenance
-        uses: actions/attest-build-provenance@v4.1.1
+        uses: actions/attest-build-provenance@v4.2.2
         with:
           subject-path: |
             dist/Eidovara-*-Windows-x64-Setup.exe
@@ -42,6 +44,8 @@ jobs:
             dist/CODE-SIGNING-STATUS.txt
             dist/PRIVACY-DECLARATION.json
             dist/PRIVACY.md
+            dist/TERMS.md
+            dist/AGE.md
             dist/LEGAL-NOTICES.md
             dist/SECURITY.md
             dist/NETWORK-USAGE.md
@@ -53,6 +57,7 @@ jobs:
             dist/BRAND-ASSET-POLICY.md
             dist/COPYRIGHT-ASSET-REGISTER.md
       - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
           name: Eidovara by Soul Consciousness Studios ${{ github.ref_name }}
@@ -65,6 +70,8 @@ jobs:
             dist/CODE-SIGNING-STATUS.txt
             dist/PRIVACY-DECLARATION.json
             dist/PRIVACY.md
+            dist/TERMS.md
+            dist/AGE.md
             dist/LEGAL-NOTICES.md
             dist/SECURITY.md
             dist/NETWORK-USAGE.md
@@ -75,3 +82,14 @@ jobs:
             dist/THIRD_PARTY_NOTICES.md
             dist/BRAND-ASSET-POLICY.md
             dist/COPYRIGHT-ASSET-REGISTER.md
+      - name: Upload unsigned Windows artifacts
+        if: github.event_name == 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/v')
+        uses: actions/upload-artifact@v4
+        with:
+          name: eidovara-windows-unsigned
+          path: |
+            dist/Eidovara-*-Windows-x64-Setup.exe
+            dist/update.json
+            dist/SHA256SUMS.txt
+            dist/SBOM.spdx.json
+            dist/CODE-SIGNING-STATUS.txt

@@ -7,7 +7,7 @@ Eidovara uses reviewed releases, not silent self-modification. The application m
 - GitHub Dependabot checks package and workflow updates weekly.
 - Security automation runs on every main-branch push, every pull request, and weekly. It executes the full tests, syntax checks, production dependency audit, and private-key scan.
 - Each release generates SHA-256 checksums, an SPDX software bill of materials, a privacy declaration, signing-status disclosure, and GitHub build provenance.
-- Network destinations, data categories, and user triggers are documented in `NETWORK_USAGE.md` and must be updated when connectivity changes.
+- Network destinations, data categories, and user triggers are documented in `NETWORK_USAGE.md` / `NETWORK-USAGE.md` and must be updated when connectivity changes. Documented future adapters (neural TTS, VRM, OBS control, live payments) must not be enabled by a maintenance update.
 
 ## Required review before adoption
 

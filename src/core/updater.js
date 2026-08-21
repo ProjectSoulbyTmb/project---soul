@@ -8,7 +8,7 @@ export function compareVersions(a, b) {
   for (let i = 0; i < Math.max(left.length, right.length); i++) { const d = (left[i] || 0) - (right[i] || 0); if (d) return Math.sign(d); }
   return 0;
 }
-function secureUrl(value) { const url = new URL(String(value || '')); if (url.protocol !== 'https:') throw new Error('Update URLs must use HTTPS.'); return url; }
+function secureUrl(value) { const url = new URL(String(value || '')); if (url.protocol !== 'https:' || url.username || url.password) throw new Error('Update URLs must use HTTPS.'); return url; }
 function trustedReleaseUrl(value) {
   const url = secureUrl(value);
   if (url.hostname !== 'github.com' || !url.pathname.startsWith('/ProjectSoulbyTmb/project---soul/releases/download/')) throw new Error('Update packages must come from the official GitHub release channel.');

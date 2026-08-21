@@ -1,3 +1,7 @@
+# Publishes docs/ as the one production GitHub Pages site from main only.
+# GitHub Pages serves github.io over HTTPS. Do not retarget this workflow at a feature branch
+# and do not add a second production site. PR #10 is merged; live URL:
+# https://projectsoulbytmb.github.io/project---soul/
 name: Deploy project website
 on:
   push:

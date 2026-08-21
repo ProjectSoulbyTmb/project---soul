@@ -1,10 +1,10 @@
 {
   "name": "eidovara",
-  "version": "0.18.0",
+  "version": "0.18.2",
   "description": "Eidovara privacy-focused desktop assistant and media workspace.",
   "author": "Tyler Michael Bosworth, project creator and product director; published by Soul Consciousness Studios",
   "license": "SEE LICENSE IN LICENSE",
-  "copyright": "Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.",
+  "copyright": "Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS.",
   "repository": {
     "type": "git",
     "url": "https://github.com/ProjectSoulbyTmb/project---soul.git"
@@ -14,9 +14,11 @@
   "scripts": {
     "start": "electron .",
     "cli": "node src/cli.js",
+    "postinstall": "node scripts/install-electron.js",
     "test": "node --test tests/*.test.js",
     "check": "node scripts/check.js",
     "smoke": "node scripts/smoke.js",
+    "server:test": "node --test tests/server.test.js",
     "release:configure": "node scripts/configure-release-channel.js",
     "release:manifest": "node scripts/create-update-manifest.js",
     "release:evidence": "node scripts/create-release-evidence.js",
@@ -51,11 +53,15 @@
       "LICENSE",
       "NOTICE.md",
       "PRIVACY.md",
+      "TERMS.md",
+      "AGE.md",
       "LEGAL_NOTICES.md",
       "SECURITY.md",
       "THIRD_PARTY_NOTICES.md",
       "AUTHORS.md",
-      "TRADEMARKS.md"
+      "TRADEMARKS.md",
+      "OWNERSHIP.md",
+      "NETWORK-USAGE.md"
     ],
     "win": {
       "icon": "assets/branding/eidovara.ico",
@@ -77,7 +83,7 @@
     },
     "nsis": {
       "artifactName": "Eidovara-${version}-Windows-${arch}-Setup.${ext}",
-      "license": "LICENSE",
+      "license": "installer/EULA.txt",
       "installerIcon": "assets/branding/eidovara.ico",
       "uninstallerIcon": "assets/branding/eidovara.ico",
       "oneClick": false,
@@ -109,6 +115,8 @@
     }
   },
   "engines": {
-    "node": ">=20.0.0"
-  }
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@10.33.3"
 }

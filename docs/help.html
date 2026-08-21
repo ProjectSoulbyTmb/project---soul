@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Help for the Eidovara public site: FAQ, website helper, Windows download, and optional service status.">
+  <meta property="og:title" content="Help · Eidovara">
+  <meta property="og:description" content="Help for the Eidovara public site: FAQ, website helper, Windows download, and optional service status.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eidovara.org/help.html">
+  <meta property="og:image" content="https://eidovara.org/eidovara-icon.png">
+  <link rel="canonical" href="https://eidovara.org/help.html">
+  <title>Help · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body class="site" data-page="help">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header site-chrome">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav" aria-label="Primary">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <a href="help.html" data-nav="help">Help</a>
+        <a href="faq.html" data-nav="faq">FAQ</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main" class="site-main">
+    <p class="eyebrow">Help</p>
+    <h1 class="section-title">Get to every real v0.18.2 surface.</h1>
+    <p class="lead">This website is documentation and download, not a hosted Soul. The Ask Eidovara helper is not Soul and not legal advice. How do I install Eidovara? Confirm you are 18 or older on the Download page, then download the official unsigned installer <code>Eidovara-0.18.2-Windows-x64-Setup.exe</code> (the <code>.exe</code>, about 101.3 MiB, not the GitHub repo) or run <code>npm run dist:win:installer</code> on Windows 10/11 x64. SHA-256 <code>EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711</code>. GitHub Pages publishes from <code>main</code>.</p>
+    <div class="module-grid">
+      <article><h2>FAQ</h2><p>Unsigned Windows download, 18+, offline use, payments off, and helper limits.</p><a href="faq.html">Open FAQ</a></article>
+      <article><h2>Website helper</h2><p>Use Ask Eidovara on any page. Optional <code>/v1/assist</code> only after you save an HTTPS base. Leave empty to stay on this page. No transcript store. Desktop health/status defaults to <code>https://api.eidovara.org</code>.</p><a href="assist.html">Assist</a></article>
+      <article><h2>Download</h2><p>Official unsigned <code>Eidovara-0.18.2-Windows-x64-Setup.exe</code> after the 18+ gate (about 101.3 MiB). Not the GitHub source tree. Not Microsoft-certified. SHA-256 is on Download. Or <code>npm run dist:win:installer</code> on Windows 10/11 x64.</p><a href="download.html">Download (18+)</a></article>
+      <article><h2>Service status</h2><p>Pages + Releases by default. Status prefills <code>https://api.eidovara.org</code>. Paste another HTTPS base to override.</p><a href="status.html">Status</a></article>
+    </div>
+  </main>
+  <footer class="site-footer site-end"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>

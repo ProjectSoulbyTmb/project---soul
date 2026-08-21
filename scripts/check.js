@@ -2,13 +2,15 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const roots = ['src', 'scripts', 'tests'];
+const roots = ['src', 'scripts', 'tests', 'docs', 'server'];
+const skipDirs = new Set(['.wrangler', 'node_modules']);
 const files = [];
 function walk(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full);
-    else if (/\.(?:js|cjs)$/.test(entry.name) && full !== path.join('scripts', 'check.js')) files.push(full);
+    if (entry.isDirectory()) {
+      if (!skipDirs.has(entry.name)) walk(full);
+    } else if (/\.(?:js|cjs)$/.test(entry.name) && full !== path.join('scripts', 'check.js')) files.push(full);
   }
 }
 for (const root of roots) walk(root);

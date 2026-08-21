@@ -2,24 +2,43 @@
 
 Repository: `https://github.com/ProjectSoulbyTmb/project---soul`
 
-1. Sign in to the ProjectSoulbyTmb GitHub account.
-2. In this project folder, initialize Git, add the repository as `origin`, commit, and push the `main` branch.
-3. Ensure repository Actions are enabled. The included `.github/workflows/release-windows.yml` workflow needs only the default `contents: write` token permission.
-4. Change `package.json` to the new release version, commit it, then create and push a matching tag such as `v0.16.0`.
-5. GitHub Actions tests the source, injects `https://github.com/OWNER/REPOSITORY/releases/latest/download/update.json` into the packaged app, builds the standard Windows setup installer, generates the SHA-256 manifest, and publishes the `.exe` directly to the GitHub Release. Users do not need to extract a ZIP.
-6. The workflow also publishes SHA-256 checksums, an SPDX SBOM, an explicit Authenticode status report, and GitHub/Sigstore signed build-provenance attestations. A private signing certificate is never uploaded as a release asset.
+Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x64 NSIS installer for users **18+**. GitHub Actions on `windows-latest` can build that installer and publish checksums, an SPDX SBOM, `CODE-SIGNING-STATUS.txt` (unsigned), and GitHub/Sigstore **build provenance**. That provenance is **not** Authenticode. CI cannot mint a signed Setup.exe until a code-signing identity exists outside this repository.
 
-PowerShell commands:
+## Tag release (publishes to GitHub Releases)
+
+1. Sign in to the ProjectSoulbyTmb GitHub account. Repository Actions must be enabled (`contents: write`, `id-token: write`, `attestations: write` for `.github/workflows/release-windows.yml`).
+2. Set `package.json` `version` to the new release, commit to `main`, then create and push a matching tag:
 
 ```powershell
-git init
-git branch -M main
-git remote add origin https://github.com/ProjectSoulbyTmb/project---soul.git
-git add .
-git commit -m "Publish Eidovara"
-git push -u origin main
-git tag v0.15.0
-git push origin v0.15.0
+git checkout main
+git pull origin main
+git tag v0.18.2
+git push origin v0.18.2
 ```
 
+3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer`, writes the update manifest and evidence, and publishes `Eidovara-${version}-Windows-x64-Setup.exe` to the GitHub Release. Users download that `.exe`; they do not extract a ZIP.
+4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button. Current SHA-256: `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. Size about 101.3 MiB.
+
 Do not reuse a release tag after changing its files. Increment the version and create a new tag so installed applications can compare versions safely.
+
+## Manual dispatch (unsigned artifacts only)
+
+`workflow_dispatch` on `.github/workflows/release-windows.yml` runs the same Windows NSIS build on `windows-latest`. On a **branch** it uploads unsigned artifacts; it does **not** create a GitHub Release (that would use the branch name as a tag). To publish, push a `v*` tag instead.
+
+Windows NSIS must be built on Windows (this workflow’s `windows-latest` runner, or a local Windows 10/11 x64 machine with Node 22+). Linux/macOS packaging scripts in `package.json` are development targets, not official products.
+
+## Local Windows build if Actions cannot run
+
+```powershell
+npm install
+npm test
+npm run check
+npm run smoke
+npm run dist:win:installer
+npm run release:manifest
+npm run release:evidence
+```
+
+Attach `dist/Eidovara-*-Windows-x64-Setup.exe`, `dist/update.json`, `dist/SHA256SUMS.txt`, `dist/SBOM.spdx.json`, and `dist/CODE-SIGNING-STATUS.txt` to a GitHub Release for the matching `v*` tag. Never upload a private signing key.
+
+Overwrite-on-reinstall for existing Eidovara installs is a separate installer change (pull request #9).

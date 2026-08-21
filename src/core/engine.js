@@ -1,5 +1,5 @@
 import { JsonStore } from './store.js';
-import { addMemory, activeMemories, forgetMemory } from './memory.js';
+import { addMemory, forgetMemory } from './memory.js';
 import { applyPolicyCommand, adultAllowed, assessRequestSafety } from './policy.js';
 import { processLearning } from './learning.js';
 import { reflectOnGrowth } from './growth.js';
@@ -9,37 +9,109 @@ import { OfflineProvider } from '../providers/offline.js';
 import { buildSystemContext } from '../providers/context.js';
 import { researchInternet } from '../providers/internet.js';
 import { entertainmentSummary, recordMediaEvent } from './entertainment.js';
+import { isExplicitInternetRequest } from './workspace.js';
+import {
+  configureKernelState,
+  createRuntimeRegistry,
+  applyPhrasing,
+  disabledModuleReply,
+  kernelHeartbeat,
+  kernelPublicMeta,
+  kernelView,
+  routeKernel,
+  startKernelSession
+} from './kernel.js';
+import { requestSoulAssist } from './soul-online.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
     this.store = store || new JsonStore();
     this.provider = provider;
     this.internetOptions = internetOptions;
+    this.modules = createRuntimeRegistry();
     this.state = this.store.load();
+    startKernelSession(this.state);
+    this.store.save(this.state);
   }
   setProvider(provider) { this.provider = provider || new OfflineProvider(); }
   setInternetOptions(options = {}) { this.internetOptions = options; }
-  reset() { this.state = this.store.reset(); return this.snapshot(); }
+  registerModule(mod) { return this.modules.register(mod); }
+  kernelStatus() { return kernelView(this.state, this.modules); }
+  heartbeat({ persist = false, at } = {}) {
+    kernelHeartbeat(this.state, { at });
+    if (persist) this.store.save(this.state);
+    return this.kernelStatus();
+  }
+  configureKernel(input = {}) {
+    configureKernelState(this.state, input);
+    this.store.save(this.state);
+    return this.snapshot();
+  }
+  async assistQuery(query, { base, fetchImpl } = {}) {
+    kernelHeartbeat(this.state);
+    const result = await requestSoulAssist({
+      base,
+      query,
+      optIn: this.state.kernel?.soulOnline?.assistOptIn === true,
+      fetchImpl
+    });
+    const at = new Date().toISOString();
+    this.state.audit.push({
+      at,
+      type: result.ok ? 'kernel.assist_ok' : 'kernel.assist_skipped',
+      details: { reason: result.reason || '', conversationsSent: false, soul: false }
+    });
+    this.store.save(this.state);
+    return result;
+  }
+  reset() { this.state = this.store.reset(); startKernelSession(this.state); this.store.save(this.state); return this.snapshot(); }
   snapshot() { return JSON.parse(JSON.stringify(this.state)); }
   remember(content, opts = {}) { const m = addMemory(this.state, content, opts); this.store.save(this.state); return m; }
   forget(idOrText) { const count = forgetMemory(this.state, idOrText); this.store.save(this.state); return count; }
   createBackup() { return this.store.createBackup(this.state); }
   listBackups() { return this.store.listBackups(); }
-  restoreBackup(name) { this.state = this.store.restoreBackup(name); return this.snapshot(); }
+  restoreBackup(name) { this.state = this.store.restoreBackup(name); startKernelSession(this.state); this.store.save(this.state); return this.snapshot(); }
   recordMedia(input) { const event = recordMediaEvent(this.state, input); this.state.audit.push({ at: event.at, type: `media.${event.event}`, details: { type: event.type, title: event.title } }); this.store.save(this.state); return entertainmentSummary(this.state); }
   entertainment() { return entertainmentSummary(this.state); }
   configureSetup(input = {}) {
     const allowed = ['gaming-editing', 'stream-helper', 'studying', 'personal', 'creative', 'work-productivity', 'accessibility'];
     const categories = Array.isArray(input.categories) ? [...new Set(input.categories.filter(x => allowed.includes(x)))] : [];
     const obsWebSocketUrl = String(input.obsWebSocketUrl || 'ws://127.0.0.1:4455').trim().slice(0, 300);
-    if (categories.includes('stream-helper')) { const url = new URL(obsWebSocketUrl); if (!['ws:', 'wss:'].includes(url.protocol)) throw new Error('OBS WebSocket must use ws:// or wss://.'); }
+    if (categories.includes('stream-helper')) {
+      let url;
+      try { url = new URL(obsWebSocketUrl); } catch { throw new Error('OBS WebSocket must be a valid ws:// or wss:// URL.'); }
+      if (!['ws:', 'wss:'].includes(url.protocol)) throw new Error('OBS WebSocket must use ws:// or wss://.');
+    }
     this.state.setup = { completed: true, completedAt: new Date().toISOString(), categories, customNeeds: String(input.customNeeds || '').trim().slice(0, 2000), stream: { enabled: categories.includes('stream-helper'), obsWebSocketUrl, goals: String(input.streamGoals || '').trim().slice(0, 1000) } };
     this.state.audit.push({ at: this.state.setup.completedAt, type: 'setup.configured', details: { categories } }); this.store.save(this.state); return this.snapshot();
   }
   configureAssistant(input = {}) {
-    const autonomy = ['user-led', 'balanced', 'proactive'].includes(input.autonomy) ? input.autonomy : 'balanced';
-    const choice=(value,allowed,fallback)=>allowed.includes(value)?value:fallback;
-    this.state.assistant = { ...this.state.assistant, autonomy, initiativeEnabled: Boolean(input.initiativeEnabled), reflectionEnabled: Boolean(input.reflectionEnabled), preferences: { responseLength: choice(input.responseLength,['concise','balanced','detailed'],'balanced'), tone: choice(input.tone,['natural','direct','warm','professional','playful'],'natural'), focusMode: choice(input.focusMode,['general','gaming','streaming','studying','creative','productivity'],'general'), accessibility: String(input.accessibility||'').trim().slice(0,500), language: choice(input.language,['en','es','fr','de'],'en') }, capabilities: { webResearch: choice(input.webResearch,['disabled','ask','enabled'],'ask'), appLaunch: 'confirm', mediaPlayback: choice(input.mediaPlayback,['disabled','confirm','enabled'],'confirm'), memoryLearning: choice(input.memoryLearning,['disabled','enabled'],'enabled') } };
+    const prev = this.state.assistant || {};
+    const prefs = prev.preferences || {};
+    const caps = prev.capabilities || {};
+    const choice = (value, allowed, fallback) => allowed.includes(value) ? value : fallback;
+    const autonomy = choice(input.autonomy, ['user-led', 'balanced', 'proactive'], choice(prev.autonomy, ['user-led', 'balanced', 'proactive'], 'balanced'));
+    this.state.assistant = {
+      ...prev,
+      autonomy,
+      initiativeEnabled: input.initiativeEnabled === undefined ? prev.initiativeEnabled !== false : Boolean(input.initiativeEnabled),
+      reflectionEnabled: input.reflectionEnabled === undefined ? prev.reflectionEnabled !== false : Boolean(input.reflectionEnabled),
+      preferences: {
+        ...prefs,
+        responseLength: choice(input.responseLength, ['concise', 'balanced', 'detailed'], prefs.responseLength || 'balanced'),
+        tone: choice(input.tone, ['natural', 'direct', 'warm', 'professional', 'playful'], prefs.tone || 'natural'),
+        focusMode: choice(input.focusMode, ['general', 'gaming', 'streaming', 'studying', 'creative', 'productivity'], prefs.focusMode || 'general'),
+        accessibility: String(input.accessibility !== undefined ? input.accessibility : (prefs.accessibility || '')).trim().slice(0, 500),
+        language: choice(input.language, ['en', 'es', 'fr', 'de'], prefs.language || 'en')
+      },
+      capabilities: {
+        ...caps,
+        webResearch: choice(input.webResearch, ['disabled', 'ask', 'enabled'], caps.webResearch || 'ask'),
+        appLaunch: 'confirm',
+        mediaPlayback: choice(input.mediaPlayback, ['disabled', 'confirm', 'enabled'], caps.mediaPlayback || 'confirm'),
+        memoryLearning: choice(input.memoryLearning, ['disabled', 'enabled'], caps.memoryLearning || 'enabled')
+      }
+    };
     const at = new Date().toISOString(); this.state.audit.push({ at, type: 'assistant.configured', details: { autonomy, initiativeEnabled: this.state.assistant.initiativeEnabled } }); this.store.save(this.state); return this.snapshot();
   }
   activeConversation() { return this.state.conversations.find(c => c.id === this.state.activeConversationId) || this.state.conversations[0]; }
@@ -73,19 +145,29 @@ export class SoulEngine {
 
     let policyReply = safetyReport ? 'I can’t help plan or facilitate illegal abuse, violence, exploitation, theft, fraud, or unauthorized access. This request was blocked and recorded in the local safety audit. If someone is in immediate danger, contact local emergency services.' : null;
     if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_enable_blocked')) policyReply = 'Adult Soul cannot be enabled until adult status is explicitly confirmed.';
-    else if (policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. I’m returning to a non-adult, pressure-free interaction stance.';
-    else if (policyEvents.some(([type]) => type === 'policy.consent_blocked')) policyReply = 'Current consent cannot be activated until the adult gate is complete.';
+    else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. I’m returning to a non-adult, pressure-free interaction stance.';
+    else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_blocked')) policyReply = 'Current consent cannot be activated until the adult gate is complete.';
 
     const conv = this.activeConversation();
     conv.messages.push({ id: uid('msg'), role: 'user', content: text, at: now });
     if (conv.messages.length === 1) conv.title = text.slice(0, 42) + (text.length > 42 ? '…' : '');
 
+    kernelHeartbeat(this.state, { at: now });
+    const route = routeKernel(text, this.state, this.modules);
+    const locale = this.state.assistant?.preferences?.language || 'en';
+
     let reply = policyReply;
     let providerError = null;
     let internetError = null;
     let webResearch = null;
+    if (!reply && route.enabled === false && route.moduleId) {
+      reply = disabledModuleReply(route, locale);
+    }
+    if (!reply && route.knowledgeReply) reply = route.knowledgeReply;
     if (!reply) {
-      if (this.state.assistant?.capabilities?.webResearch !== 'disabled') { try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); } }
+      if (route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text)) {
+        try { webResearch = await researchInternet(text, this.internetOptions); } catch (err) { internetError = String(err?.message || err); }
+      }
       const history = conv.messages.slice(-24).map(m => ({ role: m.role, content: m.content }));
       try {
         const researchContext = webResearch ? `\n\nCurrent internet research (cite the numbered source links and do not invent missing facts):\n${webResearch.context}` : '';
@@ -97,13 +179,16 @@ export class SoulEngine {
         reply += `\n\n(Model connection unavailable; continuing in offline mode.)`;
       }
     }
+    if (!policyReply) {
+      reply = applyPhrasing(reply, this.state.kernel?.registry?.phrasing, locale);
+    }
 
     const done = new Date().toISOString();
     conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch });
     conv.updatedAt = done;
-    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError } });
+    this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId } });
     if (this.state.audit.length > 5000) this.state.audit = this.state.audit.slice(-5000);
     this.store.save(this.state);
-    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, adultAllowed: adultAllowed(this.state), state: this.snapshot() };
+    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, kernel: kernelPublicMeta(route), adultAllowed: adultAllowed(this.state), state: this.snapshot() };
   }
 }

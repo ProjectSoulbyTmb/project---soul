@@ -14,7 +14,7 @@ Soul Consciousness Studios is currently described in this repository as Tyler Mi
 1. File the state formation document and save the stamped acceptance and governing document.
 2. Obtain an EIN directly from the IRS after formation if needed. The IRS application is free; avoid websites that impersonate the IRS and charge unnecessary fees.
 3. Open a separate business bank account and keep business and personal funds separate.
-4. Execute a written intellectual-property assignment only if Tyler Michael Bosworth decides the new entity—not him personally—should own pre-formation Eidovara rights. Record the effective date and excluded third-party material.
+4. Execute a written intellectual-property assignment only if Tyler Michael Bosworth decides the new entity—not him personally—should own pre-formation Eidovara rights. Record the effective date and excluded third-party material. An unsigned template is `docs/ENTITY_IP_ASSIGNMENT.md`; this repository does not contain an executed copy.
 5. Maintain a sole-member ledger, formation resolutions, licenses, contracts, tax records, annual reports, and renewal dates.
 
 ## Brand and product
