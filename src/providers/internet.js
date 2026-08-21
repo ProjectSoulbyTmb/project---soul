@@ -284,9 +284,18 @@ async function searchBroad(query, apiKey, wantsImages, fetchImpl) {
 }
 
 export async function fetchPublicPage(href, { fetchImpl = globalThis.fetch, timeoutMs = PAGE_TIMEOUT_MS } = {}) {
+  let parsed;
+  try {
+    parsed = new URL(String(href || ''));
+  } catch {
+    throw new Error('Only credential-free HTTPS pages can be opened.');
+  }
+  if (parsed.protocol !== 'https:' || parsed.username || parsed.password) {
+    throw new Error('Only credential-free HTTPS pages can be opened.');
+  }
+  if (isBlockedResearchHost(parsed)) throw new Error('That host is blocked for in-app lookup.');
   const url = publicHttpsUrl(href);
   if (!url) throw new Error('Only credential-free HTTPS pages can be opened.');
-  if (isBlockedResearchHost(url)) throw new Error('That host is blocked for in-app lookup.');
   if (isHandoffOnlyHost(url)) throw new Error('YouTube and Spotify stay official browser searches. Eidovara does not fetch their HTML.');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
