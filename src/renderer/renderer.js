@@ -1,4 +1,5 @@
 const $ = s => document.querySelector(s);
+const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
 let state = null, settings = null, sending = false, backupCount = 0;
 let mediaQueue = [], mediaIndex = -1;
@@ -44,13 +45,13 @@ function applyServiceIndicator(status){
   const siteBtn=$('#serviceSiteBtn'); if(siteBtn) siteBtn.classList.toggle('hidden',!snapshot.website);
   const note=$('#serviceStatusText');
   if(note){
-    if(!configured) note.textContent='No service URL saved. Offline Soul stays fully usable.';
+    if(!configured) note.textContent='Using the official service default (https://api.eidovara.org). Offline Soul stays fully usable if that host is down.';
     else if(online) note.textContent=`${snapshot.service||'Eidovara'} ${snapshot.version||''} connected. Checkout stays off. Conversations stay local. Assist stays opt-in.`.replace(/\s+/g,' ').trim();
     else note.textContent=snapshot.error||'Eidovara service is unreachable. Offline Soul continues locally.';
   }
   window.eidovaraCompanion?.refresh?.();
 }
-function renderStatus(){ const premium=settings?.edition==='premium'; $('#modePill').textContent=`${state.policy.mode==='adult'?'Adult Soul':'Standard Soul'} · ${premium?'Premium':'Free'}`; const labels={offline:'Soul Offline',local:'Local model',compatible:'Connected model'}; $('#providerLabel').textContent=labels[settings?.provider]||'Offline'; const kernelLive=Boolean(settings?.ageGateAccepted); const kLabel=$('#kernelLabel'), kDot=$('#kernelDot'); if(kLabel) kLabel.textContent=kernelLive?'Kernel live':'Kernel idle'; if(kDot){kDot.classList.toggle('live',kernelLive);kDot.classList.toggle('idle',!kernelLive);} $('#editionTitle').textContent=premium?'Eidovara Premium':'Eidovara Free'; $('#editionDescription').textContent=premium?'The locally implemented Premium feature gates are enabled for testing on this installation.':'Core workspace features with offline/local models, memory, media, backups, updates, and up to three linked apps.'; $('#upgradeBtn').classList.toggle('hidden',premium||!settings?.storeUrl); applyEditionGates(); applyServiceIndicator(); }
+function renderStatus(){ const premium=settings?.edition==='premium'; $('#modePill').textContent=`${state.policy.mode==='adult'?'Adult Soul':'Standard Soul'} · ${premium?'Premium':'Free'}`; const labels={offline:'Soul Offline',local:'Local model',compatible:'Connected model'}; $('#providerLabel').textContent=labels[settings?.provider]||'Offline'; const kernelLive=Boolean(settings?.ageGateAccepted); const kLabel=$('#kernelLabel'), kDot=$('#kernelDot'); if(kLabel) kLabel.textContent=kernelLive?'Soul ready':'Soul waiting'; if(kDot){kDot.classList.toggle('live',kernelLive);kDot.classList.toggle('idle',!kernelLive);} $('#editionTitle').textContent=premium?'Eidovara Premium':'Eidovara Free'; $('#editionDescription').textContent=premium?'The locally implemented Premium feature gates are enabled for testing on this installation.':'Core workspace features with offline/local models, memory, media, backups, updates, and up to three linked apps.'; $('#upgradeBtn').classList.toggle('hidden',premium||!settings?.storeUrl); applyEditionGates(); applyServiceIndicator(); }
 const SYSTEM_THEME_VALUES=new Set(['#080c16','#101828','#8f7cff','#000000','#1c1c1e','#0a84ff','#f2f2f7','#ffffff','#007aff']);
 function applyTheme(){const t=settings?.theme||{};const root=document.documentElement;const assign=(names,value)=>{const v=String(value||'').toLowerCase();if(v&&!SYSTEM_THEME_VALUES.has(v))names.forEach(name=>root.style.setProperty(name,value));else names.forEach(name=>root.style.removeProperty(name));};assign(['--bg','--grouped','--side'],t.background);assign(['--panel','--elevated'],t.panel);assign(['--accent','--tint'],t.accent);root.style.setProperty('--surface-opacity',`${Math.max(65,Math.min(100,Number(t.transparency)||96))}%`);document.body.classList.toggle('rgb-effects',Boolean(t.rgbEffects)&&!t.gamingMode);document.body.classList.toggle('gaming-mode',Boolean(t.gamingMode));}
 function populateVoices(){if(!('speechSynthesis' in window))return;const current=$('#voiceSelect').value||(settings?.companion?.voiceURI||settings?.companion?.voiceName||'');const voices=speechSynthesis.getVoices();$('#voiceSelect').textContent='';const fallback=el('option','','OS default');fallback.value='';$('#voiceSelect').append(fallback);for(const voice of voices){const option=el('option','',`${voice.name} (${voice.lang})`);option.value=voice.voiceURI||voice.name;$('#voiceSelect').append(option);}$('#voiceSelect').value=[...$('#voiceSelect').options].some(x=>x.value===current)?current:'';}
@@ -294,21 +295,94 @@ $('#backupBtn').addEventListener('click',async()=>{try{$('#backupStatus').textCo
 $('#refreshBackupsBtn').addEventListener('click',()=>refreshBackups().then(()=>{$('#backupStatus').textContent=backupCount?`${backupCount} local snapshot${backupCount===1?'':'s'} available.` : t('noBackups');renderDashboard();}).catch(err=>{$('#backupStatus').textContent=String(err?.message||err);}));
 $('#restoreBackupBtn').addEventListener('click',async()=>{const name=$('#backupSelect').value;if(!name||name.startsWith('No backups')||!confirm('Restore this backup and replace the current profile state?'))return;try{state=await window.soul.restoreBackup(name);renderAll();$('#backupStatus').textContent=`Restored ${name}. Conversations, memories, and Soul continuity now match that snapshot.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});
 $('#resetBtn').addEventListener('click',async()=>{if(!confirm('Reset the current Soul profile and local conversation history?'))return;state=await window.soul.reset();renderAll();setView('chat');});
+
+function startPathDismissed(){ try { return localStorage.getItem(START_PATH_KEY) === '1'; } catch { return false; } }
+function setStartPathDismissed(on){ try { if(on) localStorage.setItem(START_PATH_KEY,'1'); else localStorage.removeItem(START_PATH_KEY); } catch {} $('#startPath')?.classList.toggle('hidden', on); }
+function jumpSettings(id){ setView('settings'); const node=$(id); if(node) node.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); }
+function focusCompanion(){ setView('dashboard'); $('#soulDock')?.scrollIntoView({block:'nearest'}); $('#companionInput')?.focus(); }
+const PALETTE_COMMANDS = [
+  { id:'dashboard', title:'Dashboard', hint:'Home after 18+', run:()=>setView('dashboard') },
+  { id:'talk', title:'Talk with Soul', hint:'Right dock — local assistant, not Assist', run:()=>focusCompanion() },
+  { id:'apps', title:'Apps & Gaming', hint:'Launch still asks you to confirm', run:()=>setView('apps') },
+  { id:'entertainment', title:'Entertainment', hint:'Local media and official searches', run:()=>setView('entertainment') },
+  { id:'memory', title:'Memory', hint:'Facts Soul can keep', run:()=>setView('memory') },
+  { id:'identity', title:'Identity & consent', hint:'Adult Mode stays a triple gate', run:()=>setView('identity') },
+  { id:'service', title:'Service URL', hint:'Default https://api.eidovara.org', run:()=>jumpSettings('#serviceForm') },
+  { id:'voices', title:'Voices & presence', hint:'OS voices only — no neural TTS', run:()=>jumpSettings('#settings-voices') },
+  { id:'modules', title:'Modules', hint:'Local feature toggles', run:()=>jumpSettings('#kernelCustomizeForm') },
+  { id:'behavior', title:'Soul behavior', hint:'Tone, research, media confirm', run:()=>jumpSettings('#assistantBehaviorForm') },
+  { id:'backups', title:'Backups', hint:'Local snapshots', run:()=>jumpSettings('#backupSection') },
+  { id:'legal', title:'About & legal', hint:'18+, unsigned, no payments', run:()=>showLegal('about') },
+  { id:'shortcuts', title:'Keyboard shortcuts', hint:'Ctrl+/', run:()=>openShortcutSheet() }
+];
+let paletteIndex = 0;
+function filteredPalette(query){
+  const q=String(query||'').trim().toLowerCase();
+  if(!q) return PALETTE_COMMANDS.slice();
+  return PALETTE_COMMANDS.filter(item => `${item.title} ${item.hint} ${item.id}`.toLowerCase().includes(q));
+}
+function renderPaletteList(){
+  const box=$('#paletteList'); if(!box) return;
+  const items=filteredPalette($('#paletteInput')?.value);
+  box.textContent='';
+  if(!items.length){ box.append(el('p','soul-dock-empty', t('paletteEmpty','No matching places. Try dashboard or settings.'))); return; }
+  paletteIndex=Math.max(0, Math.min(paletteIndex, items.length-1));
+  items.forEach((item, i)=>{
+    const b=el('button','');
+    b.type='button';
+    b.setAttribute('role','option');
+    b.setAttribute('aria-selected', String(i===paletteIndex));
+    b.append(el('strong','',item.title), el('small','',item.hint));
+    b.addEventListener('click',()=>{ closePalette(); item.run(); });
+    box.append(b);
+  });
+}
+function openPalette(){
+  if(document.body.classList.contains('age-gated')) return;
+  $('#shortcutSheet')?.classList.add('hidden');
+  $('#commandPalette')?.classList.remove('hidden');
+  paletteIndex=0;
+  if($('#paletteInput')) $('#paletteInput').value='';
+  renderPaletteList();
+  $('#paletteInput')?.focus();
+}
+function closePalette(){ $('#commandPalette')?.classList.add('hidden'); }
+function openShortcutSheet(){
+  if(document.body.classList.contains('age-gated')) return;
+  closePalette();
+  $('#shortcutSheet')?.classList.remove('hidden');
+  $('#shortcutCloseBtn')?.focus();
+}
+function closeShortcutSheet(){ $('#shortcutSheet')?.classList.add('hidden'); }
+function overlayOpen(id){ const n=$(id); return n && !n.classList.contains('hidden'); }
+
 document.addEventListener('keydown',e=>{
-  const overlayOpen=id=>{const n=$(id);return n&&!n.classList.contains('hidden');};
   if(e.key==='Escape'){
     if(overlayOpen('#ageGateOverlay')) return;
+    if(overlayOpen('#commandPalette')){ closePalette(); e.preventDefault(); return; }
+    if(overlayOpen('#shortcutSheet')){ closeShortcutSheet(); e.preventDefault(); return; }
     if(overlayOpen('#legalOverlay')){$('#legalOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#adminOverlay')){$('#adminOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#setupOverlay')&&!$('#cancelSetupBtn').classList.contains('hidden')){$('#setupOverlay').classList.add('hidden');e.preventDefault();}
     return;
   }
-  if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.key==='/'){
+  if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.key.toLowerCase()==='k'){
     if(document.body.classList.contains('age-gated')) return;
     e.preventDefault();
-    setView('dashboard');
-    $('#companionInput')?.focus();
+    if(overlayOpen('#commandPalette')) closePalette(); else openPalette();
     return;
+  }
+  if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&(e.key==='/'||e.key==='?')){
+    if(document.body.classList.contains('age-gated')) return;
+    e.preventDefault();
+    if(overlayOpen('#shortcutSheet')) closeShortcutSheet(); else openShortcutSheet();
+    return;
+  }
+  if(overlayOpen('#commandPalette')){
+    const items=filteredPalette($('#paletteInput')?.value);
+    if(e.key==='ArrowDown'){ e.preventDefault(); paletteIndex=Math.min(items.length-1, paletteIndex+1); renderPaletteList(); return; }
+    if(e.key==='ArrowUp'){ e.preventDefault(); paletteIndex=Math.max(0, paletteIndex-1); renderPaletteList(); return; }
+    if(e.key==='Enter'){ e.preventDefault(); const pick=items[paletteIndex]; closePalette(); pick?.run(); return; }
   }
   if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.key.toLowerCase()==='a'){
     if(e.target?.closest?.('input, textarea, select, [contenteditable="true"]')) return;
@@ -317,6 +391,20 @@ document.addEventListener('keydown',e=>{
     openAdmin().catch(err=>alert(String(err?.message||err)));
   }
 });
+$('#paletteBtn')?.addEventListener('click',()=>openPalette());
+$('#shortcutBtn')?.addEventListener('click',()=>openShortcutSheet());
+$('#paletteCloseBtn')?.addEventListener('click',()=>closePalette());
+$('#shortcutCloseBtn')?.addEventListener('click',()=>closeShortcutSheet());
+$('#paletteInput')?.addEventListener('input',()=>{paletteIndex=0;renderPaletteList();});
+$$('[data-settings-jump]').forEach(b=>b.addEventListener('click',()=>jumpSettings('#'+b.dataset.settingsJump)));
+$('#welcomeDashboardBtn')?.addEventListener('click',()=>setView('dashboard'));
+$$('[data-start]').forEach(b=>b.addEventListener('click',()=>{
+  const action=b.dataset.start;
+  if(action==='talk') focusCompanion();
+  else if(action==='apps') setView('apps');
+  else if(action==='settings') jumpSettings('#serviceForm');
+}));
+$('#dismissStartPath')?.addEventListener('click',()=>setStartPathDismissed(true));
 $('#adminCancelBtn').addEventListener('click',()=>$('#adminOverlay').classList.add('hidden'));
 $('#adminLoginForm').addEventListener('submit',async e=>{e.preventDefault();try{const password=$('#adminPassword').value;const status=$('#adminLoginForm').dataset.configured==='true'?await window.soul.adminLogin(password):await window.soul.adminConfigure(password);$('#adminPassword').value='';$('#adminLoginForm').classList.add('hidden');$('#adminPanelForm').classList.remove('hidden');$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;}catch(err){$('#adminLoginStatus').textContent=String(err?.message||err);}});
 $('#adminPanelForm').addEventListener('submit',async e=>{e.preventDefault();try{const status=await window.soul.adminSave({edition:$('#adminEdition').value,storeUrl:$('#adminStoreUrl').value.trim(),serviceUrl:$('#adminServiceUrl').value.trim()});settings=await window.soul.getSettings();renderAll();$('#adminPanelStatus').textContent=`Saved ${status.edition} edition, store, and HTTPS service configuration.`;}catch(err){$('#adminPanelStatus').textContent=String(err?.message||err);}});
@@ -378,4 +466,4 @@ function setAgeGated(on){
 $('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
 $('#ageGateDeclineBtn').addEventListener('click',()=>window.soul.declineAgeGate());
 
-(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();
+(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();

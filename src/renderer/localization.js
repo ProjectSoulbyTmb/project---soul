@@ -4,7 +4,7 @@
       newConversation: '＋ New conversation', dashboard: 'Dashboard', apps: 'Apps & Gaming', entertainment: 'Entertainment', memory: 'Memory', identity: 'Identity', settings: 'Settings', language: 'Interface language', save: 'Save settings',
       adultConfirm: 'Confirm legal-adult status', adultEnable: 'Enable Adult Soul',
       adultWarning: 'Adult Soul is only for people who have reached the age of majority where they are located. It must not be used by minors. This local confirmation is not independent identity or age verification. Confirm that you are legally an adult to continue.',
-      dashboardTitle: 'Your Eidovara workspace', dashboardLead: 'Apps, gaming, media, research, backups, and a local companion that can open those surfaces. Optional Soul is a software self-model — not consciousness, not the website helper.',
+      dashboardTitle: 'Your Eidovara workspace', dashboardLead: 'Home after 18+: pick a next step, then use Apps, Entertainment, or Soul on the right. Soul is local. Assist is optional and off by default.',
       appsTitle: 'Apps & Gaming Hub', appsLead: 'Organize trusted Windows applications and ask Windows to launch them. Compatibility varies; Eidovara does not inject into or control them.',
       discoverApps: 'Discover installed apps', chooseFile: '＋ Choose file', gamingMode: 'Gaming mode', gamingModeLead: 'Reduces Eidovara’s animated lighting and transparency while you play. It does not change another game’s process or frame rate.', lowOverhead: 'Low-overhead mode',
       entertainmentTitle: 'Entertainment', entertainmentLead: 'Local taste, queue helpers, and lawful platform handoff — Spotify and YouTube stay official HTTPS searches.',
@@ -40,7 +40,15 @@
       companionTitle: 'Soul companion', companionLead: 'Always-on session kernel on this PC. Software, not a person. Assist is not Soul.',
       companionEmpty: 'Ask from this dock. Local kernel answers on this PC. Assist is not Soul.',
       companionNote: 'Local kernel · Assist is not Soul · no live payments · voices from Windows',
-      companionAskLabel: 'Ask Soul', presenceCaption: 'Decorative presence — not a conscious figure.'
+      companionAskLabel: 'Ask Soul', presenceCaption: 'Decorative presence — not a conscious figure.',
+      welcomeTitle: 'You\'re in. Start on the Dashboard.', welcomeLead: 'Eidovara is this Windows workspace. Soul (right side) is the local assistant — a software self-model, not a mind. Assist is an optional Worker helper and stays off until you turn it on. They are not the same thing.',
+      welcomeDashboard: 'Open Dashboard', settingsTitle: 'Settings', settingsLead: 'Grouped by what you change. Soul stays on this PC. Assist stays off unless you turn it on. No live payments.',
+      startPathTitle: 'Start here', startPathLead: 'One path after you confirm 18+. You can hide this card anytime.',
+      startPathStep1: 'This Dashboard is home. Cards below open the real surfaces.',
+      startPathStep2: 'Soul (right dock) is the local software self-model. Ask it here. It is not a person and not the website helper.',
+      startPathStep3: 'Assist is an optional Worker helper. It stays off unless you enable it in Settings. Assist is not Soul.',
+      startTalk: 'Talk with Soul', startApps: 'Add a trusted app', startSettings: 'Open Settings', startDismiss: 'Hide this guide',
+      paletteEmpty: 'No matching places. Try dashboard or settings.'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -82,7 +90,15 @@
       companionTitle: 'Compañero Soul', companionLead: 'Núcleo de sesión siempre disponible en este PC. Software, no una persona. Assist no es Soul.',
       companionEmpty: 'Pregunta desde este panel. El núcleo local responde en este PC. Assist no es Soul.',
       companionNote: 'Núcleo local · Assist no es Soul · sin pagos en vivo · voces de Windows',
-      companionAskLabel: 'Preguntar a Soul', presenceCaption: 'Presencia decorativa: no es una figura consciente.'
+      companionAskLabel: 'Preguntar a Soul', presenceCaption: 'Presencia decorativa: no es una figura consciente.',
+      welcomeTitle: 'Ya estás dentro. Empieza en el Panel.', welcomeLead: 'Eidovara es este espacio de Windows. Soul (derecha) es el asistente local: un modelo de software, no una mente. Assist es un ayudante opcional y permanece apagado hasta que lo actives.',
+      welcomeDashboard: 'Abrir Panel', settingsTitle: 'Configuración', settingsLead: 'Agrupado por lo que cambias. Soul se queda en este PC. Assist permanece apagado salvo que lo actives. No hay pagos en vivo.',
+      startPathTitle: 'Empieza aquí', startPathLead: 'Un camino claro después de confirmar 18+. Puedes ocultar esta tarjeta.',
+      startPathStep1: 'Este Panel es el inicio. Las tarjetas abren las superficies reales.',
+      startPathStep2: 'Soul (el muelle derecho) es el modelo de software local. Pregúntale aquí. No es una persona ni el ayudante del sitio.',
+      startPathStep3: 'Assist es un ayudante opcional del Worker. Permanece apagado salvo que lo actives en Configuración. Assist no es Soul.',
+      startTalk: 'Hablar con Soul', startApps: 'Añadir app de confianza', startSettings: 'Abrir Configuración', startDismiss: 'Ocultar esta guía',
+      paletteEmpty: 'Ningún lugar coincide. Prueba panel o configuración.'
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -124,7 +140,15 @@
       companionTitle: 'Compagnon Soul', companionLead: 'Noyau de session toujours disponible sur ce PC. Logiciel, pas une personne. Assist n’est pas Soul.',
       companionEmpty: 'Demandez depuis ce panneau. Le noyau local répond sur ce PC. Assist n’est pas Soul.',
       companionNote: 'Noyau local · Assist n’est pas Soul · pas de paiements live · voix Windows',
-      companionAskLabel: 'Demander à Soul', presenceCaption: 'Présence décorative — pas une figure consciente.'
+      companionAskLabel: 'Demander à Soul', presenceCaption: 'Présence décorative — pas une figure consciente.',
+      welcomeTitle: 'Vous y êtes. Commencez par le tableau de bord.', welcomeLead: 'Eidovara est cet espace Windows. Soul (à droite) est l’assistant local — un modèle logiciel, pas un esprit. Assist est facultatif et reste désactivé tant que vous ne l’activez pas.',
+      welcomeDashboard: 'Ouvrir le tableau de bord', settingsTitle: 'Paramètres', settingsLead: 'Groupés par ce que vous changez. Soul reste sur cet appareil. Assist reste désactivé tant que vous ne l’activez pas. Pas de paiement en direct.',
+      startPathTitle: 'Commencez ici', startPathLead: 'Un chemin unique après la confirmation 18+. Vous pouvez masquer cette carte.',
+      startPathStep1: 'Ce tableau de bord est l’accueil. Les cartes ouvrent les vrais écrans.',
+      startPathStep2: 'Soul (panneau droit) est le modèle logiciel local. Demandez-lui ici. Ce n’est pas une personne ni l’aide du site.',
+      startPathStep3: 'Assist est une aide Worker facultative. Elle reste désactivée tant que vous ne l’activez pas dans Paramètres. Assist n’est pas Soul.',
+      startTalk: 'Parler à Soul', startApps: 'Ajouter une app de confiance', startSettings: 'Ouvrir Paramètres', startDismiss: 'Masquer ce guide',
+      paletteEmpty: 'Aucun lieu correspondant. Essayez tableau de bord ou paramètres.'
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -166,7 +190,15 @@
       companionTitle: 'Soul-Begleiter', companionLead: 'Sitzungs-Kernel immer auf diesem PC. Software, keine Person. Assist ist nicht Soul.',
       companionEmpty: 'Fragen Sie über dieses Dock. Der lokale Kernel antwortet auf diesem PC. Assist ist nicht Soul.',
       companionNote: 'Lokaler Kernel · Assist ist nicht Soul · keine Live-Zahlungen · Windows-Stimmen',
-      companionAskLabel: 'Soul fragen', presenceCaption: 'Dekorative Präsenz — keine bewusste Figur.'
+      companionAskLabel: 'Soul fragen', presenceCaption: 'Dekorative Präsenz — keine bewusste Figur.',
+      welcomeTitle: 'Sie sind drin. Starten Sie in der Übersicht.', welcomeLead: 'Eidovara ist dieser Windows-Arbeitsbereich. Soul (rechts) ist der lokale Assistent — ein Software-Selbstmodell, kein Geist. Assist ist optional und bleibt aus, bis Sie ihn einschalten.',
+      welcomeDashboard: 'Übersicht öffnen', settingsTitle: 'Einstellungen', settingsLead: 'Gruppiert nach dem, was Sie ändern. Soul bleibt auf diesem PC. Assist bleibt aus, bis Sie ihn einschalten. Keine Live-Zahlungen.',
+      startPathTitle: 'Hier starten', startPathLead: 'Ein klarer Weg nach der 18+-Bestätigung. Diese Karte können Sie ausblenden.',
+      startPathStep1: 'Diese Übersicht ist die Startseite. Die Karten öffnen die echten Flächen.',
+      startPathStep2: 'Soul (rechtes Dock) ist das lokale Software-Selbstmodell. Fragen Sie hier. Keine Person und nicht der Website-Helfer.',
+      startPathStep3: 'Assist ist ein optionaler Worker-Helfer. Er bleibt aus, bis Sie ihn in den Einstellungen einschalten. Assist ist nicht Soul.',
+      startTalk: 'Mit Soul sprechen', startApps: 'Vertrauenswürdige App hinzufügen', startSettings: 'Einstellungen öffnen', startDismiss: 'Diese Anleitung ausblenden',
+      paletteEmpty: 'Kein Treffer. Versuchen Sie Übersicht oder Einstellungen.'
     }
   };
   let locale = 'en';

@@ -1,7 +1,7 @@
-/** Desktop product knowledge for the in-app Soul kernel (v0.18.2). Not the website helper. */
+/** Desktop product knowledge for the in-app Soul kernel (v0.18.3). Not the website helper. */
 
-export const DESKTOP_KNOWLEDGE_VERSION = '0.18.2';
-export const INSTALLER_NAME = 'Eidovara-0.18.2-Windows-x64-Setup.exe';
+export const DESKTOP_KNOWLEDGE_VERSION = '0.18.3';
+export const INSTALLER_NAME = 'Eidovara-0.18.3-Windows-x64-Setup.exe';
 export const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
 export const INSTALLER_SIZE = 'about 101.3 MiB';
 
@@ -18,22 +18,22 @@ const ENTRIES = {
   },
   unsigned: {
     title: 'Unsigned Windows build',
-    reply: 'This installation is Authenticode-unsigned on purpose for v0.18.2. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Checksums and updates live under Settings → Software updates.',
+    reply: 'This installation is Authenticode-unsigned on purpose for v0.18.3. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Checksums and updates live under Settings → Software updates.',
     actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   payments: {
     title: 'Payments stay off',
-    reply: 'v0.18.2 does not sell Premium and does not process payments. There is no live checkout, card collection, or PCI processing in this app. Free is $0. A local administrator override (Ctrl+A, away from text fields) can flip Premium feature gates for testing only. That override is not a purchase.',
+    reply: 'v0.18.3 does not sell Premium and does not process payments. There is no live checkout, card collection, or PCI processing in this app. Free is $0. A local administrator override (Ctrl+A, away from text fields) can flip Premium feature gates for testing only. That override is not a purchase.',
     actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   premium: {
     title: 'Free vs Premium',
-    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research after an explicit internet/web/online request, and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v0.18.2.',
+    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research after an explicit internet/web/online request, and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v0.18.3.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   },
   download: {
     title: 'You are already in the app',
-    reply: `This window is the installed Eidovara v0.18.2 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, use Settings → Software updates for the official GitHub channel. Soul does not fetch Setup.exe.`,
+    reply: `This window is the installed Eidovara v0.18.3 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, use Settings → Software updates for the official GitHub channel. Soul does not fetch Setup.exe.`,
     actions: [{ type: 'open-updates', label: 'Software updates' }]
   },
   platforms: {
@@ -53,12 +53,12 @@ const ENTRIES = {
   },
   what: {
     title: 'What Eidovara is',
-    reply: 'Eidovara v0.18.2 is a local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device — not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.',
+    reply: 'Eidovara v0.18.3 is a local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device — not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.',
     actions: [{ type: 'open-setup', label: 'Configure Soul' }, { type: 'open-view', view: 'apps', label: 'Apps & Gaming' }]
   },
   help: {
     title: 'What this kernel can do',
-    reply: 'I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v0.18.2. Assist is not Soul.',
+    reply: 'I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v0.18.3. Assist is not Soul.',
     actions: [
       { type: 'open-view', view: 'apps', label: 'Apps & Gaming' },
       { type: 'open-view', view: 'entertainment', label: 'Entertainment' },
@@ -81,8 +81,8 @@ const ENTRIES = {
     actions: [{ type: 'open-diagnostics', label: 'Show diagnostics' }, { type: 'open-service', label: 'Service settings' }]
   },
   forbidden: {
-    title: 'What v0.18.2 does not include',
-    reply: 'v0.18.2 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness or sentience. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode stays gated. Playback uses voices already installed on this OS when you enable that option.',
+    title: 'What v0.18.3 does not include',
+    reply: 'v0.18.3 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness or sentience. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode stays gated. Playback uses voices already installed on this OS when you enable that option.',
     actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   offline: {

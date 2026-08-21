@@ -1,6 +1,6 @@
 # Owner runbook: public website, Windows download, Worker, and payments
 
-Eidovara v0.18.2 is a **local-first Windows desktop app**. Making it “online for all users” means a public HTTPS site, a public Windows download, and an optional public Worker for `/health`, `/v1/config`, `/v1/status`, and website-helper `/v1/assist`. It does **not** mean hosting everyone’s Soul, chat, or memories in the cloud. Free / Offline Soul works with no Worker URL. The desktop app can attach to that service for status/config while remaining local-first. Ask Eidovara on GitHub Pages and eidovara.org works with zero secrets.
+Eidovara v0.18.3 is a **local-first Windows desktop app**. Making it “online for all users” means a public HTTPS site, a public Windows download, and an optional public Worker for `/health`, `/v1/config`, `/v1/status`, and website-helper `/v1/assist`. It does **not** mean hosting everyone’s Soul, chat, or memories in the cloud. Free / Offline Soul works with no Worker URL. The desktop app can attach to that service for status/config while remaining local-first. Ask Eidovara on GitHub Pages and eidovara.org works with zero secrets.
 
 Do not commit API tokens, Wrangler credentials, or payment secrets. Do not hard-code `dreambot333.workers.dev` in the app or public HTML/JS.
 
@@ -24,7 +24,7 @@ These cannot be completed from source code. Each item is a **solution path**, no
 1. **Dependency review CI (seen on pull request #5)** — GitHub Actions cannot turn on Dependency graph. Keep `.github/workflows/dependency-review.yml` (`fail-on-severity: moderate`); do not delete or weaken it. **Fix:** repository **Settings → Code security** (Code security and analysis) → enable **Dependency graph**. Direct link: `https://github.com/ProjectSoulbyTmb/project---soul/settings/security_analysis`. After that click, Dependency review can run on pull requests.
 2. **GitHub Pages still serves `main`** — `.github/workflows/pages.yml` already deploys `docs/` on push to `main` (and `workflow_dispatch`). The live URL `https://projectsoulbytmb.github.io/project---soul/` therefore shows whatever `main` last published. PR #10 (`cursor/engine-product-surface-c180`) is already merged; do not retarget Pages at a feature branch. If Pages was never enabled: Settings → Pages → Build and deployment → **GitHub Actions**.
 3. **Worker vs git drift** — `server/worker.js` serves `/health`, `/v1/config`, `/v1/status`, and `/v1/assist`. A previously deployed Worker can lag until you redeploy. **Fix:** from `server/`, `npx wrangler login` or a local `CLOUDFLARE_API_TOKEN` (never committed), then `npx wrangler deploy`. The desktop already defaults to `https://api.eidovara.org`. Optional: paste another HTTPS **base** (no path) into desktop **Settings → Eidovara service** to override, or the same base in the website Status page or Ask Eidovara sheet (localStorage) for `/v1/assist`. Skip deploy if you have no token; the Pages helper still works.
-4. **GitHub Releases** — Push a `v*` tag on `main` (for example `v0.18.2`) so `Release Windows` builds unsigned NSIS on `windows-latest` and publishes `Eidovara-*-Windows-x64-Setup.exe`. Tags `v0.18.0` and `v0.18.1` already exist and must not be force-moved. `workflow_dispatch` on a branch only uploads unsigned build artifacts; it does not Authenticode-sign and does not publish a Release unless the ref is a `v*` tag.
+4. **GitHub Releases** — Push a `v*` tag on `main` (for example `v0.18.3`) so `Release Windows` builds unsigned NSIS on `windows-latest` and publishes `Eidovara-*-Windows-x64-Setup.exe`. Tags `v0.18.0`, `v0.18.1`, and `v0.18.2` already exist and must not be force-moved. `workflow_dispatch` on a branch only uploads unsigned build artifacts; it does not Authenticode-sign and does not publish a Release unless the ref is a `v*` tag.
 5. **www custom domain** — Apex `eidovara.org` is already a Cloudflare Pages custom domain on project `eidovara` (same `docs/` as GitHub Pages). `www.eidovara.org` does not resolve until the owner creates a proxied CNAME `www` → `eidovara.pages.dev`. Do not add `docs/CNAME` and do not retarget GitHub Pages at this hostname. This API token cannot write DNS records. The desktop already defaults to `https://api.eidovara.org`. Do not hard-code `dreambot333.workers.dev`.
 
 NSIS overwrite-on-reinstall for existing installs is tracked on pull request #9, not in this runbook.
@@ -33,7 +33,7 @@ NSIS overwrite-on-reinstall for existing installs is tracked on pull request #9,
 
 Leave these documented. Do not “fix” them in git by claiming they exist:
 
-- **Live payments / automatic Premium** — Leave store URLs empty. v0.18.2 has no live checkout and is not PCI processing.
+- **Live payments / automatic Premium** — Leave store URLs empty. v0.18.3 has no live checkout and is not PCI processing.
 - **Authenticode** — Official advertised Windows installers stay unsigned until the owner obtains a code-signing identity outside this repository.
 - **Official Linux/macOS product** — Packaging scripts are development targets only.
 - **Neural TTS / VRM / OBS websocket control** — Not bundled; adapters stay document-only.
@@ -53,8 +53,8 @@ Source: `docs/`. Official live URL: `https://eidovara.org/`. GitHub Pages mirror
 
 ## 2. Public Windows download (GitHub Releases)
 
-- User-facing installer (primary): `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe`
-- Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.2/Eidovara-0.18.2-Windows-x64-Setup.exe`
+- User-facing installer (primary): `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.3-Windows-x64-Setup.exe`
+- Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.3/Eidovara-0.18.3-Windows-x64-Setup.exe`
 - Release notes / checksums: `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest`
 - Official advertised artifact: Authenticode-**unsigned** Windows 10/11 x64 NSIS `Setup.exe`, 18+, about 101.3 MiB. Not Microsoft-certified, EV-signed, or SmartScreen-preapproved. SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711` (also `SHA256SUMS.txt` on the GitHub Release). SmartScreen may warn. Users should verify checksums and GitHub/Sigstore provenance. There is no Authenticode claim. We cannot Authenticode-sign until the owner provides a certificate.
 - Cloning the GitHub source repository is a secondary fallback (`npm run dist:win:installer` on Windows), not the primary download. Linux/macOS scripts are development targets, not official products.
@@ -68,7 +68,7 @@ Source: `server/worker.js` plus `server/wrangler.toml` (`name = "eidovara-api"`)
 1. Create a Cloudflare account and enable Workers Free.
 2. From `server/`, authenticate with `npx wrangler login` or export `CLOUDFLARE_API_TOKEN` in your own shell. Never commit the token.
 3. Deploy with `npx wrangler deploy`. Wrangler is not an Eidovara runtime dependency.
-4. Copy the generated HTTPS **base** URL (no path) into Eidovara **Settings → Eidovara service** and **Connect**, or the private Ctrl+A panel **Soul HTTPS service**, then **Test service**. After the 18+ gate the app requests `{base}/health`, `{base}/v1/config`, and `{base}/v1/status`. Health JSON is `{ "service": "Eidovara", "status": "ok", "version": "0.18.2" }`. If those requests fail, Offline Soul continues locally. The public site’s Ask Eidovara widget can `POST {base}/v1/assist` after a visitor pastes the same base; if that fetch fails, the on-page knowledge pack still answers.
+4. Copy the generated HTTPS **base** URL (no path) into Eidovara **Settings → Eidovara service** and **Connect**, or the private Ctrl+A panel **Soul HTTPS service**, then **Test service**. After the 18+ gate the app requests `{base}/health`, `{base}/v1/config`, and `{base}/v1/status`. Health JSON is `{ "service": "Eidovara", "status": "ok", "version": "0.18.3" }`. If those requests fail, Offline Soul continues locally. The public site’s Ask Eidovara widget can `POST {base}/v1/assist` after a visitor pastes the same base; if that fetch fails, the on-page knowledge pack still answers.
 5. `/v1/config` returns the public website URL and optional provider-hosted checkout links. Leave Stripe/PayPal/Gumroad empty until a real store exists.
 
 The desktop product and the public HTML/JS never hard-code `workers.dev`. Users do not need a Worker URL. Ask Eidovara on eidovara.org and GitHub Pages works with zero secrets via `docs/knowledge.js`.
@@ -103,7 +103,7 @@ Complete the provider’s identity, business, payout, tax, refund, and dispute c
 
 Open Eidovara’s private administrator panel with Ctrl+A, enter the local administrator password, paste the provider’s public `https://` checkout URL into **Secure store / payment page**, and save. Free users then see **View Eidovara Premium** in Settings. The link opens in their system browser.
 
-v0.18.2 does not sell Premium. Leave Worker store URLs empty.
+v0.18.3 does not sell Premium. Leave Worker store URLs empty.
 
 ## Required customer-facing decisions before selling
 

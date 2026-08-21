@@ -11,7 +11,7 @@ test('public site tells users to download Windows or build from source, not use 
   assert.match(site, /local-first Windows desktop app/);
   assert.match(site, /not a hosted chat account/);
   assert.match(site, /href="download.html"/);
-  assert.match(site, /Eidovara-0\.18\.2-Windows-x64-Setup\.exe/);
+  assert.match(site, /Eidovara-0\.18\.3-Windows-x64-Setup\.exe/);
   assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/latest/);
   assert.match(site, /unsigned Stable Alpha/);
   assert.match(site, /Authenticode-unsigned/);
@@ -51,7 +51,7 @@ test('operator runbook covers Pages merge, Dependency graph, wrangler, custom do
   assert.match(read('LIVE.md'), /PR #10/);
   assert.match(read('LIVE.md'), /Do not retarget Pages at a feature branch/);
   assert.match(read('LIVE.md'), /fail-on-severity: moderate/);
-  assert.match(read('LIVE.md'), /v0\.18\.2/);
+  assert.match(read('LIVE.md'), /v0\.18\.3/);
   assert.match(read('LIVE.md'), /v0\.18\.1/);
   assert.doesNotMatch(read('LIVE.md'), /Authenticode-signed|live checkout is active|scientifically proven consciousness|®/);
   assert.match(read('server/README.md'), /Compatibility matrix/);

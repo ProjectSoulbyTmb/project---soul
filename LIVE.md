@@ -6,17 +6,17 @@ This is an operator note, not a consumer marketing page. It does not claim Authe
 
 | Surface | Status |
 | --- | --- |
-| `main` | PR #10 (`cursor/engine-product-surface-c180`) merged. Merge commit: `394cf3a287fa6fc665aed7568201e93df4165884`. Current product version on this snapshot is `0.18.2`. |
+| `main` | PR #10 (`cursor/engine-product-surface-c180`) merged. Merge commit: `394cf3a287fa6fc665aed7568201e93df4165884`. Current product version on this snapshot is `0.18.3`. |
 | GitHub Pages | `docs/` from **main only** via `.github/workflows/pages.yml`. Do not retarget Pages at a feature branch. Do not invent a second production site. Mirror: `https://projectsoulbytmb.github.io/project---soul/`. |
 | Cloudflare Pages | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). Production also at `https://eidovara.pages.dev`. Redeploy with `npx wrangler pages deploy docs --project-name=eidovara`. Worker API stays separate (`eidovara-api`, `https://api.eidovara.org`) and fail-closed. Do not add `docs/CNAME` — a GitHub Pages custom-domain file would fight this Cloudflare zone. `www.eidovara.org` has no DNS record yet. |
-| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Custom hostname `https://api.eidovara.org`. Redeploy with `npx wrangler deploy` from `server/` after Worker `version` changes. Health JSON version is `0.18.2`. `WEBSITE_URL` is `https://eidovara.org/`. |
-| Windows installer | Tag `v0.18.2` publishes unsigned `Eidovara-0.18.2-Windows-x64-Setup.exe` (~101.3 MiB). Primary site CTA is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe`. Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.2/Eidovara-0.18.2-Windows-x64-Setup.exe`. SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. Tags `v0.18.0` and `v0.18.1` already exist and must not be force-moved. |
+| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Custom hostname `https://api.eidovara.org`. Redeploy with `npx wrangler deploy` from `server/` after Worker `version` changes. Health JSON version is `0.18.3`. `WEBSITE_URL` is `https://eidovara.org/`. |
+| Windows installer | Tag `v0.18.3` publishes unsigned `Eidovara-0.18.3-Windows-x64-Setup.exe` (~101.3 MiB). Primary site CTA is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.3-Windows-x64-Setup.exe`. Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.3/Eidovara-0.18.3-Windows-x64-Setup.exe`. SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. Tags `v0.18.0`, `v0.18.1`, and `v0.18.2` already exist and must not be force-moved. |
 
 Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service (or Ctrl+A Test service) still accepts another HTTPS base as an override; empty/default resolves to the official host. No `workers.dev` host is compiled into the Electron app or public site JS. Ask Eidovara `/v1/assist` stays paste/save-only. Conversations are not sent.
 
 ## Official site (HTTPS eidovara.org)
 
-Cloudflare Pages project `eidovara` serves the same `docs/` IA as GitHub Pages. After `npx wrangler pages deploy docs --project-name=eidovara`, these should return HTTP 200 with the v0.18.2 product surface (not the retired Ask Soul homepage):
+Cloudflare Pages project `eidovara` serves the same `docs/` IA as GitHub Pages. After `npx wrangler pages deploy docs --project-name=eidovara`, these should return HTTP 200 with the v0.18.3 product surface (not the retired Ask Soul homepage):
 
 - https://eidovara.org/
 - https://eidovara.org/index.html

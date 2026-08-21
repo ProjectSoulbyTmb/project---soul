@@ -1,5 +1,5 @@
-/** Eidovara website helper knowledge pack (v0.18.2). Same answers for Pages and Worker. */
-export const ASSIST_VERSION = '0.18.2';
+/** Eidovara website helper knowledge pack (v0.18.3). Same answers for Pages and Worker. */
+export const ASSIST_VERSION = '0.18.3';
 export const MAX_ASSIST_QUERY = 800;
 export const MAX_ASSIST_BODY = 4096;
 export const STORAGE_KEY = 'eidovara.serviceBase';
@@ -7,9 +7,9 @@ export const DEFAULT_SERVICE_BASE = 'https://api.eidovara.org';
 export const ASSIST_MODES = ['help', 'download', 'legal'];
 
 const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
-const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe';
-const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.2/Eidovara-0.18.2-Windows-x64-Setup.exe';
-const INSTALLER_NAME = 'Eidovara-0.18.2-Windows-x64-Setup.exe';
+const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.3-Windows-x64-Setup.exe';
+const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.3/Eidovara-0.18.3-Windows-x64-Setup.exe';
+const INSTALLER_NAME = 'Eidovara-0.18.3-Windows-x64-Setup.exe';
 const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
 const INSTALLER_SIZE = 'about 101.3 MiB';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
@@ -21,7 +21,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['what', 'eidovara', 'product', 'workspace', 'desktop', 'windows', 'soul', 'hosted', 'account', 'cloud', 'chat', 'website', 'online'],
     title: 'What Eidovara is',
-    reply: 'Eidovara v0.18.2 is a local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. It is not a hosted chat account. Visiting this website does not create an account or store conversations. Soul is an optional assistant layer that runs on your PC. Free / Offline Soul works with no cloud URL.',
+    reply: 'Eidovara v0.18.3 is a local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. It is not a hosted chat account. Visiting this website does not create an account or store conversations. Soul is an optional assistant layer that runs on your PC. Free / Offline Soul works with no cloud URL.',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'download.html', label: 'Download' }]
   },
   {
@@ -61,7 +61,7 @@ export const ENTRIES = [
     modes: ['download', 'help', 'legal'],
     tags: ['unsigned', 'authenticode', 'smartscreen', 'sign', 'certificate', 'checksum', 'sha', 'certified', 'microsoft'],
     title: 'Unsigned Windows build',
-    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for v0.18.2, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Confirm 18+ on the Download page, then get ${INSTALLER_NAME} (${INSTALLER_SIZE}) from the official GitHub Releases asset and verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
+    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for v0.18.3, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Confirm 18+ on the Download page, then get ${INSTALLER_NAME} (${INSTALLER_SIZE}) from the official GitHub Releases asset and verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: 'security.html', label: 'Security' }]
   },
   {
@@ -69,7 +69,7 @@ export const ENTRIES = [
     modes: ['help', 'legal', 'download'],
     tags: ['pay', 'payment', 'premium', 'checkout', 'stripe', 'paypal', 'gumroad', 'buy', 'price', 'subscription', 'card', 'pci'],
     title: 'Payments stay off',
-    reply: 'v0.18.2 does not sell Premium and does not process payments. There is no live checkout on this website or in the app. Free is $0. Premium feature gates exist for local administrator testing only (Ctrl+A). That override is not payment or PCI processing. Payment-card data is not accepted. Store URLs on the optional Worker stay empty.',
+    reply: 'v0.18.3 does not sell Premium and does not process payments. There is no live checkout on this website or in the app. Free is $0. Premium feature gates exist for local administrator testing only (Ctrl+A). That override is not payment or PCI processing. Payment-card data is not accepted. Store URLs on the optional Worker stay empty.',
     links: [{ href: './#plans', label: 'Free vs Premium' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
@@ -77,7 +77,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['premium', 'free', 'edition', 'rgb', 'brave', 'apps', 'unlimited', 'remote', 'model'],
     title: 'Free vs Premium',
-    reply: 'Eidovara Free includes the workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research, and up to three linked applications. Premium (local-admin test only) adds compatible remote-model endpoints, broad keyed web search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v0.18.2.',
+    reply: 'Eidovara Free includes the workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research, and up to three linked applications. Premium (local-admin test only) adds compatible remote-model endpoints, broad keyed web search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v0.18.3.',
     links: [{ href: './#plans', label: 'Plans' }]
   },
   {
@@ -109,7 +109,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['media', 'music', 'video', 'entertainment', 'spotify', 'youtube', 'queue', 'playback'],
     title: 'Media and entertainment',
-    reply: 'Play user-selected local files and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube HTTPS searches. Playback can require confirmation. YouTube and Spotify buttons do not rip streams. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v0.18.2.',
+    reply: 'Play user-selected local files and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube HTTPS searches. Playback can require confirmation. YouTube and Spotify buttons do not rip streams. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v0.18.3.',
     links: [{ href: 'product.html', label: 'Product' }]
   },
   {
@@ -220,8 +220,8 @@ export const ENTRIES = [
     id: 'forbidden-features',
     modes: ['help', 'legal'],
     tags: ['tts', 'neural', 'vrm', 'obs', 'makehuman', 'consciousness', 'vr'],
-    title: 'What v0.18.2 does not include',
-    reply: 'v0.18.2 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode is a separate triple gate and stays off by default.',
+    title: 'What v0.18.3 does not include',
+    reply: 'v0.18.3 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode is a separate triple gate and stays off by default.',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'licensing.html', label: 'Licensing' }]
   }
 ];
@@ -266,7 +266,7 @@ const ABUSE = [
 ];
 
 const REFUSALS = {
-  empty: 'Ask a short product question about Eidovara v0.18.2 (download, 18+, local desktop use, payments, or legal pointers).',
+  empty: 'Ask a short product question about Eidovara v0.18.3 (download, 18+, local desktop use, payments, or legal pointers).',
   too_large: 'That question is too long for this website helper. Ask a shorter product question (under 800 characters).',
   refused: 'I cannot help with criminal activity, unauthorized access, or bypassing security controls. Eidovara is 18+ local Windows software. Read the Terms. This helper is not Soul and is not legal advice.',
   invalid: 'That request was not a usable product question.'

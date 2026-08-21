@@ -25,7 +25,7 @@ function publicPayload(extra = {}) {
   return {
     service: 'Eidovara',
     status: 'ok',
-    version: '0.18.2',
+    version: '0.18.3',
     time: new Date().toISOString(),
     localFirst: true,
     conversations: false,
@@ -82,11 +82,11 @@ export default {
     if (url.pathname === '/v1/status') return response(publicPayload({
       pages: 'Official site is https://eidovara.org (Cloudflare Pages from docs/). Official API is https://api.eidovara.org. GitHub Pages publishes the same docs/ on main. No workers.dev host is compiled into the app or public JS.',
       releases: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest',
-      installer: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe',
+      installer: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.3-Windows-x64-Setup.exe',
       assist: '/v1/assist knowledge-only, no transcripts'
     }), 200, { 'cache-control': 'public, max-age=30' });
     if (url.pathname === '/v1/config') return response({
-      version: '0.18.2',
+      version: '0.18.3',
       website: httpsUrl(env.WEBSITE_URL),
       store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) },
       paymentsEnabled: false,
