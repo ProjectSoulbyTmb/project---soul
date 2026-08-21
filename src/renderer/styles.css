@@ -148,14 +148,14 @@ button { cursor: pointer; }
 .workspace {
   min-width: 0;
   display: grid;
-  grid-template-rows: 52px minmax(0, 1fr);
+  grid-template-rows: 52px auto minmax(0, 1fr);
   grid-template-columns: minmax(0, 1fr) minmax(220px, 268px);
   background: var(--grouped);
   position: relative;
 }
 .topbar { grid-column: 1 / -1; }
-.view.active { grid-column: 1; grid-row: 2; }
-.soul-dock { grid-column: 2; grid-row: 2; min-height: 0; }
+.view.active { grid-column: 1; grid-row: 3; }
+.soul-dock { grid-column: 2; grid-row: 3; min-height: 0; }
 .topbar {
   border-bottom: var(--hairline) solid var(--separator);
   display: flex;

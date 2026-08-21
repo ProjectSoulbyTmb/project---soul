@@ -36,7 +36,12 @@
       launchApp: 'Launch', launchCancelled: 'Launch cancelled.',
       premiumLocked: 'Free: offline/local models, Wikipedia/Wikimedia research, up to 3 apps. RGB, Brave key, and remote endpoints stay Premium.',
       premiumUnlocked: 'Premium test gates are on: remote endpoints, Brave search key, RGB, and unlimited apps.',
-      soulDockTitle: 'Soul', soulLive: 'Soul is live on this PC', soulIdle: 'Soul kernel idle'
+      soulDockTitle: 'Soul', soulLive: 'Soul is live on this PC', soulIdle: 'Soul kernel idle',
+      paletteTitle: 'Jump in Eidovara', paletteLead: 'Local jump and search. No background crawler. Linked apps still confirm-launch. Assist is not Soul.', paletteOpen: 'Jump (Ctrl+K)', paletteHint: '↑↓ to move · Enter to run · Esc to close · Ctrl+K', paletteEmpty: 'No local matches. Search stays on this PC.',
+      cheatsheetTitle: 'Keyboard cheatsheet', cheatsheetLead: 'Eidovara shortcuts. This overlay is in-app only — it does not inject into games or other processes.', cheatsheetOpen: 'Shortcuts',
+      focusQuiet: 'Focus session', focusQuietNote: 'Local timer. Other apps are not closed or injected into.', focusStart: 'Start 25 minutes', focusStop: 'Stop',
+      scratchTitle: 'Scratchpad', scratchHint: 'Stays on this PC', scratchPlaceholder: 'Quick capture. Stays on this device.', scratchCapture: 'Capture to Memory',
+      pinWidget: 'Pin a tile', unpinWidget: 'Unpin'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -74,7 +79,12 @@
       launchApp: 'Abrir', launchCancelled: 'Lanzamiento cancelado.',
       premiumLocked: 'Gratis: modelos locales, Wikipedia/Wikimedia, hasta 3 apps. RGB, clave Brave y endpoints remotos son Premium.',
       premiumUnlocked: 'Prueba Premium activa: endpoints remotos, clave Brave, RGB y apps ilimitadas.',
-      soulDockTitle: 'Soul', soulLive: 'Soul está en vivo en este PC', soulIdle: 'Kernel de Soul inactivo'
+      soulDockTitle: 'Soul', soulLive: 'Soul está en vivo en este PC', soulIdle: 'Kernel de Soul inactivo',
+      paletteTitle: 'Saltar en Eidovara', paletteLead: 'Salto y búsqueda locales. Sin rastreador. Las apps vinculadas siguen pidiendo confirmación. Assist no es Soul.', paletteOpen: 'Saltar (Ctrl+K)', paletteHint: '↑↓ para mover · Intro para ejecutar · Esc para cerrar · Ctrl+K', paletteEmpty: 'Sin coincidencias locales. La búsqueda se queda en este PC.',
+      cheatsheetTitle: 'Atajos de teclado', cheatsheetLead: 'Atajos de Eidovara. Esta capa es solo dentro de la app; no se inyecta en juegos ni otros procesos.', cheatsheetOpen: 'Atajos',
+      focusQuiet: 'Sesión de enfoque', focusQuietNote: 'Temporizador local. No se cierran ni inyectan otras apps.', focusStart: 'Empezar 25 minutos', focusStop: 'Parar',
+      scratchTitle: 'Bloc', scratchHint: 'Se queda en este PC', scratchPlaceholder: 'Captura rápida. Se queda en este dispositivo.', scratchCapture: 'Capturar a Memoria',
+      pinWidget: 'Fijar un mosaico', unpinWidget: 'Quitar'
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -112,7 +122,12 @@
       launchApp: 'Lancer', launchCancelled: 'Lancement annulé.',
       premiumLocked: 'Gratuit : modèles locaux, Wikipedia/Wikimedia, 3 apps max. RGB, clé Brave et endpoints distants restent Premium.',
       premiumUnlocked: 'Portes Premium de test actives : endpoints distants, clé Brave, RGB et apps illimitées.',
-      soulDockTitle: 'Soul', soulLive: 'Soul est actif sur cet appareil', soulIdle: 'Noyau Soul inactif'
+      soulDockTitle: 'Soul', soulLive: 'Soul est actif sur cet appareil', soulIdle: 'Noyau Soul inactif',
+      paletteTitle: 'Aller dans Eidovara', paletteLead: 'Saut et recherche locaux. Pas de crawler. Les apps liées restent confirmées. Assist n’est pas Soul.', paletteOpen: 'Aller (Ctrl+K)', paletteHint: '↑↓ pour déplacer · Entrée pour lancer · Échap pour fermer · Ctrl+K', paletteEmpty: 'Aucune correspondance locale. La recherche reste sur cet appareil.',
+      cheatsheetTitle: 'Raccourcis clavier', cheatsheetLead: 'Raccourcis Eidovara. Ce calque reste dans l’app — pas d’injection dans les jeux ou d’autres processus.', cheatsheetOpen: 'Raccourcis',
+      focusQuiet: 'Session concentrée', focusQuietNote: 'Minuteur local. Les autres apps ne sont ni fermées ni injectées.', focusStart: 'Démarrer 25 minutes', focusStop: 'Arrêter',
+      scratchTitle: 'Brouillon', scratchHint: 'Reste sur cet appareil', scratchPlaceholder: 'Capture rapide. Reste sur cet appareil.', scratchCapture: 'Capturer dans Mémoire',
+      pinWidget: 'Épingler une tuile', unpinWidget: 'Retirer'
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -150,7 +165,12 @@
       launchApp: 'Starten', launchCancelled: 'Start abgebrochen.',
       premiumLocked: 'Free: lokale Modelle, Wikipedia/Wikimedia, bis zu 3 Apps. RGB, Brave-Schlüssel und Remote-Endpunkte bleiben Premium.',
       premiumUnlocked: 'Premium-Test aktiv: Remote-Endpunkte, Brave-Schlüssel, RGB und unbegrenzte Apps.',
-      soulDockTitle: 'Soul', soulLive: 'Soul ist auf diesem PC aktiv', soulIdle: 'Soul-Kernel inaktiv'
+      soulDockTitle: 'Soul', soulLive: 'Soul ist auf diesem PC aktiv', soulIdle: 'Soul-Kernel inaktiv',
+      paletteTitle: 'Springen in Eidovara', paletteLead: 'Lokaler Sprung und Suche. Kein Crawler. Verknüpfte Apps starten weiter nur nach Bestätigung. Assist ist nicht Soul.', paletteOpen: 'Springen (Ctrl+K)', paletteHint: '↑↓ bewegen · Enter ausführen · Esc schließen · Ctrl+K', paletteEmpty: 'Keine lokalen Treffer. Suche bleibt auf diesem PC.',
+      cheatsheetTitle: 'Tastaturübersicht', cheatsheetLead: 'Eidovara-Tastenkürzel. Diese Überlagerung bleibt in der App — keine Injektion in Spiele oder andere Prozesse.', cheatsheetOpen: 'Kürzel',
+      focusQuiet: 'Fokus-Sitzung', focusQuietNote: 'Lokaler Timer. Andere Apps werden nicht geschlossen oder injiziert.', focusStart: '25 Minuten starten', focusStop: 'Stopp',
+      scratchTitle: 'Notizblock', scratchHint: 'Bleibt auf diesem PC', scratchPlaceholder: 'Schnellerfassung. Bleibt auf diesem Gerät.', scratchCapture: 'In Speicher übernehmen',
+      pinWidget: 'Kachel anheften', unpinWidget: 'Lösen'
     }
   };
   let locale = 'en';

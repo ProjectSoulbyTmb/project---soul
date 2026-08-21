@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="gaming.css" />
   <link rel="stylesheet" href="internet.css" />
   <link rel="stylesheet" href="companion.css" />
+  <link rel="stylesheet" href="layers.css" />
 </head>
 <body>
   <div class="app">
@@ -35,8 +36,14 @@
       <header class="topbar">
         <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
         <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
-        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul presence; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span><span class="status-dot idle" id="kernelDot" title="Local Soul kernel"></span><span id="kernelLabel">Kernel idle</span><span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span></div>
+        <div class="top-actions"><button type="button" class="icon-btn" id="paletteOpenBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette">⌘K</button><button type="button" class="icon-btn" id="cheatsheetOpenBtn" title="Keyboard cheatsheet (Ctrl+/)" aria-label="Open keyboard cheatsheet">?</button><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul presence; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span><span class="status-dot idle" id="kernelDot" title="Local Soul kernel"></span><span id="kernelLabel">Kernel idle</span><span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span></div>
       </header>
+      <div class="focus-quiet-bar hidden" id="focusQuietBar" role="status">
+        <strong id="focusQuietLabel" data-i18n="focusQuiet">Focus session</strong>
+        <span id="focusQuietRemaining">0:00</span>
+        <span class="focus-quiet-note" data-i18n="focusQuietNote">Local timer. Other apps are not closed or injected into.</span>
+        <button type="button" class="secondary" id="focusQuietStop" data-i18n="focusStop">Stop</button>
+      </div>
 
       <section class="view active" id="chatView">
         <div class="chat-scroll" id="chatScroll">
@@ -62,7 +69,7 @@
         </form>
       </section>
 
-      <section class="view panel-view" id="dashboardView"><div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">A command center for applications, gaming, entertainment, research, backups, and optional Soul assistance.</p></div></div><div class="dashboard-grid" id="dashboardGrid"></div><div class="quick-grid"><button data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button><button data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button><button data-quick="Create a study plan and quiz me." data-i18n="study">Study</button><button data-quick="Help me start a creative project." data-i18n="create">Create</button><button data-quick="Search the internet for current information I need." data-i18n="research">Research</button><button data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button></div></section>
+      <section class="view panel-view" id="dashboardView"><div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">A command center for applications, gaming, entertainment, research, backups, and optional Soul assistance.</p></div><div class="widget-toolbar"><button type="button" class="secondary" id="paletteHintBtn" data-i18n="paletteOpen">Jump (Ctrl+K)</button><button type="button" class="secondary" id="cheatsheetHintBtn" data-i18n="cheatsheetOpen">Shortcuts</button></div></div><div class="dashboard-grid" id="dashboardGrid"></div><div class="quick-grid"><button data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button><button data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button><button data-quick="Create a study plan and quiz me." data-i18n="study">Study</button><button data-quick="Help me start a creative project." data-i18n="create">Create</button><button data-quick="Search the internet for current information I need." data-i18n="research">Research</button><button data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button></div></section>
 
       <aside class="soul-dock" id="soulDock" role="complementary" aria-label="Soul companion">
         <h2 data-i18n="soulDockTitle">Soul</h2>
@@ -252,8 +259,24 @@
       <div class="setup-actions"><button type="button" class="secondary" id="legalCloseBtn">Close</button></div>
     </div>
   </div>
+  <div class="setup-overlay hidden" id="commandPalette" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
+    <div class="setup-dialog palette-dialog">
+      <div><h1 id="paletteTitle" data-i18n="paletteTitle">Jump in Eidovara</h1><p data-i18n="paletteLead">Local jump and search. No background crawler. Linked apps still confirm-launch. Assist is not Soul.</p></div>
+      <label class="setup-field"><span class="visually-hidden">Palette query</span><input id="paletteInput" type="search" maxlength="200" autocomplete="off" placeholder="Views, intents, settings, memory, linked apps…" aria-label="Command palette" /></label>
+      <ul class="palette-results" id="paletteResults" role="listbox" aria-label="Palette results"></ul>
+      <p class="palette-hint" data-i18n="paletteHint">↑↓ to move · Enter to run · Esc to close · Ctrl+K</p>
+    </div>
+  </div>
+  <div class="setup-overlay hidden" id="cheatsheetOverlay" role="dialog" aria-modal="true" aria-labelledby="cheatsheetTitle">
+    <div class="setup-dialog admin-dialog">
+      <div><h1 id="cheatsheetTitle" data-i18n="cheatsheetTitle">Keyboard cheatsheet</h1><p data-i18n="cheatsheetLead">Eidovara shortcuts. This overlay is in-app only — it does not inject into games or other processes.</p></div>
+      <div id="cheatsheetList" class="cheatsheet-list"></div>
+      <div class="setup-actions"><button type="button" class="secondary" id="cheatsheetCloseBtn" data-i18n="cancel">Close</button></div>
+    </div>
+  </div>
   <script src="localization.js"></script>
   <script src="renderer.js"></script>
   <script src="companion.js"></script>
+  <script src="workspace-layers.js"></script>
 </body>
 </html>
