@@ -1,11 +1,13 @@
 # Builds an Authenticode-unsigned Windows NSIS installer on windows-latest.
-# v* tags publish a GitHub Release. workflow_dispatch on a branch only uploads
-# unsigned artifacts. This workflow does not Authenticode-sign Setup.exe.
+# v* tags publish a GitHub Release. workflow_dispatch or the dedicated release
+# build branch only uploads unsigned artifacts. This workflow does not
+# Authenticode-sign Setup.exe.
 name: Release Windows
 
 on:
   push:
     tags: ['v*']
+    branches: ['release/build-v0.22.2-windows']
   workflow_dispatch:
 
 permissions:
@@ -88,7 +90,7 @@ jobs:
             dist/BRAND-ASSET-POLICY.md
             dist/COPYRIGHT-ASSET-REGISTER.md
       - name: Upload unsigned Windows artifacts
-        if: github.event_name == 'workflow_dispatch' && !startsWith(github.ref, 'refs/tags/v')
+        if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
         uses: actions/upload-artifact@v4
         with:
           name: eidovara-windows-unsigned
