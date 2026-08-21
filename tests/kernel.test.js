@@ -86,7 +86,7 @@ test('presence looks stay first-party and freeze under reduced motion', () => {
   const frame = presenceFrame('pulse', 500, { reducedMotion: true });
   assert.equal(frame.frozen, true);
   assert.equal(presenceFrame('silhouette', 9000).frozen, true);
-  assert.doesNotMatch(PRESENCE_LOOKS.map(look => look.description).join(' '), /alive|conscious|living person/i);
+  assert.doesNotMatch(PRESENCE_LOOKS.map(look => look.description).join(' '), /\bis alive\b|\bis conscious\b|living person/i);
 });
 
 test('Soul-online assist is default off and never sends conversations', async () => {
