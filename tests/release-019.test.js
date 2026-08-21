@@ -28,6 +28,18 @@ test('v0.19.1 keeps kernel, official api.eidovara.org, and honest 18+ truth', ()
   assert.match(read('docs/help.html'), /v0\.19\.1/);
 });
 
+test('historical 0.19.0 SHA is measured; live Download stays 0.19.1; sanitizer is a scanner', () => {
+  const log = read('CHANGELOG.md');
+  const v0190 = log.split('## v0.19.0')[1].split('## v0.18.3')[0];
+  assert.match(v0190, /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/);
+  assert.doesNotMatch(v0190, /after the artifact exists/);
+  assert.match(read('docs/download.html'), /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/);
+  assert.doesNotMatch(read('docs/download.html'), /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/);
+  assert.match(read('src/providers/internet.js'), /RAW_DROP_TAGS/);
+  assert.match(read('tests/internet.test.js'), /<SCRIPT>steal\(\)<\/SCRIPT>/);
+  assert.doesNotMatch(read('src/providers/internet.js'), /replace\(\/<(?:script|style)[\s\S]*?<\/(?:script|style)>/i);
+});
+
 test('tokens stay identical, system fonts only, reduced motion, no SF Pro', () => {
   assert.equal(read('docs/tokens.css'), read('src/renderer/tokens.css'));
   const tokens = read('docs/tokens.css');
