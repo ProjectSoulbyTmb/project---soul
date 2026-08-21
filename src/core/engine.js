@@ -45,6 +45,7 @@ import {
   toggleFavorite,
   unpinWidget
 } from './layers.js';
+import { notifyDesktop, setNowPlaying, startSleepTimer, stopSleepTimer, defaultDesktopChrome, desktopChromeView, expireSleepIfNeeded, markNotificationsRead, evaluatePaletteCalc } from './desktop-chrome.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
@@ -62,6 +63,7 @@ export class SoulEngine {
   kernelStatus() { return kernelView(this.state, this.modules); }
   heartbeat({ persist = false, at } = {}) {
     kernelHeartbeat(this.state, { at });
+    expireSleepIfNeeded(this.state, at ? Date.parse(at) : Date.now());
     if (persist) this.store.save(this.state);
     return this.kernelStatus();
   }
@@ -113,11 +115,13 @@ export class SoulEngine {
   startFocusSession(opts = {}) {
     startFocusSession(this.state, opts);
     kernelHeartbeat(this.state);
+    notifyDesktop(this.state, { kind: 'focus', title: 'Focus session started', body: 'Local timer only. Other apps are not closed or injected into.' });
     this.store.save(this.state);
     return this.kernelStatus();
   }
   stopFocusSession(opts = {}) {
     stopFocusSession(this.state, opts);
+    notifyDesktop(this.state, { kind: 'focus', title: 'Focus session stopped', body: 'Remaining time is cleared. No other processes were changed.' });
     this.store.save(this.state);
     return this.kernelStatus();
   }
@@ -140,6 +144,40 @@ export class SoulEngine {
     toggleFavorite(this.state, id);
     this.store.save(this.state);
     return this.kernelStatus();
+  }
+  desktopChrome() {
+    const { expired } = expireSleepIfNeeded(this.state);
+    if (expired) this.store.save(this.state);
+    return desktopChromeView(this.state.desktopChrome || defaultDesktopChrome());
+  }
+  setNowPlaying(item) {
+    setNowPlaying(this.state, item);
+    this.store.save(this.state);
+    return this.desktopChrome();
+  }
+  startSleepTimer(minutes) {
+    startSleepTimer(this.state, minutes);
+    notifyDesktop(this.state, { kind: 'sleep', title: 'Media sleep timer', body: `Local in-app player will pause after ${Number(minutes) || 0} minutes. No other apps are controlled.` });
+    this.store.save(this.state);
+    return this.desktopChrome();
+  }
+  stopSleepTimer() {
+    stopSleepTimer(this.state);
+    this.store.save(this.state);
+    return this.desktopChrome();
+  }
+  notify(input) {
+    notifyDesktop(this.state, input);
+    this.store.save(this.state);
+    return this.desktopChrome();
+  }
+  markNotificationsRead() {
+    markNotificationsRead(this.state);
+    this.store.save(this.state);
+    return this.desktopChrome();
+  }
+  evalCalc(query) {
+    return evaluatePaletteCalc(query);
   }
   async assistQuery(query, { base, fetchImpl } = {}) {
     kernelHeartbeat(this.state);

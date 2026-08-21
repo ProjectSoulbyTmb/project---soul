@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net, Tray, Menu, nativeImage } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -14,6 +14,7 @@ import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPO
 import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
+import { evaluatePaletteCalc, loginItemPayload } from '../core/desktop-chrome.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
@@ -21,10 +22,10 @@ const allowedLocalMedia = new Map();
 protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
-let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0;
+let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
-let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false };
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, alwaysOnTop: false, openAtLogin: false };
 let pendingUpdate = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -136,6 +137,38 @@ function startKernelHeartbeat() {
     try { engine.heartbeat({ persist: heartbeatTicks % 12 === 0 }); } catch {}
   }, 5000);
 }
+function applyWindowChrome() {
+  if (!mainWindow || mainWindow.isDestroyed()) return;
+  mainWindow.setAlwaysOnTop(config.alwaysOnTop === true);
+}
+function applyOpenAtLogin() {
+  try {
+    const login = loginItemPayload(config.openAtLogin === true);
+    if (login.supported) app.setLoginItemSettings({ openAtLogin: login.openAtLogin, name: login.name, openAsHidden: false });
+  } catch (err) { log('openAtLogin unavailable', err); }
+}
+function showFromTray() {
+  if (!mainWindow || mainWindow.isDestroyed()) createWindow();
+  else { mainWindow.show(); mainWindow.focus(); }
+}
+function createTray() {
+  if (tray) return tray;
+  try {
+    const iconPath = path.join(__dirname, '../../assets/branding/eidovara.ico');
+    const pngPath = path.join(__dirname, '../../assets/branding/eidovara-512.png');
+    const image = fs.existsSync(iconPath) ? nativeImage.createFromPath(iconPath) : nativeImage.createFromPath(pngPath);
+    tray = new Tray(image.isEmpty() ? nativeImage.createEmpty() : image.resize({ width: 16, height: 16 }));
+    tray.setToolTip('Eidovara');
+    tray.setContextMenu(Menu.buildFromTemplate([
+      { label: 'Show Eidovara', click: () => showFromTray() },
+      { label: 'Always on top', type: 'checkbox', checked: config.alwaysOnTop === true, click: item => { config.alwaysOnTop = item.checked; saveConfig(); applyWindowChrome(); } },
+      { type: 'separator' },
+      { label: 'Quit', click: () => app.quit() }
+    ]));
+    tray.on('click', () => showFromTray());
+  } catch (err) { log('Tray unavailable', err); }
+  return tray;
+}
 function publicServiceUrl() { try { return resolveServiceBase(config.serviceUrl); } catch { return ''; } }
 function publicServiceStatus() {
   const stored = config.serviceStatus && typeof config.serviceStatus === 'object' ? config.serviceStatus : {};
@@ -166,6 +199,9 @@ function publicConfig() {
     theme: config.theme || {},
     companion,
     assistOptIn: config.assistOptIn === true,
+    alwaysOnTop: config.alwaysOnTop === true,
+    openAtLogin: config.openAtLogin === true,
+    loginItem: loginItemPayload(config.openAtLogin === true),
     edition: entitlement(),
     storeUrl: httpsOnlyUrl(config.storeUrl),
     serviceUrl: publicServiceUrl(),
@@ -228,11 +264,17 @@ function createWindow() {
     loadConfig();
     registerCompanionImage();
     if (config.ageGateAccepted === true) ensureEngine();
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.19.0', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.19.0', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false, alwaysOnTop: config.alwaysOnTop === true,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
     mainWindow.once('ready-to-show', () => mainWindow.show());
+    mainWindow.on('close', e => {
+      if (process.platform === 'win32' && !app.isQuitting) {
+        e.preventDefault();
+        mainWindow.hide();
+      }
+    });
     mainWindow.on('closed', () => { allowedLocalMedia.clear(); mainWindow = null; });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
@@ -255,7 +297,8 @@ function registerLocalMediaProtocol() {
 }
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
 process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
-app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).catch(err => fatal('Eidovara initialization error', err));
+app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); createTray(); applyOpenAtLogin(); }).catch(err => fatal('Eidovara initialization error', err));
+app.on('before-quit', () => { app.isQuitting = true; });
 app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
@@ -385,7 +428,36 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.assistOptIn = incoming.assistOptIn === true;
     ensureEngine().configureKernel({ assistOptIn: config.assistOptIn });
   }
+  if (incoming && Object.prototype.hasOwnProperty.call(incoming, 'alwaysOnTop')) {
+    config.alwaysOnTop = incoming.alwaysOnTop === true;
+    applyWindowChrome();
+  }
+  if (incoming && Object.prototype.hasOwnProperty.call(incoming, 'openAtLogin')) {
+    config.openAtLogin = incoming.openAtLogin === true;
+    applyOpenAtLogin();
+  }
   saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); return publicConfig();
+});
+ipcMain.handle('soul:evalCalc', (_e, query) => { requireAgeGate(); return evaluatePaletteCalc(String(query || '').slice(0, 200)); });
+ipcMain.handle('soul:chrome', (_e, op, payload = {}) => {
+  requireAgeGate();
+  const engine = ensureEngine();
+  switch (String(op || '')) {
+    case 'view':
+      return engine.desktopChrome();
+    case 'now-playing':
+      return engine.setNowPlaying(payload || null);
+    case 'sleep-start':
+      return engine.startSleepTimer(payload?.minutes);
+    case 'sleep-stop':
+      return engine.stopSleepTimer();
+    case 'notify':
+      return engine.notify(payload);
+    case 'read':
+      return engine.markNotificationsRead();
+    default:
+      throw new Error('Unknown chrome operation.');
+  }
 });
 ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
 ipcMain.handle('soul:openDataFolder', () => { requireAgeGate(); return shell.openPath(app.getPath('userData')); });
@@ -397,10 +469,11 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   const extension = path.extname(filePath).toLowerCase();
   const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
   if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
-  const id = crypto.randomBytes(16).toString('hex');
   retainCompanionMedia();
-  allowedLocalMedia.set(id, filePath);
-  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
+  const item = registerSessionMedia(filePath, { type: video ? 'video' : 'audio', title: path.basename(filePath) });
+  applyInternetOptions();
+  ensureEngine().setNowPlaying(item);
+  return item;
 });
 ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return ensureEngine().createBackup(); });
 ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return ensureEngine().listBackups(); });
@@ -453,6 +526,9 @@ ipcMain.handle('soul:workspace', (_e, op, payload = {}) => {
       return engine.recordPaletteUse(payload);
     case 'favorite':
       return engine.togglePaletteFavorite(payload.id);
+    case 'status':
+    case 'view':
+      return engine.kernelStatus();
     default:
       throw new Error('Unknown workspace operation.');
   }

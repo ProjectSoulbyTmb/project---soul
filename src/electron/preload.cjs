@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('soul', {
-  send: (m, opts) => ipcRenderer.invoke('soul:send', m, opts || {}), snapshot: () => ipcRenderer.invoke('soul:snapshot'), reset: () => ipcRenderer.invoke('soul:reset'),
+  send: (m, opts) => ipcRenderer.invoke('soul:send', m, opts || {}), snapshot: () => ipcRenderer.invoke('soul:snapshot'), reset: () => ipcRenderer.invoke('soul:reset'), chrome: (op, payload) => ipcRenderer.invoke('soul:chrome', op, payload), evalCalc: query => ipcRenderer.invoke('soul:evalCalc', query),
   recordMedia: input => ipcRenderer.invoke('soul:recordMedia', input), entertainment: () => ipcRenderer.invoke('soul:entertainment'),
   remember: (c, opts) => ipcRenderer.invoke('soul:remember', c, opts), forget: x => ipcRenderer.invoke('soul:forget', x),
   newConversation: () => ipcRenderer.invoke('soul:newConversation'), selectConversation: id => ipcRenderer.invoke('soul:selectConversation', id), deleteConversation: id => ipcRenderer.invoke('soul:deleteConversation', id),

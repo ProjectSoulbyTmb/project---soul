@@ -1,0 +1,140 @@
+/* Windows-first chrome: now playing, notifications, sleep timer.
+   Uses the same tokens as the rest of the desktop — no third-party typefaces. */
+
+.now-playing-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: 8px var(--space-5);
+  border-bottom: var(--hairline) solid var(--separator);
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  font-size: var(--caption);
+  grid-column: 1 / -1;
+}
+
+.now-playing-bar.hidden,
+.focus-quiet-bar.hidden { display: none; }
+
+.now-playing-note,
+.focus-quiet-note { color: var(--muted); }
+
+.notify-drawer {
+  position: fixed;
+  top: 52px;
+  right: var(--space-4);
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(70vh, 480px);
+  overflow: auto;
+  z-index: 40;
+  padding: 14px 16px 16px;
+  border-radius: var(--radius-xl);
+  border: var(--hairline) solid var(--line);
+  background: var(--elevated);
+  box-shadow: var(--shadow);
+}
+
+.notify-drawer.hidden { display: none; }
+
+.notify-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.notify-item {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  border: var(--hairline) solid var(--separator);
+  background: var(--panel);
+  font-size: var(--footnote);
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.notify-item p { margin: 0; color: var(--muted); }
+
+#notifyBtn.has-notices {
+  color: var(--accent);
+}
+
+.kernel-chips,
+.companion-followups .kernel-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+button.kernel-chip,
+.kernel-chip {
+  border: var(--hairline) solid var(--separator);
+  background: var(--fill-tertiary);
+  color: var(--text);
+  border-radius: var(--radius-full);
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.kernel-chip:hover,
+.kernel-chip:focus-visible {
+  border-color: var(--accent);
+}
+
+.companion-follow-label {
+  margin: 0 0 6px;
+  font-size: var(--caption);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.recent-list {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.recent-row {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: var(--radius-md);
+  border: var(--hairline) solid var(--separator);
+  background: var(--panel);
+}
+
+.palette-calc {
+  margin: 8px 12px 0;
+}
+
+.palette-calc.hidden { display: none; }
+
+.palette-calc button {
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+}
+
+.empty {
+  color: var(--muted);
+  font-size: var(--footnote);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .notify-drawer,
+  .now-playing-bar,
+  .dashboard-card { transition: none; }
+}

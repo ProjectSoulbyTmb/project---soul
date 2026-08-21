@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { defaultKernelState, migrateKernel } from './kernel.js';
+import { defaultDesktopChrome, normalizeDesktopChrome } from './desktop-chrome.js';
 
 export const CURRENT_SCHEMA_VERSION = 18;
 
@@ -35,6 +36,7 @@ export function defaultProfile(profileId = 'default') {
     memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
     activeConversationId: 'main',
     kernel: defaultKernelState(),
+    desktopChrome: defaultDesktopChrome(),
     audit: [{ at: now, type: 'profile.created', details: { profileId } }]
   };
 }
@@ -51,7 +53,8 @@ export function migrateProfile(input, profileId = 'default') {
     policy: { ...base.policy, ...(input.policy || {}) },
     setup: { ...base.setup, ...(input.setup || {}), stream: { ...base.setup.stream, ...(input.setup?.stream || {}) } },
     entertainment: { ...base.entertainment, ...(input.entertainment || {}) },
-    kernel: migrateKernel(input.kernel)
+    kernel: migrateKernel(input.kernel),
+    desktopChrome: normalizeDesktopChrome(input.desktopChrome)
   };
   if (!Array.isArray(merged.memories)) merged.memories = [];
   if (!Array.isArray(merged.feedback)) merged.feedback = [];
