@@ -1,5 +1,13 @@
 # Eidovara
 
+## v0.17.12
+
+- Encrypts desktop settings, profiles, conversations, memories, rollback copies, and new backups with operating-system credential protection when available.
+- Migrates existing plaintext desktop storage in place without discarding user data.
+- Restricts update packages to the official Project Soul GitHub release channel in addition to HTTPS and SHA-256 verification.
+- Adds Windows internet-zone marking and a silent Microsoft Defender scan attempt for downloaded updates without requiring Defender to be installed.
+- Adds persistence, migration, backup-encryption, and untrusted-update regression tests.
+
 ## v0.17.11
 
 - Added distinct black, white, and red application and studio emblems with transparent masters and a multi-resolution Windows icon.

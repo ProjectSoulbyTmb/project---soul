@@ -4,22 +4,23 @@ import os from 'node:os';
 import { defaultProfile, migrateProfile } from './schema.js';
 
 export class JsonStore {
-  constructor({ dataDir, profileId = 'default' } = {}) {
+  constructor({ dataDir, profileId = 'default', codec } = {}) {
     this.dataDir = dataDir || path.join(os.homedir(), '.project-soul');
     this.profileId = sanitize(profileId);
     this.filePath = path.join(this.dataDir, `${this.profileId}.json`);
     this.backupDir = path.join(this.dataDir, 'backups');
+    this.codec = codec || { encode: value => value, decode: value => value, encrypted: false };
   }
   load() {
     fs.mkdirSync(this.dataDir, { recursive: true });
     if (!fs.existsSync(this.filePath)) { const state = defaultProfile(this.profileId); this.save(state); return state; }
     try {
-      const state = migrateProfile(JSON.parse(fs.readFileSync(this.filePath, 'utf8')), this.profileId);
+      const state = migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(this.filePath, 'utf8'))), this.profileId);
       this.save(state); return state;
     } catch (err) {
       const stamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backup = `${this.filePath}.corrupt-${stamp}.bak`;
-      try { fs.copyFileSync(this.filePath, backup); } catch {}
+      try { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(backup, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } catch {}
       const state = defaultProfile(this.profileId);
       state.audit.push({ at: new Date().toISOString(), type: 'storage.recovered_from_corrupt_state', details: { backup: path.basename(backup), error: String(err?.message || err) } });
       this.save(state); return state;
@@ -29,32 +30,32 @@ export class JsonStore {
     fs.mkdirSync(this.dataDir, { recursive: true });
     state.updatedAt = new Date().toISOString();
     const tmp = `${this.filePath}.${process.pid}.tmp`;
-    fs.writeFileSync(tmp, JSON.stringify(state, null, 2), { encoding: 'utf8', mode: 0o600 });
+    fs.writeFileSync(tmp, this.codec.encode(JSON.stringify(state, null, 2)), { encoding: 'utf8', mode: 0o600 });
     const previous = `${this.filePath}.previous`;
-    try { if (fs.existsSync(this.filePath)) fs.copyFileSync(this.filePath, previous); fs.renameSync(tmp, this.filePath); }
+    try { if (fs.existsSync(this.filePath)) { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(previous, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } fs.renameSync(tmp, this.filePath); }
     catch (err) { try { fs.rmSync(this.filePath, { force: true }); fs.renameSync(tmp, this.filePath); } catch (inner) { if (fs.existsSync(previous)) fs.copyFileSync(previous, this.filePath); throw inner; } }
   }
   reset() { const state = defaultProfile(this.profileId); this.save(state); return state; }
   createBackup(state) {
     fs.mkdirSync(this.backupDir, { recursive: true });
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const name = `${this.profileId}-${stamp}.json`;
+    const name = `${this.profileId}-${stamp}.${this.codec.encrypted ? 'soulbackup' : 'json'}`;
     const target = path.join(this.backupDir, name);
     const payload = migrateProfile(state || this.load(), this.profileId);
-    fs.writeFileSync(target, JSON.stringify(payload, null, 2), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+    fs.writeFileSync(target, this.codec.encode(JSON.stringify(payload, null, 2)), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
     return { name, createdAt: payload.updatedAt, bytes: fs.statSync(target).size };
   }
   listBackups() {
     fs.mkdirSync(this.backupDir, { recursive: true });
     return fs.readdirSync(this.backupDir, { withFileTypes: true })
-      .filter(e => e.isFile() && e.name.startsWith(`${this.profileId}-`) && e.name.endsWith('.json'))
+      .filter(e => e.isFile() && e.name.startsWith(`${this.profileId}-`) && (e.name.endsWith('.json') || e.name.endsWith('.soulbackup')))
       .map(e => { const stat = fs.statSync(path.join(this.backupDir, e.name)); return { name: e.name, createdAt: stat.mtime.toISOString(), bytes: stat.size }; })
       .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
   }
   restoreBackup(name) {
     const safeName = path.basename(String(name || ''));
-    if (safeName !== name || !safeName.startsWith(`${this.profileId}-`) || !safeName.endsWith('.json')) throw new Error('Invalid backup name.');
-    const restored = migrateProfile(JSON.parse(fs.readFileSync(path.join(this.backupDir, safeName), 'utf8')), this.profileId);
+    if (safeName !== name || !safeName.startsWith(`${this.profileId}-`) || (!safeName.endsWith('.json') && !safeName.endsWith('.soulbackup'))) throw new Error('Invalid backup name.');
+    const restored = migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(path.join(this.backupDir, safeName), 'utf8'))), this.profileId);
     restored.audit.push({ at: new Date().toISOString(), type: 'storage.backup_restored', details: { name: safeName } });
     this.save(restored); return restored;
   }

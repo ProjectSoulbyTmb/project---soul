@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell } from 'electro
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { execFile } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
@@ -21,12 +22,45 @@ function log(message, error) { try { if (!logPath) logPath = path.join(app.getPa
 function fatal(title, error) { log(title, error); try { dialog.showErrorBox(title, `${error?.stack || error}\n\nLog: ${logPath}`); } catch {} }
 function loadConfig() {
   configPath = path.join(app.getPath('userData'), 'settings.json');
-  try { config = { ...config, ...JSON.parse(fs.readFileSync(configPath, 'utf8')) }; } catch {}
+  try {
+    const codec = protectedStorageCodec();
+    const raw = fs.readFileSync(configPath, 'utf8');
+    config = { ...config, ...JSON.parse(codec.decode(raw)) };
+    if (codec.encrypted && !raw.startsWith('eidovara-safe-storage-v1:')) saveConfig();
+  } catch {}
 }
 function atomicReplace(target, content) { fs.mkdirSync(path.dirname(target), { recursive: true }); const tmp = `${target}.${process.pid}.tmp`; const previous = `${target}.previous`; fs.writeFileSync(tmp, content, { mode: 0o600 }); try { if (fs.existsSync(target)) fs.copyFileSync(target, previous); fs.renameSync(tmp, target); } catch (err) { try { fs.rmSync(target, { force: true }); fs.renameSync(tmp, target); } catch (inner) { if (fs.existsSync(previous)) fs.copyFileSync(previous, target); throw inner; } } }
-function saveConfig() { atomicReplace(configPath, JSON.stringify(config, null, 2)); }
+function saveConfig() { atomicReplace(configPath, protectedStorageCodec().encode(JSON.stringify(config, null, 2))); }
 function getApiKey() { if (!config.encryptedApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedApiKey, 'base64')) : ''; } catch { return ''; } }
 function getSearchApiKey() { if (!config.encryptedSearchApiKey) return ''; try { return safeStorage.isEncryptionAvailable() ? safeStorage.decryptString(Buffer.from(config.encryptedSearchApiKey, 'base64')) : ''; } catch { return ''; } }
+function protectedStorageCodec() {
+  const prefix = 'eidovara-safe-storage-v1:';
+  if (!safeStorage.isEncryptionAvailable()) return { encode: value => value, decode: value => value, encrypted: false };
+  return {
+    encrypted: true,
+    encode: value => `${prefix}${safeStorage.encryptString(String(value)).toString('base64')}`,
+    decode: value => {
+      const raw = String(value || '');
+      if (!raw.startsWith(prefix)) return raw;
+      return safeStorage.decryptString(Buffer.from(raw.slice(prefix.length), 'base64'));
+    }
+  };
+}
+function defenderExecutable() {
+  if (process.platform !== 'win32') return '';
+  const candidates = [process.env.ProgramFiles && path.join(process.env.ProgramFiles, 'Windows Defender', 'MpCmdRun.exe')].filter(Boolean);
+  const root = process.env.ProgramData && path.join(process.env.ProgramData, 'Microsoft', 'Windows Defender', 'Platform');
+  try { candidates.unshift(...fs.readdirSync(root, { withFileTypes: true }).filter(entry => entry.isDirectory()).map(entry => path.join(root, entry.name, 'MpCmdRun.exe')).sort().reverse()); } catch {}
+  return candidates.find(candidate => fs.existsSync(candidate)) || '';
+}
+function scanUpdateForMalware(filePath) {
+  const scanner = defenderExecutable();
+  if (!scanner) return Promise.resolve({ available: false, completed: false });
+  return new Promise(resolve => execFile(scanner, ['-Scan', '-ScanType', '3', '-File', filePath, '-DisableRemediation'], { windowsHide: true, timeout: 120_000 }, error => {
+    const code = Number(error?.code ?? 0);
+    resolve({ available: true, completed: !error, threatDetected: code === 2 });
+  }));
+}
 function entitlement() { return config.edition === 'premium' ? 'premium' : 'free'; }
 function adminConfigured() { return Boolean(config.admin?.salt && config.admin?.hash); }
 function deriveAdminHash(password, salt) { return crypto.scryptSync(String(password), Buffer.from(salt, 'base64'), 32).toString('hex'); }
@@ -47,8 +81,8 @@ function createWindow() {
   try {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
-    engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default' }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.11', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#0b1020', show: false,
+    engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default', codec: protectedStorageCodec() }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.12', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#0b1020', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
@@ -162,7 +196,9 @@ ipcMain.handle('soul:installUpdate', async () => {
   const answer = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: ['Download and open', 'Cancel'], defaultId: 0, cancelId: 1, title: 'Install Eidovara update', message: `Install Eidovara ${pendingUpdate.version}?`, detail: pendingUpdate.packageType === 'ready-folder-zip' ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction.' : 'The installer will be downloaded over HTTPS, verified with SHA-256, and opened.' });
   if (answer.response !== 0) return { cancelled: true };
   const downloaded = await downloadUpdate(pendingUpdate, path.join(app.getPath('userData'), 'updates'));
-  const error = await shell.openPath(downloaded.path); if (error) throw new Error(error); return { ...downloaded, launched: true };
+  const malwareScan = await scanUpdateForMalware(downloaded.path);
+  if (malwareScan.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not opened.');
+  const error = await shell.openPath(downloaded.path); if (error) throw new Error(error); return { ...downloaded, malwareScan, launched: true };
 });
 ipcMain.handle('soul:addApplication', async () => { if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.'); const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Eidovara', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
 ipcMain.handle('soul:discoverApplications', () => discoverStartMenuApplications().map(({ id, name }) => ({ id, name })));
