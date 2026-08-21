@@ -31,10 +31,10 @@ jobs:
       - run: pnpm run release:configure
       - name: Build Windows installer
         run: pnpm run dist:win:installer
+      - run: pnpm run release:manifest
       - name: Require updater metadata
         shell: pwsh
-        run: if (-not (Test-Path dist/latest.yml)) { throw 'electron-builder did not write dist/latest.yml. GitHub publish config must stay so tagged releases emit updater files. No GH_TOKEN is committed.' }
-      - run: pnpm run release:manifest
+        run: if (-not (Test-Path dist/latest.yml) -or -not (Test-Path dist/update.json)) { throw 'release:manifest must write dist/latest.yml and dist/update.json so tagged GitHub Releases can feed electron-updater. No GH_TOKEN is committed. --publish never keeps CI from creating the GitHub Release itself.' }
       - run: pnpm run release:evidence
       - name: Sign build provenance
         uses: actions/attest-build-provenance@v4.2.2

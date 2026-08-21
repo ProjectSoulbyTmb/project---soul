@@ -24,7 +24,7 @@ protocol.registerSchemesAsPrivileged([
 let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
-let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, autoCheckUpdates: true };
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, autoCheckUpdates: false };
 let desktopUpdater = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -171,7 +171,7 @@ function publicConfig() {
     serviceUrl: publicServiceUrl(),
     serviceStatus: publicServiceStatus(),
     updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL),
-    autoCheckUpdates: config.autoCheckUpdates !== false,
+    autoCheckUpdates: config.autoCheckUpdates === true,
     updateStatus: desktopUpdater?.getStatus?.() || null,
     hasApiKey: Boolean(config.encryptedApiKey),
     hasSearchApiKey: Boolean(config.encryptedSearchApiKey),
@@ -398,7 +398,7 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     ensureEngine().configureKernel({ assistOptIn: config.assistOptIn });
   }
   if (incoming && Object.prototype.hasOwnProperty.call(incoming, 'autoCheckUpdates')) {
-    config.autoCheckUpdates = incoming.autoCheckUpdates !== false;
+    config.autoCheckUpdates = incoming.autoCheckUpdates === true;
     desktopUpdater?.schedule?.();
   }
   saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); return publicConfig();

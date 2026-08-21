@@ -69,8 +69,7 @@ export function isPrerelease(version) {
 }
 
 export function autoCheckEnabled(settings) {
-  if (!settings || typeof settings !== 'object') return true;
-  return settings.autoCheckUpdates !== false;
+  return settings?.autoCheckUpdates === true;
 }
 
 export function shouldOfferUpdate({ currentVersion, candidateVersion, draft = false, prerelease = false } = {}) {
@@ -117,6 +116,8 @@ export function parseLatestYml(text) {
   const fileSha = (raw.match(/^\s+-?\s*sha512:\s*['"]?([A-Za-z0-9+/=]+)/m) || raw.match(/^\s+sha512:\s*['"]?([A-Za-z0-9+/=]+)/m) || [])[1] || '';
   const fileUrl = (raw.match(/^\s+-?\s*url:\s*['"]?([^\s'"]+)/m) || raw.match(/^\s+url:\s*['"]?([^\s'"]+)/m) || [])[1] || '';
   const sha512 = topSha || fileSha;
+  const locator = fileUrl || filePath;
+  if (/^https?:\/\//i.test(locator)) trustedReleaseUrl(locator);
   const parsed = {
     version,
     path: filePath || fileUrl,

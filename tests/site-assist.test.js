@@ -117,7 +117,7 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
   assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
   assert.match(download.reply, /Eidovara-0\.19\.0-Windows-x64-Setup\.exe/);
-  assert.match(download.reply, /EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711/);
+  assert.match(download.reply, /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/);
   assert.match(download.reply, /101\.3 MiB/);
   assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
   assert.ok((download.links || []).some(link => String(link.href || '').endsWith('.exe') || String(link.href || '').includes('/releases/latest')));

@@ -52,6 +52,7 @@ export function attachDesktopUpdater({
   let pendingNsis = null;
   let pendingManifest = null;
   let checking = false;
+  let installConfirmed = false;
   let timers = [];
 
   function emit(status) {
@@ -108,6 +109,7 @@ export function attachDesktopUpdater({
           provider: 'electron-updater',
           error: ''
         });
+        if (installConfirmed) return;
         const window = getMainWindow();
         if (!window) return;
         const answer = await dialog.showMessageBox(window, {
@@ -120,11 +122,13 @@ export function attachDesktopUpdater({
           detail: 'The Windows installer was downloaded from GitHub Releases and checksum-verified. Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved.'
         });
         if (answer.response === 0) {
+          installConfirmed = true;
           autoUpdater.autoInstallOnAppQuit = false;
           autoUpdater.quitAndInstall(true, true);
         }
       } catch (err) {
         pendingNsis = null;
+        installConfirmed = false;
         emit({ phase: 'error', available: false, error: honestUpdateError(err) });
       }
     });
@@ -149,16 +153,16 @@ export function attachDesktopUpdater({
         provider: 'electron-updater'
       });
     }
-    emit({ phase: 'downloading', available: true, version: evaluated.version, provider: 'electron-updater', percent: 0, error: '' });
-    void autoUpdater.downloadUpdate().catch(err => emit({ phase: 'error', available: false, error: honestUpdateError(err) }));
+    pendingNsis = { info, evaluated, filePath: '' };
     return snapshot({
-      phase: 'downloading',
+      phase: 'available',
       available: true,
       currentVersion,
       version: evaluated.version,
       notes: evaluated.notes,
       configured: true,
-      provider: 'electron-updater'
+      provider: 'electron-updater',
+      error: ''
     });
   }
 
@@ -212,9 +216,14 @@ export function attachDesktopUpdater({
         cancelId: 1,
         title: 'Install Eidovara update',
         message: `Install Eidovara ${version}?`,
-        detail: 'The Windows installer was downloaded from GitHub Releases and checksum-verified (SHA-512 in latest.yml). Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved. Unsaved work in other apps is not closed by this prompt until you confirm.'
+        detail: 'The Windows installer is downloaded from GitHub Releases only after this prompt and is checksum-verified (SHA-512 in latest.yml). Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved. Unsaved work in other apps is not closed by this prompt until you confirm.'
       });
       if (answer.response !== 0) return { cancelled: true };
+      installConfirmed = true;
+      if (!pendingNsis.filePath) {
+        emit({ phase: 'downloading', available: true, version, provider: 'electron-updater', percent: 0, error: '' });
+        await autoUpdater.downloadUpdate();
+      }
       autoUpdater.autoInstallOnAppQuit = false;
       autoUpdater.quitAndInstall(true, true);
       return { restarting: true, provider: 'electron-updater', version, unsigned: true };
@@ -269,7 +278,7 @@ export function attachDesktopUpdater({
   ipcMain.handle('soul:setAutoCheckUpdates', (_e, enabled) => {
     requireAgeGate();
     const config = getConfig();
-    config.autoCheckUpdates = enabled !== false;
+    config.autoCheckUpdates = enabled === true;
     saveConfig();
     schedule();
     return publicConfig();

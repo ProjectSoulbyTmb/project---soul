@@ -137,7 +137,7 @@ export function kernelView(state, runtime) {
 }
 
 export const KERNEL_ACTION_TYPES = Object.freeze([
-  'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
+  'open-view', 'open-legal', 'open-service', 'open-updates', 'check-updates', 'open-setup',
   'open-diagnostics', 'pick-local-media', 'discover-apps',
   'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
   'open-external'

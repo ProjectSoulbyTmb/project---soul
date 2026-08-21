@@ -37,9 +37,9 @@ test('updater ignores drafts, ignores prereleases unless current is prerelease, 
   assert.equal(shouldOfferUpdate({ currentVersion: '0.19.0-beta.1', candidateVersion: '0.19.0' }).offer, true);
 });
 
-test('auto-check toggle defaults on and can be disabled', () => {
-  assert.equal(autoCheckEnabled(undefined), true);
-  assert.equal(autoCheckEnabled({}), true);
+test('auto-check toggle defaults off and can be enabled', () => {
+  assert.equal(autoCheckEnabled(undefined), false);
+  assert.equal(autoCheckEnabled({}), false);
   assert.equal(autoCheckEnabled({ autoCheckUpdates: true }), true);
   assert.equal(autoCheckEnabled({ autoCheckUpdates: false }), false);
 });
@@ -54,7 +54,7 @@ test('updater refuses to install without checksum metadata', () => {
   assert.equal(ok.sha512, sha512);
 });
 
-test('latest.yml parser requires sha512 and evaluateElectronUpdate gates versions', () => {
+test('latest.yml parser requires sha512, GitHub hosts, and evaluateElectronUpdate gates versions', () => {
   const sha512 = `${'B'.repeat(86)}==`;
   const yml = `version: 0.19.0\nfiles:\n  - url: Eidovara-0.19.0-Windows-x64-Setup.exe\n    sha512: ${sha512}\n    size: 12\npath: Eidovara-0.19.0-Windows-x64-Setup.exe\nsha512: ${sha512}\n`;
   const parsed = parseLatestYml(yml);
@@ -66,6 +66,10 @@ test('latest.yml parser requires sha512 and evaluateElectronUpdate gates version
   assert.equal(skipped.available, false);
   assert.equal(skipped.reason, 'prerelease');
   assert.throws(() => evaluateElectronUpdate({ version: '0.19.0' }, '0.18.3'), /checksum/i);
+  assert.throws(() => parseLatestYml(`version: 0.19.0\npath: https://evil.example/Eidovara.exe\nsha512: ${sha512}\n`), /official GitHub release channel/i);
+  assert.doesNotThrow(() => parseLatestYml(`version: 0.19.0\nfiles:\n  - url: https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.0/Eidovara-0.19.0-Windows-x64-Setup.exe\n    sha512: ${sha512}\npath: Eidovara-0.19.0-Windows-x64-Setup.exe\nsha512: ${sha512}\n`));
+  assert.match(read('src/electron/main.js'), /autoCheckUpdates: false/);
+  assert.match(read('src/renderer/index.html'), /default off/);
 });
 
 test('legacy update.json still rejects untrusted URLs and missing hashes', async () => {
@@ -114,6 +118,7 @@ test('packaging publishes GitHub latest.yml and ships electron-updater', () => {
   assert.equal(pkg.build.publish.repo, 'project---soul');
   assert.match(read('.github/workflows/release-windows.yml'), /latest\.yml/);
   assert.match(read('.github/workflows/release-windows.yml'), /dist:win:installer/);
+  assert.match(read('scripts/create-update-manifest.js'), /latest\.yml/);
   assert.match(read('package.json'), /--publish never/);
   assert.match(read('src/electron/main.js'), /attachDesktopUpdater/);
   assert.match(read('src/electron/preload.cjs'), /onUpdateStatus/);
