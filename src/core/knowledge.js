@@ -30,7 +30,7 @@ const ENTRIES = {
   },
   premium: {
     title: 'Free vs Premium',
-    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public web lookup after an explicit internet/web/online request (not a full-internet index: Wikipedia/Wikimedia plus optional keyed search and pages you open), and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. Brave is not a live payment unlock. No live checkout unlocks Premium in v0.19.0.',
+    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public web lookup after an explicit internet/web/online request (not a full-internet index: Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search chips), and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. Brave is not a live payment unlock. No live checkout unlocks Premium in v0.19.0.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   },
   download: {

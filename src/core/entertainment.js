@@ -103,8 +103,12 @@ export function isPlayableLocalUrl(value) {
   return /^eidovara-media:/i.test(String(value || '').trim());
 }
 
+function isGenericDiscoveryQuery(query) {
+  return /^(?:music|songs?|video|videos?|audio|soundtrack|mix|media|watch)$/i.test(String(query || '').trim());
+}
+
 export function matchLocalLibrary(query, { entertainment, localLibrary } = {}) {
-  const tokens = queryTokens(query);
+  const tokens = isGenericDiscoveryQuery(query) ? [] : queryTokens(query);
   const hits = [];
   const seen = new Set();
   const push = item => {
@@ -138,7 +142,7 @@ export function matchLocalLibrary(query, { entertainment, localLibrary } = {}) {
 export function discoveryQuery(input, entertainment) {
   const stripped = String(input || '')
     .replace(/https:\/\/[^\s<>"'`]+/gi, ' ')
-    .replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to|fits|my|current|mood|explain|why|something|worth|watching|youtube|spotify|archive)\b/gi, ' ')
+    .replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to|fits|my|current|mood|explain|why|something|worth|watching|youtube|spotify|archive|that|this|with|a|an|or|is|are|it)\b/gi, ' ')
     .replace(/[^\p{L}\p{N}\s'_-]/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim()

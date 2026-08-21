@@ -333,7 +333,7 @@ ipcMain.handle('soul:adminSave', (_e, incoming) => {
   } else {
     config.storeUrl = '';
   }
-  config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); ensureEngine().setProvider(makeProvider()); ensureEngine().setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
+  config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); log(`Administrator changed local edition to ${config.edition}.`);
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
@@ -413,11 +413,11 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   const extension = path.extname(filePath).toLowerCase();
   const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
   if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
-  const id = crypto.randomBytes(16).toString('hex');
-  retainCompanionMedia();
-  allowedLocalMedia.set(id, filePath);
-  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
+  const item = registerSessionMedia(filePath, { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200) });
+  applyInternetOptions();
+  return item;
 });
+ipcMain.handle('soul:listLocalMedia', () => { requireAgeGate(); return publicLocalLibrary(); });
 ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return ensureEngine().createBackup(); });
 ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return ensureEngine().listBackups(); });
 ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return ensureEngine().restoreBackup(String(name || '')); });

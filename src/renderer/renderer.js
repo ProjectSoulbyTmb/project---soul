@@ -4,7 +4,7 @@ const $ = s => document.querySelector(s);
 const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
 let state = null, settings = null, sending = false, backupCount = 0;
-let mediaQueue = [], mediaIndex = -1;
+let mediaQueue = [], mediaIndex = -1, sessionLibrary = [];
 const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), settings: $('#settingsView') };
 const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 const assistantPayload = (extra = {}) => {
@@ -87,7 +87,7 @@ function renderResearch(target,research){
   const remote=Boolean(research.fetchedAt);
   const panel=el('div','research-panel');
   panel.append(el('div','research-title',`${remote?t('researchResults','Internet results'):t('discoveryTitle','Local library & official searches')} · ${fmt(research.fetchedAt)||t('localNow','this device')}`));
-  panel.append(el('p','research-copy',research.disclaimer||t('researchCopy','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.')));
+  panel.append(el('p','research-copy',research.disclaimer||t('researchCopy','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.')));
   for(const s of research.sources||[]){
     const row=el('article','research-source research-card');
     row.append(el('strong','',s.title||''));
@@ -97,19 +97,22 @@ function renderResearch(target,research){
     if(s.url) row.append(externalLink(s.url, t('openInBrowser','Open in browser')));
     panel.append(row);
   }
-  for(const h of research.handoffs||[]){
-    const row=el('article','research-source research-card');
-    row.append(el('strong','',h.title||h.provider||'Search'));
-    if(h.provider) row.append(el('small','research-host',h.provider));
-    row.append(el('p','research-snippet',t('handoffNote','Official HTTPS search in your browser. Eidovara does not fetch that site’s HTML or capture logins.')));
-    if(h.url) row.append(externalLink(h.url, t('openInBrowser','Open in browser')));
-    panel.append(row);
+  if((research.handoffs||[]).length){
+    const chips=el('div','research-handoffs');
+    for(const h of research.handoffs){
+      const chip=el('button','handoff-chip',`${h.provider||'Search'}: ${h.title||h.provider||'Open search'}`);
+      chip.type='button';
+      chip.title=t('handoffNote','Official HTTPS search in your browser. Eidovara does not fetch that site’s HTML or capture logins.');
+      if(h.url) chip.addEventListener('click',()=>openResearchLink(h.url, h.title||h.provider));
+      chips.append(chip);
+    }
+    panel.append(chips);
   }
   if(research.local?.length){
     const localBox=el('div','local-library');
     localBox.append(el('div','research-title',t('sessionLibrary','This session’s local library')));
     for(const item of research.local){
-      const row=el('div','kv');
+      const row=el('div','kv local-library-item');
       row.append(el('span','',item.playable?t('playInEidovara','Play in Eidovara'):item.type||'audio'), el('span','',item.title));
       if(item.playable){
         const play=el('button','handoff-chip',t('playLocal','Play'));
@@ -145,7 +148,7 @@ function renderResearchView(){
   box.textContent='';
   const research=latestResearch();
   const copy=$('#researchLead');
-  if(copy) copy.textContent=t('researchLead','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.');
+  if(copy) copy.textContent=t('researchLead','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.');
   if(!research){
     box.append(el('div','empty-state'));
     box.lastChild.append(el('strong','',t('researchEmptyTitle','No lookup yet')), el('p','',t('researchEmpty','Ask me to search the internet for a topic, or include an HTTPS URL after an explicit internet/web/online request. This is not a crawl of the whole internet.')));
@@ -337,11 +340,26 @@ function renderEntertainment(){
   if(library){
     library.textContent='';
     const discovery=latestResearch();
-    const items=discovery?.local||[];
+    const seen=new Set();
+    const items=[];
+    for(const item of [...sessionLibrary, ...(discovery?.local||[])]){
+      const key=item.url||item.title;
+      if(!key||seen.has(key)) continue;
+      seen.add(key);
+      items.push(item);
+    }
     if(!items.length) library.append(el('div','empty',t('emptyLibrary','Open a local audio or video file to play it in Eidovara. Paths stay out of taste records.')));
     else for(const item of items){
       const row=el('div','kv');
-      row.append(el('span','',item.playable?t('playInEidovara','Play in Eidovara'):item.type||'title'), el('span','',item.title));
+      const playable=Boolean(item.playable||item.local||/^eidovara-media:/i.test(item.url||''));
+      row.append(el('span','',playable?t('playInEidovara','Play in Eidovara'):item.type||'title'), el('span','',item.title));
+      if(playable && item.url){
+        const play=el('button','handoff-chip',t('playLocal','Play'));
+        play.type='button';
+        const playableItems=items.filter(x=>x.url);
+        play.addEventListener('click',()=>playMedia(playableItems, playableItems.indexOf(item), {alreadyConfirmed:true}));
+        row.append(play);
+      }
       library.append(row);
     }
   }
@@ -458,7 +476,7 @@ $('#memoryForm').addEventListener('submit',async e=>{e.preventDefault();const v=
 $$('[data-command]').forEach(b=>b.addEventListener('click',async()=>{const command=b.dataset.command;if((command==='adult status confirmed'||command==='enable adult soul')&&!state.policy?.adultStatusConfirmed){const accepted=window.confirm(window.eidovaraI18n.t('adultWarning'));if(!accepted)return;if(command==='enable adult soul')await send('adult status confirmed');}setView('chat');await send(command);}));
 $('#settingsForm').addEventListener('submit',async e=>{e.preventDefault();$('#settingsStatus').textContent='Saving…';try{const provider=$('#providerSelect').value, endpoint=$('#endpointInput').value.trim(), model=$('#modelInput').value.trim();settings=await window.soul.saveSettings({provider,endpoint,model,language:$('#languageSelect').value,apiKey:$('#apiKeyInput').value,clearApiKey:$('#clearKeyInput').checked,searchApiKey:$('#searchApiKeyInput').value,clearSearchApiKey:$('#clearSearchKeyInput').checked,assistOptIn:$('#assistOptIn')?$('#assistOptIn').checked:false,theme:{background:$('#themeBackground').value,panel:$('#themePanel').value,accent:$('#themeAccent').value,transparency:Number($('#themeTransparency').value),rgbEffects:$('#themeRgb').checked,gamingMode:$('#gamingModeInput').checked},companion:{avatarMode:$('#avatarMode').value,motion:$('#avatarMotion').value,voiceEnabled:$('#voiceMute')? !$('#voiceMute').checked : $('#voiceEnabled').checked,mute:$('#voiceMute')?$('#voiceMute').checked:!$('#voiceEnabled').checked,voiceName:$('#voiceSelect').value,voiceURI:$('#voiceSelect').value,lookId:$('#presenceLook')?.value||'orb',rate:Number($('#voiceRate').value),pitch:Number($('#voicePitch').value),adultPresentation:$('#adultPresentation').checked,bodyHeight:Number($('#bodyHeight').value),bodyBuild:Number($('#bodyBuild').value),bodyCurves:Number($('#bodyCurves').value)}});$('#apiKeyInput').value='';$('#searchApiKeyInput').value='';$('#clearKeyInput').checked=false;$('#clearSearchKeyInput').checked=false;const labels={offline:'Soul Offline',local:'Local model',compatible:'Connected model'};let note=`Settings saved. Provider: ${labels[settings.provider]||settings.provider}. Language: ${settings.language||'en'}.`;if(settings.provider!=='offline'&&(!endpoint||!model)) note+=' Add an endpoint and model before leaving offline fallback.';$('#settingsStatus').textContent=note;applyTheme();applyCompanion();renderStatus();renderDashboard();}catch(err){$('#settingsStatus').textContent=String(err?.message||err);}});
 $('#addAppBtn').addEventListener('click',async()=>{try{settings=await window.soul.addApplication();applyTheme();renderApps();$('#appsStatus').textContent='Application list updated.';}catch(err){$('#appsStatus').textContent=String(err?.message||err);}});
-const localMediaButton=el('button','secondary',t('openLocalMedia','Open local media'));localMediaButton.type='button';localMediaButton.id='openLocalMediaBtn';localMediaButton.addEventListener('click',async()=>{try{const item=await window.soul.selectLocalMedia();if(item)playMedia([item],0,{alreadyConfirmed:true});}catch(err){alert(String(err?.message||err));}});$('#entertainmentView .panel-head').append(localMediaButton);
+const localMediaButton=el('button','secondary',t('openLocalMedia','Open local media'));localMediaButton.type='button';localMediaButton.id='openLocalMediaBtn';localMediaButton.addEventListener('click',async()=>{try{const item=await window.soul.selectLocalMedia();if(item){sessionLibrary=[{...item,playable:true},...sessionLibrary.filter(x=>x.url!==item.url)].slice(0,32);playMedia([item],0,{alreadyConfirmed:true});renderEntertainment();}}catch(err){alert(String(err?.message||err));}});$('#entertainmentView .panel-head').append(localMediaButton);
 $('#discoverAppsBtn').addEventListener('click',async()=>{
   const grid=$('#discoveredAppsGrid');
   try {
@@ -606,7 +624,7 @@ $('#autoCheckUpdates')?.addEventListener('change',async()=>{
 });
 if(window.soul?.onUpdateStatus) window.soul.onUpdateStatus(payload=>{ applyUpdateStatus(payload); });
 $$('input[name="setupCategory"]').forEach(x=>x.addEventListener('change',toggleStreamSetup));$('#openSetupBtn').addEventListener('click',()=>openSetup(true));$('#cancelSetupBtn').addEventListener('click',()=>$('#setupOverlay').classList.add('hidden'));$('#setupForm').addEventListener('submit',async e=>{e.preventDefault();const categories=setupCategories();const access=$('#setupAccessibility')?.value.trim()||'';if(!categories.length&&!$('#setupCustomNeeds').value.trim()&&!access){$('#setupStatus').textContent='Choose at least one role or describe what you need.';return;}try{$('#setupStatus').textContent='Saving…';state=await window.soul.configureSetup({categories,customNeeds:$('#setupCustomNeeds').value,obsWebSocketUrl:$('#setupObsUrl').value,streamGoals:$('#setupStreamGoals').value});if(access||categories.includes('accessibility')) state=await window.soul.configureAssistant(assistantPayload({accessibility:access || state.assistant?.preferences?.accessibility || ''}));$('#setupOverlay').classList.add('hidden');renderAll();}catch(err){$('#setupStatus').textContent=String(err?.message||err);}});
-$('#mediaPrevBtn').addEventListener('click',()=>loadMedia(mediaIndex-1));$('#mediaNextBtn').addEventListener('click',()=>loadMedia(mediaIndex+1));$('#mediaPlayBtn').addEventListener('click',()=>{const p=currentPlayer();if(!p)return;p.paused?p.play().catch(()=>{}):p.pause();});$('#mediaFavoriteBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;await window.soul.recordMedia({event:'favorite',type:item.type,title:item.title,sourceUrl:item.sourceUrl});$('#mediaFavoriteBtn').textContent='♥';});$('#mediaSimilarBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;const taste=await window.soul.entertainment();const favorites=taste.topTitles.slice(0,3).map(x=>x.title).join(', ');send(`Find something similar to my favorite music: ${item.title}${favorites?`, considering ${favorites}`:''}`);});$('#mediaSpotifyBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://open.spotify.com/search/${encodeURIComponent(item.title)}`);});$('#mediaYouTubeBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`);});$('#mediaSourceBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(item.sourceUrl);});$('#mediaCloseBtn').addEventListener('click',()=>{const p=currentPlayer();p?.pause();$('#mediaDock').classList.add('hidden');});function completeMedia(){const next=mediaIndex+1;mediaSignal('complete');mediaIndex=-1;loadMedia(next);}$('#audioPlayer').addEventListener('ended',completeMedia);$('#videoPlayer').addEventListener('ended',completeMedia);
+$('#mediaPrevBtn').addEventListener('click',()=>loadMedia(mediaIndex-1));$('#mediaNextBtn').addEventListener('click',()=>loadMedia(mediaIndex+1));$('#mediaPlayBtn').addEventListener('click',()=>{const p=currentPlayer();if(!p)return;p.paused?p.play().catch(()=>{}):p.pause();});$('#mediaFavoriteBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;await window.soul.recordMedia({event:'favorite',type:item.type,title:item.title,sourceUrl:item.sourceUrl});$('#mediaFavoriteBtn').textContent='♥';});$('#mediaSimilarBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;const taste=await window.soul.entertainment();const favorites=taste.topTitles.slice(0,3).map(x=>x.title).join(', ');send(`Find something similar to my favorite music: ${item.title}${favorites?`, considering ${favorites}`:''}`);});$('#mediaSpotifyBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://open.spotify.com/search/${encodeURIComponent(item.title)}`);});$('#mediaYouTubeBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`);});$('#mediaArchiveBtn')?.addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://archive.org/search?query=${encodeURIComponent(item.title)}`);});$('#mediaSourceBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(item.sourceUrl);});$('#mediaCloseBtn').addEventListener('click',()=>{const p=currentPlayer();p?.pause();$('#mediaDock').classList.add('hidden');});function completeMedia(){const next=mediaIndex+1;mediaSignal('complete');mediaIndex=-1;loadMedia(next);}$('#audioPlayer').addEventListener('ended',completeMedia);$('#videoPlayer').addEventListener('ended',completeMedia);
 $('#backupBtn').addEventListener('click',async()=>{try{$('#backupStatus').textContent='Creating local snapshot…';const b=await window.soul.createBackup();$('#backupStatus').textContent=`Created ${b.name} (${Math.ceil(b.bytes/1024)} KB). Restore is available from the list below.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});
 $('#refreshBackupsBtn').addEventListener('click',()=>refreshBackups().then(()=>{$('#backupStatus').textContent=backupCount?`${backupCount} local snapshot${backupCount===1?'':'s'} available.` : t('noBackups');renderDashboard();}).catch(err=>{$('#backupStatus').textContent=String(err?.message||err);}));
 $('#restoreBackupBtn').addEventListener('click',async()=>{const name=$('#backupSelect').value;if(!name||name.startsWith('No backups')||!confirm('Restore this backup and replace the current profile state?'))return;try{state=await window.soul.restoreBackup(name);renderAll();$('#backupStatus').textContent=`Restored ${name}. Conversations, memories, and Soul continuity now match that snapshot.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});

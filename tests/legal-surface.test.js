@@ -254,7 +254,8 @@ test('network, security, and licensing docs match current fail-closed v0.19.0 su
     /\/v1\/assist/,
     /github\.com\/ProjectSoulbyTmb\/project---soul/,
     /Spotify/,
-    /YouTube/
+    /YouTube/,
+    /archive\.org/
   ];
   for (const file of ['NETWORK-USAGE.md', 'docs/NETWORK_USAGE.md']) {
     const text = read(file);

@@ -27,7 +27,7 @@ You may run an official unmodified Windows release for personal evaluation and l
 - scrape, rip, or download protected media catalogs;
 - misrepresent Eidovara as affiliated with Apple, Microsoft, Electron, GitHub, Spotify, YouTube, OBS, Wikimedia, or any other third party.
 
-**Research** is user-directed. Built-in research uses public Wikipedia/Wikimedia only after an explicit internet, web, or online request. Optional Premium Brave Search uses a key **you** supply and is subject to Brave's terms. Eidovara is not a general-purpose crawler.
+**Research** is user-directed. Built-in research is a public web lookup after an explicit internet, web, or online request — Wikipedia/Wikimedia, an optional Internet Archive catalog search, optional keyed Brave Search (a key **you** supply, subject to Brave's terms), bounded HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Eidovara is not a general-purpose crawler.
 
 **Application launching** is user-confirmed: Eidovara asks Windows to open a user-selected local `.exe` or `.lnk` after on-screen confirmation. You must already have the right to install and use that application. Eidovara does not inject into games or confer third-party licenses.
 
@@ -41,7 +41,7 @@ Eidovara does not grant rights in anyone else's material. You are responsible fo
 
 - **User-supplied** local media files and linked applications;
 - **Wikipedia/Wikimedia** content under the licenses those projects publish;
-- **YouTube and Spotify** official HTTPS search/handoff links (not ripping, not embedded unofficial clients);
+- **YouTube, Spotify, and Internet Archive** official HTTPS search/handoff links (not ripping, not embedded unofficial clients, not injection into other players);
 - **Windows-installed** speech voices; neural TTS packs, VRM, and MakeHuman models are **not bundled**;
 - Electron, Chromium, Node.js, and other runtime components under [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
