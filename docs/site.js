@@ -14,6 +14,12 @@
     if (legal) legal.setAttribute('data-current', 'true');
   }
 
+  if (header) {
+    const compact = () => header.classList.toggle('is-compact', window.scrollY > 10);
+    compact();
+    window.addEventListener('scroll', compact, { passive: true });
+  }
+
   if (toggle && header && nav) {
     const close = () => {
       header.classList.remove('nav-open');
@@ -26,6 +32,16 @@
     nav.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
     doc.addEventListener('keydown', event => {
       if (event.key === 'Escape') close();
+    });
+  }
+
+  const legalMenu = doc.querySelector('.nav-legal');
+  if (legalMenu) {
+    doc.addEventListener('click', event => {
+      if (legalMenu.open && !legalMenu.contains(event.target)) legalMenu.removeAttribute('open');
+    });
+    doc.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && legalMenu.open) legalMenu.removeAttribute('open');
     });
   }
 
