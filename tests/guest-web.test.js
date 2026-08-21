@@ -42,7 +42,7 @@ test('guest window is an isolated sandboxed partition and the main workspace sta
   assert.match(guest, /will-attach-webview/);
   assert.match(guest, /soul:openGuest/);
   assert.match(main, /attachGuestWindow/);
-  assert.match(main, /will-navigate, e => e.preventDefault\(\)/);
+  assert.match(main, /on\('will-navigate', e => e.preventDefault\(\)\)/);
   assert.match(html, /id="webGuestForm"/);
   assert.match(html, /id="webGuestPolicy"/);
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
