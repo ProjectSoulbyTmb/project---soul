@@ -54,7 +54,8 @@
     const empty = $('#soulPresenceEmpty');
     const figure = $('#soulPresenceFigure');
     if (canvas) canvas.hidden = look !== 'pulse';
-    if (figure) figure.hidden = look === 'pulse' || look === 'local-image' || look === 'ambient';
+    if (figure) figure.hidden = look === 'pulse' || look === 'local-image' || look === 'ambient' || look === 'ribbon' || look === 'hidden';
+    root.hidden = look === 'hidden';
     if (img) {
       const show = look === 'local-image' && imageUrl;
       img.hidden = !show;
@@ -176,10 +177,15 @@
       if (!list.children.length) list.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('soulNoActions', 'Add a custom quick action in Settings.') }));
     }
     const wrap = $('#assistThisWrap');
+    const dockWrap = $('#companionAssistWrap');
+    const show = kernel.assistOptIn === true && Boolean(window.eidovaraSettings?.serviceUrl);
     if (wrap) {
-      const show = kernel.assistOptIn === true && Boolean(window.eidovaraSettings?.serviceUrl);
       wrap.classList.toggle('hidden', !show);
       if (!show && $('#assistThisMessage')) $('#assistThisMessage').checked = false;
+    }
+    if (dockWrap) {
+      dockWrap.classList.toggle('hidden', !show);
+      if (!show && $('#companionAssistThis')) $('#companionAssistThis').checked = false;
     }
   }
 
@@ -252,8 +258,33 @@
           $('#checkUpdateBtn')?.focus();
         }
       }
+    },
+    noteExchange(userText, reply, extra) {
+      const log = $('#companionLog');
+      if (!log) return;
+      log.textContent = '';
+      if (!userText && !reply) {
+        log.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('companionEmpty', 'Ask from this dock. Local kernel answers on this PC. Assist is not Soul.') }));
+        return;
+      }
+      if (userText) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn', textContent: userText }));
+      if (reply) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn assistant', textContent: reply }));
+      if (extra) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn', textContent: extra }));
     }
   };
+
+  $('#companionForm')?.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = $('#companionInput')?.value;
+    if (typeof window.eidovaraSend === 'function') window.eidovaraSend(text, { surface: 'companion' });
+  });
+  $('#companionInput')?.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      const text = e.currentTarget.value;
+      if (typeof window.eidovaraSend === 'function') window.eidovaraSend(text, { surface: 'companion' });
+    }
+  });
 
   $('#kernelCustomizeForm')?.addEventListener('submit', async e => {
     e.preventDefault();

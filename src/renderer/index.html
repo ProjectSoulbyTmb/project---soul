@@ -35,7 +35,7 @@
       <header class="topbar">
         <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
         <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
-        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul presence; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span><span class="status-dot idle" id="kernelDot" title="Local Soul kernel"></span><span id="kernelLabel">Kernel idle</span><span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span></div>
+        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Open Soul companion"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span><span class="status-dot idle" id="kernelDot" title="Local Soul kernel"></span><span id="kernelLabel">Kernel idle</span><span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span></div>
       </header>
 
       <section class="view active" id="chatView">
@@ -56,26 +56,38 @@
         </div>
         <form class="composer" id="chatForm">
           <textarea id="messageInput" rows="1" maxlength="12000" placeholder="Message Soul…" aria-label="Message Soul"></textarea>
-          <button type="button" id="voiceInputBtn" class="voice-input hidden" aria-label="Dictate message" title="Dictate message">🎙</button><button type="submit" id="sendBtn" aria-label="Send message">↑</button>
+          <button type="button" id="voiceInputBtn" class="voice-input hidden" aria-label="Hold to talk" title="Hold to talk">🎙</button><button type="submit" id="sendBtn" aria-label="Send message">↑</button>
           <label class="check composer-assist hidden" id="assistThisWrap"><input type="checkbox" id="assistThisMessage" /> Also ask my Worker helper (one question, no chat history). Assist is not Soul.</label>
-          <div class="composer-note">Enter to send · Shift+Enter for a new line</div>
+          <div class="composer-note">Enter to send · Shift+Enter for a new line · Hold 🎙 to talk · Ctrl+/ focuses Soul</div>
         </form>
       </section>
 
-      <section class="view panel-view" id="dashboardView"><div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">A command center for applications, gaming, entertainment, research, backups, and optional Soul assistance.</p></div></div><div class="dashboard-grid" id="dashboardGrid"></div><div class="quick-grid"><button data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button><button data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button><button data-quick="Create a study plan and quiz me." data-i18n="study">Study</button><button data-quick="Help me start a creative project." data-i18n="create">Create</button><button data-quick="Search the internet for current information I need." data-i18n="research">Research</button><button data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button></div></section>
+      <section class="view panel-view" id="dashboardView"><div class="panel-head"><div><h2 data-i18n="dashboardTitle">Your Eidovara workspace</h2><p data-i18n="dashboardLead">Apps, gaming, media, research, backups, and a local companion that can open those surfaces. Optional Soul is a software self-model — not consciousness, not the website helper.</p></div></div><div class="dashboard-grid" id="dashboardGrid"></div><div class="quick-grid" id="dashboardQuick"><button data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button><button data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button><button data-quick="Create a study plan and quiz me." data-i18n="study">Study</button><button data-quick="Help me start a creative project." data-i18n="create">Create</button><button data-quick="Search the internet for current information I need." data-i18n="research">Research</button><button data-quick="Review what you remember and suggest useful updates." data-i18n="reviewMemory">Review memory</button></div></section>
 
-      <aside class="soul-dock" id="soulDock" role="complementary" aria-label="Soul companion">
-        <h2 data-i18n="soulDockTitle">Soul</h2>
+      <aside class="soul-dock companion-panel" id="soulDock" role="complementary" aria-labelledby="companionTitle">
+        <h2 id="companionTitle" data-i18n="companionTitle">Soul companion</h2>
+        <p class="companion-sub" data-i18n="companionLead">Always-on session kernel on this PC. Software, not a person. Assist is not Soul.</p>
         <div class="soul-presence" id="soulPresence" data-look="orb">
           <canvas id="soulPresenceCanvas" width="240" height="240" hidden aria-hidden="true"></canvas>
           <img id="soulPresenceImage" alt="" hidden />
           <div class="soul-presence-figure" id="soulPresenceFigure" aria-hidden="true"></div>
           <p class="presence-empty" id="soulPresenceEmpty" hidden>Choose a local image in Settings. Decorative only — not a live model.</p>
         </div>
+        <p class="presence-caption" data-i18n="presenceCaption">Decorative presence — not a conscious figure.</p>
         <p class="soul-heartbeat" id="soulHeartbeat">Confirm 18+ to start the local kernel.</p>
         <p class="soul-online-copy" id="soulOnlineCopy">Online helper off. Local kernel stays the source of truth.</p>
         <div class="soul-module-list" id="soulModuleChips" aria-label="Feature modules"></div>
         <div class="soul-action-list" id="soulQuickActions" aria-label="Custom quick actions"></div>
+        <div class="companion-log" id="companionLog" aria-live="polite"></div>
+        <p class="companion-error hidden" id="companionError" role="status"></p>
+        <form class="companion-form" id="companionForm">
+          <label class="visually-hidden" for="companionInput" data-i18n="companionAskLabel">Ask Soul</label>
+          <textarea id="companionInput" name="companion" rows="2" maxlength="12000" placeholder="Ask Soul on this device…"></textarea>
+          <button type="button" id="companionTalkBtn" class="voice-input hidden" aria-label="Hold to talk">🎙</button>
+          <button type="submit" id="companionSendBtn" aria-label="Send companion message">↑</button>
+        </form>
+        <label class="check composer-assist hidden" id="companionAssistWrap"><input type="checkbox" id="companionAssistThis" /> Send this message to my pasted Eidovara service (Assist, not Soul). Default off.</label>
+        <p class="composer-note" data-i18n="companionNote">Local kernel · Assist is not Soul · no live payments · voices from Windows</p>
       </aside>
 
       <section class="view panel-view" id="appsView">

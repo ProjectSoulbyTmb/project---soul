@@ -115,7 +115,79 @@ function renderEntertainment(){
 function renderAll(){ renderConversations();renderMessages();renderDashboard();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraSettings=settings;window.eidovaraCompanion?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;}$('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
-async function send(text){ text=String(text||'').trim();if(!text||sending)return;setView('chat');sending=true;$('#sendBtn').disabled=true;$('#messageInput').value='';autoSize(); if(!activeConversation()?.messages?.length) $('#welcome').classList.add('hidden'); const user=el('div','message user');const c=el('div');c.append(el('div','bubble',text));user.append(c);$('#messages').append(user);addTyping();try{const res=await window.soul.send(text);state=res.state;renderAll();window.eidovaraCompanion?.applyKernelActions?.(res.kernel?.actions);const replies=(activeConversation()?.messages||[]).filter(x=>x.role==='assistant');speakSoul(replies.at(-1)?.content);if(res.providerError){const note=el('div','error-note',`Model connection issue: ${res.providerError}`);$('#messages').append(note);}if(res.internetError){const note=el('div','error-note',`Internet search issue: ${res.internetError}`);$('#messages').append(note);}if($('#assistThisMessage')?.checked){try{const assist=await window.soul.assistQuery(text);$('#assistThisMessage').checked=false;const note=el('div',assist.ok?'research-panel':'error-note');note.append(el('div','research-title','Worker helper · not Soul · no transcript sent'));note.append(el('p','',assist.ok?(assist.reply||assist.warning): (assist.reason||'Assist unavailable. Local Soul continues.')));if(assist.warning)note.append(el('small','',assist.warning));$('#messages').append(note);}catch(err){const note=el('div','error-note',`Worker helper: ${err?.message||err}`);$('#messages').append(note);}}}catch(err){$('#typing')?.remove();const note=el('div','error-note',String(err?.message||err));$('#messages').append(note);}finally{sending=false;$('#sendBtn').disabled=false;$('#messageInput').focus();} }
+async function send(text, opts={}){
+  text=String(text||'').trim();
+  if(!text||sending)return;
+  const stayCompanion=opts.surface==='companion';
+  if(!stayCompanion) setView('chat');
+  sending=true;
+  $('#sendBtn').disabled=true;
+  $('#companionSendBtn') && ($('#companionSendBtn').disabled=true);
+  $('#messageInput').value='';
+  if($('#companionInput') && stayCompanion) $('#companionInput').value='';
+  autoSize();
+  if(!activeConversation()?.messages?.length) $('#welcome').classList.add('hidden');
+  const user=el('div','message user');
+  const c=el('div');
+  c.append(el('div','bubble',text));
+  user.append(c);
+  $('#messages').append(user);
+  addTyping();
+  const askAssist=$('#assistThisMessage')?.checked===true || $('#companionAssistThis')?.checked===true;
+  try{
+    const res=await window.soul.send(text);
+    state=res.state;
+    renderAll();
+    window.eidovaraCompanion?.applyKernelActions?.(res.kernel?.actions);
+    const replies=(activeConversation()?.messages||[]).filter(x=>x.role==='assistant');
+    const replyText=replies.at(-1)?.content;
+    speakSoul(replyText);
+    if(res.providerError){
+      const note=el('div','error-note',`Model connection issue: ${res.providerError}`);
+      $('#messages').append(note);
+    }
+    if(res.internetError){
+      const note=el('div','error-note',`Internet search issue: ${res.internetError}`);
+      $('#messages').append(note);
+    }
+    let assistNote='';
+    if(askAssist){
+      if($('#assistThisMessage')) $('#assistThisMessage').checked=false;
+      if($('#companionAssistThis')) $('#companionAssistThis').checked=false;
+      try{
+        const assist=await window.soul.assistQuery(text);
+        const note=el('div',assist.ok?'research-panel':'error-note');
+        note.append(el('div','research-title','Assist from your pasted service (not Soul)'));
+        note.append(el('p','',assist.ok?(assist.reply||assist.warning): (assist.reason||'Assist unavailable. Local Soul continues.')));
+        if(assist.warning)note.append(el('small','',assist.warning));
+        $('#messages').append(note);
+        assistNote=assist.ok?`Assist (not Soul): ${assist.reply||assist.warning||''}`:(assist.reason||'Assist unavailable. Local Soul continues.');
+      }catch(err){
+        const note=el('div','error-note',`Worker helper: ${err?.message||err}`);
+        $('#messages').append(note);
+        assistNote=`Worker helper: ${err?.message||err}`;
+      }
+    }
+    window.eidovaraCompanion?.noteExchange?.(text, replyText, assistNote);
+    if(stayCompanion){
+      setView('dashboard');
+      $('#companionInput')?.focus();
+    }
+  }catch(err){
+    $('#typing')?.remove();
+    const note=el('div','error-note',String(err?.message||err));
+    $('#messages').append(note);
+    if($('#companionError')){
+      $('#companionError').textContent=String(err?.message||err);
+      $('#companionError').classList.remove('hidden');
+    }
+  }finally{
+    sending=false;
+    $('#sendBtn').disabled=false;
+    if($('#companionSendBtn')) $('#companionSendBtn').disabled=false;
+    if(!stayCompanion) $('#messageInput').focus();
+  }
+}
 
 $('#chatForm').addEventListener('submit',e=>{e.preventDefault();send($('#messageInput').value);});
 $('#messageInput').addEventListener('input',autoSize);$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value);}});
@@ -147,11 +219,43 @@ $('#discoverAppsBtn').addEventListener('click',async()=>{
 });
 $('#gamingModeInput').addEventListener('change',async()=>{try{settings=await window.soul.saveSettings({provider:settings.provider,endpoint:settings.endpoint,model:settings.model,theme:{...(settings.theme||{}),gamingMode:$('#gamingModeInput').checked}});if($('#gamingModeInput').checked&&'speechSynthesis' in window)speechSynthesis.cancel();applyTheme();$('#appsStatus').textContent=$('#gamingModeInput').checked?'Low-overhead mode enabled for Eidovara.':'Low-overhead mode disabled.';}catch(err){$('#appsStatus').textContent=String(err?.message||err);}});
 $('#themeTransparency').addEventListener('input',()=>{$('#themeTransparencyValue').textContent=`${$('#themeTransparency').value}%`;});
-$('#companionAvatar').addEventListener('click',()=>{$('#avatarMode').value='hidden';$('#settingsStatus').textContent='Avatar hidden. Save Settings to keep this choice.';$('#companionAvatar').classList.add('mode-hidden');});
-$('#voicePreviewBtn').addEventListener('click',()=>{settings.companion={...(settings.companion||{}),voiceURI:$('#voiceSelect').value,voiceName:$('#voiceSelect').value,rate:Number($('#voiceRate').value),pitch:Number($('#voicePitch').value),mute:false};speakSoul('Hello. I am Soul, your Eidovara companion. This uses an OS-installed voice.',true);});
+$('#companionAvatar').addEventListener('click',()=>{setView('dashboard');$('#soulDock')?.scrollIntoView({block:'nearest'});$('#companionInput')?.focus();});
+$('#voicePreviewBtn').addEventListener('click',()=>{settings.companion={...(settings.companion||{}),voiceURI:$('#voiceSelect').value,voiceName:$('#voiceSelect').value,rate:Number($('#voiceRate').value),pitch:Number($('#voicePitch').value),mute:false};speakSoul('This is an Eidovara system-voice preview. Soul is software on this device, not a person.',true);});
 $('#voiceMute')?.addEventListener('change',()=>{if($('#voiceEnabled'))$('#voiceEnabled').checked=!$('#voiceMute').checked;});
 $('#voiceEnabled')?.addEventListener('change',()=>{if($('#voiceMute'))$('#voiceMute').checked=!$('#voiceEnabled').checked;});
-const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;if(Recognition){$('#voiceInputBtn').classList.remove('hidden');const recognition=new Recognition();recognition.continuous=false;recognition.interimResults=false;recognition.onstart=()=>{$('#voiceSupportStatus').textContent='Listening… microphone audio is used only for this dictation session.';};recognition.onresult=e=>{$('#messageInput').value=[...e.results].map(r=>r[0].transcript).join(' ');autoSize();};recognition.onerror=e=>{const reason=e.error==='not-allowed'?'Microphone permission was denied.':e.error==='no-speech'?'No speech was heard.':e.error;$('#voiceSupportStatus').textContent=`Voice input unavailable: ${reason}. You can continue typing. Eidovara does not ship a neural TTS engine.`;};recognition.onend=()=>{if(!$('#voiceSupportStatus').textContent.startsWith('Voice input unavailable'))$('#voiceSupportStatus').textContent='Dictation complete. Review the text before sending.';};$('#voiceInputBtn').addEventListener('click',()=>{try{recognition.start();}catch(err){$('#voiceSupportStatus').textContent=`Voice input could not start: ${err?.message||err}. You can continue typing.`;}}); }else{$('#voiceSupportStatus').textContent='Installed OS voices are available for playback. Voice input is not supported by this system build. Eidovara does not ship a neural TTS engine.';}
+const Recognition=window.SpeechRecognition||window.webkitSpeechRecognition;
+function bindHoldToTalk(button, fill){
+  if(!button) return;
+  if(!Recognition){ button.classList.add('hidden'); return; }
+  button.classList.remove('hidden');
+  let rec=null;
+  const stop=()=>{try{rec?.stop();}catch{} button.classList.remove('listening');};
+  const start=()=>{
+    rec=new Recognition(); rec.continuous=false; rec.interimResults=false;
+    rec.onstart=()=>{button.classList.add('listening'); if($('#voiceSupportStatus')) $('#voiceSupportStatus').textContent='Listening… microphone audio is used only for this dictation session.'; if($('#companionError')) $('#companionError').classList.add('hidden');};
+    rec.onresult=e=>{fill([...e.results].map(r=>r[0].transcript).join(' '));};
+    rec.onerror=e=>{
+      const reason=e.error==='not-allowed'?'Microphone permission was denied.':e.error==='no-speech'?'No speech was heard.':e.error;
+      const copy=`Voice input unavailable: ${reason}. You can continue typing. Eidovara does not ship a neural TTS engine.`;
+      if($('#voiceSupportStatus')) $('#voiceSupportStatus').textContent=copy;
+      if($('#companionError')){ $('#companionError').textContent=copy; $('#companionError').classList.remove('hidden'); }
+    };
+    rec.onend=()=>{button.classList.remove('listening'); if($('#voiceSupportStatus') && !$('#voiceSupportStatus').textContent.startsWith('Voice input unavailable')) $('#voiceSupportStatus').textContent='Dictation complete. Review the text before sending.';};
+    try{rec.start();}catch(err){if($('#voiceSupportStatus')) $('#voiceSupportStatus').textContent=`Voice input unavailable: ${err?.message||err}. You can continue typing.`;}
+  };
+  button.addEventListener('pointerdown', e=>{e.preventDefault(); start();});
+  button.addEventListener('pointerup', stop);
+  button.addEventListener('pointercancel', stop);
+  button.addEventListener('pointerleave', stop);
+  button.addEventListener('keydown', e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); start(); }});
+  button.addEventListener('keyup', e=>{ if(e.key===' '||e.key==='Enter'){ e.preventDefault(); stop(); }});
+}
+if(Recognition){
+  bindHoldToTalk($('#voiceInputBtn'), text=>{ $('#messageInput').value=text; autoSize(); });
+  bindHoldToTalk($('#companionTalkBtn'), text=>{ if($('#companionInput')) $('#companionInput').value=text; });
+}else if($('#voiceSupportStatus')){
+  $('#voiceSupportStatus').textContent='Installed OS voices are available for playback. Voice input is not supported by this system build. Eidovara does not ship a neural TTS engine.';
+}
 if('speechSynthesis' in window)speechSynthesis.onvoiceschanged=populateVoices;
 $('#openDataBtn').addEventListener('click',()=>window.soul.openDataFolder());
 $('#privacyNoticeBtn').addEventListener('click',()=>window.soul.openExternal('https://eidovara.org/privacy.html'));
@@ -161,7 +265,8 @@ $('#securityCenterBtn').addEventListener('click',()=>window.soul.openExternal('h
 $('#licensingBtn').addEventListener('click',()=>window.soul.openExternal('https://eidovara.org/licensing.html'));
 $('#upgradeBtn').addEventListener('click',()=>{if(settings?.storeUrl)window.soul.openExternal(settings.storeUrl).catch(err=>{$('#settingsStatus').textContent=String(err?.message||err);});});
 $('#assistantBehaviorForm').addEventListener('submit',async e=>{e.preventDefault();try{state=await window.soul.configureAssistant({autonomy:$('#assistantAutonomy').value,initiativeEnabled:$('#assistantInitiative').checked,reflectionEnabled:$('#assistantReflection').checked,responseLength:$('#responseLength').value,tone:$('#responseTone').value,focusMode:$('#focusMode').value,accessibility:$('#assistantAccessibility').value,language:$('#languageSelect').value,webResearch:$('#webResearchPolicy').value,mediaPlayback:$('#mediaPlaybackPolicy').value,memoryLearning:$('#memoryLearning').checked?'enabled':'disabled'});$('#assistantBehaviorStatus').textContent=t('behaviorSaved','Behavior settings saved. Language, tone, and accessibility remain as set.');renderAll();}catch(err){$('#assistantBehaviorStatus').textContent=String(err?.message||err);}});
-$$('[data-quick]').forEach(b=>b.addEventListener('click',()=>{setView('chat');send(b.dataset.quick);}));
+$$('#dashboardQuick [data-quick]').forEach(b=>b.addEventListener('click',()=>{setView('dashboard');send(b.dataset.quick,{surface:'companion'});}));
+$$('#entertainmentView [data-quick]').forEach(b=>b.addEventListener('click',()=>{setView('chat');send(b.dataset.quick);}));
 $('#diagnosticsBtn').addEventListener('click',async()=>{
   const d=await window.soul.diagnostics();
   d.rendererCapabilities=rendererCapabilities();
@@ -196,6 +301,13 @@ document.addEventListener('keydown',e=>{
     if(overlayOpen('#legalOverlay')){$('#legalOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#adminOverlay')){$('#adminOverlay').classList.add('hidden');e.preventDefault();return;}
     if(overlayOpen('#setupOverlay')&&!$('#cancelSetupBtn').classList.contains('hidden')){$('#setupOverlay').classList.add('hidden');e.preventDefault();}
+    return;
+  }
+  if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.key==='/'){
+    if(document.body.classList.contains('age-gated')) return;
+    e.preventDefault();
+    setView('dashboard');
+    $('#companionInput')?.focus();
     return;
   }
   if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.key.toLowerCase()==='a'){
@@ -263,7 +375,7 @@ function setAgeGated(on){
   $('#ageGateOverlay').classList.toggle('hidden',!on);
   if(on) $('#ageGateTermsCheck')?.focus();
 }
-$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);if(!state.setup?.completed)openSetup(false);else {$('#messageInput').focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
+$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
 $('#ageGateDeclineBtn').addEventListener('click',()=>window.soul.declineAgeGate());
 
-(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();$('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();
+(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();

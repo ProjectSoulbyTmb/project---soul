@@ -4,7 +4,7 @@
       newConversation: '＋ New conversation', dashboard: 'Dashboard', apps: 'Apps & Gaming', entertainment: 'Entertainment', memory: 'Memory', identity: 'Identity', settings: 'Settings', language: 'Interface language', save: 'Save settings',
       adultConfirm: 'Confirm legal-adult status', adultEnable: 'Enable Adult Soul',
       adultWarning: 'Adult Soul is only for people who have reached the age of majority where they are located. It must not be used by minors. This local confirmation is not independent identity or age verification. Confirm that you are legally an adult to continue.',
-      dashboardTitle: 'Your Eidovara workspace', dashboardLead: 'A command center for applications, gaming, entertainment, research, backups, and optional Soul assistance.',
+      dashboardTitle: 'Your Eidovara workspace', dashboardLead: 'Apps, gaming, media, research, backups, and a local companion that can open those surfaces. Optional Soul is a software self-model — not consciousness, not the website helper.',
       appsTitle: 'Apps & Gaming Hub', appsLead: 'Organize trusted Windows applications and ask Windows to launch them. Compatibility varies; Eidovara does not inject into or control them.',
       discoverApps: 'Discover installed apps', chooseFile: '＋ Choose file', gamingMode: 'Gaming mode', gamingModeLead: 'Reduces Eidovara’s animated lighting and transparency while you play. It does not change another game’s process or frame rate.', lowOverhead: 'Low-overhead mode',
       entertainmentTitle: 'Entertainment', entertainmentLead: 'Local taste, queue helpers, and lawful platform handoff — Spotify and YouTube stay official HTTPS searches.',
@@ -36,7 +36,11 @@
       launchApp: 'Launch', launchCancelled: 'Launch cancelled.',
       premiumLocked: 'Free: offline/local models, Wikipedia/Wikimedia research, up to 3 apps. RGB, Brave key, and remote endpoints stay Premium.',
       premiumUnlocked: 'Premium test gates are on: remote endpoints, Brave search key, RGB, and unlimited apps.',
-      soulDockTitle: 'Soul', soulLive: 'Soul is live on this PC', soulIdle: 'Soul kernel idle'
+      soulDockTitle: 'Soul', soulLive: 'Soul is live on this PC', soulIdle: 'Soul kernel idle',
+      companionTitle: 'Soul companion', companionLead: 'Always-on session kernel on this PC. Software, not a person. Assist is not Soul.',
+      companionEmpty: 'Ask from this dock. Local kernel answers on this PC. Assist is not Soul.',
+      companionNote: 'Local kernel · Assist is not Soul · no live payments · voices from Windows',
+      companionAskLabel: 'Ask Soul', presenceCaption: 'Decorative presence — not a conscious figure.'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -74,7 +78,11 @@
       launchApp: 'Abrir', launchCancelled: 'Lanzamiento cancelado.',
       premiumLocked: 'Gratis: modelos locales, Wikipedia/Wikimedia, hasta 3 apps. RGB, clave Brave y endpoints remotos son Premium.',
       premiumUnlocked: 'Prueba Premium activa: endpoints remotos, clave Brave, RGB y apps ilimitadas.',
-      soulDockTitle: 'Soul', soulLive: 'Soul está en vivo en este PC', soulIdle: 'Kernel de Soul inactivo'
+      soulDockTitle: 'Soul', soulLive: 'Soul está en vivo en este PC', soulIdle: 'Kernel de Soul inactivo',
+      companionTitle: 'Compañero Soul', companionLead: 'Núcleo de sesión siempre disponible en este PC. Software, no una persona. Assist no es Soul.',
+      companionEmpty: 'Pregunta desde este panel. El núcleo local responde en este PC. Assist no es Soul.',
+      companionNote: 'Núcleo local · Assist no es Soul · sin pagos en vivo · voces de Windows',
+      companionAskLabel: 'Preguntar a Soul', presenceCaption: 'Presencia decorativa: no es una figura consciente.'
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -112,7 +120,11 @@
       launchApp: 'Lancer', launchCancelled: 'Lancement annulé.',
       premiumLocked: 'Gratuit : modèles locaux, Wikipedia/Wikimedia, 3 apps max. RGB, clé Brave et endpoints distants restent Premium.',
       premiumUnlocked: 'Portes Premium de test actives : endpoints distants, clé Brave, RGB et apps illimitées.',
-      soulDockTitle: 'Soul', soulLive: 'Soul est actif sur cet appareil', soulIdle: 'Noyau Soul inactif'
+      soulDockTitle: 'Soul', soulLive: 'Soul est actif sur cet appareil', soulIdle: 'Noyau Soul inactif',
+      companionTitle: 'Compagnon Soul', companionLead: 'Noyau de session toujours disponible sur ce PC. Logiciel, pas une personne. Assist n’est pas Soul.',
+      companionEmpty: 'Demandez depuis ce panneau. Le noyau local répond sur ce PC. Assist n’est pas Soul.',
+      companionNote: 'Noyau local · Assist n’est pas Soul · pas de paiements live · voix Windows',
+      companionAskLabel: 'Demander à Soul', presenceCaption: 'Présence décorative — pas une figure consciente.'
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -150,7 +162,11 @@
       launchApp: 'Starten', launchCancelled: 'Start abgebrochen.',
       premiumLocked: 'Free: lokale Modelle, Wikipedia/Wikimedia, bis zu 3 Apps. RGB, Brave-Schlüssel und Remote-Endpunkte bleiben Premium.',
       premiumUnlocked: 'Premium-Test aktiv: Remote-Endpunkte, Brave-Schlüssel, RGB und unbegrenzte Apps.',
-      soulDockTitle: 'Soul', soulLive: 'Soul ist auf diesem PC aktiv', soulIdle: 'Soul-Kernel inaktiv'
+      soulDockTitle: 'Soul', soulLive: 'Soul ist auf diesem PC aktiv', soulIdle: 'Soul-Kernel inaktiv',
+      companionTitle: 'Soul-Begleiter', companionLead: 'Sitzungs-Kernel immer auf diesem PC. Software, keine Person. Assist ist nicht Soul.',
+      companionEmpty: 'Fragen Sie über dieses Dock. Der lokale Kernel antwortet auf diesem PC. Assist ist nicht Soul.',
+      companionNote: 'Lokaler Kernel · Assist ist nicht Soul · keine Live-Zahlungen · Windows-Stimmen',
+      companionAskLabel: 'Soul fragen', presenceCaption: 'Dekorative Präsenz — keine bewusste Figur.'
     }
   };
   let locale = 'en';
