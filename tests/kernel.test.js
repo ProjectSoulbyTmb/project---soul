@@ -33,12 +33,12 @@ test('kernel routing covers workspace surfaces and product help', () => {
   const apps = routeKernel('Help me add a trusted Windows app from the Start Menu.', state);
   assert.equal(apps.intent, 'apps');
   assert.equal(apps.moduleId, 'workspace-apps');
-  const brands = routeKernel('Are you Jarvis or Siri?', state);
+  const brands = routeKernel('Are you another company\'s assistant product?', state);
   assert.equal(brands.intent, 'brands');
   assert.equal(brands.usedKnowledge, true);
   assert.match(brands.knowledgeReply, /first-party software names/i);
-  assert.match(brands.knowledgeReply, /not Jarvis/);
-  assert.doesNotMatch(brands.knowledgeReply, /I am Jarvis|Eidovara Jarvis/i);
+  assert.match(brands.knowledgeReply, /not Eidovara product identities|do not imply sponsorship or affiliation/i);
+  assert.doesNotMatch(brands.knowledgeReply, /I am another company|Eidovara is another company/i);
 });
 
 test('feature registry toggles modules and matches custom actions', () => {
