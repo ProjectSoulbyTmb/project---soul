@@ -220,6 +220,10 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.equal(safePublicHref('https://user:pass@evil.example/'), '');
   assert.equal(safePublicHref('http://example.test/page'), '');
   assert.equal(safePublicHref('../secret'), '');
+  assert.equal(
+    safePublicHref('https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe'),
+    'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe'
+  );
   const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
   assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));
   assert.match(read('docs/assist.js'), /safePublicHref\(link\.href\)/);
