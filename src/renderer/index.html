@@ -34,7 +34,7 @@
       <header class="topbar">
         <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
         <div class="title-wrap"><strong id="viewTitle">Conversation</strong><span id="modePill">Standard Soul</span></div>
-        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul companion; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span></div>
+        <div class="top-actions"><button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Soul companion; click to hide"><span class="companion-face"><i></i><i></i></span></button><span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span><span class="status-dot idle" id="serviceDot" title="Eidovara service"></span><span id="serviceLabel">Service idle</span></div>
       </header>
 
       <section class="view active" id="chatView">
@@ -90,6 +90,19 @@
       </section>
 
       <section class="view panel-view" id="settingsView">
+        <form class="settings-card" id="serviceForm">
+          <h3>Eidovara service</h3>
+          <p>Attach this installation to the official online Eidovara service for health, status, and public config. Conversations stay on this PC. If the service is down, Offline Soul and the workspace keep working. HTTPS is required except loopback.</p>
+          <label>Service URL<input id="serviceUrlInput" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" autocomplete="off" /></label>
+          <div class="settings-actions"><button type="submit">Save URL</button><button type="button" class="secondary" id="serviceConnectBtn">Connect</button><button type="button" class="secondary hidden" id="serviceSiteBtn">Open site</button></div>
+          <p class="settings-status" id="serviceStatusText"></p>
+          <div id="serviceDetails" class="service-details">
+            <div class="kv"><span>Connection</span><span id="serviceOnlineValue">Offline</span></div>
+            <div class="kv"><span>Last seen</span><span id="serviceLastSeenValue">Never</span></div>
+            <div class="kv"><span>Site URL</span><span id="serviceWebsiteValue">None from config</span></div>
+            <div class="kv"><span>paymentsEnabled</span><span id="servicePaymentsValue">off</span></div>
+          </div>
+        </form>
         <div class="panel-head"><div><h2>Conversation engine</h2><p>Use Soul offline, connect a local model service, or connect a compatible remote endpoint.</p></div></div>
         <form id="settingsForm" class="settings-card">
           <label><span data-i18n="language">Interface language</span><select id="languageSelect"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option></select></label>
@@ -193,7 +206,7 @@
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
         <p>Local-first: conversations, memories, settings, safety records, linked-app shortcuts, Adult Mode state, and the 18+ flag stay on this device. No owner-operated accounts, telemetry, or analytics.</p>
-        <p>What can leave: explicit Wikipedia/Wikimedia research terms; optional pasted model endpoints; official GitHub update checks; Spotify/YouTube HTTPS searches you click; an optional Worker health check if a local administrator pastes a URL. Payment cards are not collected. See PRIVACY.md.</p>
+        <p>What can leave: explicit Wikipedia/Wikimedia research terms; optional pasted model endpoints; official GitHub update checks; Spotify/YouTube HTTPS searches you click; optional Eidovara service health/config/status after you confirm age and paste a URL in Settings. Payment cards are not collected. Conversations are not sent to the Worker. See PRIVACY.md.</p>
       </div>
       <div class="legal-panel hidden" id="legalAgePanel">
         <p>You must be 18 or older. Declining this gate exits the app. Adult Mode is a separate triple gate. Local confirmation is not independent identity verification and is not a child-safety certification.</p>

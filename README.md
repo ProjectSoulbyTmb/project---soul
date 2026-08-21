@@ -6,6 +6,8 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 [Download the latest Windows installer](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest) · [Website](https://projectsoulbytmb.github.io/project---soul/) · [Release notes](CHANGELOG.md)
 
+**Public online path:** anyone can open the HTTPS site, download the Authenticode-unsigned Windows Stable Alpha (18+) from GitHub Releases when a `Setup.exe` is published, or build from source with `npm run dist:win:installer` on Windows. The desktop app is the product and stays local-first; it can attach to the online Eidovara service for status/config (`/health`, `/v1/config`, `/v1/status`) while remaining usable offline. That attachment is not required. Owner clicks (Pages, tags, wrangler, optional custom domain) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md).
+
 ## What is included
 
 - Local application discovery, trusted shortcuts, and user-confirmed Windows launching without process injection.

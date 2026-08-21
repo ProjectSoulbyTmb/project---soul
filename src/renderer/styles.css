@@ -188,6 +188,11 @@ button { cursor: pointer; }
   border-radius: 50%;
   background: var(--good);
 }
+#serviceDot.idle { background: var(--muted); }
+#serviceDot.online { background: var(--good); }
+#serviceDot.offline { background: var(--danger); }
+.service-details { display: grid; gap: 8px; margin-top: 12px; }
+.service-details .kv { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; }
 
 .view { display: none; min-height: 0; }
 .view.active { display: flex; }

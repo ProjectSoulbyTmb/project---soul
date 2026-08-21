@@ -6,9 +6,9 @@
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Eidovara — a modular Windows workspace for applications, gaming, entertainment, media, research, and optional adaptive assistance.">
+  <meta name="description" content="Eidovara — a local-first Windows desktop workspace. Download the unsigned Stable Alpha (18+) or build from source. Cloud is optional config only.">
   <meta property="og:title" content="Eidovara — Your digital space, alive">
-  <meta property="og:description" content="A modular, local-first Windows workspace from Soul Consciousness Studios.">
+  <meta property="og:description" content="A local-first Windows desktop app from Soul Consciousness Studios. Not a hosted chat service.">
   <meta property="og:type" content="website">
   <title>Eidovara · Soul Consciousness Studios</title>
   <link rel="stylesheet" href="tokens.css">
@@ -20,16 +20,40 @@
   <header class="site-header">
     <div class="site-header-inner">
       <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
-      <nav><a href="#experience">Experience</a><a href="#trust">Trust</a><a href="#plans">Plans</a><a href="age.html">Age 18+</a><a href="terms.html">Terms</a><a href="security.html">Security</a><a href="licensing.html">Licensing</a></nav>
+      <nav><a href="#download">Get Eidovara</a><a href="#experience">Experience</a><a href="#trust">Trust</a><a href="#plans">Plans</a><a href="age.html">Age 18+</a><a href="terms.html">Terms</a><a href="security.html">Security</a><a href="licensing.html">Licensing</a></nav>
     </div>
   </header>
   <main>
     <section class="hero">
       <p class="eyebrow studio-line"><img class="studio-icon" src="soul-consciousness-studios-icon.png" alt="">Soul Consciousness Studios presents</p>
       <h1>Your Windows space,<br><em>organized.</em></h1>
-      <p>Eidovara brings applications, gaming tools, local and online media, research, personalization, and diagnostics into one fluid workspace. Soul is available as an adaptive assistant layer when wanted—not a requirement for the rest of the product.</p>
-      <div class="actions"><a class="primary btn-filled" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">Download Windows Alpha (18+)</a><a class="btn-gray" href="#experience">Explore capabilities</a></div>
+      <p>Eidovara is a local-first Windows desktop app you install on your PC—not a hosted chat account. This site is the public home page. The workspace (apps, gaming tools, media, research, personalization, diagnostics) lives on your machine. Soul is an optional assistant layer. Free / Offline Soul works with no cloud URL.</p>
+      <div class="actions"><a class="primary btn-filled" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">Download Windows Alpha (18+)</a><a class="btn-gray" href="#download">How to get it</a></div>
       <div class="trust-strip"><span>For users 18+</span><span>Source-available, not open source</span><span>Local-first settings</span><span>User-directed internet</span><span>Unsigned Windows build</span><span>No card storage</span></div>
+    </section>
+
+    <section id="download">
+      <p class="eyebrow">Get Eidovara · Windows 10/11 x64 · 18+</p>
+      <h2 class="section-title">Install the desktop app. Keep Soul on your PC.</h2>
+      <p class="lead">The product is the Windows application, not a multi-tenant web service. Conversations, memories, and workspace settings stay local by default. The desktop app can attach to the online Eidovara service for status and config while remaining local-first; you never need that attachment to use Free / Offline Soul.</p>
+      <div class="get-grid">
+        <article>
+          <span class="number">1</span>
+          <h3>Download the unsigned Stable Alpha</h3>
+          <p>When a GitHub Release includes <code>Eidovara-*-Windows-x64-Setup.exe</code>, get it from the Releases page. That installer is Authenticode-unsigned. Windows SmartScreen may warn; verify SHA-256 and GitHub provenance. Adults 18+ only.</p>
+        </article>
+        <article>
+          <span class="number">2</span>
+          <h3>Or build from source</h3>
+          <p>If no Setup.exe is listed yet, clone the source-available repository and run <code>npm run dist:win:installer</code> on Windows 10/11 x64. Official advertised distribution is Windows only. Linux/macOS scripts are development targets, not products.</p>
+        </article>
+        <article>
+          <span class="number">3</span>
+          <h3>Cloud is optional config, not the app</h3>
+          <p>No account is created by visiting this site. There is no live checkout. After the 18+ gate, Settings → Eidovara service (or Ctrl+A Test service) can attach for <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code> only. If that service is down, the local workspace still works. Conversations are not sent. The Worker URL is not compiled into the app.</p>
+        </article>
+      </div>
+      <div class="actions"><a class="primary btn-filled" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">Open GitHub Releases</a><a class="btn-gray" href="https://github.com/ProjectSoulbyTmb/project---soul">View source</a></div>
     </section>
 
     <section id="experience">

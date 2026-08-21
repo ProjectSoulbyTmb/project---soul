@@ -31,7 +31,7 @@ Network access is user-directed except for the official update-manifest check:
 | User-pasted HTTPS `/chat/completions` endpoint | You send a chat while Compatible/Premium is selected | Conversation context, model name, credential if you stored one |
 | GitHub official release channel | Startup or manual update check; user-approved installer download | App version via user agent, IP address; installer bytes after you confirm |
 | Spotify or YouTube HTTPS search | You click those media buttons | Current track search text; the destination site may set its own cookies |
-| Optional Worker `/health` | Local admin **Test service** after you paste a base URL | No conversations or payment data; health JSON only |
+| Optional Eidovara service `/health`, `/v1/config`, `/v1/status` | After 18+ confirmation: launch check, Settings **Connect**, or local admin **Test service** after you paste a base URL | No conversations or payment data; health/config/status JSON only |
 
 A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payment environment variables for the optional Worker are intended to stay empty in v0.18.0.
 
