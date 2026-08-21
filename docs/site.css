@@ -155,6 +155,19 @@ nav a:hover,
   background: var(--fill-secondary);
   font-weight: 600;
 }
+#site-nav > a.nav-cta {
+  margin-left: 8px;
+  background: var(--text);
+  color: var(--grouped);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+#site-nav > a.nav-cta:hover,
+#site-nav > a.nav-cta[aria-current="page"] {
+  background: var(--text);
+  color: var(--grouped);
+  filter: brightness(1.08);
+}
 .nav-toggle {
   display: none;
   min-height: 44px;
@@ -202,8 +215,8 @@ main.site-main {
 
 .hero,
 .hero.hero-stage {
-  padding: 40px 0 64px;
-  max-width: 760px;
+  padding: 72px 0 88px;
+  max-width: 820px;
 }
 .eyebrow {
   color: var(--accent);
@@ -218,17 +231,31 @@ main.site-main {
 .trust h2,
 .creator h2,
 .legal h1 {
-  font-size: clamp(36px, 5.6vw, 56px);
   line-height: 1.04;
-  letter-spacing: -0.042em;
+  letter-spacing: -0.044em;
   font-weight: 650;
   margin: 0 0 14px;
+}
+.hero h1 {
+  font-size: clamp(48px, 7.4vw, 76px);
+  letter-spacing: -0.048em;
+  margin: 0 0 18px;
+}
+.section-title,
+.creator h2,
+.legal h1 {
+  font-size: clamp(34px, 5vw, 52px);
+}
+.trust h2 {
+  font-size: clamp(26px, 3.6vw, 34px);
+  letter-spacing: -0.034em;
 }
 .hero h1 em {
   font-style: normal;
   color: var(--accent);
 }
 .feature p,
+.benefit p,
 .get-grid p,
 .trust p,
 .creator p,
@@ -249,9 +276,9 @@ main.site-main {
 .hero > p:not(.eyebrow),
 .lead {
   color: var(--copy);
-  font-size: 18px;
-  line-height: 1.45;
-  max-width: 40rem;
+  font-size: 19px;
+  line-height: 1.48;
+  max-width: 38rem;
   margin: 0;
   font-weight: 450;
 }
@@ -291,6 +318,16 @@ main.site-main {
     background var(--motion) var(--ease),
     filter var(--motion) var(--ease);
 }
+.actions .text-link,
+.text-link {
+  min-height: 44px;
+  padding: 10px 6px;
+  border-radius: 0;
+  background: none;
+  color: var(--accent);
+  box-shadow: none;
+  font-weight: 600;
+}
 .primary,
 .btn-filled,
 .plans .primary,
@@ -300,7 +337,7 @@ main.site-main {
   color: var(--on-accent);
   box-shadow: 0 8px 20px -10px color-mix(in srgb, var(--accent) 80%, transparent);
 }
-.actions a:not(.primary),
+.actions a:not(.primary):not(.text-link),
 .btn-gray,
 .status-panel #statusClear,
 .assist-close,
@@ -319,13 +356,21 @@ main.site-main {
     transform: translateY(-1px);
     box-shadow: 0 12px 24px -10px color-mix(in srgb, var(--accent) 75%, transparent);
   }
-  .actions a:not(.primary):hover,
+  .actions a:not(.primary):not(.text-link):hover,
   .btn-gray:hover,
   .status-panel #statusClear:hover,
   .assist-close:hover,
   .assist-service-save:hover {
     background: var(--fill);
     transform: translateY(-1px);
+  }
+  .actions .text-link:hover,
+  .text-link:hover {
+    background: none;
+    transform: none;
+    filter: none;
+    text-decoration: underline;
+    text-underline-offset: 4px;
   }
   .primary:active,
   .btn-filled:active,
@@ -350,22 +395,23 @@ code {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 32px;
+  margin-top: 36px;
 }
 .trust-strip span {
-  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  background: color-mix(in srgb, var(--panel) 78%, transparent);
   border: 1px solid var(--card-border);
   border-radius: var(--radius-full);
-  padding: 6px 12px;
+  padding: 7px 13px;
   color: var(--muted);
   font-size: var(--caption);
   font-weight: 550;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.012em;
   backdrop-filter: blur(12px);
 }
 
 .get-grid,
-.feature-grid {
+.feature-grid,
+.benefit-grid {
   display: grid;
   gap: 14px;
   margin: 28px 0 72px;
@@ -373,6 +419,7 @@ code {
 .get-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .get-grid article,
 .feature,
+.benefit,
 .plans article,
 .module-grid article,
 .legal-index a,
@@ -415,6 +462,7 @@ code {
   letter-spacing: 0.04em;
 }
 .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.benefit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .feature {
   min-height: 228px;
   padding: 22px;
@@ -424,16 +472,26 @@ code {
 }
 .feature.large { grid-column: span 2; min-height: 248px; }
 .feature .number { margin-bottom: auto; }
-.feature h3 {
+.feature h3,
+.benefit h3 {
   font-size: var(--title-2);
   letter-spacing: -0.034em;
-  margin: 0 0 6px;
+  margin: 0 0 8px;
   font-weight: 650;
 }
+.benefit {
+  min-height: 0;
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+.benefit p { margin: 0; }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .get-grid article,
   .feature,
+  .benefit,
   .plans article,
   .module-grid article,
   .legal-index a,
@@ -442,7 +500,7 @@ code {
   }
   .get-grid article:hover,
   .feature:hover,
-  .plans article:hover,
+  .benefit:hover,
   .module-grid article:hover,
   .legal-index a:hover,
   .legal-card:hover {
@@ -456,8 +514,9 @@ code {
   display: grid;
   grid-template-columns: 1.08fr 0.92fr;
   gap: 28px;
-  padding: 28px;
+  padding: 24px;
   margin-bottom: 72px;
+  box-shadow: none;
 }
 .trust-links {
   display: grid;
@@ -487,22 +546,21 @@ code {
   gap: 14px;
   margin: 28px 0 72px;
 }
-.plans article { padding: 26px; }
+.plans article { padding: 22px; box-shadow: none; }
 .plans .premium {
   outline: none;
-  border-color: color-mix(in srgb, var(--accent) 42%, var(--card-border));
-  background:
-    linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, var(--panel)), var(--panel) 42%);
+  border-color: var(--card-border);
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
 }
 .plan-label { font-weight: 650; font-size: var(--headline); margin: 0; letter-spacing: -0.02em; }
 .price {
-  font-size: 40px;
-  letter-spacing: -0.04em;
+  font-size: 28px;
+  letter-spacing: -0.036em;
   font-weight: 650;
-  margin: 10px 0 16px;
+  margin: 8px 0 14px;
 }
-.plans ul { min-height: 180px; padding-left: 18px; margin: 0 0 20px; }
-.plans li { margin: 7px 0; }
+.plans ul { min-height: 0; padding-left: 18px; margin: 0 0 18px; }
+.plans li { margin: 6px 0; }
 
 .creator { max-width: 720px; padding: 28px 0 8px; }
 .legal { max-width: 720px; margin: auto; }
@@ -763,9 +821,12 @@ code {
   html.has-js .site-header.nav-open nav,
   html.has-js .site-header.nav-open #site-nav { display: flex; }
   html.has-js .nav-legal[open] .nav-legal-menu { position: static; box-shadow: none; }
-  .hero, .hero.hero-stage { padding-top: 20px; padding-bottom: 40px; }
-  .hero h1, .section-title, .trust h2, .creator h2 { font-size: clamp(32px, 9vw, 44px); }
-  .feature-grid, .get-grid, .plans, .trust, .module-grid { grid-template-columns: 1fr; }
+  html.has-js #site-nav > a.nav-cta { margin-left: 0; justify-content: center; }
+  .hero, .hero.hero-stage { padding-top: 36px; padding-bottom: 52px; }
+  .hero h1 { font-size: clamp(40px, 11vw, 56px); }
+  .section-title, .creator h2 { font-size: clamp(30px, 8vw, 42px); }
+  .trust h2 { font-size: clamp(24px, 6vw, 32px); }
+  .feature-grid, .get-grid, .benefit-grid, .plans, .trust, .module-grid { grid-template-columns: 1fr; }
   .feature.large { grid-column: auto; }
   .trust { padding: 18px; gap: 18px; }
   .feature { min-height: 168px; }
