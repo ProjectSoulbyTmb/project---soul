@@ -4,13 +4,13 @@ cd /d "%~dp0"
 title Eidovara Launcher
 
 echo ========================================
-echo             Eidovara v0.17
+echo             Eidovara v0.18.0
 echo ========================================
 echo.
 where node >nul 2>nul
 if errorlevel 1 (
   echo ERROR: Node.js was not found.
-  echo Install Node.js 20 LTS or newer from nodejs.org, then run this file again.
+  echo Install Node.js 22.12 or newer from nodejs.org for the desktop app, then run this file again.
   echo.
   pause
   exit /b 1

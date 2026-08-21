@@ -13,6 +13,10 @@
 - Requires an explicit internet/web/online request before Wikipedia/Wikimedia research; mood mix, apps, gaming, study, and stream intents stay local.
 - Awaits CLI replies, skips empty lines, and adds `--message`, `--help`, and `npm run cli`.
 - Preserves assistant language/tone/accessibility when the behavior form omits them; Free edition no longer re-applies a stored Brave search key.
+- Confirms application launch in the Windows dialog before `shell.openPath`; media playback honors the advertised `confirm` capability except after a local file picker.
+- Normalizes local Ollama `/api/chat` and Premium OpenAI-compatible `/chat/completions` URLs so pasted chat paths are not doubled; HTTPS is required except loopback (including `[::1]`).
+- Disables RGB, Brave key, and remote-endpoint controls in the Free UI; documents Node 22.12+ for Electron 43 and the advertised `NETWORK-USAGE.md` path.
+- Documents Ctrl+A paste of the Cloudflare Worker base URL; Test service hits `/health`. The app does not hard-code `workers.dev`.
 
 ## v0.17.12
 

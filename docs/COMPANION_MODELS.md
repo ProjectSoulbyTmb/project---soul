@@ -1,6 +1,6 @@
 # Companion and voice integration policy
 
-Eidovara 0.17 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled.
+Eidovara 0.18.0 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled. Kokoro, Piper, VRM, and MakeHuman runtimes are documented future adapters only.
 
 ## Screened future adapters
 

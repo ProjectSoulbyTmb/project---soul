@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { OfflineProvider } from '../providers/offline.js';
-import { callCompatibleProvider, callLocalProvider } from '../providers/http.js';
+import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT } from '../providers/http.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
@@ -78,7 +78,7 @@ function publicConfig() { return { provider: config.provider, endpoint: config.e
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
-  if (config.provider === 'local') return { reply: ({ messages }) => callLocalProvider({ endpoint: config.endpoint || 'http://127.0.0.1:11434', model: config.model, messages }) };
+  if (config.provider === 'local') return { reply: ({ messages }) => callLocalProvider({ endpoint: config.endpoint || LOCAL_PROVIDER_DEFAULT_ENDPOINT, model: config.model, messages }) };
   if (config.provider === 'compatible' && entitlement() === 'premium') return { reply: ({ messages }) => callCompatibleProvider({ endpoint: config.endpoint, apiKey: getApiKey(), model: config.model, messages }) };
   return new OfflineProvider();
 }
@@ -237,7 +237,23 @@ ipcMain.handle('soul:addDiscoveredApplication', (_e, id) => {
   if (!config.apps.some(item => item.path.toLowerCase() === entry.path.toLowerCase())) config.apps.push(entry);
   saveConfig(); return publicConfig();
 });
-ipcMain.handle('soul:launchApplication', async (_e, id) => { const entry = (config.apps || []).find(x => x.id === String(id)); if (!entry || !fs.existsSync(entry.path)) throw new Error('Application is unavailable or has moved.'); const error = await shell.openPath(entry.path); if (error) throw new Error(error); return true; });
+ipcMain.handle('soul:launchApplication', async (_e, id) => {
+  const entry = (config.apps || []).find(x => x.id === String(id));
+  if (!entry || !fs.existsSync(entry.path)) throw new Error('Application is unavailable or has moved.');
+  const answer = await dialog.showMessageBox(mainWindow, {
+    type: 'question',
+    buttons: ['Launch', 'Cancel'],
+    defaultId: 0,
+    cancelId: 1,
+    title: 'Launch with Windows',
+    message: `Ask Windows to open ${entry.name}?`,
+    detail: 'Eidovara does not inject into that process, overlay it, or bypass anti-cheat. Windows will open the selected shortcut or executable.'
+  });
+  if (answer.response !== 0) return { cancelled: true };
+  const error = await shell.openPath(entry.path);
+  if (error) throw new Error(error);
+  return { launched: true };
+});
 ipcMain.handle('soul:removeApplication', (_e, id) => { config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
 
 function cryptoId(value) { return crypto.createHash('sha256').update(String(value).toLowerCase()).digest('base64url'); }

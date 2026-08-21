@@ -10,9 +10,9 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 - Local application discovery, trusted shortcuts, and user-confirmed Windows launching without process injection.
 - Local and sourced online media playback, queues, favorites, DJ-style discovery, and external Spotify/YouTube handoff.
-- User-requested internet research with visible sources, images, audio, and video; optional broad search with a user-supplied key.
+- Explicit internet/web/online research with cited Wikipedia/Wikimedia sources, images, audio, and video; optional Premium Brave Search with a user-supplied key.
 - Local-first conversations, memories, preferences, encrypted settings/backups when Windows protection is available, diagnostics, and verified updates.
-- Custom themes, RGB effects, low-overhead gaming mode, setup roles, optional stream-helper configuration, voice output, dictation support, and a hideable 2D/3D-styled companion.
+- Custom themes, Premium RGB effects, low-overhead gaming mode (Eidovara visuals only), setup roles, optional stream-helper checklists, Windows voice output, dictation support, and a hideable 2D/3D-styled companion.
 - English, Spanish, French, and German language preference foundation with English fallback.
 - Free and locally testable Premium feature gates. No live subscription or payment processing is represented by this release.
 
@@ -32,7 +32,7 @@ Read [Privacy](PRIVACY.md), [Security](SECURITY.md), [Network Usage](NETWORK-USA
 
 ## Editions
 
-Eidovara Free includes core workspace, offline/local assistance, public research, media, backups, updates, personalization, and up to three linked apps. Premium gates compatible remote-model endpoints, broad keyed search, unlimited linked apps, and premium appearance options. The private Ctrl+A panel uses a per-installation administrator password and provides local testing controls only; it does not prove payment or entitlement.
+Eidovara Free includes core workspace, offline/local assistance, public Wikipedia/Wikimedia research, media, backups, updates, personalization, and up to three linked apps. Premium gates compatible remote-model endpoints (`/chat/completions`), broad keyed Brave search, unlimited linked apps, and RGB appearance. The private Ctrl+A panel uses a per-installation administrator password and provides local testing controls only; it does not prove payment or entitlement.
 
 ## Build and test
 
@@ -43,6 +43,8 @@ npm run check
 npm run smoke
 npm run dist:win:installer
 ```
+
+`npm install` works. The repository also ships `pnpm-lock.yaml` (`packageManager` `pnpm@10.33.3`). Node 20 runs CLI, tests, and checks. Electron 43 (desktop `npm start` / Windows packaging) needs Node >= 22.12.0. A postinstall helper skips the Electron binary download on older Node instead of failing the whole install.
 
 The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 
