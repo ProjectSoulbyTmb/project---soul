@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** Desktop product knowledge for the in-app Soul kernel (v0.19.0). Not the website helper. */
+/** Desktop product knowledge for the in-app Soul kernel (v0.19.1). Not the website helper. */
 
-export const DESKTOP_KNOWLEDGE_VERSION = '0.19.0';
+export const DESKTOP_KNOWLEDGE_VERSION = '0.19.1';
 export const INSTALLER_NAME = 'Eidovara-0.19.0-Windows-x64-Setup.exe';
-export const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
+export const INSTALLER_SHA256 = 'F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310';
 export const INSTALLER_SIZE = 'about 101.3 MiB';
 
 export const KNOWLEDGE_INTENTS = new Set([
@@ -20,8 +20,8 @@ const ENTRIES = {
   },
   unsigned: {
     title: 'Unsigned Windows build',
-    reply: 'This installation is Authenticode-unsigned on purpose for v0.19.0. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Checksums and updates live under Settings → Software updates.',
-    actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'open-legal', legal: 'about', label: 'About & legal' }]
+    reply: 'This installation is Authenticode-unsigned on purpose for v0.19.0. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned.',
+    actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'check-updates', label: 'Check for updates' }, { type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   payments: {
     title: 'Payments stay off',
@@ -35,8 +35,8 @@ const ENTRIES = {
   },
   download: {
     title: 'You are already in the app',
-    reply: `This window is the installed Eidovara v0.19.0 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, use Settings → Software updates for the official GitHub channel. Soul does not fetch Setup.exe.`,
-    actions: [{ type: 'open-updates', label: 'Software updates' }]
+    reply: `This window is the installed Eidovara v0.19.0 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Soul does not fetch Setup.exe itself.`,
+    actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'check-updates', label: 'Check for updates' }]
   },
   platforms: {
     title: 'Official platform',
@@ -107,7 +107,7 @@ const PRODUCT_RULES = [
   { id: 'platforms', re: /\b(linux|macos|mac\s*os|iphone|ios|ipad|android|official\s+platform|sf\s*pro|sf\s*mono)\b/i },
   { id: 'brands', re: /\b(jarvis|j\.a\.r\.v\.i\.s|iron\s*man|marvel|disney|stark(?:\s+industries)?|siri|alexa|google\s+assistant|copilot|cortana|chatgpt|claude|raycast|alfred|spotlight|clippy|replika|character\.ai|xbox|game\s*bar|hey\s+siri|ok(?:ay)?\s+google)\b/i },
   { id: 'forbidden', re: /\b(neural\s+tts|vrm|makehuman|obs\s+websocket|consciousness|sentien(?:t|ce)|are\s+you\s+(?:alive|conscious|a\s+person))\b/i },
-  { id: 'download', re: /\b(download|setup\.exe|installer|github\s+releases|get\s+eidovara)\b/i },
+  { id: 'download', re: /\b(download|setup\.exe|installer|github\s+releases|get\s+eidovara|check(?:ing)?\s+for\s+updates?|auto[- ]?update)\b/i },
   { id: 'connect', re: /\b(connect\s+(?:the\s+)?service|worker\s+url|paste\s+(?:an?\s+)?https|\/v1\/status|\/v1\/health|\/health)\b/i },
   { id: 'hosted', re: /\b(hosted\s+chat|cloud\s+account|saas|conversations?\s+sent|\/v1\/assist|website\s+helper|site\s+assist)\b/i },
   { id: 'premium', re: /\b(free\s+vs\s+premium|premium\s+(?:test|gate|edition|override)|eidovara\s+premium)\b/i },

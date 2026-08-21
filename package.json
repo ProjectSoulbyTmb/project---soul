@@ -1,6 +1,6 @@
 {
   "name": "eidovara",
-  "version": "0.19.0",
+  "version": "0.19.1",
   "description": "Eidovara privacy-focused desktop assistant and media workspace.",
   "author": "Tyler Michael Bosworth, project creator and product director. Soul Consciousness Studios is the intended publisher name, not a formed IP-owning entity.",
   "license": "SEE LICENSE IN LICENSE",
@@ -22,13 +22,16 @@
     "release:configure": "node scripts/configure-release-channel.js",
     "release:manifest": "node scripts/create-update-manifest.js",
     "release:evidence": "node scripts/create-release-evidence.js",
-    "dist:win": "electron-builder --win nsis portable --x64",
+    "dist:win": "electron-builder --win nsis portable --x64 --publish never",
     "dist:win:installer": "electron-builder --win nsis --x64 --publish never",
     "dist": "npm run dist:win",
     "dist:linux": "electron-builder --linux AppImage deb --x64",
     "dist:mac:x64": "electron-packager . 'Eidovara' --platform=darwin --arch=x64 --out=dist-mac --overwrite --asar --prune=true",
     "dist:mac:arm64": "electron-packager . 'Eidovara' --platform=darwin --arch=arm64 --out=dist-mac --overwrite --asar --prune=true",
     "dist:dir": "electron-builder --dir"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",
@@ -82,13 +85,22 @@
         }
       ]
     },
+    "publish": {
+      "provider": "github",
+      "owner": "ProjectSoulbyTmb",
+      "repo": "project---soul",
+      "private": false,
+      "releaseType": "release"
+    },
     "nsis": {
       "artifactName": "Eidovara-${version}-Windows-${arch}-Setup.${ext}",
       "license": "installer/EULA.txt",
       "installerIcon": "assets/branding/eidovara.ico",
       "uninstallerIcon": "assets/branding/eidovara.ico",
+      "include": "build/installer.nsh",
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": false,
       "createDesktopShortcut": true,
       "createStartMenuShortcut": true
     },

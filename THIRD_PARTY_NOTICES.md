@@ -2,7 +2,7 @@
 
 Copyright in qualifying original first-party Eidovara expression is claimed by Tyler Michael Bosworth. That claim does **not** extend to third-party software.
 
-Eidovara 0.19.0 is packaged with Electron 43.4.1 (MIT) and its Chromium/Node.js runtime components under their respective licenses. The Windows distribution includes `LICENSE.electron.txt` and `LICENSES.chromium.html`; these files must remain with redistributed copies. Electron's build-time packaging tools are not represented as first-party code. Node.js, Electron, Chromium, electron-builder, and platform services retain their owners' copyrights, licenses, and trademarks. Tyler Michael Bosworth and Soul Consciousness Studios do not own Electron, Chromium, Node.js, Microsoft Windows, or Wikipedia/Wikimedia content.
+Eidovara 0.19.1 is packaged with Electron 43.4.1 (MIT) and its Chromium/Node.js runtime components under their respective licenses. The Windows distribution includes `LICENSE.electron.txt` and `LICENSES.chromium.html`; these files must remain with redistributed copies. Electron's build-time packaging tools are not represented as first-party code. The in-app updater uses `electron-updater` 6.8.9 (MIT) against official GitHub Releases metadata (`latest.yml`). Node.js, Electron, Chromium, electron-builder, electron-updater, and platform services retain their owners' copyrights, licenses, and trademarks. Tyler Michael Bosworth and Soul Consciousness Studios do not own Electron, Chromium, Node.js, Microsoft Windows, or Wikipedia/Wikimedia content.
 
 The MIT-licensed `rcedit` build tool is used only during Windows packaging to apply the approved icon to the executable. It is a development dependency and is not exposed as an application capability.
 

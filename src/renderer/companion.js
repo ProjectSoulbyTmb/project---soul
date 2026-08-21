@@ -420,6 +420,10 @@
     }
   };
 
+  $('#companionCheckUpdatesBtn')?.addEventListener('click', () => {
+    if (typeof window.eidovaraCheckUpdates === 'function') window.eidovaraCheckUpdates();
+    else $('#checkUpdateBtn')?.click();
+  });
   $('#companionForm')?.addEventListener('submit', e => {
     e.preventDefault();
     const text = $('#companionInput')?.value;

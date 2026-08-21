@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** Eidovara website helper knowledge pack (v0.19.0). Same answers for Pages and Worker. */
-export const ASSIST_VERSION = '0.19.0';
+/** Eidovara website helper knowledge pack (v0.19.1). Same answers for Pages and Worker. */
+export const ASSIST_VERSION = '0.19.1';
 export const MAX_ASSIST_QUERY = 800;
 export const MAX_ASSIST_BODY = 4096;
 export const STORAGE_KEY = 'eidovara.serviceBase';
@@ -12,7 +12,7 @@ const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/la
 const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe';
 const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.0/Eidovara-0.19.0-Windows-x64-Setup.exe';
 const INSTALLER_NAME = 'Eidovara-0.19.0-Windows-x64-Setup.exe';
-const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
+const INSTALLER_SHA256 = 'F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310';
 const INSTALLER_SIZE = 'about 101.3 MiB';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
 const SITE = 'https://eidovara.org/';
@@ -45,9 +45,9 @@ export const ENTRIES = [
   {
     id: 'download',
     modes: ['download', 'help'],
-    tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'certified'],
+    tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'certified', 'update', 'updates', 'auto-update'],
     title: 'Download Windows Alpha',
-    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} (${INSTALLER_SIZE}) from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned tag asset: ${INSTALLER_PINNED}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. Source-available fallback: npm run dist:win:installer on Windows.`,
+    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} (${INSTALLER_SIZE}) from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned tag asset: ${INSTALLER_PINNED}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. After install, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Builds stay Authenticode-unsigned. Source-available fallback: npm run dist:win:installer on Windows.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: INSTALLER, label: INSTALLER_NAME }]
   },
   {

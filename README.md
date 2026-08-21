@@ -13,7 +13,7 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 - Local application discovery, trusted shortcuts, and user-confirmed Windows launching without process injection.
 - Local and sourced online media playback, queues, favorites, DJ-style discovery, and external Spotify/YouTube handoff.
 - Explicit public web lookup after you ask (not a full-internet index): cited Wikipedia/Wikimedia, optional Internet Archive catalog hits, optional Premium Brave Search with a user-supplied key, and bounded HTTPS pages you open. Results display in Research, conversation cards, and companion chips.
-- Local-first conversations, memories, preferences, encrypted settings/backups when Windows protection is available, diagnostics, and verified updates.
+- Local-first conversations, memories, preferences, encrypted settings/backups when Windows protection is available, diagnostics, and GitHub Releases auto-update checks (checksum-verified; Authenticode-unsigned).
 - Custom themes, Premium RGB effects, low-overhead gaming mode (Eidovara visuals only), setup roles, optional stream-helper checklists, Windows voice output, dictation support, and a hideable 2D/3D-styled companion.
 - English, Spanish, French, and German language preference foundation with English fallback.
 - Free and locally testable Premium feature gates. No live subscription or payment processing is represented by this release.
@@ -34,9 +34,9 @@ Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices
 
 ## Privacy and security
 
-The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance.
+The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, `latest.yml` SHA-512 for the in-app updater, an SPDX SBOM, and GitHub build provenance. After 18+, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Settings can disable automatic checks. Builds stay Authenticode-unsigned.
 
-Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. Download `Eidovara-0.19.0-Windows-x64-Setup.exe` (~101.3 MiB) from GitHub Releases (SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`) and verify checksums plus provenance. No software can guarantee perfect security.
+Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. Download `Eidovara-0.19.0-Windows-x64-Setup.exe` (~101.3 MiB) from GitHub Releases (SHA-256 `F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310`) and verify checksums plus provenance. No software can guarantee perfect security.
 
 ## Editions
 
@@ -54,7 +54,7 @@ npm run dist:win:installer
 
 `npm install` works. The repository also ships `pnpm-lock.yaml` (`packageManager` `pnpm@10.33.3`). Node 20 runs CLI, tests, and checks. Electron 43 (desktop `npm start` / Windows packaging) needs Node >= 22.12.0. A postinstall helper skips the Electron binary download on older Node instead of failing the whole install.
 
-The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
+The Windows installer is generated in `dist/`. Running Setup again overwrites an existing Eidovara program install for the same application ID: a running Eidovara window is closed first so files can be replaced. Local user data is not wiped. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 
 ## Rights and project records
 

@@ -7,8 +7,8 @@ import { DESKTOP_KNOWLEDGE_VERSION, INSTALLER_NAME } from '../src/core/knowledge
 const read = file => fs.readFileSync(file, 'utf8');
 
 test('v0.19.0 keeps kernel, official api.eidovara.org, and honest 18+ truth', () => {
-  assert.equal(JSON.parse(read('package.json')).version, '0.19.0');
-  assert.equal(DESKTOP_KNOWLEDGE_VERSION, '0.19.0');
+  assert.equal(JSON.parse(read('package.json')).version, '0.19.1');
+  assert.equal(DESKTOP_KNOWLEDGE_VERSION, '0.19.1');
   assert.equal(INSTALLER_NAME, 'Eidovara-0.19.0-Windows-x64-Setup.exe');
   assert.equal(DEFAULT_EIDOVARA_SERVICE_BASE, 'https://api.eidovara.org');
   const html = read('src/renderer/index.html');

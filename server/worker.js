@@ -25,7 +25,7 @@ function publicPayload(extra = {}) {
   return {
     service: 'Eidovara',
     status: 'ok',
-    version: '0.19.0',
+    version: '0.19.1',
     time: new Date().toISOString(),
     localFirst: true,
     conversations: false,
@@ -86,7 +86,7 @@ export default {
       assist: '/v1/assist knowledge-only, no transcripts'
     }), 200, { 'cache-control': 'public, max-age=30' });
     if (url.pathname === '/v1/config') return response({
-      version: '0.19.0',
+      version: '0.19.1',
       website: httpsUrl(env.WEBSITE_URL),
       store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) },
       paymentsEnabled: false,

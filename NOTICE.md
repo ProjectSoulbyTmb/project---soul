@@ -24,6 +24,7 @@ Declared development / packaging tools in `package.json` (v0.18.2) that this pro
 | Electron | 43.4.1 | Desktop runtime | MIT (Electron); Chromium/Node.js keep their own notices | Yes — runtime |
 | Chromium | bundled by Electron 43.4.1 | Rendering engine | Chromium authors; see `LICENSES.chromium.html` in Windows builds | Yes — via Electron |
 | Node.js | bundled by Electron 43.4.1 | JavaScript runtime | OpenJS Foundation and contributors; see Electron notices | Yes — via Electron |
+| electron-updater | 6.8.9 | GitHub Releases auto-update in packaged Windows builds | MIT (as published by electron-userland) | Yes — runtime |
 | electron-builder | 26.15.3 | Windows/Linux packaging | As published by electron-builder | No — build-time only |
 | rcedit | 5.0.2 | Applies the approved `.ico` during Windows `afterPack` | As published by rcedit | No — build-time only |
 | @electron/packager | 20.3.0 | macOS packaging scripts (not an official signed product) | As published by @electron/packager | No — build-time only |
