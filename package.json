@@ -71,7 +71,7 @@
     ],
     "win": {
       "icon": "assets/branding/eidovara.ico",
-      "signAndEditExecutable": false,
+      "signExecutable": false,
       "target": [
         {
           "target": "nsis",
