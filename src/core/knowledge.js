@@ -52,7 +52,7 @@ const ENTRIES = {
   },
   brands: {
     title: 'First-party names only',
-    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Architecture is a session kernel / Soul kernel only. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use — not bundled apps or logos.',
+    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. Unrelated third-party assistants, entertainment properties, launchers, gaming services, models, and platforms remain owned by their respective owners and are not Eidovara product identities. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use — not bundled apps or logos.',
     actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   connect: {
@@ -112,7 +112,7 @@ const PRODUCT_RULES = [
   { id: 'unsigned', re: /\b(authenticode|unsigned|smartscreen|microsoft[- ]certified|code[ -]?sign(?:ed|ing)?|ev[ -]?sign)\b/i },
   { id: 'payments', re: /\b(pci|stripe|paypal|gumroad|checkout|live\s+payments?|buy\s+(?:premium|eidovara)|credit\s*cards?|card\s+numbers?)\b/i },
   { id: 'platforms', re: /\b(linux|macos|mac\s*os|iphone|ios|ipad|android|official\s+platform|sf\s*pro|sf\s*mono)\b/i },
-  { id: 'brands', re: /\b(jarvis|j\.a\.r\.v\.i\.s|iron\s*man|marvel|disney|stark(?:\s+industries)?|siri|alexa|google\s+assistant|copilot|cortana|chatgpt|claude|raycast|alfred|spotlight|clippy|replika|character\.ai|xbox|game\s*bar|hey\s+siri|ok(?:ay)?\s+google)\b/i },
+  { id: 'brands', re: /\b(jarvis|j\.a\.r\.v\.i\.s|iron\s*man|marvel|disney|stark(?:\s+industries)?|siri|alexa|google\s+assistant|copilot|cortana|claude|raycast|alfred|spotlight|clippy|replika|character\.ai|xbox|game\s*bar|hey\s+siri|ok(?:ay)?\s+google)\b/i },
   { id: 'forbidden', re: /\b(neural\s+tts|vrm|makehuman|obs\s+websocket|consciousness|sentien(?:t|ce)|are\s+you\s+(?:alive|conscious|a\s+person))\b/i },
   { id: 'download', re: /\b(download|setup\.exe|installer|github\s+releases|get\s+eidovara|check(?:ing)?\s+for\s+updates?|auto[- ]?update)\b/i },
   { id: 'connect', re: /\b(connect\s+(?:the\s+)?service|worker\s+url|paste\s+(?:an?\s+)?https|\/v1\/status|\/v1\/health|\/health)\b/i },
