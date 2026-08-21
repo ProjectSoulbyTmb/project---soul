@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import worker, { httpsUrl } from '../server/worker.js';
+import worker, { httpsUrl, LIVE_INSTALLER_VERSION, LIVE_INSTALLER, LIVE_INSTALLER_SHA256, LIVE_INSTALLER_SIZE } from '../server/worker.js';
 
 test('server accepts only HTTPS public configuration', async () => {
   const env = { WEBSITE_URL: 'https://example.test/', STRIPE_PAYMENT_URL: 'http://unsafe.test', PAYPAL_PAYMENT_URL: 'https://paypal.test/buy' };
@@ -15,7 +15,7 @@ test('server fails closed for writes and unknown paths', async () => {
   assert.equal((await worker.fetch(new Request('https://api.test/private'), {})).status, 404);
 });
 
-test('Worker health/status support HEAD, CORS, honesty flags, and private status cache', async () => {
+test('Worker health/status support HEAD, CORS, honesty flags, release integrity, and private status cache', async () => {
   const healthHead = await worker.fetch(new Request('https://api.example.test/health', { method: 'HEAD' }), {});
   assert.equal(healthHead.status, 200);
   assert.equal(await healthHead.text(), '');
@@ -46,10 +46,14 @@ test('Worker health/status support HEAD, CORS, honesty flags, and private status
   assert.equal(status.minimumAge, 18);
   assert.equal(status.authenticodeSigned, false);
   assert.equal(status.version, '0.22.2');
-  assert.equal(status.liveInstallerVersion, '0.19.1');
+  assert.equal(status.liveInstallerVersion, LIVE_INSTALLER_VERSION);
+  assert.equal(status.liveInstallerVersion, '0.22.2');
+  assert.equal(status.liveInstaller, LIVE_INSTALLER);
+  assert.equal(status.liveInstallerSha256, LIVE_INSTALLER_SHA256);
+  assert.equal(status.liveInstallerSize, LIVE_INSTALLER_SIZE);
   assert.ok(!status.endpoints.includes('/v1/heartbeat'));
-  assert.match(status.heartbeat, /No dedicated \/v1\/heartbeat/);
-  assert.doesNotMatch(JSON.stringify(status), /Eidovara-0\.22\.2-Windows/);
+  assert.match(status.heartbeat, /Desktop Connect uses GET \/health/);
+  assert.match(JSON.stringify(status), /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
   assert.doesNotMatch(JSON.stringify(status), /workers\.dev/i);
 
   const statusHead = await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'HEAD' }), {});
@@ -63,6 +67,7 @@ test('server health is stateless and sends hardened headers', async () => {
   assert.equal(body.status, 'ok');
   assert.equal(body.checkoutEnabled, false);
   assert.equal(body.conversationsStored, false);
+  assert.equal(body.liveInstallerSha256, LIVE_INSTALLER_SHA256);
   assert.equal(res.headers.get('x-frame-options'), 'DENY');
   assert.match(res.headers.get('strict-transport-security'), /max-age=/);
   assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
@@ -82,6 +87,9 @@ test('server config advertises 18+ source-available Windows alpha with payments 
   assert.equal(body.authenticodeSigned, false);
   assert.equal(body.openSource, false);
   assert.equal(body.premium, 'local-admin-testing-only');
+  assert.equal(body.liveInstallerVersion, '0.22.2');
+  assert.equal(body.liveInstallerSha256, LIVE_INSTALLER_SHA256);
+  assert.equal(body.liveInstallerSize, LIVE_INSTALLER_SIZE);
   assert.deepEqual(body.officialPlatforms, ['windows-10-11-x64']);
   assert.equal(body.store.stripe, '');
   assert.equal(body.store.paypal, '');
