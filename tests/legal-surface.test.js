@@ -154,3 +154,85 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   assert.match(html, /Soul Consciousness Studios™ \(unregistered\)/);
   assert.doesNotMatch(html, /I am conscious|scientifically proven consciousness|®/);
 });
+
+test('network, security, and licensing docs match current fail-closed v0.18.0 surface', () => {
+  const destinations = [
+    /en\.wikipedia\.org/,
+    /commons\.wikimedia\.org/,
+    /api\.search\.brave\.com/,
+    /chat\/completions/,
+    /\/health/,
+    /\/v1\/config/,
+    /\/v1\/status/,
+    /\/v1\/assist/,
+    /github\.com\/ProjectSoulbyTmb\/project---soul/,
+    /Spotify/,
+    /YouTube/
+  ];
+  for (const file of ['NETWORK-USAGE.md', 'docs/NETWORK_USAGE.md']) {
+    const text = read(file);
+    for (const pattern of destinations) assert.match(text, pattern, `${file} ${pattern}`);
+    assert.match(text, /fail-closed/i);
+    assert.match(text, /paymentsEnabled/);
+    assert.match(text, /Enhancement-allowed vs blocked/);
+    assert.match(text, /neural TTS/);
+    assert.match(text, /VRM/);
+    assert.match(text, /OBS/);
+    assert.match(text, /media-src 'self'/);
+    assert.match(text, /18\+/);
+    assert.match(text, /source-available/i);
+    assert.match(text, /Authenticode-unsigned/);
+    assert.doesNotMatch(text, /dreambot333\.workers\.dev/);
+    assert.doesNotMatch(text, /patent pending|PCI[- ]DSS certified|federally registered trademark/i);
+  }
+  const security = read('SECURITY.md');
+  assert.match(security, /sandboxed/i);
+  assert.match(security, /fail-closed/);
+  assert.match(security, /paymentsEnabled/);
+  assert.match(security, /media-src https: eidovara-media:/);
+  assert.match(security, /\/v1\/assist/);
+  assert.match(security, /fail-on-severity: moderate/);
+  assert.match(security, /Authenticode-unsigned/);
+  const legal = read('LEGAL_NOTICES.md');
+  assert.match(legal, /age 18 or older/);
+  assert.match(legal, /Authenticode-unsigned/);
+  assert.match(legal, /fail-closed/);
+  assert.match(legal, /source-available/i);
+  assert.doesNotMatch(legal, /PCI[- ]DSS certified/i);
+  const license = read('LICENSE');
+  assert.match(license, /18 years of age or older/);
+  assert.match(license, /Source-Available/);
+  assert.match(license, /\/v1\/assist|health\/config\/status\/assist/);
+  assert.match(license, /neural TTS, VRM, OBS/);
+  const third = read('THIRD_PARTY_NOTICES.md');
+  assert.match(third, /\/v1\/assist/);
+  assert.match(third, /fail-closed/);
+  assert.match(third, /Neural TTS/);
+  const companions = read('docs/COMPANION_MODELS.md');
+  assert.match(companions, /Blocked in v0\.18\.0/);
+  assert.match(companions, /Neural TTS/);
+  assert.match(companions, /VRM/);
+  assert.match(companions, /OBS websocket/);
+  assert.match(companions, /Live payments/);
+  const licensingPage = read('docs/licensing.html');
+  assert.match(licensingPage, /Source-available/i);
+  assert.match(licensingPage, /Adults 18\+/);
+  assert.match(licensingPage, /Authenticode-unsigned/);
+  assert.match(licensingPage, /fail-closed/);
+  assert.match(licensingPage, /\/v1\/assist/);
+  assert.match(licensingPage, /neural TTS/);
+  const securityPage = read('docs/security.html');
+  assert.match(securityPage, /fail-closed/);
+  assert.match(securityPage, /Adults 18\+/);
+  assert.match(securityPage, /Source-available, not open source/);
+  assert.match(securityPage, /Authenticode-unsigned/);
+  assert.match(securityPage, /\/v1\/assist/);
+  assert.match(securityPage, /media-src https: eidovara-media:/);
+  assert.match(read('PRIVACY.md'), /fail-closed/);
+  assert.match(read('PRIVACY.md'), /\/v1\/assist/);
+  assert.match(read('docs/privacy.html'), /fail-closed/);
+  assert.match(read('.github/workflows/dependency-review.yml'), /fail-on-severity: moderate/);
+  assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
+  assert.match(read('src/core/service.js'), /checkoutEnabledFromRemoteConfig\(_body\) \{\s*return false;/);
+  assert.match(read('src/electron/main.js'), /sandbox: true/);
+});
