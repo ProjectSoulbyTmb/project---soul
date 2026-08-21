@@ -8,12 +8,13 @@ Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x
 
 - Version/tag: `v0.22.2`
 - Installer: `Eidovara-0.22.2-Windows-x64-Setup.exe`
-- Size: 106,691,429 bytes (about 101.75 MiB)
-- SHA-256: `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`
+- Size: 106,691,524 bytes (about 101.75 MiB)
+- SHA-256: `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`
 - Latest asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe`
 - Pinned asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/Eidovara-0.22.2-Windows-x64-Setup.exe`
 - Signing: Authenticode-unsigned; Windows SmartScreen may warn.
 - Provenance: GitHub/Sigstore build provenance is available and is not Authenticode signing.
+- Edition: full free v0.22.2 Alpha; no paid entitlement is required for currently implemented features.
 
 ## Tag release procedure
 
@@ -67,4 +68,4 @@ A release is not considered fully promoted until these surfaces agree on the sam
 - `server/worker.js` `/health`, `/v1/config`, and `/v1/status` payloads
 - release/update metadata and checksums
 
-Historical changelog entries can retain older-version history, but current-release statements must identify the actual live release.
+Historical changelog entries can retain older-version history, but current-release statements must identify the actual live release as v0.22.2 until a later version is formally published.
