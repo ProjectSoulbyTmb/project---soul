@@ -6,7 +6,7 @@ This self-declared network inventory is included in signed release provenance.
 
 ## Current egress (v0.19.1)
 
-Network access is user-directed except the official GitHub update-manifest check. No `workers.dev` host is compiled into the Electron app or the public site. The official Eidovara service default is `https://api.eidovara.org` (overridable). Payments stay **fail-closed**: `paymentsEnabled` and `checkoutEnabled` remain false even if a remote `/v1/config` payload claims otherwise.
+Network access is user-directed except the official GitHub update-manifest check (default on; Settings can disable automatic checks). No `workers.dev` host is compiled into the Electron app or the public site. The official Eidovara service default is `https://api.eidovara.org` (overridable). Payments stay **fail-closed**: `paymentsEnabled` and `checkoutEnabled` remain false even if a remote `/v1/config` payload claims otherwise.
 
 | Destination | Trigger | Data sent |
 | --- | --- | --- |
@@ -21,8 +21,9 @@ Network access is user-directed except the official GitHub update-manifest check
 | Optional website helper `GET`/`POST /v1/assist` | Visitor pastes an HTTPS Worker base on the public site (Status / Assist); knowledge-pack questions only | The typed question and mode. Desktop conversation history is refused. Transcripts are not stored. |
 | Optional desktop `POST /v1/assist` | After 18+: pasted HTTPS base in Settings **and** Soul-online opt-in **and** the per-message send checkbox (all default off) | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
 | Optional desktop helper `POST /v1/assist` | User pastes a Worker HTTPS base **and** enables **Allow one-shot Worker helper** (default off), then checks **Ask the Worker helper** on one send | The typed query only (about 32 KiB bound). Conversations, memories, and chat history stay local. Transcripts are not stored. |
-| `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
+| `github.com/ProjectSoulbyTmb/project---soul` | After 18+: automatic GitHub Releases check (startup + interval, default on) or Settings/companion **Check for updates**; user-approved installer download | App version through user agent, IP address; installer request after checksum metadata (`latest.yml` SHA-512 and/or `update.json` SHA-256). Builds are Authenticode-unsigned. |
 | User-opened HTTPS page in the browse or Discord **guest overlay** | User opens an overlay and navigates | URL request, IP, site cookies in an isolated Electron partition (`persist:eidovara-guest` / `persist:eidovara-guest-discord`). Workspace renderer stays locked. Discord tokens are not sent to Soul or Assist. |
+| Spotify, YouTube, or Internet Archive official search | User clicks a media-dock button or an official search chip in companion, Research, or Entertainment (constructed HTTPS search URLs; Eidovara does not fetch those sites’ HTML or inject into their apps) | Search terms, IP address, platform cookies/account state |
 
 No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Empty/default Settings → Eidovara service resolves to `https://api.eidovara.org`. If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.19.1; the app never enables live checkout from a remote flag.
 
@@ -42,7 +43,7 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Optional website `GET`/`POST /v1/assist` after a pasted HTTPS base
 - Optional desktop `POST /v1/assist` after a pasted HTTPS base, Soul-online opt-in, and a per-message send checkbox (default off; Assist is not Soul)
 - Optional desktop `POST /v1/assist` only after pasted HTTPS base **and** explicit helper opt-in (default off); conversations are not sent
-- Spotify/YouTube official HTTPS search links (no stream ripping)
+- Spotify/YouTube/Internet Archive official HTTPS search chips (constructed search URLs; no HTML scrape, no stream ripping, no player injection)
 - User-opened HTTPS in the browse or Discord guest overlay (isolated partitions; workspace renderer CSP unchanged)
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure

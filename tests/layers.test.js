@@ -103,11 +103,7 @@ test('focus session start/stop tracks remaining time and does not claim process 
   assert.equal(isFocusStartCommand('Plan a focused session for my current priority.'), false);
   const dir = tmp();
   const s = make(dir);
-<<<<<<< HEAD
-  const startMs = Date.now() - 10 * 60 * 1000;
-=======
   const startMs = Date.now();
->>>>>>> origin/cursor/game-workspace-c180
   const start = new Date(startMs).toISOString();
   const kernel = s.startFocusSession({ minutes: 25, label: 'Ship palette', at: start });
   assert.equal(kernel.workspace.focus.active, true);

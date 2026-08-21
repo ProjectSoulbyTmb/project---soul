@@ -1,19 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { app, BrowserWindow, WebContentsView, ipcMain, dialog, safeStorage, shell, protocol, net, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, WebContentsView, ipcMain, dialog, safeStorage, shell, protocol, Tray, Menu, nativeImage } from 'electron';
 import fs from 'node:fs';
+import { createReadStream } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { Readable } from 'node:stream';
+import { fileURLToPath } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { defaultProfile } from '../core/schema.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT, normalizeProviderEndpoint } from '../providers/http.js';
 import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
-import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
+import { attachDesktopUpdater } from './auto-update.js';
+import { attachPlayerWindows } from './player-windows.js';
+import { parseByteRange, rangeResponseHeaders, isMediaId, sidecarCaptionPaths } from '../core/media-protocol.js';
 import { defaultDesktopChrome, evaluatePaletteCalc, loginItemPayload, normalizeDesktopChrome } from '../core/desktop-chrome.js';
 import { adultAllowed } from '../core/policy.js';
 import { defaultOverlayLayout, normalizeOverlayLayout } from '../core/overlays.js';
@@ -29,8 +33,10 @@ protocol.registerSchemesAsPrivileged([
 let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false, overlayManager = null;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
-let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, desktop: defaultDesktopChrome(), overlays: defaultOverlayLayout(), overlayRecents: [] };
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, autoCheckUpdates: true, desktop: defaultDesktopChrome(), overlays: defaultOverlayLayout(), overlayRecents: [] };
 let pendingUpdate = null;
+let desktopUpdater = null;
+let playerWindows = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
 
@@ -124,13 +130,26 @@ function applyInternetOptions() {
 function registerSessionMedia(filePath, { type, title }) {
   const id = crypto.randomBytes(16).toString('hex');
   allowedLocalMedia.set(id, filePath);
-  const item = { id, type, title: String(title).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, local: true, path: filePath };
+  const captions = [];
+  for (const captionPath of sidecarCaptionPaths(filePath)) {
+    if (!fs.existsSync(captionPath)) continue;
+    const captionId = crypto.randomBytes(16).toString('hex');
+    allowedLocalMedia.set(captionId, captionPath);
+    const ext = path.extname(captionPath).toLowerCase();
+    captions.push({
+      url: `${LOCAL_MEDIA_SCHEME}://${captionId}/`,
+      label: ext === '.vtt' ? 'Captions' : 'Subtitles',
+      kind: 'subtitles',
+      srclang: 'und'
+    });
+  }
+  const item = { id, type, title: String(title).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, local: true, path: filePath, captions };
   sessionLocalLibrary.unshift(item);
   while (sessionLocalLibrary.length > LOCAL_LIBRARY_LIMIT) {
     const old = sessionLocalLibrary.pop();
     if (old?.id && old.id !== COMPANION_MEDIA_ID) allowedLocalMedia.delete(old.id);
   }
-  return { type: item.type, title: item.title, url: item.url, sourceUrl: '', local: true };
+  return { type: item.type, title: item.title, url: item.url, sourceUrl: '', local: true, captions };
 }
 function startKernelHeartbeat() {
   clearInterval(heartbeatTimer);
@@ -176,6 +195,8 @@ function publicConfig() {
     serviceUrl: publicServiceUrl(),
     serviceStatus: publicServiceStatus(),
     updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL),
+    autoCheckUpdates: config.autoCheckUpdates !== false,
+    updateStatus: desktopUpdater?.getStatus?.() || null,
     hasApiKey: Boolean(config.encryptedApiKey),
     hasSearchApiKey: Boolean(config.encryptedSearchApiKey),
     encryptionAvailable: safeStorage.isEncryptionAvailable(),
@@ -305,14 +326,40 @@ function registerLocalMediaProtocol() {
   protocol.handle(LOCAL_MEDIA_SCHEME, async request => {
     let id = '';
     try { id = new URL(request.url).hostname; } catch { return new Response('Bad request', { status: 400 }); }
-    if (!/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
+    if (!isMediaId(id)) return new Response('Not found', { status: 404 });
     const filePath = allowedLocalMedia.get(id);
     if (!filePath || !fs.existsSync(filePath)) return new Response('Not found', { status: 404 });
-    return net.fetch(pathToFileURL(filePath).toString());
+    const size = fs.statSync(filePath).size;
+    const range = parseByteRange(request.headers.get('range'), size);
+    if (!range) return new Response('Range Not Satisfiable', { status: 416, headers: { 'Content-Range': `bytes */${size}` } });
+    const { status, headers } = rangeResponseHeaders(filePath, range);
+    if (range.length <= 0) return new Response(null, { status, headers });
+    const stream = createReadStream(filePath, { start: range.start, end: range.end });
+    return new Response(Readable.toWeb(stream), { status, headers });
   });
 }
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
 process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
+desktopUpdater = attachDesktopUpdater({
+  app, dialog, ipcMain, shell,
+  getMainWindow: () => mainWindow,
+  getConfig: () => config,
+  saveConfig,
+  requireAgeGate,
+  publicConfig,
+  scanUpdateForMalware,
+  log
+});
+playerWindows = attachPlayerWindows({
+  BrowserWindow,
+  ipcMain,
+  getMainWindow: () => mainWindow,
+  requireAgeGate,
+  log
+});
+ipcMain.on('soul:playerCommand', (_e, command) => {
+  try { mainWindow?.webContents.send('soul:playerCommand', command); } catch {}
+});
 app.whenReady().then(() => {
   registerLocalMediaProtocol();
   overlayManager = attachOverlayWindows({
@@ -336,6 +383,7 @@ app.whenReady().then(() => {
     createGuestOverlayManager
   });
   createWindow();
+  if (config.ageGateAccepted === true) desktopUpdater?.schedule?.();
 }).catch(err => fatal('Eidovara initialization error', err));
 app.on('before-quit', () => { quitting = true; overlayManager?.closeAll?.(); destroyTray(); });
 app.on('window-all-closed', () => {
@@ -367,7 +415,7 @@ ipcMain.handle('soul:newConversation', () => { requireAgeGate(); return ensureEn
 ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return ensureEngine().selectConversation(String(id)); });
 ipcMain.handle('soul:deleteConversation', (_e, id) => { requireAgeGate(); return ensureEngine().deleteConversation(String(id)); });
 ipcMain.handle('soul:getSettings', () => publicConfig());
-ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); ensureEngine(); return publicConfig(); });
+ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); ensureEngine(); desktopUpdater?.schedule?.(); return publicConfig(); });
 ipcMain.handle('soul:declineAgeGate', () => { overlayManager?.closeAll(); setImmediate(() => app.quit()); return true; });
 ipcMain.handle('soul:adminLogin', (_e, password) => {
   requireAgeGate();
@@ -408,7 +456,7 @@ ipcMain.handle('soul:adminSave', (_e, incoming) => {
   } else {
     config.storeUrl = '';
   }
-  config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); ensureEngine().setProvider(makeProvider()); ensureEngine().setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
+  config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); log(`Administrator changed local edition to ${config.edition}.`);
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
@@ -472,6 +520,10 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.assistOptIn = incoming.assistOptIn === true;
     ensureEngine().configureKernel({ assistOptIn: config.assistOptIn });
   }
+  if (incoming && Object.prototype.hasOwnProperty.call(incoming, 'autoCheckUpdates')) {
+    config.autoCheckUpdates = incoming.autoCheckUpdates !== false;
+    desktopUpdater?.schedule?.();
+  }
   if (incoming?.desktop && typeof incoming.desktop === 'object') {
     config.desktop = normalizeDesktopChrome(incoming.desktop, config.desktop);
     applyDesktopChrome();
@@ -488,11 +540,11 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   const extension = path.extname(filePath).toLowerCase();
   const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
   if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
-  const id = crypto.randomBytes(16).toString('hex');
-  retainCompanionMedia();
-  allowedLocalMedia.set(id, filePath);
-  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
+  const item = registerSessionMedia(filePath, { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200) });
+  applyInternetOptions();
+  return item;
 });
+ipcMain.handle('soul:listLocalMedia', () => { requireAgeGate(); return publicLocalLibrary(); });
 ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return ensureEngine().createBackup(); });
 ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return ensureEngine().listBackups(); });
 ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return ensureEngine().restoreBackup(String(name || '')); });
@@ -576,18 +628,6 @@ ipcMain.handle('soul:selectCompanionImage', async () => {
   return publicConfig();
 });
 ipcMain.handle('soul:openExternal', (_e, value) => { requireAgeGate(); const url = httpsOnlyUrl(value); if (!url) throw new Error('Only secure web links can be opened.'); return shell.openExternal(url); });
-ipcMain.handle('soul:checkForUpdates', async () => { requireAgeGate(); pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
-ipcMain.handle('soul:installUpdate', async () => {
-  requireAgeGate();
-  if (!pendingUpdate?.available) pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() });
-  if (!pendingUpdate.available) throw new Error('No update is available.');
-  const answer = await dialog.showMessageBox(mainWindow, { type: 'question', buttons: ['Download and open', 'Cancel'], defaultId: 0, cancelId: 1, title: 'Install Eidovara update', message: `Install Eidovara ${pendingUpdate.version}?`, detail: pendingUpdate.packageType === 'ready-folder-zip' ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction.' : 'The installer will be downloaded over HTTPS, verified with SHA-256, and opened.' });
-  if (answer.response !== 0) return { cancelled: true };
-  const downloaded = await downloadUpdate(pendingUpdate, path.join(app.getPath('userData'), 'updates'));
-  const malwareScan = await scanUpdateForMalware(downloaded.path);
-  if (malwareScan.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not opened.');
-  const error = await shell.openPath(downloaded.path); if (error) throw new Error(error); return { ...downloaded, malwareScan, launched: true };
-});
 ipcMain.handle('soul:addApplication', async () => { requireAgeGate(); if (entitlement() === 'free' && (config.apps || []).length >= 3) throw new Error('Eidovara Free supports up to three linked applications. Premium removes this limit.'); const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Add an application to Eidovara', properties: ['openFile'], filters: [{ name: 'Windows applications', extensions: ['exe', 'lnk'] }] }); if (chosen.canceled || !chosen.filePaths[0]) return publicConfig(); const filePath = path.resolve(chosen.filePaths[0]); if (!['.exe','.lnk'].includes(path.extname(filePath).toLowerCase()) || !fs.existsSync(filePath)) throw new Error('Choose an existing Windows executable or shortcut.'); config.apps = Array.isArray(config.apps) ? config.apps : []; if (!config.apps.some(x => x.path.toLowerCase() === filePath.toLowerCase())) config.apps.push({ id: cryptoId(filePath), name: path.basename(filePath, path.extname(filePath)).slice(0, 100), path: filePath }); saveConfig(); return publicConfig(); });
 ipcMain.handle('soul:discoverApplications', () => { requireAgeGate(); return discoverStartMenuApplications().map(({ id, name }) => ({ id, name })); });
 ipcMain.handle('soul:addDiscoveredApplication', (_e, id) => {

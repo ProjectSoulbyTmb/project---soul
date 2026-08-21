@@ -291,9 +291,12 @@
       $('#serviceForm')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' });
     }
     if (type === 'open-legal' && typeof window.eidovaraShowLegal === 'function') window.eidovaraShowLegal(action.legal || 'about');
-    if (type === 'open-updates') {
-      if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
-      $('#checkUpdateBtn')?.focus();
+    if (type === 'open-updates' || type === 'check-updates') {
+      if (typeof window.eidovaraCheckUpdates === 'function') window.eidovaraCheckUpdates();
+      else {
+        if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
+        $('#checkUpdateBtn')?.focus();
+      }
     }
     if (type === 'open-palette') openPalette();
     if (type === 'open-cheatsheet') openCheatsheet();
