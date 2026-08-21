@@ -66,11 +66,11 @@ const catalog = [
   {
     id: 'workspace-research',
     title: 'Research',
-    summary: 'Explicit internet/web/online lookups via Wikipedia/Wikimedia. Stays off until you ask.',
+    summary: 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.',
     intents: ['research'],
     commands: ['search the internet', 'research online'],
-    workspace: 'chat',
-    ui: { view: 'chat' }
+    workspace: 'research',
+    ui: { view: 'research' }
   },
   {
     id: 'workspace-help',

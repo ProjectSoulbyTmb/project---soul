@@ -63,7 +63,129 @@ export function mixBriefing(state, intent = 'mood') {
     skipped,
     idea: ideas[intent] || ideas.mood,
     empty: !seeds.length && !recent.length,
-    handoff: 'Spotify and YouTube open official HTTPS searches in your browser. Eidovara does not capture credentials, download protected streams, or imply affiliation.'
+    handoff: 'Spotify, YouTube, and Internet Archive open official HTTPS searches in your browser. Eidovara does not capture credentials, download protected streams, inject into other players, or imply affiliation.'
+  };
+}
+
+function httpsUrl(value, suffixes) {
+  try {
+    const url = new URL(String(value || '').trim());
+    if (url.protocol !== 'https:' || url.username || url.password) return '';
+    const host = url.hostname.toLowerCase();
+    if (suffixes && !suffixes.some(suffix => host === suffix || host.endsWith(`.${suffix}`))) return '';
+    return url.toString();
+  } catch {
+    return '';
+  }
+}
+
+export function officialSearchHandoffs(query) {
+  const q = clean(query, 180);
+  if (!q) return [];
+  const encoded = encodeURIComponent(q);
+  const items = [
+    { provider: 'YouTube', title: `YouTube search: ${q}`, url: `https://www.youtube.com/results?search_query=${encoded}` },
+    { provider: 'Spotify', title: `Spotify search: ${q}`, url: `https://open.spotify.com/search/${encoded}` },
+    { provider: 'Internet Archive', title: `Internet Archive search: ${q}`, url: `https://archive.org/search?query=${encoded}` }
+  ];
+  return items.filter(item => {
+    if (item.provider === 'YouTube') return Boolean(httpsUrl(item.url, ['youtube.com']));
+    if (item.provider === 'Spotify') return Boolean(httpsUrl(item.url, ['spotify.com']));
+    return Boolean(httpsUrl(item.url, ['archive.org']));
+  });
+}
+
+function queryTokens(query) {
+  return String(query || '').toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(token => token.length > 2);
+}
+
+export function isPlayableLocalUrl(value) {
+  return /^eidovara-media:/i.test(String(value || '').trim());
+}
+
+export function matchLocalLibrary(query, { entertainment, localLibrary } = {}) {
+  const tokens = queryTokens(query);
+  const hits = [];
+  const seen = new Set();
+  const push = item => {
+    const title = clean(item?.title, 200);
+    const key = title.toLowerCase();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    const url = isPlayableLocalUrl(item.url) ? String(item.url).slice(0, 400) : '';
+    hits.push({
+      type: item.type === 'video' ? 'video' : 'audio',
+      title,
+      url,
+      sourceUrl: httpsUrl(item.sourceUrl) || '',
+      local: true,
+      playable: Boolean(url)
+    });
+  };
+  for (const item of localLibrary || []) {
+    const title = String(item.title || '').toLowerCase();
+    if (!tokens.length || tokens.some(token => title.includes(token))) push(item);
+  }
+  const taste = entertainment || {};
+  for (const item of [...(taste.favorites || []), ...(taste.history || [])]) {
+    const title = String(item.title || '').toLowerCase();
+    if (!title) continue;
+    if (!tokens.length || tokens.some(token => title.includes(token))) push(item);
+  }
+  return hits.slice(0, 12);
+}
+
+export function discoveryQuery(input, entertainment) {
+  const stripped = String(input || '')
+    .replace(/https:\/\/[^\s<>"'`]+/gi, ' ')
+    .replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to|fits|my|current|mood|explain|why|something|worth|watching|youtube|spotify|archive)\b/gi, ' ')
+    .replace(/[^\p{L}\p{N}\s'_-]/gu, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .slice(0, 180);
+  if (stripped) return stripped;
+  const seeds = mixBriefing({ entertainment }, 'mood').seeds;
+  return seeds[0] || 'music';
+}
+
+export function discoverMedia(input, { entertainment, localLibrary, query } = {}) {
+  const q = clean(query, 180) || discoveryQuery(input, entertainment);
+  const local = matchLocalLibrary(q, { entertainment, localLibrary });
+  const handoffs = officialSearchHandoffs(q);
+  const playable = local.filter(item => item.playable);
+  const context = [
+    local.length
+      ? `Local library matches:\n${local.map((item, index) => `${index + 1}. ${item.title}${item.playable ? ' (play in Eidovara)' : ' (taste title; open the local file to play in Eidovara)'}`).join('\n')}`
+      : 'No local library titles matched. Open a local audio or video file in Entertainment to play it in Eidovara (eidovara-media, never media-src \'self\').',
+    `Official search links (browser handoff — not Spotify/iTunes/VLC/Windows Media Player injection, not stream ripping):\n${handoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`
+  ].join('\n\n');
+  return {
+    query: q,
+    fetchedAt: null,
+    remote: false,
+    sources: [],
+    media: playable,
+    local,
+    handoffs,
+    context
+  };
+}
+
+export function mergeMediaDiscovery(webResearch, discovery) {
+  if (!discovery) return webResearch || null;
+  if (!webResearch) {
+    return { ...discovery, fetchedAt: discovery.fetchedAt || null };
+  }
+  const local = Array.isArray(discovery.local) ? discovery.local : [];
+  const playable = local.filter(item => item.playable);
+  const seenMedia = new Set((webResearch.media || []).map(item => item.url || item.title));
+  const media = [...playable.filter(item => !seenMedia.has(item.url || item.title)), ...(webResearch.media || [])];
+  return {
+    ...webResearch,
+    handoffs: discovery.handoffs || webResearch.handoffs || [],
+    local,
+    media,
+    context: [webResearch.context, discovery.context].filter(Boolean).join('\n\n')
   };
 }
 

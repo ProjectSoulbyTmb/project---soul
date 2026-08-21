@@ -2,7 +2,7 @@
 
 Last updated: August 21, 2026
 
-This notice describes Eidovara v0.18.3 Stable Alpha (Windows 10/11 x64). It is a self-declared product notice, **not** an independent audit, ISO certification, or guarantee of compliance for every deployment. Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Local age confirmation is not independent age or identity verification. See [AGE.md](AGE.md) and [NETWORK-USAGE.md](NETWORK-USAGE.md).
+This notice describes Eidovara v0.19.0 Stable Alpha (Windows 10/11 x64). It is a self-declared product notice, **not** an independent audit, ISO certification, or guarantee of compliance for every deployment. Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Local age confirmation is not independent age or identity verification. See [AGE.md](AGE.md) and [NETWORK-USAGE.md](NETWORK-USAGE.md).
 
 ## Local-first: what stays on the machine
 
@@ -25,8 +25,10 @@ Network access is user-directed except for the official update-manifest check:
 
 | Leaves the device | When | What is sent |
 | --- | --- | --- |
-| Wikipedia / Wikimedia | Explicit internet, web, or online research request | Search terms, IP address, application user agent |
-| Brave Search (Premium test gate) | Explicit research **and** a user-supplied key while Premium testing is on | Search terms, API credential, IP address |
+| Wikipedia / Wikimedia | Explicit internet, web, or online research request from the companion, conversation, or Research panel | Search terms, IP address, application user agent |
+| Internet Archive | Explicit internet/web/online research request | Search terms, IP address, application user agent |
+| User-provided or result HTTPS page | Explicit research that includes an HTTPS URL, or a bounded in-app text extract | URL request, IP address, application user agent. No credentials. Redirects refused. |
+| Brave Search (Premium test gate) | Explicit research **and** a user-supplied key while Premium testing is on. Not a live payment unlock. | Search terms, API credential, IP address |
 | User-pasted local model endpoint (loopback) | You send a chat while Local is selected | Conversation context and model name on loopback |
 | User-pasted HTTPS `/chat/completions` endpoint | You send a chat while Compatible/Premium is selected | Conversation context, model name, credential if you stored one |
 | GitHub official release channel | Startup or manual update check; user-approved installer download | App version via user agent, IP address; installer bytes after you confirm |
@@ -36,7 +38,7 @@ Network access is user-directed except for the official update-manifest check:
 | Optional desktop helper `/v1/assist` | You paste a Worker HTTPS base **and** enable **Allow one-shot Worker helper** (default off), then tick **Ask the Worker helper** on one send | The typed question and mode only (about 32 KiB). Conversations, memories, and chat history stay local. Transcripts are not stored. Assist is not Soul. |
 | Optional desktop `/v1/assist` | You paste an HTTPS base in Settings, enable Soul online (default off), and check send for that message | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
 
-A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payments stay fail-closed (`paymentsEnabled` remains false). Payment environment variables for the optional Worker are intended to stay empty in v0.18.3. No `workers.dev` host is compiled into the app. The official default is `https://api.eidovara.org`.
+A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payments stay fail-closed (`paymentsEnabled` remains false). Payment environment variables for the optional Worker are intended to stay empty in v0.19.0. No `workers.dev` host is compiled into the app. The official default is `https://api.eidovara.org`.
 
 ## Your controls
 

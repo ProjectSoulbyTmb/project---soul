@@ -213,13 +213,36 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   assert.match(html, /Users own their own content/);
   assert.match(html, /not legal advice/);
   assert.match(html, /Soul Consciousness Studios™ \(unregistered\)/);
+  assert.match(html, /LICENSE and TRADEMARKS\.md/);
   assert.match(html, /intended publisher only/);
   assert.match(html, /pull requests do not transfer ownership/i);
   assert.match(html, /unsigned templates only/);
   assert.doesNotMatch(html, /I am conscious|scientifically proven consciousness|®/);
 });
 
-test('network, security, and licensing docs match current fail-closed v0.18.3 surface', () => {
+test('legal-instrument pack is templates and notices, not registrations', () => {
+  const copyright = read('docs/COPYRIGHT.md');
+  const filing = read('docs/TRADEMARK_FILING.md');
+  const brand = read('docs/BRAND_GUIDE.md');
+  const claim = read('COPYRIGHT.txt');
+  const marks = read('TRADEMARKS.md');
+  assert.match(copyright, /copyright\.gov/);
+  assert.match(copyright, /not a U\.S\. Copyright Office registration/i);
+  assert.match(filing, /not a trademark application/i);
+  assert.match(filing, /No trademark application is filed by this commit/i);
+  assert.match(brand, /system font/i);
+  assert.match(brand, /SF Pro/);
+  assert.match(brand, /Jarvis|Marvel/i);
+  assert.match(claim, /Tyler Michael Bosworth/);
+  assert.match(claim, /not a U\.S\. Copyright Office registration/i);
+  assert.match(marks, /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(marks, /Marvel/);
+  assert.match(marks, /Jarvis/i);
+  assert.match(read('docs/legal.html'), /COPYRIGHT\.md/);
+  assert.match(read('docs/legal.html'), /TRADEMARK_FILING.md/);
+});
+
+test('network, security, and licensing docs match current fail-closed v0.19.0 surface', () => {
   const destinations = [
     /en\.wikipedia\.org/,
     /commons\.wikimedia\.org/,
@@ -275,7 +298,7 @@ test('network, security, and licensing docs match current fail-closed v0.18.3 su
   assert.match(third, /fail-closed/);
   assert.match(third, /Neural TTS/);
   const companions = read('docs/COMPANION_MODELS.md');
-  assert.match(companions, /Blocked in v0\.18\.3/);
+  assert.match(companions, /Blocked in v0\.19\.0/);
   assert.match(companions, /Neural TTS/);
   assert.match(companions, /VRM/);
   assert.match(companions, /OBS websocket/);

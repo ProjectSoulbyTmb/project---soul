@@ -157,8 +157,8 @@ button { cursor: pointer; }
   background: var(--grouped);
   position: relative;
 }
-.topbar { grid-column: 1 / -1; }
-.view.active { grid-column: 1; grid-row: 3; }
+.topbar { grid-column: 1 / -1; grid-row: 1; }
+.focus-quiet-bar { grid-column: 1 / -1; grid-row: 2; }.view.active { grid-column: 1; grid-row: 3; }
 .soul-dock { grid-column: 2; grid-row: 3; min-height: 0; }
 .topbar {
   border-bottom: var(--hairline) solid var(--separator);

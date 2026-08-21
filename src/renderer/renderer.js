@@ -5,7 +5,7 @@ const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
 let state = null, settings = null, sending = false, backupCount = 0;
 let mediaQueue = [], mediaIndex = -1;
-const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), settings: $('#settingsView') };
+const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), settings: $('#settingsView') };
 const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 const assistantPayload = (extra = {}) => {
   const p = state?.assistant?.preferences || {}, c = state?.assistant?.capabilities || {};
@@ -20,12 +20,37 @@ function setView(name){
   if(!views[name])return;
   Object.values(views).forEach(v=>v.classList.remove('active'));
   views[name].classList.add('active');
-  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]);
+  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]);
   $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
   if(innerWidth<861) $('#sidebar').classList.remove('open');
   window.eidovaraCompanion?.renderFollowups?.(name);
+  if(name==='research') renderResearchView();
 }
 function el(tag, cls, text){ const n=document.createElement(tag); if(cls)n.className=cls; if(text!==undefined)n.textContent=text; return n; }
+function latestResearch(){
+  const convs=state?.conversations||[];
+  for(const c of convs){
+    const messages=c?.messages||[];
+    for(let i=messages.length-1;i>=0;i--) {
+      if(messages[i]?.webResearch) return messages[i].webResearch;
+      if(messages[i]?.mediaDiscovery) return messages[i].mediaDiscovery;
+    }
+  }
+  return null;
+}
+function hostnameOf(href){
+  try { return new URL(String(href||'')).hostname; } catch { return ''; }
+}
+function openResearchLink(url, title){
+  const href=String(url||'');
+  if(!href) return;
+  const host=hostnameOf(href);
+  const line=[title, host].filter(Boolean).join(' · ');
+  const ok=window.confirm(`${t('confirmOpenLink','Open this HTTPS page in your browser?')}${line?`\n${line}`:''}\n${href}`);
+  if(!ok) return;
+  window.soul.openExternal(href).catch(err=>alert(String(err?.message||err)));
+}
+window.eidovaraOpenResearch=openResearchLink;
 function kernelActionButton(action){
   const b=el('button','kernel-chip',action.label||action.type);
   b.type='button';
@@ -63,6 +88,7 @@ function runKernelAction(action){
   else if(action.type==='capture-scratch'){ window.eidovaraLayers?.captureScratch?.(); }
   else if(action.type==='open-palette'){ openPalette(); }
   else if(action.type==='open-cheatsheet'){ openShortcutSheet(); }
+  else if(action.type==='open-external'&&action.url) openResearchLink(action.url);
 }
 window.eidovaraRunAction=runKernelAction;
 function setupCategories(){return $$('input[name="setupCategory"]:checked').map(x=>x.value);}
@@ -71,13 +97,83 @@ function openSetup(reconfigure=false){const setup=state.setup||{};$$('input[name
 async function openAdmin(){const status=await window.soul.adminStatus();$('#adminOverlay').classList.remove('hidden');$('#adminLoginStatus').textContent='';$('#adminPassword').value='';$('#adminLoginForm').classList.toggle('hidden',status.authorized);$('#adminPanelForm').classList.toggle('hidden',!status.authorized);$('#adminTitle').textContent=status.configured?'Private administration':'Create administrator password';$('#adminLoginHelp').textContent=status.configured?'Local access only. This session automatically locks after 15 minutes.':'Create a unique password of at least 12 characters for this installation. Eidovara cannot recover it.';$('#adminLoginButton').textContent=status.configured?'Unlock':'Create and unlock';$('#adminLoginForm').dataset.configured=String(Boolean(status.configured));if(status.authorized){$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;}else $('#adminPassword').focus();}
 
 function renderConversations(){ const list=$('#conversationList'); list.textContent=''; const onlyOne=(state.conversations||[]).length<=1; for(const c of state.conversations){ const row=el('button','conversation'+(c.id===state.activeConversationId?' active':'')); row.type='button'; const label=el('span','label',c.title||'Conversation'); const del=el('button','delete','×'); del.type='button'; del.title='Delete conversation'; del.hidden=onlyOne; del.disabled=onlyOne; del.addEventListener('click',async e=>{e.stopPropagation(); if(state.conversations.length<=1)return; state=await window.soul.deleteConversation(c.id); renderAll();}); row.append(label,del); row.addEventListener('click',async()=>{state=await window.soul.selectConversation(c.id); renderAll();setView('chat');}); list.append(row); } }
-function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>window.soul.openExternal(url));return a;}
+function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>openResearchLink(url));return a;}
 function currentPlayer(){return mediaQueue[mediaIndex]?.type==='video'?$('#videoPlayer'):$('#audioPlayer');}
 function mediaSignal(event,item=mediaQueue[mediaIndex]){if(!item||!['audio','video'].includes(item.type))return;window.soul.recordMedia({event,type:item.type,title:item.title,sourceUrl:item.sourceUrl}).catch(()=>{});}
 function loadMedia(index,autoplay=true){if(!mediaQueue.length)return;const previous=mediaQueue[mediaIndex];if(previous&&index!==mediaIndex)mediaSignal('skip',previous);mediaIndex=(index+mediaQueue.length)%mediaQueue.length;const item=mediaQueue[mediaIndex],audio=$('#audioPlayer'),video=$('#videoPlayer'),player=item.type==='video'?video:audio;audio.pause();video.pause();audio.classList.toggle('hidden',item.type==='video');video.classList.toggle('hidden',item.type!=='video');player.src=item.url;$('#mediaTitle').textContent=item.title||'Untitled media';$('#mediaKind').textContent=`${item.local?'local ':''}${item.type} · ${mediaIndex+1} of ${mediaQueue.length}`;$('#mediaFavoriteBtn').textContent='♡';$('#mediaSourceBtn').disabled=!item.sourceUrl;$('#mediaDock').classList.remove('hidden');mediaSignal('play',item);if(autoplay)player.play().catch(()=>{});}
 function playMedia(items,index,opts={}){const mode=state?.assistant?.capabilities?.mediaPlayback||'confirm';if(mode==='disabled'){alert(t('mediaDisabled','Media playback is disabled in Soul behavior settings.'));return;}const selected=items[index];if(mode==='confirm'&&!opts.alreadyConfirmed){if(!window.confirm(`${t('mediaConfirm','Play this media in Eidovara:')} ${selected?.title||''}`.trim()))return;}mediaQueue=items.filter(m=>m.type==='audio'||m.type==='video');loadMedia(Math.max(0,mediaQueue.indexOf(selected)));}
-function renderResearch(target,research){if(!research)return;const panel=el('div','research-panel');panel.append(el('div','research-title',`Internet results · ${fmt(research.fetchedAt)}`));for(const s of research.sources||[]){const row=el('div','research-source');row.append(externalLink(s.url,s.title),el('small','',s.description||''));panel.append(row);}if(research.media?.length){const grid=el('div','media-grid');research.media.forEach((m,index)=>{const card=el('div','media-card');if(m.type==='image'){const img=document.createElement('img');img.src=m.url;img.alt=m.title;img.loading='lazy';card.append(img);}else{const play=el('button','media-launch',m.type==='audio'?'▶ Play audio':'▶ Play video');play.type='button';play.addEventListener('click',()=>playMedia(research.media,index));card.append(play);}card.append(externalLink(m.sourceUrl,m.title));grid.append(card);});panel.append(grid);}target.append(panel);}
-function renderMessages(){ const box=$('#messages'); box.textContent=''; const c=activeConversation(); const messages=c?.messages||[]; $('#welcome').classList.toggle('hidden',messages.length>0); for(const m of messages){ const wrap=el('div',`message ${m.role==='assistant'?'assistant':'user'}`); if(m.role==='assistant'){ const av=el('div','soul-mark avatar'); av.append(el('span')); wrap.append(av); } const content=el('div'); const bubble=el('div','bubble',m.content); const meta=el('div','message-meta',fmt(m.at)); content.append(bubble);renderResearch(content,m.webResearch);appendKernelActions(content,m.actions);content.append(meta);wrap.append(content); box.append(wrap); } requestAnimationFrame(()=>{$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight;}); }
+function renderResearch(target,research){
+  if(!research)return;
+  const remote=Boolean(research.fetchedAt);
+  const panel=el('div','research-panel');
+  panel.append(el('div','research-title',`${remote?t('researchResults','Internet results'):t('discoveryTitle','Local library & official searches')} · ${fmt(research.fetchedAt)||t('localNow','this device')}`));
+  panel.append(el('p','research-copy',research.disclaimer||t('researchCopy','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.')));
+  for(const s of research.sources||[]){
+    const row=el('article','research-source research-card');
+    row.append(el('strong','',s.title||''));
+    if(s.hostname||s.provider) row.append(el('small','research-host',s.provider?`${s.provider}${s.hostname?` · ${s.hostname}`:''}`:s.hostname));
+    row.append(el('p','research-snippet',s.description||s.extract||''));
+    if(s.extract && s.extract!==s.description) row.append(el('p','research-extract',s.extract));
+    if(s.url) row.append(externalLink(s.url, t('openInBrowser','Open in browser')));
+    panel.append(row);
+  }
+  for(const h of research.handoffs||[]){
+    const row=el('article','research-source research-card');
+    row.append(el('strong','',h.title||h.provider||'Search'));
+    if(h.provider) row.append(el('small','research-host',h.provider));
+    row.append(el('p','research-snippet',t('handoffNote','Official HTTPS search in your browser. Eidovara does not fetch that site’s HTML or capture logins.')));
+    if(h.url) row.append(externalLink(h.url, t('openInBrowser','Open in browser')));
+    panel.append(row);
+  }
+  if(research.local?.length){
+    const localBox=el('div','local-library');
+    localBox.append(el('div','research-title',t('sessionLibrary','This session’s local library')));
+    for(const item of research.local){
+      const row=el('div','kv');
+      row.append(el('span','',item.playable?t('playInEidovara','Play in Eidovara'):item.type||'audio'), el('span','',item.title));
+      if(item.playable){
+        const play=el('button','handoff-chip',t('playLocal','Play'));
+        play.type='button';
+        const playable=research.local.filter(x=>x.playable);
+        play.addEventListener('click',()=>playMedia(playable, playable.indexOf(item), {alreadyConfirmed:true}));
+        row.append(play);
+      }
+      localBox.append(row);
+    }
+    panel.append(localBox);
+  }
+  if(research.media?.length){
+    const grid=el('div','media-grid');
+    research.media.forEach((m,index)=>{
+      const card=el('div','media-card');
+      if(m.type==='image'){const img=document.createElement('img');img.src=m.url;img.alt=m.title;img.loading='lazy';card.append(img);}
+      else{const play=el('button','media-launch',m.local||m.playable?(m.type==='audio'?'▶ Play local audio':'▶ Play local video'):(m.type==='audio'?'▶ Play audio':'▶ Play video'));play.type='button';play.addEventListener('click',()=>playMedia(research.media,index,{alreadyConfirmed:Boolean(m.local||m.playable)}));card.append(play);}
+      if(m.hostname) card.append(el('small','research-host',m.hostname));
+      if(m.sourceUrl) card.append(externalLink(m.sourceUrl,m.title));
+      else card.append(el('small','',m.title||''));
+      grid.append(card);
+    });
+    panel.append(grid);
+  }
+  target.append(panel);
+}
+window.eidovaraRenderDiscovery=renderResearch;
+window.eidovaraPlayMedia=playMedia;
+function renderResearchView(){
+  const box=$('#researchResults');
+  if(!box) return;
+  box.textContent='';
+  const research=latestResearch();
+  const copy=$('#researchLead');
+  if(copy) copy.textContent=t('researchLead','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.');
+  if(!research){
+    box.append(el('div','empty-state'));
+    box.lastChild.append(el('strong','',t('researchEmptyTitle','No lookup yet')), el('p','',t('researchEmpty','Ask me to search the internet for a topic, or include an HTTPS URL after an explicit internet/web/online request. This is not a crawl of the whole internet.')));
+    return;
+  }
+  renderResearch(box, research);
+}
+function renderMessages(){ const box=$('#messages'); box.textContent=''; const c=activeConversation(); const messages=c?.messages||[]; $('#welcome').classList.toggle('hidden',messages.length>0); for(const m of messages){ const wrap=el('div',`message ${m.role==='assistant'?'assistant':'user'}`); if(m.role==='assistant'){ const av=el('div','soul-mark avatar'); av.append(el('span')); wrap.append(av); } const content=el('div'); const bubble=el('div','bubble',m.content); const meta=el('div','message-meta',fmt(m.at)); content.append(bubble);renderResearch(content,m.webResearch||m.mediaDiscovery);appendKernelActions(content,m.actions);content.append(meta);wrap.append(content); box.append(wrap); } requestAnimationFrame(()=>{$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight;}); }
 function renderMemory(){ const box=$('#memoryCards'); box.textContent=''; const mem=[...(state.memories||[])].reverse(); if(!mem.length){box.append(el('div','empty',t('emptyMemory','No durable memories yet.')));return;} for(const m of mem){ const card=el('div','card memory-card'); const body=el('div'); const p=el('div','',m.content); const sm=el('small','',`${m.active?'active':'inactive'} · ${m.kind} · confidence ${Math.round((m.confidence||0)*100)}%`); body.append(p,sm); const b=el('button','forget',m.active?'Forget':'Inactive'); b.type='button'; b.disabled=!m.active; b.addEventListener('click',async()=>{await window.soul.forget(m.id);state=await window.soul.snapshot();renderAll();}); card.append(body,b); box.append(card); } }
 function renderIdentity(){ const sm=state.continuity.selfModel; const self=$('#selfModel'); self.textContent=''; for(const [k,v] of [['Name',sm.name],['Architecture',sm.architecture],['Protected identity',String(sm.protectedIdentity)],['Core values',sm.coreValues.join(', ')]]){const r=el('div','kv');r.append(el('span','',k),el('span','',v));self.append(r);} const traits=$('#traits');traits.textContent='';for(const [k,v] of Object.entries(state.personality).filter(([,v])=>typeof v==='number')){const r=el('div','trait');r.append(el('span','',k),(()=>{const b=el('div','bar');const f=el('div','fill');f.style.width=`${Math.round(v*100)}%`;b.append(f);return b;})(),el('span','',`${Math.round(v*100)}%`));traits.append(r);} const rel=$('#relationship');rel.textContent='';for(const [k,v] of [['Style',state.relationship.style],['Temporary initiative',String(state.relationship.temporaryInitiative)],['Trust',`${Math.round(state.relationship.trust*100)}%`],['Comfort',`${Math.round(state.relationship.comfort*100)}%`]]){const r=el('div','kv');r.append(el('span','',k),el('span','',v));rel.append(r);} const p=$('#policy');p.textContent='';for(const [k,v] of [['Mode',state.policy.mode],['Adult status confirmed',String(state.policy.adultStatusConfirmed)],['Adult Soul enabled',String(state.policy.adultSoulEnabled)],['Current consent',String(state.policy.currentConsent)],['Consent scope',state.policy.consentScope||'none'],['Active boundaries',String((state.policy.boundaries||[]).filter(b=>b.active).length)]]){const r=el('div','kv');r.append(el('span','',k),el('span','',v));p.append(r);} }
 function applyEditionGates(){ const premium=settings?.edition==='premium'; const rgb=$('#themeRgb'); if(rgb){rgb.disabled=!premium; if(!premium) rgb.checked=false;} const search=$('#searchApiKeyInput'), clearSearch=$('#clearSearchKeyInput'); if(search) search.disabled=!premium; if(clearSearch) clearSearch.disabled=false; const compatible=$('#providerSelect option[value="compatible"]'); if(compatible) compatible.disabled=!premium; if(!premium&&$('#providerSelect')?.value==='compatible') $('#providerSelect').value='offline'; const note=$('#premiumFieldsNote'); if(note) note.textContent=premium?t('premiumUnlocked','Premium test gates are on: remote endpoints, Brave search key, RGB, and unlimited apps.'):t('premiumLocked','Free: offline/local models, Wikipedia/Wikimedia research, up to 3 apps. RGB, Brave key, and remote endpoints stay Premium.'); }
@@ -141,7 +237,8 @@ function renderDashboard(){
     window.eidovaraLayers.renderDashboard({state,settings,backupCount,setView,send,openSetup});
     return;
   }
-  const box=$('#dashboardGrid');box.textContent='';
+  const box=$('#dashboardGrid'); if(!box) return;
+  box.textContent='';
   const roles=(state.setup?.categories||[]);
   const memories=(state.memories||[]).filter(x=>x.active).length;
   const apps=(settings?.apps||[]).length;
@@ -152,6 +249,7 @@ function renderDashboard(){
     {label:t('dashMemory','Memory'), value:`${memories} active`, next:t('nextMemory','Review memory'), run:()=>setView('memory')},
     {label:t('dashApps','Apps'), value:`${apps} linked`, next:t('nextAddApps','Add a trusted app'), run:()=>setView('apps')},
     {label:t('dashMedia','Entertainment'), value:taste?`${taste} taste signals`:'none yet', next:t('nextEntertainment','Open Entertainment'), run:()=>setView('entertainment')},
+    {label:t('dashResearch','Research'), value:latestResearch()?.query || t('researchIdle','no lookup yet'), next:t('nextResearch','Open Research'), run:()=>setView('research')},
     {label:t('dashPrivacy','Workspace'), value:settings?.provider==='offline'?t('offlineFirst','offline-first'):t('connectedProvider','connected provider'), next:t('nextSettings','Open settings'), run:()=>setView('settings')},
     {label:'Eidovara service', value:settings?.serviceStatus?.online?'Online':settings?.serviceUrl?'Offline':'Not attached', next:'Open service settings', run:()=>{setView('settings');$('#serviceForm')?.scrollIntoView({behavior:'smooth',block:'center'});}},
     {label:t('dashBackups','Backups'), value:String(backupCount), next:t('nextBackup','Create a backup'), run:()=>{setView('settings');$('#backupSection')?.scrollIntoView({behavior:'smooth',block:'center'});}},
@@ -222,7 +320,7 @@ function renderCompanionPanel(){
   const messages=(activeConversation()?.messages||[]).slice(-8);
   if(!messages.length){
     const empty=el('div','companion-empty');
-    empty.append(el('strong','',t('companionEmptyTitle','Ask this workspace.')), el('p','',t('companionEmpty','Local answers from product facts and your on-device profile. Nothing is sent to the website helper or Worker /v1/assist.')));
+    empty.append(el('strong','',t('companionEmptyTitle','Ask this workspace.')), el('p','',t('companionEmpty','Local answers from product facts and your on-device profile. Nothing is sent to the website helper.')));
     log.append(empty);
     return;
   }
@@ -248,9 +346,28 @@ function renderEntertainment(){
   if(!favorites.children.length)favorites.append(el('div','empty',t('emptyFavorites','Favorite media will appear here after you heart something in the player.')));
   if(!recent.children.length)recent.append(el('div','empty',t('emptyRecent','Play, skip, and complete events will appear here. Local file paths are not stored in taste records.')));
   const seeds=Object.entries(e.taste||{}).sort((a,b)=>b[1]-a[1]).filter(([,score])=>score>0).slice(0,4).map(([title])=>title);
-  if(mix) mix.textContent=seeds.length?`${seeds.join(', ')}. Spotify and YouTube remain official HTTPS searches in your browser.` : t('mixEmpty','Play or favorite something to grow a local mix. Suggestions stay on this device.');
+  if(mix) mix.textContent=seeds.length?`${seeds.join(', ')}. Spotify, YouTube, and Internet Archive remain official HTTPS searches in your browser.` : t('mixEmpty','Play or favorite something to grow a local mix. Suggestions stay on this device.');
+  const library=$('#entertainmentLibrary');
+  if(library){
+    library.textContent='';
+    const discovery=latestResearch();
+    const items=discovery?.local||[];
+    if(!items.length) library.append(el('div','empty',t('emptyLibrary','Open a local audio or video file to play it in Eidovara. Paths stay out of taste records.')));
+    else for(const item of items){
+      const row=el('div','kv');
+      row.append(el('span','',item.playable?t('playInEidovara','Play in Eidovara'):item.type||'title'), el('span','',item.title));
+      library.append(row);
+    }
+  }
+  const discoveryBox=$('#entertainmentDiscovery');
+  if(discoveryBox){
+    discoveryBox.textContent='';
+    const discovery=latestResearch();
+    if(discovery) renderResearch(discoveryBox, discovery);
+    else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
+  }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -280,15 +397,16 @@ async function send(text, opts={}){
     const replies=(activeConversation()?.messages||[]).filter(x=>x.role==='assistant');
     if(surface!=='companion') speakSoul(replies.at(-1)?.content);
     if(res.providerError){
-      const note=`Model connection issue: ${res.providerError}`;
+      const note=`${t('modelIssue','Model connection issue:')} ${res.providerError}`;
       if(surface==='companion') setCompanionError(note);
       else $('#messages').append(el('div','error-note',note));
     }
     if(res.internetError){
-      const note=`Internet search issue: ${res.internetError}`;
+      const note=`${t('researchIssue','Internet search issue:')} ${res.internetError}`;
       if(surface==='companion') setCompanionError(note);
       else $('#messages').append(el('div','error-note',note));
-    }
+      if($('#researchError')) $('#researchError').textContent=res.internetError;
+    } else if($('#researchError')) $('#researchError').textContent='';
     if(askAssist){
       if($('#assistThisMessage')) $('#assistThisMessage').checked=false;
       if($('#companionAssistThis')) $('#companionAssistThis').checked=false;
@@ -307,7 +425,11 @@ async function send(text, opts={}){
       }
     }
     applyCompanionResult(res,{applyAuto:surface==='companion'});
-    if(surface==='companion') setView('dashboard');
+    const replyText=replies.at(-1)?.content;
+    const assistNote='';
+    window.eidovaraCompanion?.noteExchange?.(text, replyText, assistNote, { research: res.webResearch || res.mediaDiscovery, actions: res.kernel?.actions });
+    if(res.kernel?.intent==='research' || res.kernel?.view==='research') setView('research');
+    else if(surface==='companion') setView('dashboard');
   }catch(err){
     $('#typing')?.remove();
     const note=String(err?.message||err);
@@ -324,6 +446,13 @@ async function send(text, opts={}){
 }
 
 $('#chatForm').addEventListener('submit',e=>{e.preventDefault();send($('#messageInput').value);});
+$('#researchForm')?.addEventListener('submit',e=>{
+  e.preventDefault();
+  const topic=$('#researchQuery')?.value.trim();
+  if(!topic) return;
+  const prompt=/\b(?:internet|web|online)\b/i.test(topic)?topic:`Search the internet for ${topic}`;
+  send(prompt);
+});
 $('#companionForm')?.addEventListener('submit',e=>{e.preventDefault();send($('#companionInput')?.value,{surface:'companion'});});
 $('#companionInput')?.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value,{surface:'companion'});}});
 $$('[data-companion-nav]').forEach(b=>b.addEventListener('click',()=>{
@@ -334,8 +463,7 @@ $$('[data-companion-nav]').forEach(b=>b.addEventListener('click',()=>{
   else if(nav==='legal') showLegal('about');
   else if(nav==='status'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
 }));
-$$('[data-companion-ask]').forEach(b=>b.addEventListener('click',()=>{setView('dashboard');send(b.dataset.companionAsk,{surface:'companion'});}));
-$('#messageInput').addEventListener('input',autoSize);$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value);}});
+$$('[data-companion-ask]').forEach(b=>b.addEventListener('click',()=>{setView('dashboard');send(b.dataset.companionAsk,{surface:'companion'});}));$('#messageInput').addEventListener('input',autoSize);$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value);}});
 $$('[data-starter]').forEach(b=>b.addEventListener('click',()=>send(b.dataset.starter)));
 $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
 $('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
@@ -523,7 +651,7 @@ document.addEventListener('keydown',e=>{
     if(overlayOpen('#setupOverlay')&&!$('#cancelSetupBtn').classList.contains('hidden')){$('#setupOverlay').classList.add('hidden');e.preventDefault();}
     return;
   }
-  if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&e.key.toLowerCase()==='k'){
+  if(e.ctrlKey&&!e.shiftKey&&!e.altKey&&(e.key.toLowerCase()==='k'||e.key.toLowerCase()==='p')){
     if(e.defaultPrevented) return;
     if(document.body.classList.contains('age-gated')) return;
     e.preventDefault();
@@ -615,7 +743,8 @@ window.eidovaraSetView=setView;
 window.eidovaraSend=send;
 window.eidovaraOpenSetup=openSetup;
 window.eidovaraShowLegal=showLegal;
-window.eidovaraRenderDashboard=renderDashboard;
+window.eidovaraOpenPalette=openPalette;
+window.eidovaraOpenShortcutSheet=openShortcutSheet;window.eidovaraRenderDashboard=renderDashboard;
 window.eidovaraRenderAll=renderAll;
 window.eidovaraActiveConversation=()=>activeConversation()?.messages||[];
 window.eidovaraReloadState=async()=>{state=await window.soul.snapshot();renderAll();};

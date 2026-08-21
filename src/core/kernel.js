@@ -139,7 +139,8 @@ export function kernelView(state, runtime) {
 export const KERNEL_ACTION_TYPES = Object.freeze([
   'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
   'open-diagnostics', 'pick-local-media', 'discover-apps',
-  'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet'
+  'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
+  'open-external'
 ]);
 
 function action(type, extra = {}) {
@@ -261,6 +262,7 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
       ];
     case 'research':
       return [
+        action('open-view', { view: 'research', label: 'Open Research', auto: true }),
         action('open-view', { view: 'chat', label: 'Open conversation' }),
         action('open-legal', { legal: 'privacy', label: 'Privacy notice' })
       ];
@@ -312,6 +314,12 @@ export function suggestionsForView(view, overlay = {}) {
       return [
         action('open-view', { view: 'memory', label: 'Memory' }),
         action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-legal', { legal: 'privacy', label: 'Privacy' })
+      ];
+    case 'research':
+      return [
+        action('open-view', { view: 'research', label: 'Open Research' }),
+        action('open-view', { view: 'chat', label: 'Conversation' }),
         action('open-legal', { legal: 'privacy', label: 'Privacy' })
       ];
     default:
@@ -400,6 +408,23 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry(), { v
   };
 }
 
+export function researchResultActions(webResearch = {}, overlay = {}) {
+  const actions = actionsForIntent('research', overlay);
+  for (const source of (webResearch?.sources || []).slice(0, 6)) {
+    if (!source?.url || !/^https:\/\//i.test(source.url)) continue;
+    const host = String(source.hostname || '').slice(0, 80);
+    const title = String(source.title || host || 'Source').slice(0, 60);
+    actions.push(action('open-external', {
+      url: source.url,
+      hostname: host,
+      snippet: String(source.description || source.extract || '').slice(0, 180),
+      label: host ? `${title} · ${host}`.slice(0, 80) : title,
+      auto: false
+    }));
+  }
+  return actions;
+}
+
 export function kernelPublicMeta(route) {
   const value = route && typeof route === 'object' ? route : {};
   return {
@@ -415,9 +440,15 @@ export function kernelPublicMeta(route) {
       legal: item.legal || undefined,
       panel: item.panel || undefined,
       minutes: item.minutes || undefined,
+      url: item.url ? String(item.url).slice(0, 500) : undefined,
+      hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
+      snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
       label: String(item.label || '').slice(0, 80),
-      auto: Boolean(item.auto)
-    })).filter(item => item.type && KERNEL_ACTION_TYPES.includes(item.type)) : [],
+      auto: item.type === 'open-external' ? false : Boolean(item.auto)
+    })).filter(item => item.type && (
+      KERNEL_ACTION_TYPES.includes(item.type)
+      || (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))
+    )) : [],
     soul: {
       enabled: Boolean(value.overlay?.enabled),
       name: value.overlay?.enabled ? String(value.overlay?.name || 'Soul') : null,
@@ -427,7 +458,8 @@ export function kernelPublicMeta(route) {
     },
     localOnly: true,
     network: false,
-    conversationsSent: false
+    conversationsSent: false,
+    webLookup: false
   };
 }
 

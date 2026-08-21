@@ -175,7 +175,8 @@ test('no workers.dev host is compiled into the desktop kernel', () => {
     'src/renderer/workspace-layers.js',
     'src/core/kernel.js',
     'src/core/soul-online.js',
-    'src/core/service.js'
+    'src/core/service.js',
+    'src/providers/internet.js'
   ];
   for (const file of files) {
     assert.doesNotMatch(read(file), /dreambot333\.workers\.dev/);
@@ -190,6 +191,7 @@ test('no workers.dev host is compiled into the desktop kernel', () => {
   const html = read('src/renderer/index.html');
   assert.match(html, /id="soulDock"/);
   assert.match(html, /id="commandPalette"/);
+  assert.match(html, /id="shortcutSheet"/);
   assert.match(html, /id="cheatsheetOverlay"/);
   assert.match(html, /id="focusQuietBar"/);
   assert.match(html, /id="kernelCustomizeForm"/);
@@ -198,6 +200,8 @@ test('no workers.dev host is compiled into the desktop kernel', () => {
   assert.match(html, /id="companionInput"/);
   assert.match(html, /id="companionTalkBtn"/);
   assert.match(html, /id="dashboardQuick"/);
+  assert.match(html, /id="researchView"/);
+  assert.match(html, /id="researchForm"/);
   assert.match(html, /id="companionAssistThis"/);
   const settingsOpen = html.lastIndexOf('<form', html.indexOf('id="settingsForm"'));
   const settingsClose = html.indexOf('</form>', settingsOpen);

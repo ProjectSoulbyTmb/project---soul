@@ -119,7 +119,7 @@ test('mix briefing prefers favorites and keeps HTTPS handoff copy', () => {
 
 test('localization locales share the expanded workspace keys and keep English fallback', () => {
   const src = fs.readFileSync('src/renderer/localization.js', 'utf8');
-  const keys = ['roleAccess', 'emptyAppsTitle', 'mixHelper', 'diagLead', 'noBackups', 'dashBackups', 'openLocalMedia', 'behaviorSaved', 'companionTitle', 'companionEmpty', 'companionNote', 'paletteTitle', 'scratchTitle', 'focusQuiet'];
+  const keys = ['roleAccess', 'emptyAppsTitle', 'mixHelper', 'diagLead', 'noBackups', 'dashBackups', 'openLocalMedia', 'behaviorSaved', 'companionTitle', 'companionEmpty', 'companionNote', 'researchTitle', 'researchLead', 'dashResearch', 'nextResearch', 'handoffNote', 'paletteTitle', 'scratchTitle', 'focusQuiet'];
   for (const loc of ['en', 'es', 'fr', 'de']) {
     const start = src.indexOf(`${loc}: {`);
     assert.ok(start >= 0, loc);

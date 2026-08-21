@@ -129,10 +129,40 @@
 .companion-log {
   display: grid;
   gap: 8px;
-  max-height: 160px;
+  max-height: 280px;
   overflow: auto;
   font-size: 13px;
   line-height: 1.45;
+}
+.companion-research-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.companion-research-source {
+  display: grid;
+  gap: 4px;
+}
+.companion-research-source small {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.4;
+}
+.companion-log .kernel-chips,
+.companion-research-source .kernel-chip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.companion-research-source .kernel-chip,
+.companion-log .kernel-chip {
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: 6px 10px;
+  background: var(--fill);
+  color: var(--text);
+  font-size: 12px;
+  text-align: left;
 }
 .companion-log .companion-turn {
   margin: 0;

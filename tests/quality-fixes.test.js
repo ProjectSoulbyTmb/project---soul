@@ -41,6 +41,7 @@ test('Escape closes legal, admin, palette, cheatsheet, and cancelable setup over
   assert.match(renderer, /#legalOverlay/);
   assert.match(renderer, /#adminOverlay/);
   assert.match(renderer, /#commandPalette/);
+  assert.match(renderer, /#shortcutSheet/);
   assert.match(renderer, /#cheatsheetOverlay/);
 });
 

@@ -6,7 +6,7 @@ Updated: 2026-08-21
 
 Eidovara is the modular Windows workspace; Soul remains its optional adaptive assistant personality. Applications, gaming controls, media, entertainment, appearance, backups, diagnostics, and updates remain useful without a connected model. Soul's protected identity, local continuity, reviewable memory, configurable tone/focus/autonomy, consent boundaries, and relationship model remain separate from the product and publishing identity. User-authored memories and setup text are treated as untrusted data, not system authority.
 
-## Working in v0.18.3
+## Working in v0.19.0
 
 | Area | Status | Evidence |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
 | Website | Live on eidovara.org plus github.io from `main` | Complete `docs/` marketing site (Home, Product, Download, Assist, Help, FAQ, Status, Legal, 404, robots/sitemap, Ask Eidovara). Cloudflare Pages project `eidovara` serves `https://eidovara.org/`. GitHub Pages also publishes `docs/` from `main` via `pages.yml` (HTTPS). Mirror: `https://projectsoulbytmb.github.io/project---soul/`. Do not add `docs/CNAME`. |
-| Public Windows download | Working | Primary CTA is `releases/latest/download/Eidovara-0.18.3-Windows-x64-Setup.exe` (official unsigned NSIS `.exe`, ~101.3 MiB, 18+ gate on Download). SHA-256 `4C6D9FA2B0CB4667C1B6580551632618DEB12B5CF5947457474BAEC0DFA7740E`. `/releases/latest` remains the notes/checksums page. Source repo is secondary. Tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. `v0.18.0`, `v0.18.1`, and `v0.18.2` remain published and must not be moved. |
+| Public Windows download | Working | Primary CTA is `releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe` (official unsigned NSIS `.exe`, ~101.3 MiB, 18+ gate on Download). SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`. `/releases/latest` remains the notes/checksums page. Source repo is secondary. Tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. `v0.18.0`, `v0.18.1`, `v0.18.2`, and `v0.18.3` remain published and must not be moved. |
 | Optional Worker | Working when deployed | `/health`, `/v1/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+ against `https://api.eidovara.org` by default; website assist is paste/save-only; desktop assist is default + explicit opt-in; not required to run the app; no `workers.dev` hard-code. Redeploy with `npx wrangler deploy` after merge so the live Worker does not drift. Neural TTS/VRM/OBS/live payments stay documented only. |
 
 ## Owner clicks git cannot finish
@@ -35,7 +35,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Problem | Solution path |
 | --- | --- |
 | Dependency review CI fails (“Dependency graph” off) | Settings → Code security → enable Dependency graph. Keep `.github/workflows/dependency-review.yml`. |
-| Windows `v0.18.3` Release | Push tag `v0.18.3` on current `main` (do not move `v0.18.0`, `v0.18.1`, or `v0.18.2`). `Release Windows` publishes unsigned Setup.exe. Site CTAs use `releases/latest/download/Eidovara-0.18.3-Windows-x64-Setup.exe`. |
+| Windows `v0.19.0` Release | Push tag `v0.19.0` on current `main` (do not move `v0.18.0`, `v0.18.1`, or `v0.18.2`). `Release Windows` publishes unsigned Setup.exe. Site CTAs use `releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe`. |
 | Deployed Worker lags git | From `server/`, `npx wrangler deploy` after login/token. Never commit the token. |
 
 ## Not yet production-complete
@@ -53,4 +53,4 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 
 ## Release decision
 
-v0.18.3 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, universally compatible application controller, or Authenticode-signed binary.
+v0.19.0 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, universally compatible application controller, or Authenticode-signed binary.

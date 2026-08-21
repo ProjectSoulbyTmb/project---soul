@@ -1,10 +1,10 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** Desktop product knowledge for the in-app Soul kernel (v0.18.3). Not the website helper. */
+/** Desktop product knowledge for the in-app Soul kernel (v0.19.0). Not the website helper. */
 
-export const DESKTOP_KNOWLEDGE_VERSION = '0.18.3';
-export const INSTALLER_NAME = 'Eidovara-0.18.3-Windows-x64-Setup.exe';
-export const INSTALLER_SHA256 = '4C6D9FA2B0CB4667C1B6580551632618DEB12B5CF5947457474BAEC0DFA7740E';
+export const DESKTOP_KNOWLEDGE_VERSION = '0.19.0';
+export const INSTALLER_NAME = 'Eidovara-0.19.0-Windows-x64-Setup.exe';
+export const INSTALLER_SHA256 = 'EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711';
 export const INSTALLER_SIZE = 'about 101.3 MiB';
 
 export const KNOWLEDGE_INTENTS = new Set([
@@ -20,22 +20,22 @@ const ENTRIES = {
   },
   unsigned: {
     title: 'Unsigned Windows build',
-    reply: 'This installation is Authenticode-unsigned on purpose for v0.18.3. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Checksums and updates live under Settings → Software updates.',
+    reply: 'This installation is Authenticode-unsigned on purpose for v0.19.0. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Checksums and updates live under Settings → Software updates.',
     actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   payments: {
     title: 'Payments stay off',
-    reply: 'v0.18.3 does not sell Premium and does not process payments. There is no live checkout, card collection, or PCI processing in this app. Free is $0. A local administrator override (Ctrl+A, away from text fields) can flip Premium feature gates for testing only. That override is not a purchase.',
+    reply: 'v0.19.0 does not sell Premium and does not process payments. There is no live checkout, card collection, or PCI processing in this app. Free is $0. A local administrator override (Ctrl+A, away from text fields) can flip Premium feature gates for testing only. That override is not a purchase.',
     actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   premium: {
     title: 'Free vs Premium',
-    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research after an explicit internet/web/online request, and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v0.18.3.',
+    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public web lookup after an explicit internet/web/online request (not a full-internet index: Wikipedia/Wikimedia plus optional keyed search and pages you open), and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. Brave is not a live payment unlock. No live checkout unlocks Premium in v0.19.0.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   },
   download: {
     title: 'You are already in the app',
-    reply: `This window is the installed Eidovara v0.18.3 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, use Settings → Software updates for the official GitHub channel. Soul does not fetch Setup.exe.`,
+    reply: `This window is the installed Eidovara v0.19.0 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, use Settings → Software updates for the official GitHub channel. Soul does not fetch Setup.exe.`,
     actions: [{ type: 'open-updates', label: 'Software updates' }]
   },
   platforms: {
@@ -60,12 +60,12 @@ const ENTRIES = {
   },
   what: {
     title: 'What Eidovara is',
-    reply: 'Eidovara v0.18.3 is a local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device — not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.',
+    reply: 'Eidovara v0.19.0 is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device — not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.',
     actions: [{ type: 'open-setup', label: 'Configure Soul' }, { type: 'open-view', view: 'apps', label: 'Apps & Gaming' }]
   },
   help: {
     title: 'What this kernel can do',
-    reply: 'I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. Ctrl+K (or Ctrl+P) opens a local command palette; Ctrl+/ opens the keyboard cheatsheet. Local search covers linked apps, memories, settings labels, and product intents — no background crawler and no injection into other processes. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v0.18.3. Assist is not Soul.',
+    reply: 'I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. Ctrl+K (or Ctrl+P) opens a local command palette; Ctrl+/ opens the keyboard cheatsheet. Local search covers linked apps, memories, settings labels, and product intents — no background crawler and no injection into other processes. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v0.19.0. Assist is not Soul.',
     actions: [
       { type: 'open-view', view: 'apps', label: 'Apps & Gaming' },
       { type: 'open-view', view: 'entertainment', label: 'Entertainment' },
@@ -80,7 +80,7 @@ const ENTRIES = {
   },
   privacy: {
     title: 'Privacy pointers',
-    reply: 'This is not legal advice. Conversations, memories, settings, and the 18+ flag stay on this device. No owner-operated accounts or telemetry. What can leave: explicit Wikipedia/Wikimedia research, optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /v1/health /v1/config /v1/status after you paste a service URL, and optional /v1/assist only after a separate opt-in. Conversations are not sent by default. No payment-card collection.',
+    reply: 'This is not legal advice. Conversations, memories, settings, and the 18+ flag stay on this device. No owner-operated accounts or telemetry. What can leave: public web lookup after you ask (Wikipedia/Wikimedia, optional keyed search, and HTTPS pages you open — not a full-internet index), optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /v1/health /v1/config /v1/status after you paste a service URL, and optional /v1/assist only after a separate opt-in. Conversations are not sent by default. No payment-card collection.',
     actions: [{ type: 'open-legal', legal: 'privacy', label: 'Privacy notice' }]
   },
   status: {
@@ -89,13 +89,13 @@ const ENTRIES = {
     actions: [{ type: 'open-diagnostics', label: 'Show diagnostics' }, { type: 'open-service', label: 'Service settings' }]
   },
   forbidden: {
-    title: 'What v0.18.3 does not include',
-    reply: 'v0.18.3 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness or sentience. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode stays gated. Playback uses voices already installed on this OS when you enable that option.',
+    title: 'What v0.19.0 does not include',
+    reply: 'v0.19.0 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness or sentience. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode stays gated. Playback uses voices already installed on this OS when you enable that option.',
     actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   offline: {
     title: 'Offline workspace',
-    reply: 'Free / Offline Soul and this workspace work with no cloud URL. Profiles, conversations, memories, and backups stay in the Windows application-data directory. Explicit internet/web/online research is the exception, and only after you ask. If a connected model endpoint fails, replies fall back to offline mode. The kernel stays the source of truth even when a Worker is attached.',
+    reply: 'Free / Offline Soul and this workspace work with no cloud URL. Profiles, conversations, memories, and backups stay in the Windows application-data directory. Public web lookup after you ask is the exception — not a full-internet index — and only after an explicit internet/web/online request. If a connected model endpoint fails, replies fall back to offline mode. The kernel stays the source of truth even when a Worker is attached.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   }
 };

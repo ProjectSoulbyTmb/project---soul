@@ -2,7 +2,7 @@
 
 Last updated: August 21, 2026
 
-Product: Eidovara v0.18.3 Stable Alpha for Windows 10/11 x64.
+Product: Eidovara v0.19.0 Stable Alpha for Windows 10/11 x64.
 
 These product terms describe advertised use of the current release. They are **not legal advice**, a lawyer letterhead, a certification of compliance, or a substitute for qualified counsel. Mandatory consumer rights that applicable law does not allow to be waived remain unaffected. Use is also governed by [LICENSE](LICENSE). If these terms and LICENSE conflict on a permission, LICENSE controls.
 
@@ -59,7 +59,7 @@ Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (the soft
 
 The official advertised product is **Authenticode-unsigned Windows 10/11 x64 desktop software**. Linux and macOS packaging scripts in this repository are development targets, not official signed products. You are responsible for export-control, sanctions, and local law applicable to downloading and running unsigned desktop software.
 
-## 8. Commerce in v0.18.3
+## 8. Commerce in v0.19.0
 
 This release does **not** process live payments, store payment cards, or automatically unlock Premium. Premium feature gates exist for **local administrator testing only** (Ctrl+A). That override is not proof of purchase or subscription. No PCI, SOC, or similar certification is claimed. Payment-provider URLs on the optional Worker remain empty until a real store exists.
 
