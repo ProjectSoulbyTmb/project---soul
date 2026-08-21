@@ -58,7 +58,7 @@
       <ul>
         <li>Explicit internet/web/online research: search terms to Wikipedia/Wikimedia (and, if you enabled Premium testing and pasted a Brave key, to Brave Search).</li>
         <li>Optional pasted model endpoints: conversation context to loopback Ollama or to an HTTPS <code>/chat/completions</code> URL you configure.</li>
-        <li>Official GitHub update checks: app version via user agent; installer download only after you confirm.</li>
+        <li>Official GitHub update checks: after 18+, the desktop app can auto-check GitHub Releases (Settings can disable this). Installer download still needs your confirm. Checksums are verified. Builds are Authenticode-unsigned.</li>
         <li>Spotify/YouTube buttons: HTTPS search text in your system browser.</li>
         <li>Optional Eidovara service: after the 18+ gate, Settings Connect (or Ctrl+A Test service) may call <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code>. Conversations and payment data are not sent. If the service is down, the local app still works.</li>
         <li>Website helper: answers from a fixed knowledge pack in this browser. If you paste an HTTPS service base (saved only in this browser), the site may POST a single question to <code>/v1/assist</code>. Transcripts are not stored. Desktop conversation history is refused.</li>

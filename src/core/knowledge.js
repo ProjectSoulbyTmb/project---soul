@@ -20,8 +20,8 @@ const ENTRIES = {
   },
   unsigned: {
     title: 'Unsigned Windows build',
-    reply: 'This installation is Authenticode-unsigned on purpose for v0.19.1. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Checksums and updates live under Settings → Software updates.',
-    actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'open-legal', legal: 'about', label: 'About & legal' }]
+    reply: 'This installation is Authenticode-unsigned on purpose for v0.19.1. It is not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub or Sigstore provenance is not Authenticode. No software is perfectly secure. Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned.',
+    actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'check-updates', label: 'Check for updates' }, { type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   payments: {
     title: 'Payments stay off',
@@ -30,13 +30,13 @@ const ENTRIES = {
   },
   premium: {
     title: 'Free vs Premium',
-    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public web lookup after an explicit internet/web/online request (not a full-internet index: Wikipedia/Wikimedia plus optional keyed search and pages you open), and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. Brave is not a live payment unlock. No live checkout unlocks Premium in v0.19.1.',
+    reply: 'Eidovara Free includes this workspace, media, gaming mode, backups, updates, offline and local-model assistance, public web lookup after an explicit internet/web/online request (not a full-internet index: Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search chips), and up to three linked apps. Premium test gates (local admin only) add compatible remote-model endpoints, a keyed Brave search, unlimited linked apps, and RGB lighting. Brave is not a live payment unlock. No live checkout unlocks Premium in v0.19.1.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   },
   download: {
     title: 'You are already in the app',
-    reply: `This window is the installed Eidovara v0.19.1 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, use Settings → Software updates for the official GitHub channel. Soul does not fetch Setup.exe.`,
-    actions: [{ type: 'open-updates', label: 'Software updates' }]
+    reply: `This window is the installed Eidovara v0.19.1 workspace, not the public Download page. The advertised unsigned Windows installer is ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases — an 18+ site concern. In this app, Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Soul does not fetch Setup.exe itself.`,
+    actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'check-updates', label: 'Check for updates' }]
   },
   platforms: {
     title: 'Official platform',
@@ -107,7 +107,7 @@ const PRODUCT_RULES = [
   { id: 'platforms', re: /\b(linux|macos|mac\s*os|iphone|ios|ipad|android|official\s+platform|sf\s*pro|sf\s*mono)\b/i },
   { id: 'brands', re: /\b(jarvis|j\.a\.r\.v\.i\.s|iron\s*man|marvel|disney|stark(?:\s+industries)?|siri|alexa|google\s+assistant|copilot|cortana|chatgpt|claude|raycast|alfred|spotlight|clippy|replika|character\.ai|xbox|game\s*bar|hey\s+siri|ok(?:ay)?\s+google)\b/i },
   { id: 'forbidden', re: /\b(neural\s+tts|vrm|makehuman|obs\s+websocket|consciousness|sentien(?:t|ce)|are\s+you\s+(?:alive|conscious|a\s+person))\b/i },
-  { id: 'download', re: /\b(download|setup\.exe|installer|github\s+releases|get\s+eidovara)\b/i },
+  { id: 'download', re: /\b(download|setup\.exe|installer|github\s+releases|get\s+eidovara|check(?:ing)?\s+for\s+updates?|auto[- ]?update)\b/i },
   { id: 'connect', re: /\b(connect\s+(?:the\s+)?service|worker\s+url|paste\s+(?:an?\s+)?https|\/v1\/status|\/v1\/health|\/health)\b/i },
   { id: 'hosted', re: /\b(hosted\s+chat|cloud\s+account|saas|conversations?\s+sent|\/v1\/assist|website\s+helper|site\s+assist)\b/i },
   { id: 'premium', re: /\b(free\s+vs\s+premium|premium\s+(?:test|gate|edition|override)|eidovara\s+premium)\b/i },

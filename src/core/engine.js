@@ -57,7 +57,7 @@ export class SoulEngine {
     this.store.save(this.state);
   }
   setProvider(provider) { this.provider = provider || new OfflineProvider(); }
-  setInternetOptions(options = {}) { this.internetOptions = options; }
+  setInternetOptions(options = {}) { this.internetOptions = { ...(this.internetOptions || {}), ...options }; }
   registerModule(mod) { return this.modules.register(mod); }
   kernelStatus() { return kernelView(this.state, this.modules); }
   heartbeat({ persist = false, at } = {}) {
