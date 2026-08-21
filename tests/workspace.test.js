@@ -61,6 +61,9 @@ test('intent detection covers workspace starters', () => {
   assert.equal(detectOfflineIntent('Review what you remember and suggest useful updates.'), 'memory');
   assert.equal(detectOfflineIntent('I want to talk something through with you.'), 'talk');
   assert.equal(detectOfflineIntent('Surprise me with lawful, properly sourced public media.'), 'surprise');
+  assert.equal(detectOfflineIntent('Find music that fits my current mood and explain why.'), 'mood');
+  assert.equal(detectOfflineIntent('Help me add a trusted Windows app from the Start Menu.'), 'apps');
+  assert.equal(detectOfflineIntent('Search the internet for current information I need.'), 'research');
 });
 
 test('untrusted memory text is quoted and OBS URLs stay out of context and offline replies', () => {

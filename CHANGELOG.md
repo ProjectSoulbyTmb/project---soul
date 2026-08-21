@@ -8,7 +8,11 @@
 - Presents the age-of-majority warning only when Adult Soul is accessed, while keeping enablement and consent separate.
 - Clarifies minor restrictions, professional-advice limits, mandatory consumer rights, payment status, media rights, and third-party boundaries.
 - Adds persisted English, Spanish, French, and German interface foundations and assistant-language preferences with English fallback.
-- Makes the desktop workspace usable offline: Soul answers setup roles, dashboard starters, entertainment mixes, and Windows launcher/media checklists instead of a generic listener; local media plays through a gated protocol; internet research stays request-driven.
+- Makes the desktop workspace usable offline: Soul answers setup roles, dashboard starters, entertainment mixes, study/stream checklists, and Windows launcher help instead of a generic listener.
+- Plays user-selected local audio/video through a gated `eidovara-media://` protocol (`media-src https: eidovara-media:`), without opening `'self'` media or persisting local paths in taste records.
+- Requires an explicit internet/web/online request before Wikipedia/Wikimedia research; mood mix, apps, gaming, study, and stream intents stay local.
+- Awaits CLI replies, skips empty lines, and adds `--message`, `--help`, and `npm run cli`.
+- Preserves assistant language/tone/accessibility when the behavior form omits them; Free edition no longer re-applies a stored Brave search key.
 
 ## v0.17.12
 

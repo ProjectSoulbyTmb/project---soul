@@ -1,14 +1,9 @@
-import { isExplicitInternetRequest, isLocalWorkspaceIntent } from '../core/workspace.js';
+import { isExplicitInternetRequest } from '../core/workspace.js';
 
 const AGENT = 'Eidovara/0.18 (desktop research client)';
 
 function plain(value) {
   return String(value || '').replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, '&').replace(/\s+/g, ' ').trim();
-}
-function requested(text) {
-  if (isLocalWorkspaceIntent(text) && !isExplicitInternetRequest(text)) return false;
-  if (isExplicitInternetRequest(text)) return true;
-  return /\b(search|look up|find|pull|get|show|play)\b[\s\S]*\b(?:the\s+)?(?:online|internet|web)\b[\s\S]*\b(information|info|picture|pictures|image|images|photo|photos|video|videos|audio|music|song|songs|sound|recording|recordings)\b/i.test(text);
 }
 function subject(text) { return String(text).replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to)\b/gi, ' ').replace(/[^\p{L}\p{N}\s'_-]/gu, ' ').replace(/\s+/g, ' ').trim().slice(0, 240); }
 async function json(url, timeoutMs = 15000, headers = {}) {
@@ -46,8 +41,7 @@ async function searchBroad(query, apiKey, wantsImages) {
 }
 
 export async function researchInternet(input, { searchApiKey = '' } = {}) {
-  if (isLocalWorkspaceIntent(input) && !isExplicitInternetRequest(input)) return null;
-  if (!requested(input)) return null;
+  if (!isExplicitInternetRequest(input)) return null;
   const query = subject(input);
   if (!query) throw new Error('Tell me what you want me to search for.');
   const wantsImages = /\b(picture|image|photo)s?\b/i.test(input);

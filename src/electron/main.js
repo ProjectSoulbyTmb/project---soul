@@ -92,6 +92,7 @@ function createWindow() {
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
     mainWindow.once('ready-to-show', () => mainWindow.show());
+    mainWindow.on('closed', () => { allowedLocalMedia.clear(); mainWindow = null; });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
     mainWindow.webContents.on('will-attach-webview', e => e.preventDefault());
@@ -114,7 +115,7 @@ function registerLocalMediaProtocol() {
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
 process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
 app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).catch(err => fatal('Eidovara initialization error', err));
-app.on('window-all-closed', () => { if (process.platform !== 'darwin') app.quit(); });
+app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
 ipcMain.handle('soul:send', async (_e, m) => { const result = await engine.respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
