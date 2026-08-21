@@ -1,3 +1,5 @@
+# Applied only if docs/ is later published to Cloudflare Pages.
+# GitHub Pages does not use this file as HTTP response headers; each HTML page also sets CSP via a meta tag.
 /*
   Content-Security-Policy: default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests
   Referrer-Policy: no-referrer

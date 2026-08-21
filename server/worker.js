@@ -5,11 +5,12 @@ const httpsUrl = value => { try { const url = new URL(String(value || '')); retu
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const pathname = url.pathname.replace(/\/+$/, '') || '/';
     env ||= {};
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...JSON_HEADERS, allow: 'GET, OPTIONS' } });
     if (request.method !== 'GET') return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, OPTIONS' });
-    if (url.pathname === '/health') return response({ service: 'Eidovara', status: 'ok', version: '0.18.0', time: new Date().toISOString() }, 200, { 'cache-control': 'public, max-age=30' });
-    if (url.pathname === '/v1/config') return response({ version: '0.18.0', website: httpsUrl(env.WEBSITE_URL), store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) }, privacy: 'No payment-card data is accepted by this service.' }, 200, { 'cache-control': 'public, max-age=300' });
+    if (pathname === '/health') return response({ service: 'Eidovara', status: 'ok', version: '0.18.0', time: new Date().toISOString() }, 200, { 'cache-control': 'public, max-age=30' });
+    if (pathname === '/v1/config') return response({ version: '0.18.0', website: httpsUrl(env.WEBSITE_URL), store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) }, privacy: 'No payment-card data is accepted by this service.' }, 200, { 'cache-control': 'public, max-age=300' });
     return response({ error: 'not_found' }, 404);
   }
 };

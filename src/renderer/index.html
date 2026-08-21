@@ -161,8 +161,8 @@
       <label class="setup-field">Local test edition override<select id="adminEdition"><option value="free">Eidovara Free</option><option value="premium">Eidovara Premium</option></select></label>
       <small>This local control is for owner testing and does not verify a purchase or subscription. Production entitlements require a signed server response.</small>
       <label class="setup-field">Secure store / payment page<input id="adminStoreUrl" type="url" maxlength="1000" placeholder="https://your-store.example/upgrade" /></label>
-      <label class="setup-field">Soul HTTPS service<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" /></label>
-      <p>Checkout must be hosted by an HTTPS payment provider. Soul never collects card numbers, security codes, or payment certificates.</p>
+      <label class="setup-field">Cloudflare Worker HTTPS base URL<input id="adminServiceUrl" type="url" maxlength="1000" placeholder="https://eidovara-api.example.workers.dev" /></label>
+      <p>Paste the HTTPS origin printed by <code>npx wrangler deploy</code> from <code>server/</code> (a <code>*.workers.dev</code> URL, no path). Test service calls <code>/health</code>. Do not paste API tokens. Checkout must be a provider-hosted HTTPS page. Soul never collects card numbers, security codes, or payment certificates.</p>
       <p class="settings-status" id="adminPanelStatus"></p>
       <div class="setup-actions"><button type="button" class="secondary" id="adminStoreBtn">Open store</button><button type="button" class="secondary" id="adminServiceBtn">Test service</button><button type="button" class="secondary" id="adminLockBtn">Lock</button><button type="submit">Save</button></div>
     </form>

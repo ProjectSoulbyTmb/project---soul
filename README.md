@@ -40,9 +40,13 @@ Eidovara Free includes core workspace, offline/local assistance, public research
 npm install
 npm test
 npm run check
+npm run server:test
+npm run server:check
 npm run smoke
 npm run dist:win:installer
 ```
+
+The public website is GitHub Pages (`https://projectsoulbytmb.github.io/project---soul/`). The optional online API is the Cloudflare Worker in `server/`; deploy it with `npx wrangler deploy` after `npx wrangler login` or `CLOUDFLARE_API_TOKEN`, then paste the printed HTTPS origin into the desktop Ctrl+A panel. Do not commit tokens.
 
 The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 

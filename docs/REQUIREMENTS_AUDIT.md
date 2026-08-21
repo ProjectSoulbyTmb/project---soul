@@ -1,6 +1,6 @@
 # Eidovara / Soul requirements audit
 
-Updated: 2026-08-20
+Updated: 2026-08-21
 
 ## Product purpose — intact and modular
 
@@ -23,14 +23,14 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
-| Website | Working | GitHub Pages deployment with responsive product, trust, privacy, security, licensing, and terms pages. |
+| Website | Working | GitHub Pages HTTPS deployment with responsive product, trust, privacy, security, licensing, and terms pages. Cloudflare Pages is not serving the site unless the owner later publishes `docs/` there. |
 
 ## Not yet production-complete
 
 | Area | Required next dependency |
 | --- | --- |
 | Automatic paid Premium activation | Payment account, signed webhooks, D1/KV entitlement store, server signing key, activation UI, cancellation/refund tests. |
-| Stable public API | Select the Cloudflare `workers.dev` account subdomain, deploy Worker, monitor `/health`, configure app service URL. |
+| Stable public API | Cloudflare Worker source and local `/health` checks exist; live `workers.dev` deploy still needs the owner Cloudflare login or `CLOUDFLARE_API_TOKEN` with Workers edit permission. Then paste the printed HTTPS origin into Ctrl+A. |
 | Branded permanent domain | Register an available domain in Tyler Michael Bosworth's account and maintain renewals/security controls. |
 | Authenticode reputation | Obtain an organization/individual code-signing certificate or trusted signing service; current release is explicitly unsigned. |
 | Native neural voice/model packs | Pin exact runtimes/assets only after per-model license, provenance, consent, hash, and sandbox review. |
