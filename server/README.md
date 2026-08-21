@@ -15,4 +15,4 @@ Owner reference (not baked into the app): `https://eidovara-api.dreambot333.work
 
 For production, enable Cloudflare account two-factor authentication, keep Wrangler tokens out of source control, deploy from a protected GitHub environment, monitor `/health`, and configure more than one owner-controlled recovery method. The public service is deliberately stateless, so an outage cannot corrupt user conversations or payment records.
 
-Endpoints: `GET /health` and `GET /v1/config`. All other methods and paths fail closed.
+Endpoints: `GET /health` and `GET /v1/config`. `/v1/config` reports `paymentsEnabled: false`, `ageRestricted: true`, `minimumAge: 18`, `authenticodeSigned: false`, `openSource: false`, and `premium: local-admin-testing-only`. Store URLs stay empty unless you later add provider-hosted checkout links. Live payments stay off in v0.18.0. All other methods and paths fail closed.

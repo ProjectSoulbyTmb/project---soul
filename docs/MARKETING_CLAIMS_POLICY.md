@@ -24,7 +24,8 @@ Use this checklist for websites, store listings, release notes, videos, screensh
 - “First digital human,” “conscious,” “sentient,” “perfect,” “unrestricted,” or scientifically proven consciousness.
 - “Patented,” “patent pending,” “registered trademark,” “certified,” “government approved,” “lawyer approved,” or “legally compliant everywhere.”
 - Guaranteed game performance, universal compatibility, complete computer access, infallible security, or guaranteed prevention of malware or illegal use.
-- Partnership, sponsorship, certification, or endorsement by Microsoft, GitHub, Electron, Spotify, YouTube, OBS, Twitch, NVIDIA, payment providers, model providers, or any other third party without a signed agreement.
+- Partnership, sponsorship, certification, or endorsement by Apple, Microsoft, GitHub, Electron, Spotify, YouTube, OBS, Twitch, NVIDIA, payment providers, model providers, or any other third party without a signed agreement.
+- Describing Eidovara as an iOS, iPhone, iPad, or Apple product, or stating that licensed SF Pro fonts are required.
 - An active subscription, automatic entitlement, refund promise, or payment security certification before the commerce service and its complete consumer terms are deployed and tested.
 
 ## Publication gate

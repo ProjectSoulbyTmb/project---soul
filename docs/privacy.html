@@ -1,7 +1,37 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>Privacy · Eidovara</title><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="site.css"></head>
-<body><header class="site-header"><div class="site-header-inner"><a class="brand" href="./">Eidovara</a></div></header><main><section class="trust"><h1>Privacy notice</h1>
-<p>Eidovara stores profile data locally by default. Network requests occur when a user requests internet research, opens an external link, checks for updates, or configures a model or search provider. Provider services receive the information required to fulfill the request under their own terms. The application does not collect card numbers or security codes. Review and remove local memories, credentials, backups, and application shortcuts from the desktop application.</p>
-<p>Eidovara is restricted to users age 18 or older. The current project does not operate user accounts or intentionally collect minors' personal information. Adult Mode additionally requires the user to have reached the age of majority where located. Local confirmation is not independent identity or age verification.</p>
-<p>Last updated August 21, 2026. This notice describes the current software and is not a certification or guarantee of compliance for every deployment.</p>
-</section></main></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Privacy · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+</head>
+<body>
+<header class="site-header"><div class="site-header-inner"><a class="brand" href="./"><span class="mark"></span>Eidovara</a><nav><a href="terms.html">Terms</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="security.html">Security</a></nav></div></header>
+<main class="legal">
+  <p class="eyebrow">Privacy notice · v0.18.0</p>
+  <h1>What stays local, and what can leave.</h1>
+  <p>This notice describes Eidovara Stable Alpha for Windows. It is not an independent audit or a compliance certification. Last updated August 21, 2026.</p>
+
+  <div class="legal-card"><h2>Local-first</h2><p>Profiles, conversations, memories, preferences, safety records, linked-app shortcuts, Adult Mode state, the 18+ confirmation, encrypted credentials, and backups stay in the Windows application-data directory (or a CLI data directory you choose). There are no owner-operated accounts, telemetry, advertising identifiers, analytics SDKs, or cloud memory. Operating-system credential encryption protects data at rest when available; it does not protect against malware running as your user.</p></div>
+
+  <div class="legal-card"><h2>What can leave this device</h2>
+    <ul>
+      <li>Explicit internet/web/online research: search terms to Wikipedia/Wikimedia (and, if you enabled Premium testing and pasted a Brave key, to Brave Search).</li>
+      <li>Optional pasted model endpoints: conversation context to loopback Ollama or to an HTTPS <code>/chat/completions</code> URL you configure.</li>
+      <li>Official GitHub update checks: app version via user agent; installer download only after you confirm.</li>
+      <li>Spotify/YouTube buttons: HTTPS search text in your system browser.</li>
+      <li>Optional Worker health check: only if a local administrator pastes a base URL and clicks Test service. Conversations and payment data are not sent.</li>
+    </ul>
+    <p>The application does not collect card numbers or security codes. Review and remove local data from Settings.</p>
+  </div>
+
+  <div class="legal-card"><h2>Age 18+</h2><p>Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Adult Mode additionally requires the age of majority where located. Local confirmation is not independent identity or age verification.</p></div>
+</main>
+<footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved.</span><a href="./">Back to Eidovara</a></div></footer>
+</body>
+</html>

@@ -1,3 +1,35 @@
+EIDOVARA WINDOWS INSTALLER NOTICE
+Version 0.18.0 Stable Alpha
+
+This Setup program installs unsigned Windows 10/11 x64 desktop software.
+It is source-available for lawful evaluation, NOT open source, and is
+restricted to users 18 years of age or older.
+
+BY CLICKING I AGREE / INSTALL YOU CONFIRM THAT:
+
+- You are 18 or older. This click is not independent age or identity
+  verification.
+- You accept TERMS.md, PRIVACY.md, AGE.md, and the license below.
+- You will not use Eidovara for criminal activity or unauthorized access.
+- Built-in research uses public Wikipedia/Wikimedia on explicit request.
+- Application launching asks Windows to open local apps you already have
+  the right to use, after you confirm.
+- Premium in this version is local-admin testing only. There is no live
+  payment, card storage, or automatic paid unlock.
+- Official Linux/macOS products are not claimed. Authenticode signing is
+  not claimed.
+- Soul is software assistance, not therapy, medical care, or a claim of
+  consciousness.
+- Eidovara is not an Apple, Microsoft, iOS, iPhone, or Electron product
+  and does not require licensed SF Pro fonts.
+
+If you are under 18, click Decline / Cancel and do not install.
+
+These statements are product terms, not legal advice. Mandatory consumer
+rights remain unaffected.
+
+======== LICENSE ========
+
 Eidovara Source-Available Evaluation License 1.0
 
 Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.

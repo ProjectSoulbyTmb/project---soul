@@ -201,6 +201,11 @@
   background: var(--btn-gray);
   color: var(--text);
 }
+body.age-gated .app { pointer-events: none; user-select: none; }
+#legalOverlay { z-index: 130; }
+.legal-dialog { max-height: min(88vh, 760px); overflow: auto; }
+.legal-panel p { margin: 0 0 10px; }
+.legal-tabs { flex-wrap: wrap; }
 @media (max-width: 650px) {
   .setup-overlay { padding: 8px; place-items: start center; }
   .setup-dialog { padding: 16px; border-radius: 16px; }
