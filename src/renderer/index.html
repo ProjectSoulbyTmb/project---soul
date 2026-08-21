@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src https: eidovara-media:; connect-src 'none'; object-src 'none'" />
-  <title>Eidovara v0.19.0</title>
+  <title>Eidovara v0.19.1</title>
   <link rel="stylesheet" href="tokens.css" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="gaming.css" />
@@ -19,7 +19,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand-row">
         <div class="soul-mark" aria-hidden="true"><span></span></div>
-        <div><strong>Eidovara</strong><small>v0.19.0 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
+        <div><strong>Eidovara</strong><small>v0.19.1 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
       </div>
       <button class="new-chat" id="newChatBtn" data-i18n="newConversation">＋ New conversation</button>
       <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
@@ -41,6 +41,7 @@
         <div class="top-actions">
           <button type="button" class="icon-btn" id="paletteBtn" aria-label="Jump anywhere" aria-keyshortcuts="Control+K" title="Ctrl+K">Ctrl+K</button>
           <button type="button" class="icon-btn" id="shortcutBtn" aria-label="Keyboard shortcuts" aria-keyshortcuts="Control+/" title="Ctrl+/">Ctrl+/</button>
+          <button type="button" class="icon-btn" id="notifyOpenBtn" aria-label="In-app notices" title="Notices">●</button>
           <button type="button" class="icon-btn visually-hidden" id="paletteOpenBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette">⌘K</button>
           <button type="button" class="icon-btn visually-hidden" id="cheatsheetOpenBtn" title="Keyboard cheatsheet (Ctrl+/)" aria-label="Open keyboard cheatsheet">?</button>
           <button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Open Soul companion"><span class="companion-face"><i></i><i></i></span></button>
@@ -113,6 +114,7 @@
               </div>
             </div>
             <div class="dashboard-grid" id="dashboardGrid"></div>
+            <div class="card recents-card" id="recentsCard"><h3 data-i18n="recentsTitle">Recents</h3><p class="settings-help" data-i18n="recentsLead">Linked apps you confirm-launched, local media titles, and memories you opened — on this PC only. Not a whole-internet index.</p><div id="recentsList"></div></div>
             <div class="quick-grid" id="dashboardQuick">
               <button type="button" data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button>
               <button type="button" data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button>
@@ -221,6 +223,7 @@
           <button type="button" data-settings-jump="assistantBehaviorForm">Behavior</button>
           <button type="button" data-settings-jump="settings-updates">Updates</button>
           <button type="button" data-settings-jump="backupSection">Backups</button>
+          <button type="button" data-settings-jump="desktopChromeForm">Desktop</button>
         </div>
         <form class="settings-card settings-group" id="serviceForm">
           <h3 id="settings-service">Eidovara service</h3>
@@ -280,6 +283,17 @@
             <div class="settings-actions"><button type="button" class="secondary" id="addCustomActionBtn">Add action</button><button type="submit">Save customization</button></div>
             <p class="settings-status" id="kernelCustomizeStatus"></p>
           </form>
+        <form class="settings-card settings-group" id="desktopChromeForm">
+          <h3>Desktop chrome</h3>
+          <p class="settings-help" data-i18n="chromeHelp">Tray, on-top, and sign-in apply to this Eidovara window only. Open at login is Windows-only via Electron. Not a global hotkey into other apps.</p>
+          <label class="check"><input type="checkbox" id="trayStayInput" /> <span data-i18n="trayStay">Keep running in the tray</span></label>
+          <label class="check"><input type="checkbox" id="alwaysOnTopInput" /> <span data-i18n="alwaysOnTop">Keep window on top</span></label>
+          <label class="check"><input type="checkbox" id="openAtLoginInput" /> <span data-i18n="openAtLogin">Open at Windows sign-in</span></label>
+          <label class="check"><input type="checkbox" id="pinCompanionInput" /> <span data-i18n="pinCompanion">Pin companion dock</span></label>
+          <p class="settings-help" id="openAtLoginHelp">Open at login uses Electron's Windows login-item setting. It is not available on this host if you are not on Windows.</p>
+          <div class="settings-actions"><button type="submit">Save desktop chrome</button></div>
+          <p class="settings-status" id="desktopChromeStatus"></p>
+        </form>
         <div class="card diagnostics hidden" id="diagnosticsCard"><p class="settings-status" data-i18n="diagLead">Local snapshot of this installation. Not a security certification or compatibility guarantee.</p><div class="diagnostics-summary" id="diagnosticsSummary"></div><pre id="diagnosticsText"></pre></div>
         <div class="settings-card settings-group" id="settings-updates"><h3>Software updates</h3><p class="settings-help">Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned.</p><label class="check"><input type="checkbox" id="autoCheckUpdates" checked /> Check GitHub Releases automatically (default on). Turn off on metered networks.</label><div class="settings-actions"><button type="button" id="checkUpdateBtn">Check for updates</button><button type="button" class="secondary hidden" id="installUpdateBtn">Restart and install</button></div><p class="settings-status" id="updateStatus"></p></div>
         <div class="settings-card settings-group" id="editionCard"><h3 id="editionTitle">Eidovara Free</h3><p id="editionDescription">A complete core assistant with offline/local models, memory, media, backups, updates, and up to three linked apps.</p><p class="settings-help">Premium in this version is local-admin testing only. There is no live checkout.</p><button type="button" class="hidden" id="upgradeBtn">View Eidovara Premium</button></div>
@@ -336,7 +350,17 @@
             <label>Rate <select id="mediaRate"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
             <button type="button" id="mediaLoopBtn" aria-label="Loop">🔁︎</button>
             <button type="button" id="mediaShuffleBtn" aria-label="Shuffle">Shuffle</button>
-            <label>Sleep <select id="mediaSleep"><option value="0">Off</option><option value="15">15 min</option><option value="30">30 min</option><option value="45">45 min</option><option value="60">60 min</option><option value="90">90 min</option></select></label>
+            <label class="sleep-timer"><span data-i18n="sleepTimer">Sleep</span>
+              <select id="sleepTimerSelect" aria-label="Sleep timer for local media">
+                <option value="off" data-i18n="sleepOff">Off</option>
+                <option value="15" data-i18n="sleep15">15 min</option>
+                <option value="30" data-i18n="sleep30">30 min</option>
+                <option value="45">45 min</option>
+                <option value="60" data-i18n="sleep60">60 min</option>
+                <option value="90">90 min</option>
+              </select>
+              <small id="sleepTimerRemain"></small>
+            </label>
             <div class="np-quality is-empty" id="mediaQualityWrap"><label>Quality <select id="mediaQuality"></select></label></div>
             <button type="button" id="mediaOutputBtn">Output</button>
             <select id="mediaOutput" class="hidden" aria-label="Audio output"></select>
@@ -346,7 +370,7 @@
     </div>
     <section class="media-dock now-playing-bar" id="mediaDock">
       <button type="button" class="np-art" id="npArt" aria-label="Expand player"><span>▶</span></button>
-      <div class="media-now" id="mediaNow"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small></div>
+      <div class="media-now" id="mediaNow"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small><span id="nowPlayingLabel" class="now-playing-tag" data-i18n="nowPlaying">Now playing</span></div>
       <div class="np-transport">
         <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
         <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
@@ -388,7 +412,7 @@
   <div class="setup-overlay hidden" id="ageGateOverlay" role="dialog" aria-modal="true" aria-labelledby="ageGateTitle"><div class="setup-dialog admin-dialog"><div><h1 id="ageGateTitle">Eidovara is for adults 18+</h1><p>You need to be 18 or older to use this app. Adult Mode is a separate, optional setting with extra confirmation you can revoke.</p></div><p class="truth-note">This checkbox stays on this PC. It is not ID verification. Eidovara is source-available (not open source) unsigned Windows software. There is no live payment. Soul is software assistance, not therapy or a claim of consciousness.</p><label class="check"><input type="checkbox" id="ageGateTermsCheck" /> I confirm I am 18 or older and I accept the Terms of Use, Privacy notice, and Age statement.</label><div class="setup-actions"><button type="button" class="secondary" id="ageGateLegalBtn">Read terms</button><button type="button" class="secondary" id="ageGateDeclineBtn">Exit</button><button type="button" id="ageGateAcceptBtn" disabled>I confirm I am 18 or older</button></div></div></div>
   <div class="setup-overlay hidden" id="legalOverlay" role="dialog" aria-modal="true" aria-labelledby="legalTitle">
     <div class="setup-dialog admin-dialog legal-dialog">
-      <div><h1 id="legalTitle">About &amp; legal</h1><p>Eidovara v0.19.0 Stable Alpha. Product copy, not legal advice. Mandatory consumer rights remain unaffected.</p></div>
+      <div><h1 id="legalTitle">About &amp; legal</h1><p>Eidovara v0.19.1 Stable Alpha. Product copy, not legal advice. Mandatory consumer rights remain unaffected.</p></div>
       <div class="settings-actions legal-tabs">
         <button type="button" data-legal="about">About</button>
         <button type="button" class="secondary" data-legal="terms">Terms</button>
@@ -396,7 +420,7 @@
         <button type="button" class="secondary" data-legal="age">Age 18+</button>
       </div>
       <div class="legal-panel" id="legalAboutPanel">
-        <p>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Created and owned by Tyler Michael Bosworth. Published under the intended name Soul Consciousness Studios™ (unregistered) — that name is the intended publisher only, not a formed entity that owns this IP unless a signed assignment exists. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Source-available evaluation license — not OSI open source. Forks remain under LICENSE and may not be relicensed as MIT, Apache, GPL, or other open source. GitHub pull requests do not transfer ownership or trademark rights; contributor-assignment and entity-assignment files in the repository are unsigned templates only. Official product: unsigned Windows 10/11 x64 desktop software. The advertised download is the official unsigned installer Eidovara-0.19.0-Windows-x64-Setup.exe from GitHub Releases, not a git clone. It is not Authenticode-signed or Microsoft-certified. Linux/macOS scripts are development targets.</p>
+        <p>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Created and owned by Tyler Michael Bosworth. Published under the intended name Soul Consciousness Studios™ (unregistered) — that name is the intended publisher only, not a formed entity that owns this IP unless a signed assignment exists. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Source-available evaluation license — not OSI open source. Forks remain under LICENSE and may not be relicensed as MIT, Apache, GPL, or other open source. GitHub pull requests do not transfer ownership or trademark rights; contributor-assignment and entity-assignment files in the repository are unsigned templates only. Official product: unsigned Windows 10/11 x64 desktop software. The advertised download is the official unsigned installer Eidovara-0.19.1-Windows-x64-Setup.exe from GitHub Releases, not a git clone. It is not Authenticode-signed or Microsoft-certified. Linux/macOS scripts are development targets.</p>
         <p>Soul is a software assistant with local continuity. It is not a human, therapy, medical/financial/legal advice, or proof of consciousness. Eidovara is not affiliated with Apple, Microsoft, Electron, GitHub, Spotify, YouTube, OBS, Marvel, or Disney, and is not an iOS or iPhone product, not Jarvis, and not a Marvel character. The interface uses a system font stack and does not require licensed SF Pro or SF Mono files. Eidovara, Soul, and the Soul kernel are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar. Electron, Chromium, Node.js, Windows, and Wikipedia/Wikimedia content remain their owners' property. Users own their own content. These notices are not legal advice or a government registration. Full LICENSE and TRADEMARKS.md ship with this installation.</p>
         <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed on this OS. Optional Worker <code>/v1/assist</code> is off unless you opt in; it is not Soul and never receives conversation history.</p>
       </div>
@@ -417,7 +441,7 @@
   <div class="setup-overlay hidden" id="commandPalette" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
     <div class="setup-dialog palette-dialog">
       <div><h1 id="paletteTitle" data-i18n="paletteTitle">Jump in Eidovara</h1><p data-i18n="paletteLead">Local jump and search. No background crawler. Linked apps still confirm-launch. Assist is not Soul.</p></div>
-      <label class="setup-field"><span class="visually-hidden">Palette query</span><input id="paletteInput" type="search" maxlength="200" autocomplete="off" placeholder="Views, intents, settings, memory, linked apps…" aria-label="Command palette" /></label>
+      <label class="setup-field"><span class="visually-hidden">Palette query</span><input id="paletteInput" type="search" maxlength="200" autocomplete="off" placeholder="Views, intents, settings, memory, 12 ft in m…" aria-label="Command palette" /></label>
       <ul class="palette-results" id="paletteResults" role="listbox" aria-label="Palette results"></ul>
       <div id="paletteList" class="palette-list hidden" role="listbox" aria-label="Commands"></div>
       <p class="palette-hint" data-i18n="paletteHint">↑↓ to move · Enter to run · Esc to close · Ctrl+K</p>
@@ -447,10 +471,18 @@
       <div class="setup-actions"><button type="button" class="secondary" id="shortcutCloseBtn">Close</button></div>
     </div>
   </div>
+  <div class="setup-overlay hidden" id="notifyDrawer" role="dialog" aria-modal="false" aria-labelledby="notifyTitle">
+    <div class="setup-dialog palette-dialog">
+      <div><h1 id="notifyTitle" data-i18n="notifyTitle">In-app notices</h1><p data-i18n="notifyLead">Local events from this workspace (focus ended, sleep timer, backup). Not OS toast spam and not telemetry.</p></div>
+      <div id="notifyList" class="notify-list"></div>
+      <div class="setup-actions"><button type="button" class="secondary" id="notifyClearBtn" data-i18n="notifyClear">Clear</button><button type="button" class="secondary" id="notifyCloseBtn" data-i18n="cancel">Close</button></div>
+    </div>
+  </div>
   <script src="localization.js"></script>
   <script src="renderer.js"></script>
   <script src="player.js"></script>
   <script src="companion.js"></script>
   <script src="workspace-layers.js"></script>
+  <script src="desktop-chrome.js"></script>
 </body>
 </html>

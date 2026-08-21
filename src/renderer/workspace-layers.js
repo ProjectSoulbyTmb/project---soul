@@ -11,6 +11,7 @@
   let paletteIndex = 0;
   let paletteTimer = 0;
   let focusTimer = 0;
+  let focusStopping = false;
   let lastScratch = '';
 
   function kernelWorkspace() {
@@ -59,6 +60,13 @@
     document.body.classList.toggle('focus-quiet', live);
     if ($('#focusQuietRemaining')) $('#focusQuietRemaining').textContent = formatRemain(remain);
     if ($('#focusQuietLabel')) $('#focusQuietLabel').textContent = focus.label || t('focusQuiet', 'Focus session');
+    if (focus.active === true && remain <= 0) {
+      if (!focusStopping) {
+        focusStopping = true;
+        Promise.resolve(window.eidovaraLayers?.stopFocus?.()).finally(() => { focusStopping = false; });
+      }
+      return;
+    }
     if (!live) {
       clearInterval(focusTimer);
       focusTimer = 0;
@@ -312,6 +320,12 @@
     if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('dashboard');
     renderFocusBar();
     window.eidovaraRenderDashboard?.();
+    window.eidovaraChrome?.pushNotice?.({
+      id: `focus-start-${Date.now()}`,
+      title: 'Focus session',
+      body: 'Quiet timer is running in Eidovara. Other apps are not closed or overlaid.',
+      kind: 'focus'
+    });
   }
 
   async function stopFocus() {
@@ -321,6 +335,12 @@
     if (window.eidovaraState) window.eidovaraState.kernel = { ...(window.eidovaraState.kernel || {}), workspace: kernel.workspace };
     renderFocusBar();
     window.eidovaraRenderDashboard?.();
+    window.eidovaraChrome?.pushNotice?.({
+      id: `focus-end-${Date.now()}`,
+      title: 'Focus session ended',
+      body: 'The local quiet timer stopped. This is an in-app notice, not an OS toast.',
+      kind: 'focus'
+    });
   }
 
   async function saveScratch(text) {

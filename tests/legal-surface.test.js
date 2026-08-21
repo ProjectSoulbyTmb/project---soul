@@ -242,7 +242,7 @@ test('legal-instrument pack is templates and notices, not registrations', () => 
   assert.match(read('docs/legal.html'), /TRADEMARK_FILING.md/);
 });
 
-test('network, security, and licensing docs match current fail-closed v0.19.0 surface', () => {
+test('network, security, and licensing docs match current fail-closed v0.19.1 surface', () => {
   const destinations = [
     /en\.wikipedia\.org/,
     /commons\.wikimedia\.org/,
@@ -299,7 +299,7 @@ test('network, security, and licensing docs match current fail-closed v0.19.0 su
   assert.match(third, /fail-closed/);
   assert.match(third, /Neural TTS/);
   const companions = read('docs/COMPANION_MODELS.md');
-  assert.match(companions, /Blocked in v0\.19\.0/);
+  assert.match(companions, /Blocked in v0\.19\.1/);
   assert.match(companions, /Neural TTS/);
   assert.match(companions, /VRM/);
   assert.match(companions, /OBS websocket/);

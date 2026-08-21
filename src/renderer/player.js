@@ -184,6 +184,7 @@
     if ($('#mediaSourceBtn')) $('#mediaSourceBtn').disabled = !item.sourceUrl;
     setActive(true);
     mediaSignal('play', item);
+    window.eidovaraChrome?.recordMedia?.(item);
     bindMediaSession(item);
     paint();
     if (autoplay) player.play().catch(() => {});
@@ -355,7 +356,6 @@
     const player = currentPlayer();
     if (player) player.playbackRate = rate;
   });
-  $('#mediaSleep')?.addEventListener('change', e => armSleep(e.target.value));
   $('#mediaQuality')?.addEventListener('change', e => {
     const item = currentItem();
     const player = currentPlayer();
