@@ -32,6 +32,8 @@ test('website legal pages cover terms, privacy, age, and Apple disclaimer', () =
   assert.match(site, /Download Windows Alpha \(18\+\)/);
   assert.match(site, /Source-available, not open source/);
   assert.match(site, /not an iOS or iPhone product/i);
+  assert.match(site, /id="download"/);
+  assert.match(site, /Get Eidovara/);
   assert.match(terms, /Acceptable use/);
   assert.match(terms, /Wikipedia\/Wikimedia/);
   assert.match(privacy, /What can leave this device/);
