@@ -36,13 +36,21 @@ Eidovara Free includes core workspace, offline/local assistance, public research
 
 ## Build and test
 
+Node.js 20 or newer is required. Official CI uses pnpm with the committed lockfile; `npm install` also works for a local run.
+
 ```powershell
-npm install
-npm test
-npm run check
-npm run smoke
-npm run dist:win:installer
+pnpm install --frozen-lockfile
+pnpm test
+pnpm run check
+pnpm run smoke
+pnpm start
+pnpm run cli
+pnpm run dist:win:installer
 ```
+
+Equivalent npm commands (`npm install`, `npm test`, `npm start`, `npm run cli`) work after dependencies are installed. On Windows, `run-gui.bat` and `run-cli.bat` install dependencies if needed and launch the desktop or terminal app. On Linux and macOS, use `./run-gui.sh` or `./run-cli.sh`.
+
+The desktop app starts in offline mode with no API keys, payment service, or Cloudflare Worker. Optional local models, remote providers, Brave Search, and the HTTPS service are configured in Settings or the private Ctrl+A panel after launch.
 
 The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 

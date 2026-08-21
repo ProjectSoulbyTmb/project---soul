@@ -4,7 +4,7 @@ cd /d "%~dp0"
 title Eidovara Launcher
 
 echo ========================================
-echo             Eidovara v0.17
+echo             Eidovara v0.18.0
 echo ========================================
 echo.
 where node >nul 2>nul
@@ -45,8 +45,8 @@ exit /b 0
 echo.
 echo Eidovara did not start successfully.
 echo The error above is important. Please copy it or send a screenshot.
-echo A runtime log may also exist under:
-echo %%APPDATA%%\project-soul-js-gui\project-soul.log
+echo A runtime log may also exist as project-soul.log in the app user-data folder
+echo (usually %%APPDATA%%\eidovara while developing, or %%APPDATA%%\Eidovara when installed).
 echo.
 pause
 exit /b 1

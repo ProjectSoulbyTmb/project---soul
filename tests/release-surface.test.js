@@ -28,3 +28,20 @@ test('public claims retain alpha and unsigned boundaries', () => {
   assert.match(read('README.md'), /Authenticode-unsigned/);
   assert.match(read('LEGAL_NOTICES.md'), /age 18 or older/);
 });
+
+test('local media uses a gated custom protocol instead of raw file URLs', () => {
+  const main = read('src/electron/main.js');
+  const html = read('src/renderer/index.html');
+  assert.match(main, /LOCAL_MEDIA_SCHEME = 'eidovara-media'/);
+  assert.match(main, /allowedLocalMedia/);
+  assert.match(main, /protocol\.registerSchemesAsPrivileged/);
+  assert.match(main, /url: `\$\{LOCAL_MEDIA_SCHEME\}:\/\/\$\{id\}\/`/);
+  assert.match(html, /media-src 'self' https: eidovara-media:/);
+});
+
+test('documented launchers invoke the cli script and current version', () => {
+  assert.match(read('run-cli.bat'), /npm run cli/);
+  assert.match(read('run-gui.bat'), /Eidovara v0\.18\.0/);
+  assert.match(read('run-cli.sh'), /node src\/cli\.js/);
+  assert.match(read('package.json'), /"cli": "node src\/cli\.js"/);
+});
