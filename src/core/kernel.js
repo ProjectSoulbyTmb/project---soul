@@ -10,6 +10,15 @@ import {
   matchCustomAction,
   normalizeRegistry
 } from './registry.js';
+import {
+  defaultWorkspaceLayers,
+  expireFocusIfNeeded,
+  isFocusStartCommand,
+  isFocusStopCommand,
+  isScratchCaptureCommand,
+  normalizeWorkspaceLayers,
+  workspacePublicView
+} from './layers.js';
 
 export function defaultKernelState() {
   return {
@@ -17,7 +26,8 @@ export function defaultKernelState() {
     registry: defaultRegistry(),
     voice: defaultVoiceSettings(),
     presence: defaultPresence(),
-    soulOnline: defaultSoulOnline()
+    soulOnline: defaultSoulOnline(),
+    workspace: defaultWorkspaceLayers()
   };
 }
 
@@ -35,7 +45,8 @@ export function migrateKernel(input) {
     registry: normalizeRegistry(input.registry, base.registry),
     voice: normalizeVoiceSettings(input.voice, base.voice),
     presence: normalizePresence(input.presence, base.presence),
-    soulOnline: normalizeSoulOnline(input.soulOnline, base.soulOnline)
+    soulOnline: normalizeSoulOnline(input.soulOnline, base.soulOnline),
+    workspace: normalizeWorkspaceLayers(input.workspace, base.workspace)
   };
 }
 
@@ -84,6 +95,7 @@ export function configureKernelState(state, input = {}) {
   if (next.presence) state.kernel.presence = normalizePresence(next.presence, state.kernel.presence);
   if (next.soulOnline) state.kernel.soulOnline = normalizeSoulOnline(next.soulOnline, state.kernel.soulOnline);
   if (next.assistOptIn !== undefined) state.kernel.soulOnline = normalizeSoulOnline({ assistOptIn: next.assistOptIn }, state.kernel.soulOnline);
+  if (next.workspace) state.kernel.workspace = normalizeWorkspaceLayers(next.workspace, state.kernel.workspace);
   const at = new Date().toISOString();
   if (!Array.isArray(state.audit)) state.audit = [];
   state.audit.push({ at, type: 'kernel.configured', details: { assistOptIn: state.kernel.soulOnline.assistOptIn === true, lookId: state.kernel.presence.lookId } });
@@ -92,6 +104,10 @@ export function configureKernelState(state, input = {}) {
 
 export function kernelView(state, runtime) {
   const kernel = migrateKernel(state?.kernel);
+  if (state?.kernel) {
+    state.kernel = kernel;
+    expireFocusIfNeeded(state);
+  }
   const registry = runtime || createRuntimeRegistry();
   const modules = registry.list().map(mod => ({
     ...mod,
@@ -112,7 +128,8 @@ export function kernelView(state, runtime) {
     looks: PRESENCE_LOOKS,
     futureVoiceBackend: FUTURE_VOICE_BACKEND,
     selfModel: state?.continuity?.selfModel || null,
-    assistOptIn: kernel.soulOnline.assistOptIn === true
+    assistOptIn: kernel.soulOnline.assistOptIn === true,
+    workspace: workspacePublicView(state?.kernel?.workspace || kernel.workspace)
   };
 }
 
@@ -148,6 +165,22 @@ export function actionsForIntent(intent, overlay = {}) {
     case 'presence':
       return [action('open-view', { view: 'settings', label: 'Presence & voice', auto: true })];
     case 'focus':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Open Dashboard' }),
+        action('start-focus', { minutes: 25, label: 'Focus session' })
+      ];
+    case 'focus-stop':
+      return [action('stop-focus', { label: 'Stop focus session', auto: true })];
+    case 'scratch':
+      return [action('open-view', { view: 'dashboard', label: 'Open scratchpad', auto: true }), action('capture-scratch', { label: 'Capture to memory' })];
+    case 'palette':
+      return [action('open-palette', { label: 'Open command palette', auto: true })];
+    case 'search':
+      return [action('open-palette', { label: 'Search this workspace', auto: true })];
+    case 'cheatsheet':
+      return [action('open-cheatsheet', { label: 'Keyboard cheatsheet', auto: true })];
+    case 'widgets':
+      return [action('open-view', { view: 'dashboard', label: 'Open Dashboard', auto: true })];
     case 'study':
     case 'create':
     case 'talk':
@@ -210,23 +243,32 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry()) {
   }
   const workspace = classifyWorkspaceIntent(text);
   const product = matchProductIntent(text);
-  const intent = (workspace === 'general' && product) ? product : workspace;
+  let intent = (workspace === 'general' && product) ? product : workspace;
+  if (intent === 'focus' && isFocusStopCommand(text)) intent = 'focus-stop';
+  if (intent === 'focus' && isFocusStartCommand(text)) intent = 'focus';
+  if (isScratchCaptureCommand(text) && workspace === 'scratch') intent = 'scratch';
   const productIntent = product && shouldUseKnowledgeReply(product) ? product : (shouldUseKnowledgeReply(intent) ? intent : null);
   const mod = moduleForIntent(productIntent || intent, runtime.list()) || moduleForIntent(workspace, runtime.list());
   const enabled = !mod || runtime.enabled(mod.id, kernel.registry);
   const entry = productIntent ? knowledgeEntry(productIntent) : null;
   const usedKnowledge = Boolean(enabled && entry?.reply && (intent === 'general' || shouldUseKnowledgeReply(intent) || productIntent));
+  const routedIntent = productIntent && (intent === 'general' || shouldUseKnowledgeReply(intent)) ? productIntent : intent;
+  const actions = actionsForIntent(routedIntent, overlay).map(item => {
+    if (item.type === 'start-focus' && isFocusStartCommand(text)) return { ...item, auto: true };
+    if (item.type === 'capture-scratch' && isScratchCaptureCommand(text)) return { ...item, auto: true };
+    return item;
+  });
   return {
-    intent: productIntent && (intent === 'general' || shouldUseKnowledgeReply(intent)) ? productIntent : intent,
+    intent: routedIntent,
     moduleId: mod?.id || null,
     enabled,
     source: usedKnowledge ? 'knowledge' : 'workspace',
-    view: mod?.ui?.view || 'chat',
+    view: mod?.ui?.view || (routedIntent === 'palette' || routedIntent === 'search' || routedIntent === 'cheatsheet' ? 'dashboard' : 'chat'),
     action: null,
     overlay,
     knowledgeReply: usedKnowledge ? entry.reply : null,
     usedKnowledge,
-    actions: actionsForIntent(productIntent || intent, overlay)
+    actions
   };
 }
 

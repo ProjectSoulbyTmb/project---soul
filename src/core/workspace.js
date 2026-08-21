@@ -2,7 +2,7 @@ const LOCAL_WORKSPACE_INTENTS = new Set([
   'identity', 'hello', 'memory', 'remember', 'focus', 'gaming', 'study', 'create',
   'mood', 'favorites', 'watch', 'gaming-ost', 'study-ost', 'surprise', 'talk',
   'reassure', 'growth', 'thanks', 'apps', 'settings', 'help', 'accessibility',
-  'presence', 'identity-panel'
+  'presence', 'identity-panel', 'palette', 'search', 'scratch', 'cheatsheet', 'widgets'
 ]);
 
 export { LOCAL_WORKSPACE_INTENTS };
@@ -23,7 +23,12 @@ export function classifyWorkspaceIntent(input) {
   if (/\b(who are you|what are you|tell me who you are)\b/.test(t)) return 'identity';
   if (/^(hi|hello|hey)\b/.test(t)) return 'hello';
   if (/\b(review what you remember|what do you remember|what do you know about me|suggest useful updates)\b/.test(t)) return 'memory';
-  if (/\b(focused session|current priority|focus session|plan a focused)\b/.test(t)) return 'focus';
+  if (/\b(command palette|open palette|jump to)\b/.test(t)) return 'palette';
+  if (/\b(keyboard|hotkey|shortcut)s?\b[\s\S]{0,24}\b(cheat\s*sheet|help|list)\b/.test(t) || /\bcheat\s*sheet\b/.test(t) || /\bkeyboard shortcuts\b/.test(t)) return 'cheatsheet';
+  if (/\b(search|find|filter)\b[\s\S]{0,48}\b(memory|memories|apps?|settings|workspace|knowledge)\b/.test(t) || /\bsearch this workspace\b/.test(t)) return 'search';
+  if (/^(note:|scratch:)/.test(t) || /\b(scratchpad|quick capture|quick note|capture scratch)\b/.test(t)) return 'scratch';
+  if (/\b(pin|unpin|reorder)\b[\s\S]{0,24}\b(widget|tile|dashboard)\b/.test(t)) return 'widgets';
+  if (/\b(start|begin|stop|end|cancel)\b[\s\S]{0,32}\bfocus\b/.test(t) || /\b(focused session|current priority|focus session|plan a focused|start (?:a )?(?:\d+\s*(?:min|minute) )?(?:focused )?session)\b/.test(t)) return 'focus';
   if (/\bgaming soundtrack\b/.test(t)) return 'gaming-ost';
   if (/\b(study soundtrack|calm study soundtrack)\b/.test(t)) return 'study-ost';
   if (/\b(gaming or streaming|streaming setup|gaming setup|prepare my gaming|stream helper|\bobs\b)\b/.test(t)) return 'gaming';
