@@ -4,7 +4,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { SoulEngine } from '../core/ensureEngine().js';
+import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { defaultProfile } from '../core/schema.js';
 import { OfflineProvider } from '../providers/offline.js';
