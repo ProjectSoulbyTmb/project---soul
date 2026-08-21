@@ -166,9 +166,9 @@ export function expireSleepIfNeeded(state, now = Date.now()) {
       body: 'The in-app player can pause now. Eidovara does not stop Spotify, VLC, or other apps.',
       at: chrome.sleepTimer.completedAt
     });
-    return { expired: true, chrome };
+    return { expired: true, chrome: state.desktopChrome };
   }
-  return { expired: false, chrome };
+  return { expired: false, chrome: state.desktopChrome };
 }
 
 export function notifyDesktop(state, input = {}) {

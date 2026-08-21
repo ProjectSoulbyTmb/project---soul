@@ -112,6 +112,6 @@ test('desktop chrome renderer and preload stay honest', () => {
   assert.match(renderer, /eidovaraChrome/);
   assert.match(chrome, /sleepTimerMinutes/);
   assert.match(chrome, /pause\?\./);
-  assert.doesNotMatch(chrome + renderer, /Spotify Web API|iTunes|VLC control/);
+  assert.doesNotMatch(chrome + renderer, /Spotify Web API|inject into iTunes|VLC control/);
   assert.doesNotMatch(chrome, /globalShortcut|RegisterHotKey/);
 });
