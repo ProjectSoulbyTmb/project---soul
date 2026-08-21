@@ -100,7 +100,7 @@
     const failClosed = message => {
       if (out) out.textContent = message;
     };
-    failClosed('Not configured. This site is Cloudflare Pages (eidovara.org) with a GitHub Pages mirror; Windows downloads come from GitHub Releases. No Worker URL is compiled in. Paste an HTTPS base only if you operate one — otherwise no request is sent.');
+    failClosed('Not configured. Paste an HTTPS base only if you operate a Worker — otherwise no request is sent.');
 
     const saveBase = event => {
       event.preventDefault();
@@ -120,7 +120,7 @@
       event.preventDefault();
       if (input) input.value = '';
       writeStoredBase('');
-      failClosed('Cleared. eidovara.org + GitHub Pages mirror + GitHub Releases only. Fail closed — no service request will be sent.');
+      failClosed('Cleared. Fail closed — no service request will be sent.');
     });
     probe?.addEventListener('click', async event => {
       event.preventDefault();
@@ -130,7 +130,7 @@
         return;
       }
       if (!base) {
-        failClosed('No service base configured. Fail closed — nothing was fetched. eidovara.org, GitHub Pages, and Releases do not require a Worker.');
+        failClosed('No service base configured. Fail closed — nothing was fetched.');
         return;
       }
       writeStoredBase(base);
@@ -156,7 +156,7 @@
           `Base: ${base}`,
           `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
           `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
-          'This website never sends desktop conversations. v0.18.2 payments stay off.'
+          'Desktop conversations are never sent. Payments stay off.'
         ];
         failClosed(lines.join('\n'));
       } catch (error) {

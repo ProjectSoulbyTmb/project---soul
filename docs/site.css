@@ -1,7 +1,4 @@
-@import url("tokens.css");
-
-/* Public marketing chrome. Shared type/color tokens stay in tokens.css (identical to the desktop app).
-   Visual revision sleek-c180: tighter hierarchy, quieter motion, not an Apple product page. */
+/* Public marketing chrome. Shared type/color tokens stay in tokens.css (identical to the desktop app). */
 :root {
   --eidovara-visual: sleek-c180;
   --site-max: 1080px;
@@ -103,12 +100,6 @@ button { font: inherit; cursor: pointer; }
   font-weight: 650;
   font-size: 16px;
   letter-spacing: -0.03em;
-}
-.mark {
-  width: 22px;
-  height: 22px;
-  border-radius: 7px;
-  background: radial-gradient(circle at 32% 28%, #fff 0 6%, var(--accent) 34%, #1c3a66 72%);
 }
 #site-nav {
   display: flex;
