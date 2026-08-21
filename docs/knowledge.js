@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** Eidovara website helper knowledge pack (source v0.22.2). Same answers for Pages and Worker. Live advertised installer remains v0.19.1. */
+/** Eidovara website helper knowledge pack for the current v0.22.2 release. Same answers for Pages and Worker. */
 export const ASSIST_VERSION = '0.22.2';
 export const MAX_ASSIST_QUERY = 800;
 export const MAX_ASSIST_BODY = 4096;
@@ -9,237 +9,182 @@ export const DEFAULT_SERVICE_BASE = 'https://api.eidovara.org';
 export const ASSIST_MODES = ['help', 'download', 'legal'];
 
 const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
-const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe';
-const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.1/Eidovara-0.19.1-Windows-x64-Setup.exe';
-const INSTALLER_NAME = 'Eidovara-0.19.1-Windows-x64-Setup.exe';
-const INSTALLER_SHA256 = '72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8';
-const INSTALLER_SIZE = 'about 101.3 MiB';
+const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe';
+const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/Eidovara-0.22.2-Windows-x64-Setup.exe';
+const INSTALLER_NAME = 'Eidovara-0.22.2-Windows-x64-Setup.exe';
+const INSTALLER_SHA256 = 'A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE';
+const INSTALLER_SIZE = '106,691,429 bytes (about 101.75 MiB)';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
 const SITE = 'https://eidovara.org/';
 
 export const ENTRIES = [
   {
-    id: 'what',
-    modes: ['help'],
-    tags: ['what', 'eidovara', 'product', 'workspace', 'desktop', 'windows', 'soul', 'hosted', 'account', 'cloud', 'chat', 'website', 'online'],
+    id: 'what', modes: ['help'],
+    tags: ['what', 'eidovara', 'product', 'workspace', 'desktop', 'windows', 'soul', 'hosted', 'account', 'cloud', 'website', 'online'],
     title: 'What Eidovara is',
-    reply: `Eidovara v${ASSIST_VERSION} is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is not a hosted chat account. Visiting this website does not create an account or store conversations. Soul is an optional assistant layer that runs on your PC. Free / Offline Soul works with no cloud URL. The live advertised Windows installer remains ${INSTALLER_NAME} until a newer tagged Setup.exe exists.`,
+    reply: `Eidovara v${ASSIST_VERSION} is the current local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It includes apps, gaming tools, media, internet research, updates, backups, persistent continuity, and optional Soul. Visiting this website does not create an account or store desktop conversations. The current published Windows installer is ${INSTALLER_NAME}.`,
     links: [{ href: 'product.html', label: 'Product' }, { href: 'download.html', label: 'Download' }]
   },
   {
-    id: 'hosted',
-    modes: ['help', 'legal'],
-    tags: ['hosted', 'cloud', 'account', 'saas', 'webapp', 'browser', 'chatbot', 'multi-tenant', 'login', 'sign'],
-    title: 'Not a hosted Soul',
-    reply: 'This site is not a hosted chat account. Conversations, memories, and workspace settings stay on the Windows PC by default. Soul, when you use it, runs on that PC. The desktop app can optionally Connect to a Worker for /health, /v1/config, and /v1/status only. Conversations are not sent to that service. If the service is down, the local workspace still works.',
+    id: 'hosted', modes: ['help', 'legal'], tags: ['hosted', 'cloud', 'account', 'saas', 'webapp', 'browser', 'login', 'sign'],
+    title: 'Local-first, not a hosted account',
+    reply: 'This site is documentation, download, status, and product assistance—not a hosted Soul account. Conversations, memories, and workspace settings stay on the Windows PC by default. The desktop can optionally use the official service for health/config/status and can use user-directed online research, media, update, and provider functions. Service outages do not disable the local workspace.',
     links: [{ href: 'privacy.html', label: 'Privacy' }, { href: 'status.html', label: 'Status' }]
   },
   {
-    id: 'age',
-    modes: ['help', 'download', 'legal'],
-    tags: ['18', 'age', 'adult', 'minor', 'child', 'older', 'gate', 'eligibility', 'coppa'],
+    id: 'age', modes: ['help', 'download', 'legal'], tags: ['18', 'age', 'adult', 'minor', 'child', 'older', 'gate', 'eligibility'],
     title: 'Age 18+',
-    reply: 'Eidovara is for adults 18 or older. You must be at least 18 years old to download, install, or use the Windows app, CLI, or official releases. Windows Setup shows an 18+ notice. The desktop app blocks use until you confirm age and accept the Terms. The CLI needs --i-am-18-or-older or a stored confirmation. Local confirmation is not independent identity or age verification. If you are under 18, leave this site and do not install.',
+    reply: 'Eidovara is for adults 18 or older. You must be at least 18 to download, install, or use the Windows app, CLI, or official releases. The local confirmation is not independent identity or age verification.',
     links: [{ href: 'age.html', label: 'Age 18+' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
-    id: 'download',
-    modes: ['download', 'help'],
-    tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'certified', 'update', 'updates', 'auto-update'],
-    title: 'Download Windows Alpha',
-    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} (${INSTALLER_SIZE}) from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned tag asset: ${INSTALLER_PINNED}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. After install, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Builds stay Authenticode-unsigned. Source-available fallback: npm run dist:win:installer on Windows.`,
+    id: 'download', modes: ['download', 'help'], tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'update', 'updates', 'auto-update'],
+    title: 'Download Windows v0.22.2',
+    reply: `The official download is ${INSTALLER_NAME}, an Authenticode-unsigned Windows 10/11 x64 NSIS installer from GitHub Releases. Size: ${INSTALLER_SIZE}. SHA-256: ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned asset: ${INSTALLER_PINNED}. Windows SmartScreen may warn. GitHub/Sigstore provenance records build origin but is not Authenticode signing.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: INSTALLER, label: INSTALLER_NAME }]
   },
   {
-    id: 'source',
-    modes: ['download', 'help'],
-    tags: ['source', 'build', 'npm', 'dist', 'clone', 'compile', 'from'],
+    id: 'source', modes: ['download', 'help'], tags: ['source', 'build', 'npm', 'dist', 'clone', 'compile'],
     title: 'Build from source',
-    reply: 'The advertised download is the official unsigned Setup.exe, not a git clone. If you still want source on Windows 10/11 x64, run npm install, then npm run dist:win:installer. Linux and macOS packaging scripts are development targets, not official products. The license is source-available, not open source.',
+    reply: 'The advertised Windows download is the published Setup.exe, not the GitHub source tree. To build from source on Windows 10/11 x64, install dependencies and run npm run dist:win:installer. Linux and macOS packaging scripts are development targets, not official advertised products. The license is source-available, not open source.',
     links: [{ href: SOURCE, label: 'Source repository' }, { href: 'download.html', label: 'Official installer (18+)' }]
   },
   {
-    id: 'unsigned',
-    modes: ['download', 'help', 'legal'],
-    tags: ['unsigned', 'authenticode', 'smartscreen', 'sign', 'certificate', 'checksum', 'sha', 'certified', 'microsoft'],
+    id: 'unsigned', modes: ['download', 'help', 'legal'], tags: ['unsigned', 'authenticode', 'smartscreen', 'sign', 'certificate', 'checksum', 'sha', 'microsoft'],
     title: 'Unsigned Windows build',
-    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for this Alpha, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Confirm 18+ on the Download page, then get ${INSTALLER_NAME} (${INSTALLER_SIZE}) from the official GitHub Releases asset and verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
+    reply: `The current ${INSTALLER_NAME} is Authenticode-unsigned. Windows SmartScreen may warn. Verify SHA-256 ${INSTALLER_SHA256} and the GitHub release provenance. The project does not claim Microsoft certification or SmartScreen preapproval.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: 'security.html', label: 'Security' }]
   },
   {
-    id: 'payments',
-    modes: ['help', 'legal', 'download'],
-    tags: ['pay', 'payment', 'premium', 'checkout', 'stripe', 'paypal', 'gumroad', 'buy', 'price', 'subscription', 'card', 'pci'],
+    id: 'payments', modes: ['help', 'legal', 'download'], tags: ['pay', 'payment', 'premium', 'checkout', 'stripe', 'paypal', 'gumroad', 'buy', 'price', 'subscription', 'card', 'pci'],
     title: 'Payments stay off',
-    reply: `v${ASSIST_VERSION} does not sell Premium and does not process payments. There is no live checkout on this website or in the app. Free is $0. Premium feature gates exist for local administrator testing only (Ctrl+A). That override is not payment or PCI processing. Payment-card data is not accepted. Store URLs on the optional Worker stay empty.`,
+    reply: `v${ASSIST_VERSION} does not process payments and there is no live checkout. Free is $0. Premium feature gates exist for local administrator testing only. Payment-card data is not accepted by the current service.`,
     links: [{ href: './#plans', label: 'Free vs Premium' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
-    id: 'premium',
-    modes: ['help'],
-    tags: ['premium', 'free', 'edition', 'rgb', 'brave', 'apps', 'unlimited', 'remote', 'model'],
+    id: 'premium', modes: ['help'], tags: ['premium', 'free', 'edition', 'rgb', 'apps', 'unlimited', 'remote', 'model', 'search'],
     title: 'Free vs Premium',
-    reply: `Eidovara Free includes the workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research, and up to three linked applications. Premium (local-admin test only) adds compatible remote-model endpoints, broad keyed web search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v${ASSIST_VERSION}.`,
+    reply: `Eidovara Free includes the workspace, media, gaming mode, backups, updates, offline/local assistance, public research, and up to three linked applications. Premium remains a local-admin test gate for compatible remote-model endpoints, broader keyed search, unlimited linked apps, and RGB appearance. No live checkout unlocks Premium in v${ASSIST_VERSION}.`,
     links: [{ href: './#plans', label: 'Plans' }]
   },
   {
-    id: 'connect',
-    modes: ['help'],
-    tags: ['connect', 'worker', 'service', 'health', 'config', 'status', 'settings', 'url', 'https', 'offline'],
+    id: 'connect', modes: ['help'], tags: ['connect', 'worker', 'service', 'health', 'config', 'status', 'settings', 'url', 'https', 'offline'],
     title: 'Connect service in Settings',
-    reply: 'After the 18+ gate, Settings → Eidovara service (or Ctrl+A Test service) uses https://api.eidovara.org by default. Paste another HTTPS base to override; empty/default resolves to that official host. Connect calls /health, /v1/config, and /v1/status only. After that the desktop keeps a live Online / Reconnecting / Offline status with /health and /v1/status from the main process. Conversations are not sent. No workers.dev host is compiled in. If the service is down, Free / Offline Soul and the workspace keep working.',
+    reply: 'After the 18+ gate, Settings → Eidovara service uses https://api.eidovara.org by default. Connect calls health/config/status endpoints and the desktop keeps Online / Reconnecting / Offline state. Conversations are not sent by the status heartbeat. A valid HTTPS base can be supplied as an override. If the service is down, the local workspace keeps working.',
     links: [{ href: 'faq.html', label: 'FAQ' }, { href: 'status.html', label: 'Status' }]
   },
   {
-    id: 'offline',
-    modes: ['help'],
-    tags: ['offline', 'local', 'no', 'internet', 'airplane', 'disconnected'],
-    title: 'Offline Soul',
-    reply: 'Free / Offline Soul works with no cloud URL and no Worker. Profiles, conversations, memories, and backups stay in the Windows application-data directory. You can use apps, media, gaming mode, and local assistance without attaching a service. Explicit internet/web/online research is the exception, and only after you ask.',
+    id: 'offline', modes: ['help'], tags: ['offline', 'local', 'internet', 'airplane', 'disconnected'],
+    title: 'Offline and local-first use',
+    reply: 'Core workspace features and Free / Offline Soul can work without the official service. Profiles, conversations, memories, and backups stay in the Windows application-data area by default. Explicit internet research, online updates, online media discovery, and remote provider connections require network access.',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'privacy.html', label: 'Privacy' }]
   },
   {
-    id: 'apps',
-    modes: ['help'],
-    tags: ['apps', 'launch', 'start', 'menu', 'exe', 'shortcut', 'gaming', 'injection', 'anticheat'],
+    id: 'apps', modes: ['help'], tags: ['apps', 'launch', 'start', 'menu', 'exe', 'shortcut', 'gaming', 'injection', 'anticheat'],
     title: 'Apps and gaming',
-    reply: 'Eidovara can discover local Start Menu shortcuts, organize trusted .exe/.lnk files, confirm, then ask Windows to launch them. Free keeps up to three linked apps. Low-overhead gaming mode reduces Eidovara visuals only. It does not inject into processes or interact with anti-cheat. You must already have the right to use those applications.',
+    reply: 'Eidovara can discover local Start Menu shortcuts, organize trusted applications, and ask Windows to launch them after confirmation. Low-overhead gaming mode reduces Eidovara visuals only. It does not inject into game processes or interact with anti-cheat systems.',
     links: [{ href: 'product.html', label: 'Product' }]
   },
   {
-    id: 'media',
-    modes: ['help'],
-    tags: ['media', 'music', 'video', 'entertainment', 'spotify', 'youtube', 'queue', 'playback'],
+    id: 'media', modes: ['help'], tags: ['media', 'music', 'video', 'entertainment', 'queue', 'playback', 'audio'],
     title: 'Media and entertainment',
-    reply: `Play user-selected local files in Eidovara and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube/Internet Archive HTTPS search chips. Playback can require confirmation. Those chips do not rip streams or inject into other players. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v${ASSIST_VERSION}.`,
+    reply: `v${ASSIST_VERSION} supports user-selected local media, properly sourced public audio/video where supported, queues/favorites, playback controls, and official HTTPS discovery/handoff surfaces. It does not rip protected streams or redistribute copyrighted media.`,
     links: [{ href: 'product.html', label: 'Product' }]
   },
   {
-    id: 'research',
-    modes: ['help'],
-    tags: ['research', 'wikipedia', 'wikimedia', 'internet', 'web', 'online', 'brave', 'search'],
-    title: 'Research',
-    reply: 'Built-in research is a public web lookup after an explicit internet, web, or online request — not a crawl of the whole internet. It uses Wikipedia/Wikimedia, an optional Internet Archive catalog search, optional keyed Brave Search (Premium test gate), and bounded HTTPS pages you open, plus official YouTube/Spotify/Archive search chips. Pictures, audio, and video can be retrieved from allowlisted public sources when asked. Eidovara is not a general-purpose crawler.',
+    id: 'research', modes: ['help'], tags: ['research', 'wikipedia', 'wikimedia', 'internet', 'web', 'online', 'search', 'source', 'citation'],
+    title: 'Internet research',
+    reply: 'Built-in research runs after an explicit internet/web/online request. It retrieves bounded public information, sanitizes results, keeps source-aware presentation, and fails closed on unsafe or unavailable URLs. It is not a background crawl of the whole internet.',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
-    id: 'soul',
-    modes: ['help'],
-    tags: ['soul', 'assistant', 'conscious', 'sentient', 'voice', 'avatar', 'memory', 'tone'],
+    id: 'soul', modes: ['help'], tags: ['soul', 'assistant', 'conscious', 'sentient', 'voice', 'avatar', 'memory', 'tone', 'continuity'],
     title: 'Optional Soul',
-    reply: 'Soul is optional software assistance with configurable tone, focus, memory, voice, avatar, and initiative. It is not a human, not therapy, and not a claim of consciousness or sentience. This website helper is also not Soul: it only answers from a fixed product knowledge pack. Output is general assistance, not legal, medical, or financial advice.',
+    reply: 'Soul is optional software assistance with configurable tone, memory, continuity, voice/presence, boundaries, and initiative. It is not a human, not therapy, and not a claim of consciousness or sentience. The website helper is not Soul; it answers only from this product knowledge pack.',
     links: [{ href: 'assist.html', label: 'Website helper' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
-    id: 'backups',
-    modes: ['help'],
-    tags: ['backup', 'restore', 'memory', 'settings', 'local', 'data', 'privacy'],
+    id: 'backups', modes: ['help'], tags: ['backup', 'restore', 'memory', 'settings', 'local', 'data', 'privacy', 'recovery'],
     title: 'Backups and local data',
-    reply: 'Preferences, conversations, backups, appearance, and workspace configuration stay local by default. Encrypted settings and backups use Windows credential protection when available. That protects data at rest; it does not protect against malware running as your user. Review or remove local data from Settings.',
+    reply: 'Preferences, conversations, backups, appearance, and workspace configuration stay local by default. Recovery and backup controls are part of the current desktop architecture. Windows credential protection is used where available for supported protected settings/data.',
     links: [{ href: 'privacy.html', label: 'Privacy' }, { href: 'product.html', label: 'Product' }]
   },
   {
-    id: 'platforms',
-    modes: ['help', 'download'],
-    tags: ['linux', 'mac', 'macos', 'iphone', 'ios', 'android', 'platform', 'official', 'sf'],
+    id: 'platforms', modes: ['help', 'download'], tags: ['linux', 'mac', 'macos', 'iphone', 'ios', 'android', 'platform', 'official'],
     title: 'Official platform',
-    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets, not official signed products. Eidovara is not an iOS, iPhone, iPad, or Apple product and does not require licensed SF Pro or SF Mono fonts. It is not affiliated with Apple, Microsoft, or Electron.',
+    reply: 'The official advertised product is Windows 10/11 x64. Linux and macOS packaging scripts are development targets rather than official signed products. Eidovara is not an iOS, iPhone, iPad, or Apple product.',
     links: [{ href: 'licensing.html', label: 'Licensing' }]
   },
   {
-    id: 'brands',
-    modes: ['help', 'legal'],
-    tags: ['jarvis', 'marvel', 'disney', 'siri', 'alexa', 'copilot', 'chatgpt', 'claude', 'raycast', 'alfred', 'spotlight', 'clippy', 'cortana', 'replika', 'iron', 'stark', 'xbox', 'brand', 'trademark', 'affiliated'],
+    id: 'brands', modes: ['help', 'legal'], tags: ['brand', 'trademark', 'affiliated', 'third-party', 'assistant', 'platform'],
     title: 'First-party names only',
-    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Architecture is a session kernel / Soul kernel only. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use — not bundled apps or logos. Marks stay unregistered ™. This is not legal advice.',
+    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. Third-party products, platforms, models, media services, and marks remain owned by their respective owners. References to interoperable services are factual platform or user-directed handoff information and do not imply sponsorship or affiliation.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
-    id: 'license',
-    modes: ['legal', 'help'],
-    tags: ['license', 'open', 'source-available', 'oss', 'copyright', 'evaluation'],
+    id: 'license', modes: ['legal', 'help'], tags: ['license', 'open', 'source-available', 'oss', 'copyright', 'evaluation'],
     title: 'Source-available, not open source',
-    reply: 'The repository uses the Eidovara Source-Available Evaluation License (LicenseRef-Eidovara-Source-Available-1.0). That is not an OSI open-source license and is not MIT, Apache, or GPL. Viewing or forking the source does not transfer ownership, grant patent or trademark rights, or let anyone relicense first-party material as open source. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Read LICENSE, TERMS, NOTICE, OWNERSHIP, TRADEMARKS, and AGE included with each release.',
+    reply: 'The repository uses the Eidovara Source-Available Evaluation License (LicenseRef-Eidovara-Source-Available-1.0). It is not an OSI open-source license. Viewing or forking the source does not transfer ownership or grant patent/trademark rights. Read LICENSE, TERMS, NOTICE, OWNERSHIP, TRADEMARKS, and AGE with the release.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: SOURCE, label: 'GitHub' }]
   },
   {
-    id: 'ownership',
-    modes: ['legal', 'help'],
-    tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
+    id: 'ownership', modes: ['legal', 'help'], tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
     title: 'First-party owner',
-    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. A fork stays under LICENSE and is not open source. Pull requests do not transfer copyright, joint authorship, or trademark rights until a privately executed assignment. Sign privately; posting a PR is not assignment. The contributor CLA and entity assignment files are unsigned templates only; this repository does not contain executed copies. This is not legal advice, a court judgment, or a government registration.',
+    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Qualifying original Eidovara first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name. Third-party software, services, models, marks, and media retain their respective rights. Repository records are not government registrations or legal advice.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
-    id: 'cla',
-    modes: ['legal', 'help'],
-    tags: ['cla', 'contributor', 'assignment', 'signed', 'execute', 'executed', 'template', 'inbound', 'pr', 'pull'],
-    title: 'Unsigned contributor assignment',
-    reply: 'The contributor copyright assignment in this repository is an unsigned template only. It is not executed. GitHub pull requests, issues, and “I agree” checkboxes do not transfer copyright. Eidovara does not accept inbound copyrightable work until Tyler Michael Bosworth gives prior written approval and both parties execute a separate written agreement. Do not commit completed copies to the public repository. This is not legal advice.',
+    id: 'cla', modes: ['legal', 'help'], tags: ['cla', 'contributor', 'assignment', 'signed', 'execute', 'executed', 'template', 'inbound', 'pr', 'pull'],
+    title: 'Contributor assignment status',
+    reply: 'Contributor and entity assignment documents in the public repository are templates unless separately executed. Posting a pull request does not by itself transfer copyright or trademark rights. Do not publish executed private agreements or confidential material in the repository.',
     links: [{ href: 'CONTRIBUTOR_ASSIGNMENT.md', label: 'CLA template' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
-    id: 'ip-certify',
-    modes: ['legal', 'help'],
-    tags: ['attestation', 'self-attestation', 'certification', 'ip-certify', 'uspto', 'copyright-office', 'registered', 'registration', 'deposit', 'infringement', 'dmca'],
+    id: 'ip-certify', modes: ['legal', 'help'], tags: ['attestation', 'self-attestation', 'certification', 'ip-certify', 'uspto', 'copyright-office', 'registered', 'registration', 'deposit', 'infringement', 'dmca'],
     title: 'Repository IP self-attestation',
-    reply: `docs/IP_CERTIFICATION.md is a dated repository self-attestation: it inventories licenses, unsigned templates, and owner-only leftovers for Eidovara v${ASSIST_VERSION}. It is not a U.S. Copyright Office registration, USPTO filing, patent, Authenticode certificate, or executed assignment. Eidovara is not registered with the Copyright Office or USPTO. Marks stay unregistered ™. The owner can file at copyright.gov and USPTO privately; this helper cannot. CLA and entity assignment files remain unsigned templates. See also docs/INFRINGEMENT.md for DMCA pointers.`,
+    reply: `docs/IP_CERTIFICATION.md is a repository self-attestation for Eidovara v${ASSIST_VERSION}. It is not a government registration, patent, Authenticode certificate, or executed assignment.`,
     links: [{ href: 'IP_CERTIFICATION.md', label: 'IP self-attestation' }, { href: 'licensing.html', label: 'Licensing' }]
   },
   {
-    id: 'pages-publish',
-    modes: ['help'],
-    tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing', 'eidovara', 'cloudflare', 'domain', 'www'],
-    title: 'Live GitHub Pages publishes from main',
-    reply: 'The official consumer site is https://eidovara.org (Cloudflare Pages project eidovara deploying the same docs/ folder). GitHub Pages also publishes docs/ from the main branch at the github.io URL after PR #10 merged to main. pages.yml deploys docs/ on push to main; do not retarget Pages at a feature branch. www.eidovara.org has no DNS record until the owner adds a CNAME. This helper cannot change GitHub or Cloudflare DNS settings.',
+    id: 'pages-publish', modes: ['help'], tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing', 'eidovara', 'cloudflare', 'domain'],
+    title: 'Website publication',
+    reply: 'The official consumer site is https://eidovara.org from the same docs/ source on main. GitHub Pages mirrors docs/ from main. The Cloudflare Pages production workflow is configured to deploy docs/ after website changes reach main when its production credentials are available. Browser or edge caching can briefly show older content after a deployment.',
     links: [{ href: './', label: 'Home' }, { href: 'status.html', label: 'Status' }]
   },
   {
-    id: 'terms',
-    modes: ['legal'],
-    tags: ['terms', 'acceptable', 'criminal', 'unauthorized', 'use', 'legal'],
+    id: 'terms', modes: ['legal'], tags: ['terms', 'acceptable', 'criminal', 'unauthorized', 'use', 'legal'],
     title: 'Terms pointers',
-    reply: 'These pointers are not legal advice. Eidovara is 18+, source-available not open source, and Authenticode-unsigned on Windows. Do not use it for criminal activity or unauthorized access to computers, accounts, networks, or data. Do not bypass subscriptions, DRM, anti-cheat, or authentication. Research is Wikipedia/Wikimedia after an explicit internet/web/online request. Application launching is user-confirmed local Windows apps.',
+    reply: 'These pointers are not legal advice. Eidovara is 18+, source-available rather than open source, and the current Windows build is Authenticode-unsigned. Do not use it for criminal activity, unauthorized access, DRM bypass, anti-cheat bypass, or other prohibited conduct. Application launching and online research/media use remain user-directed.',
     links: [{ href: 'terms.html', label: 'Terms of use' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
-    id: 'privacy',
-    modes: ['legal', 'help'],
-    tags: ['privacy', 'telemetry', 'analytics', 'leave', 'network', 'conversation'],
+    id: 'privacy', modes: ['legal', 'help'], tags: ['privacy', 'telemetry', 'analytics', 'leave', 'network', 'conversation'],
     title: 'Privacy pointers',
-    reply: 'This is not legal advice. There are no owner-operated accounts, telemetry, advertising identifiers, or cloud memory. What can leave the machine: explicit Wikipedia/Wikimedia research, optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /health /v1/config /v1/status after Connect (default https://api.eidovara.org), and optional /v1/assist only after helper opt-in. Conversations are not sent by default. Assist is not Soul. No payment-card collection. Payments stay fail-closed.',
+    reply: 'This is not legal advice. The current architecture is local-first. Network use can include explicit research, optional model/provider endpoints, official update checks, user-directed media/service searches, optional health/config/status, and website assist after opt-in. The status heartbeat does not send desktop conversations. No payment-card collection is enabled.',
     links: [{ href: 'privacy.html', label: 'Privacy notice' }]
   },
   {
-    id: 'security',
-    modes: ['legal', 'help'],
-    tags: ['security', 'sandbox', 'csp', 'vulnerability', 'sbom', 'checksum'],
+    id: 'security', modes: ['legal', 'help'], tags: ['security', 'sandbox', 'csp', 'vulnerability', 'sbom', 'checksum'],
     title: 'Security pointers',
-    reply: 'The desktop renderer is sandboxed and isolated from Node.js. Workspace CSP uses media-src https: eidovara-media: and connect-src none. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance. Installers are Authenticode-unsigned. The public repository runs CodeQL, OpenSSF Scorecards, Dependabot, a license inventory, and a prohibited-secret scan. Dependency graph and private vulnerability reporting still need owner clicks; this helper cannot enable them. Report vulnerabilities through the repository private advisory channel when the owner has enabled it; do not post exploits or credentials in public issues. No software is guaranteed perfectly secure.',
+    reply: 'The desktop renderer is sandboxed and isolated from Node.js. Release artifacts include measured checksums, updater metadata, an SPDX SBOM, and GitHub build provenance. Installers are Authenticode-unsigned. The repository uses automated security checks and a prohibited-secret scan. No software is guaranteed perfectly secure.',
     links: [{ href: 'security.html', label: 'Security center' }]
   },
   {
-    id: 'helper',
-    modes: ['help', 'legal'],
-    tags: ['helper', 'chatbot', 'widget', 'ask', 'website', 'assist', 'faq'],
+    id: 'helper', modes: ['help', 'legal'], tags: ['helper', 'widget', 'ask', 'website', 'assist', 'faq'],
     title: 'Website helper',
-    reply: 'Ask Eidovara on this site is a website helper over a fixed knowledge pack from the README, Terms, Age, Privacy, and download/runbook facts. It is not Soul, not conscious, and not legal advice. It needs no API key on eidovara.org or GitHub Pages. If you paste an optional Worker base in Status or this sheet, the same allowlisted answers can be served from POST /v1/assist. Transcripts are not stored. Desktop conversation history is never sent.',
+    reply: 'Ask Eidovara is a website helper over this fixed product knowledge pack. It is not Soul, not a consciousness claim, and not legal advice. The same allowlisted answers can be served through /v1/assist after opt-in. Desktop conversation history is not accepted by the helper service.',
     links: [{ href: 'assist.html', label: 'Assist' }, { href: 'faq.html', label: 'FAQ' }]
   },
   {
-    id: 'status',
-    modes: ['help'],
-    tags: ['status', 'pages', 'outage', 'uptime', 'releases'],
+    id: 'status', modes: ['help'], tags: ['status', 'pages', 'outage', 'uptime', 'releases'],
     title: 'Public status',
-    reply: `Default public surfaces are https://eidovara.org (Cloudflare Pages) plus the GitHub Pages github.io mirror, and the official unsigned Windows installer on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). The Status page prefills https://api.eidovara.org for /health and /v1/status. Paste another HTTPS base to override (saved in localStorage). No workers.dev host is compiled into the site. Invalid URLs fail closed.`,
+    reply: `Public surfaces are ${SITE}, the GitHub Pages mirror, and the official Windows release on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). The Status page uses https://api.eidovara.org by default for health/status. Invalid URLs fail closed.`,
     links: [{ href: 'status.html', label: 'Status' }, { href: 'download.html', label: 'Download (18+)' }]
   },
   {
-    id: 'forbidden-features',
-    modes: ['help', 'legal'],
-    tags: ['tts', 'neural', 'vrm', 'obs', 'makehuman', 'consciousness', 'vr'],
+    id: 'forbidden-features', modes: ['help', 'legal'], tags: ['tts', 'neural', 'vrm', 'obs', 'makehuman', 'consciousness', 'vr'],
     title: `What v${ASSIST_VERSION} does not include`,
-    reply: `v${ASSIST_VERSION} does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode is a separate triple gate and stays off by default. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields).`,
+    reply: `v${ASSIST_VERSION} does not claim scientific consciousness, does not enable live payments, and is not an official signed Linux or macOS product. Features that are not actually bundled must not be advertised as shipped.`,
     links: [{ href: 'product.html', label: 'Product' }, { href: 'licensing.html', label: 'Licensing' }]
   }
 ];
@@ -254,9 +199,7 @@ export function safePublicHref(value) {
     const url = new URL(raw);
     if (url.protocol !== 'https:' || url.username || url.password) return '';
     return url.toString();
-  } catch {
-    return '';
-  }
+  } catch { return ''; }
 }
 
 function publicLinks(links) {
@@ -272,7 +215,6 @@ function publicLinks(links) {
 }
 
 const STOP = new Set(['the', 'is', 'a', 'an', 'to', 'for', 'of', 'and', 'or', 'in', 'on', 'can', 'i', 'you', 'how', 'what', 'do', 'does', 'are', 'me', 'my', 'your', 'this', 'that', 'with', 'it', 'be', 'at', 'from', 'about']);
-
 const ABUSE = [
   /\b(hack(?:ing)?|phish(?:ing)?|ransomware|keylogger|rootkit|sqli|sql\s*injection|xss|zero[- ]day)\b/i,
   /\b(unauthorized|unauthorised|illegal)\s+access\b/i,
@@ -283,27 +225,17 @@ const ABUSE = [
   /\b(child\s+(?:porn|sexual|exploit)|csam|cse)\b/i,
   /\bmalware\s+(?:dropper|payload|builder)\b/i
 ];
-
 const REFUSALS = {
-  empty: `Ask a short product question about Eidovara v${ASSIST_VERSION} (download, 18+, local desktop use, payments, or legal pointers).`,
+  empty: `Ask a short product question about Eidovara v${ASSIST_VERSION} (download, 18+, local desktop use, online features, payments, or legal pointers).`,
   too_large: 'That question is too long for this website helper. Ask a shorter product question (under 800 characters).',
-  refused: 'I cannot help with criminal activity, unauthorized access, or bypassing security controls. Eidovara is 18+ local Windows software. Read the Terms. This helper is not Soul and is not legal advice.',
+  refused: 'I cannot help with criminal activity, unauthorized access, or bypassing security controls. Read the Terms. This helper is not Soul and is not legal advice.',
   invalid: 'That request was not a usable product question.'
 };
 
 export function tokenize(text) {
-  return String(text || '')
-    .toLowerCase()
-    .replace(/[^a-z0-9+]+/g, ' ')
-    .split(/\s+/)
-    .filter(token => token.length > 1 && !STOP.has(token));
+  return String(text || '').toLowerCase().replace(/[^a-z0-9+]+/g, ' ').split(/\s+/).filter(token => token.length > 1 && !STOP.has(token));
 }
-
-export function isAbuseQuery(text) {
-  const value = String(text || '');
-  return ABUSE.some(pattern => pattern.test(value));
-}
-
+export function isAbuseQuery(text) { return ABUSE.some(pattern => pattern.test(String(text || ''))); }
 export function classifyAssistInput(raw, bodyBytes = 0) {
   if (bodyBytes > MAX_ASSIST_BODY) return { ok: false, code: 'too_large', status: 413 };
   const query = String(raw || '').replace(/\s+/g, ' ').trim();
@@ -312,89 +244,32 @@ export function classifyAssistInput(raw, bodyBytes = 0) {
   if (isAbuseQuery(query)) return { ok: false, code: 'refused', status: 400 };
   return { ok: true, query };
 }
-
 function scoreEntry(entry, tokens, mode) {
   let score = 0;
   const hay = `${entry.id} ${entry.tags.join(' ')} ${entry.title} ${entry.reply}`.toLowerCase();
-  for (const token of tokens) {
-    if (entry.tags.includes(token)) score += 3;
-    else if (hay.includes(token)) score += 1;
-  }
+  for (const token of tokens) { if (entry.tags.includes(token)) score += 3; else if (hay.includes(token)) score += 1; }
   if (mode && entry.modes.includes(mode)) score += 2;
   return score;
 }
-
-function normalizeMode(mode) {
-  const value = String(mode || 'help').toLowerCase();
-  return ASSIST_MODES.includes(value) ? value : 'help';
-}
+function normalizeMode(mode) { const value = String(mode || 'help').toLowerCase(); return ASSIST_MODES.includes(value) ? value : 'help'; }
 
 export function answerAssist(raw, options = {}) {
   const mode = normalizeMode(options.mode);
   const classified = classifyAssistInput(raw, options.bodyBytes || 0);
-  if (!classified.ok) {
-    return {
-      ok: false,
-      code: classified.code,
-      status: classified.status,
-      mode,
-      version: ASSIST_VERSION,
-      source: 'knowledge',
-      transcripts: false,
-      legalAdvice: false,
-      soul: false,
-      paymentsEnabled: false,
-      reply: REFUSALS[classified.code] || REFUSALS.invalid,
-      links: publicLinks([{ href: 'faq.html', label: 'FAQ' }, { href: 'terms.html', label: 'Terms' }])
-    };
-  }
+  if (!classified.ok) return { ok: false, code: classified.code, status: classified.status, mode, version: ASSIST_VERSION, source: 'knowledge', transcripts: false, legalAdvice: false, soul: false, paymentsEnabled: false, reply: REFUSALS[classified.code] || REFUSALS.invalid, links: publicLinks([{ href: 'faq.html', label: 'FAQ' }, { href: 'terms.html', label: 'Terms' }]) };
   const tokens = tokenize(classified.query);
   let best = ENTRIES[0];
   let bestScore = -1;
-  for (const entry of ENTRIES) {
-    const score = scoreEntry(entry, tokens, mode);
-    if (score > bestScore) {
-      best = entry;
-      bestScore = score;
-    }
-  }
+  for (const entry of ENTRIES) { const score = scoreEntry(entry, tokens, mode); if (score > bestScore) { best = entry; bestScore = score; } }
   const weak = tokens.length > 0 && bestScore < 2;
   const preface = mode === 'legal' ? 'This is not legal advice. ' : '';
-  const reply = weak
-    ? `${preface}I only answer from the Eidovara v${ASSIST_VERSION} website knowledge pack (not Soul, not conscious). Try asking about download, age 18+, local Windows use, payments, Connect service, or legal pointers.`
-    : `${preface}${best.reply}`;
-  const links = publicLinks(weak
-    ? [{ href: 'faq.html', label: 'FAQ' }, { href: 'download.html', label: 'Download' }, { href: 'legal.html', label: 'Legal' }]
-    : (best.links || []));
-  return {
-    ok: true,
-    code: weak ? 'fallback' : 'match',
-    status: 200,
-    mode,
-    version: ASSIST_VERSION,
-    source: 'knowledge',
-    id: weak ? 'fallback' : best.id,
-    transcripts: false,
-    legalAdvice: false,
-    soul: false,
-    paymentsEnabled: false,
-    reply,
-    links
-  };
+  const reply = weak ? `${preface}I only answer from the Eidovara v${ASSIST_VERSION} website knowledge pack. Try asking about download, age 18+, local Windows use, online features, payments, service status, or legal pointers.` : `${preface}${best.reply}`;
+  const links = publicLinks(weak ? [{ href: 'faq.html', label: 'FAQ' }, { href: 'download.html', label: 'Download' }, { href: 'legal.html', label: 'Legal' }] : (best.links || []));
+  return { ok: true, code: weak ? 'fallback' : 'match', status: 200, mode, version: ASSIST_VERSION, source: 'knowledge', id: weak ? 'fallback' : best.id, transcripts: false, legalAdvice: false, soul: false, paymentsEnabled: false, reply, links };
 }
 
 export function assistMeta() {
-  return {
-    service: 'Eidovara',
-    assist: true,
-    version: ASSIST_VERSION,
-    knowledgeOnly: true,
-    transcripts: false,
-    paymentsEnabled: false,
-    soul: false,
-    legalAdvice: false,
-    modes: ASSIST_MODES.slice()
-  };
+  return { service: 'Eidovara', assist: true, version: ASSIST_VERSION, liveInstallerVersion: ASSIST_VERSION, liveInstaller: INSTALLER_NAME, liveInstallerSha256: INSTALLER_SHA256, knowledgeOnly: true, transcripts: false, paymentsEnabled: false, soul: false, legalAdvice: false, modes: ASSIST_MODES.slice() };
 }
 
 export { RELEASES, INSTALLER, INSTALLER_PINNED, INSTALLER_NAME, INSTALLER_SHA256, INSTALLER_SIZE, SOURCE, SITE, REFUSALS };
