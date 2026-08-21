@@ -11,8 +11,8 @@ This self-declared network inventory is included in signed release provenance.
 | `api.search.brave.com` | Explicit web/image request when a Premium Brave Search key is configured | Search terms, API credential, IP address |
 | User-configured local model (`127.0.0.1` / `localhost` / `::1`, typically Ollama `/api/chat`) | User sends a conversation while Local is selected | Conversation context and selected model on loopback |
 | User-configured Premium HTTPS `/chat/completions` endpoint | User sends a conversation while Compatible is selected | Conversation context, selected model, credential when required |
-| Configured HTTPS service `/health` | Owner uses Ctrl+A **Test service** | No conversations or payment data; health JSON only |
+| Configured Eidovara service `/health`, `/v1/config`, `/v1/status` | After 18+ confirmation: launch retry, Settings **Connect**, or Ctrl+A **Test service** | No conversations or payment data; health/config/status JSON only |
 | `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
 | Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
 
-No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. The Electron app does not hard-code a `workers.dev` URL; paste a service base into the local administrator panel.
+No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. The Electron app does not hard-code a `workers.dev` URL; paste a service base into Settings → Eidovara service (or the local administrator panel). If the service is unreachable, Offline Soul continues locally.
