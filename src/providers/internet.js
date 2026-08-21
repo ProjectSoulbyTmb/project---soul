@@ -16,20 +16,30 @@ function orderedPages(data) {
   const list = Array.isArray(raw) ? raw : Object.values(raw);
   return list.sort((a, b) => (Number(a.index) || 0) - (Number(b.index) || 0));
 }
-function asHttps(value) {
+function hostnameAllowed(href, suffixes) {
+  try {
+    const host = new URL(href).hostname.toLowerCase();
+    return suffixes.some(suffix => host === suffix || host.endsWith(`.${suffix}`));
+  } catch {
+    return false;
+  }
+}
+function asHttps(value, hostSuffixes) {
   let raw = String(value || '').trim();
   if (!raw) return '';
   if (raw.startsWith('//')) raw = `https:${raw}`;
   try {
     const url = new URL(raw);
     if (url.protocol !== 'https:' || url.username || url.password) return '';
-    return url.toString();
+    const href = url.toString();
+    if (hostSuffixes && !hostnameAllowed(href, hostSuffixes)) return '';
+    return href;
   } catch {
     return '';
   }
 }
 function wikiUrl(page) {
-  if (page?.fullurl) return asHttps(page.fullurl);
+  if (page?.fullurl) return asHttps(page.fullurl, ['wikipedia.org']);
   const title = String(page?.title || '').replace(/ /g, '_');
   return title ? `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}` : '';
 }
@@ -39,14 +49,14 @@ async function searchArticles(query) {
   return orderedPages(data).slice(0, 5).map(p => ({
     type: 'source', title: plain(p.title), description: plain(p.description || p.extract || p.excerpt),
     url: wikiUrl(p),
-    thumbnail: asHttps(p.thumbnail?.source || p.thumbnail?.url) || null
+    thumbnail: asHttps(p.thumbnail?.source || p.thumbnail?.url, ['upload.wikimedia.org', 'wikimedia.org', 'wikipedia.org']) || null
   })).filter(p => p.title && p.url);
 }
 async function searchMedia(query, kind) {
   const type = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'bitmap';
   const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime', iiurlwidth: '900' });
   const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`);
-  return orderedPages(data).map(p => { const i = p.imageinfo?.[0] || {}; return { type: kind, title: plain(String(p.title || '').replace(/^File:/, '')), url: asHttps(i.thumburl || i.url), sourceUrl: asHttps(i.descriptionurl), mime: i.mime }; }).filter(x => x.url && x.sourceUrl).slice(0, 4);
+  return orderedPages(data).map(p => { const i = p.imageinfo?.[0] || {}; return { type: kind, title: plain(String(p.title || '').replace(/^File:/, '')), url: asHttps(i.thumburl || i.url, ['upload.wikimedia.org', 'wikimedia.org']), sourceUrl: asHttps(i.descriptionurl, ['commons.wikimedia.org', 'wikimedia.org', 'wikipedia.org']), mime: i.mime }; }).filter(x => x.url && x.sourceUrl).slice(0, 4);
 }
 async function searchBroad(query, apiKey, wantsImages) {
   const params = new URLSearchParams({ q: query, count: '10', search_lang: 'en', safesearch: 'strict' });

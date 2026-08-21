@@ -123,6 +123,32 @@ test('untrusted Wikipedia JSON keeps only credential-free HTTPS URLs',async()=>{
     assert.equal(r.media.length,0);
   }finally{globalThis.fetch=original;}
 });
+test('Wikipedia and Wikimedia result URLs are kept only when the hostname is wiki/wikimedia',async()=>{
+  const original=globalThis.fetch;
+  globalThis.fetch=async url=>{
+    if(isWikipediaHost(url)) return {ok:true,json:async()=>({query:{pages:{
+      '1':{pageid:1,index:1,title:'Keep',extract:'ok',fullurl:'https://en.wikipedia.org/wiki/Keep'},
+      '2':{pageid:2,index:2,title:'Lookalike',extract:'bad',fullurl:'https://en.wikipedia.org.evil.example/wiki/Keep'},
+      '3':{pageid:3,index:3,title:'Query',extract:'bad',fullurl:'https://evil.example/?q=wikipedia.org'},
+      '4':{pageid:4,index:4,title:'Thumb',extract:'ok',fullurl:'https://en.wikipedia.org/wiki/Thumb',thumbnail:{url:'https://evil.example/upload.wikimedia.org/saturn.jpg'}}
+    }}})};
+    return {ok:true,json:async()=>({query:{pages:{
+      '1':{title:'File:Evil',imageinfo:[{thumburl:'https://evil.example/saturn.jpg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Evil',mime:'image/jpeg'}]},
+      '2':{title:'File:Keep',imageinfo:[{thumburl:'https://upload.wikimedia.org/wikipedia/commons/keep.jpg',descriptionurl:'https://commons.wikimedia.org/wiki/File:Keep',mime:'image/jpeg'}]}
+    }}})};
+  };
+  try{
+    const r=await researchInternet('Search the internet for information and pictures of Keep');
+    assert.equal(r.sources.length,2);
+    assert.equal(r.sources[0].title,'Keep');
+    assert.equal(r.sources[0].url,'https://en.wikipedia.org/wiki/Keep');
+    assert.equal(r.sources[0].thumbnail,null);
+    assert.equal(r.sources[1].title,'Thumb');
+    assert.equal(r.media.length,1);
+    assert.equal(r.media[0].url,'https://upload.wikimedia.org/wikipedia/commons/keep.jpg');
+    assert.equal(r.media[0].sourceUrl,'https://commons.wikimedia.org/wiki/File:Keep');
+  }finally{globalThis.fetch=original;}
+});
 test('wikipedia citations keep search order and canonical HTTPS URLs',async()=>{
   const original=globalThis.fetch;
   globalThis.fetch=async url=>{

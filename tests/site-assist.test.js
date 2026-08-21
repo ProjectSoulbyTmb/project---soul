@@ -228,4 +228,5 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));
   assert.match(read('docs/assist.js'), /safePublicHref\(link\.href\)/);
   assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
+  assert.match(read('docs/404.html'), /<base href="https:\/\/projectsoulbytmb\.github\.io\/project---soul\/">/);
 });

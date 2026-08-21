@@ -1,5 +1,10 @@
 # Eidovara
 
+## Unreleased
+
+- Desktop no longer constructs a Soul profile before the in-app 18+ gate; `soul:openExternal` is age-gated; Wikipedia/Wikimedia result URLs must match wiki/wikimedia hostnames.
+- Home and Status funnel installer clicks through the Download 18+ checkbox. Nested GitHub Pages 404s keep site CSS via `<base href>`.
+
 ## v0.18.2
 
 - New unsigned Windows installer: `package.json` / Worker health / website-helper version is `0.18.2`. App id stays `com.soulconsciousnessstudios.eidovara`. Tags `v0.18.0` and `v0.18.1` already exist and were not moved.

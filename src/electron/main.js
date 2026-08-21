@@ -4,8 +4,9 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { SoulEngine } from '../core/engine.js';
+import { SoulEngine } from '../core/ensureEngine().js';
 import { JsonStore } from '../core/store.js';
+import { defaultProfile } from '../core/schema.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT, normalizeProviderEndpoint } from '../providers/http.js';
 import { fetchServiceSnapshot, normalizeServiceUrl, httpsOnlyUrl } from '../core/service.js';
@@ -117,11 +118,21 @@ function makeProvider() {
   if (config.provider === 'compatible' && entitlement() === 'premium') return { reply: ({ messages }) => callCompatibleProvider({ endpoint: config.endpoint, apiKey: getApiKey(), model: config.model, messages }) };
   return new OfflineProvider();
 }
+function ensureEngine() {
+  requireAgeGate();
+  if (!engine) {
+    engine = new SoulEngine({
+      store: new JsonStore({ dataDir: path.join(app.getPath('userData'), 'profiles'), profileId: 'default', codec: protectedStorageCodec() }),
+      provider: makeProvider(),
+      internetOptions: { searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }
+    });
+  }
+  return engine;
+}
 function createWindow() {
   try {
     loadConfig();
-    const dataDir = path.join(app.getPath('userData'), 'profiles');
-    engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default', codec: protectedStorageCodec() }), provider: makeProvider(), internetOptions: { searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' } });
+    if (config.ageGateAccepted === true) ensureEngine();
     mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.18.2', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
@@ -153,22 +164,22 @@ app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).ca
 app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
-ipcMain.handle('soul:send', async (_e, m) => { requireAgeGate(); const result = await engine.respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
-ipcMain.handle('soul:snapshot', () => engine.snapshot());
-ipcMain.handle('soul:recordMedia', (_e, input) => { requireAgeGate(); return engine.recordMedia(input); });
-ipcMain.handle('soul:entertainment', () => { requireAgeGate(); return engine.entertainment(); });
-ipcMain.handle('soul:reset', () => { requireAgeGate(); return engine.reset(); });
+ipcMain.handle('soul:send', async (_e, m) => { requireAgeGate(); const result = await ensureEngine().respond(m); if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); } return result; });
+ipcMain.handle('soul:snapshot', () => (config.ageGateAccepted === true ? ensureEngine().snapshot() : defaultProfile('default')));
+ipcMain.handle('soul:recordMedia', (_e, input) => { requireAgeGate(); return ensureEngine().recordMedia(input); });
+ipcMain.handle('soul:entertainment', () => { requireAgeGate(); return ensureEngine().entertainment(); });
+ipcMain.handle('soul:reset', () => { requireAgeGate(); return ensureEngine().reset(); });
 ipcMain.handle('soul:remember', (_e, c, opts) => {
   requireAgeGate();
   const kind = ['preference', 'observation', 'criticism', 'fact'].includes(opts?.kind) ? opts.kind : 'preference';
-  return engine.remember(String(c || '').slice(0, 1000), { kind });
+  return ensureEngine().remember(String(c || '').slice(0, 1000), { kind });
 });
-ipcMain.handle('soul:forget', (_e, x) => { requireAgeGate(); return engine.forget(String(x || '').slice(0, 1000)); });
-ipcMain.handle('soul:newConversation', () => { requireAgeGate(); return engine.newConversation(); });
-ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return engine.selectConversation(String(id)); });
-ipcMain.handle('soul:deleteConversation', (_e, id) => { requireAgeGate(); return engine.deleteConversation(String(id)); });
+ipcMain.handle('soul:forget', (_e, x) => { requireAgeGate(); return ensureEngine().forget(String(x || '').slice(0, 1000)); });
+ipcMain.handle('soul:newConversation', () => { requireAgeGate(); return ensureEngine().newConversation(); });
+ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return ensureEngine().selectConversation(String(id)); });
+ipcMain.handle('soul:deleteConversation', (_e, id) => { requireAgeGate(); return ensureEngine().deleteConversation(String(id)); });
 ipcMain.handle('soul:getSettings', () => publicConfig());
-ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); return publicConfig(); });
+ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); ensureEngine(); return publicConfig(); });
 ipcMain.handle('soul:declineAgeGate', () => { setImmediate(() => app.quit()); return true; });
 ipcMain.handle('soul:adminLogin', (_e, password) => {
   requireAgeGate();
@@ -209,7 +220,7 @@ ipcMain.handle('soul:adminSave', (_e, incoming) => {
   } else {
     config.storeUrl = '';
   }
-  config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
+  config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); ensureEngine().setProvider(makeProvider()); ensureEngine().setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
@@ -235,7 +246,7 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   config.model = String(incoming?.model || '').slice(0, 200);
   if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#000000'), panel: color(incoming.theme.panel, '#1C1C1E'), accent: color(incoming.theme.accent, '#0A84FF'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
   if (incoming?.companion && typeof incoming.companion === 'object') {
-    const policy = engine.snapshot().policy || {};
+    const policy = ensureEngine().snapshot().policy || {};
     const adultGatesActive = policy.adultStatusConfirmed === true && policy.adultSoulEnabled === true && policy.currentConsent === true && policy.mode === 'adult';
     const boundedShape = value => Math.max(0, Math.min(100, Number(value) || 50));
     config.companion = { avatarMode: ['hidden','2d','3d'].includes(incoming.companion.avatarMode) ? incoming.companion.avatarMode : '3d', motion: ['full','gentle','reduced'].includes(incoming.companion.motion) ? incoming.companion.motion : 'gentle', voiceEnabled: Boolean(incoming.companion.voiceEnabled), voiceName: String(incoming.companion.voiceName || '').slice(0, 200), rate: Math.max(0.5, Math.min(2, Number(incoming.companion.rate) || 1)), pitch: Math.max(0.5, Math.min(2, Number(incoming.companion.pitch) || 1)), adultPresentation: adultGatesActive && Boolean(incoming.companion.adultPresentation), bodyHeight: boundedShape(incoming.companion.bodyHeight), bodyBuild: boundedShape(incoming.companion.bodyBuild), bodyCurves: boundedShape(incoming.companion.bodyCurves) };
@@ -251,9 +262,9 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.encryptedSearchApiKey = safeStorage.encryptString(incoming.searchApiKey).toString('base64');
   }
   if (incoming?.clearSearchApiKey) config.encryptedSearchApiKey = '';
-  saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }); return publicConfig();
+  saveConfig(); ensureEngine().setProvider(makeProvider()); ensureEngine().setInternetOptions({ searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' }); return publicConfig();
 });
-ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: engine.snapshot().policy.localSafetyReports?.length || 0 }); });
+ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
 ipcMain.handle('soul:openDataFolder', () => { requireAgeGate(); return shell.openPath(app.getPath('userData')); });
 ipcMain.handle('soul:selectLocalMedia', async () => {
   requireAgeGate();
@@ -268,12 +279,12 @@ ipcMain.handle('soul:selectLocalMedia', async () => {
   allowedLocalMedia.set(id, filePath);
   return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
 });
-ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return engine.createBackup(); });
-ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return engine.listBackups(); });
-ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return engine.restoreBackup(String(name || '')); });
-ipcMain.handle('soul:configureSetup', (_e, input) => { requireAgeGate(); return engine.configureSetup(input); });
-ipcMain.handle('soul:configureAssistant', (_e, input) => { requireAgeGate(); return engine.configureAssistant(input); });
-ipcMain.handle('soul:openExternal', (_e, value) => { const url = httpsOnlyUrl(value); if (!url) throw new Error('Only secure web links can be opened.'); return shell.openExternal(url); });
+ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return ensureEngine().createBackup(); });
+ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return ensureEngine().listBackups(); });
+ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return ensureEngine().restoreBackup(String(name || '')); });
+ipcMain.handle('soul:configureSetup', (_e, input) => { requireAgeGate(); return ensureEngine().configureSetup(input); });
+ipcMain.handle('soul:configureAssistant', (_e, input) => { requireAgeGate(); return ensureEngine().configureAssistant(input); });
+ipcMain.handle('soul:openExternal', (_e, value) => { requireAgeGate(); const url = httpsOnlyUrl(value); if (!url) throw new Error('Only secure web links can be opened.'); return shell.openExternal(url); });
 ipcMain.handle('soul:checkForUpdates', async () => { requireAgeGate(); pendingUpdate = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() }); return pendingUpdate; });
 ipcMain.handle('soul:installUpdate', async () => {
   requireAgeGate();

@@ -21,7 +21,7 @@ test('age gate inert-blocks the app and refreshes backups after accept', () => {
   const renderer = read('src/renderer/renderer.js');
   assert.match(renderer, /toggleAttribute\('inert'/);
   assert.match(renderer, /function setAgeGated/);
-  assert.match(renderer, /acceptAgeGate\(true\);setAgeGated\(false\);await refreshBackups/);
+  assert.match(renderer, /acceptAgeGate\(true\);state=await window\.soul\.snapshot\(\);setAgeGated\(false\);await refreshBackups/);
 });
 
 test('settings save normalizes local and Premium endpoints', () => {
@@ -54,6 +54,15 @@ test('desktop chrome and installer EULA match package.json version', () => {
 test('desktop store and openExternal reject credentialed HTTPS URLs', () => {
   const main = read('src/electron/main.js');
   assert.match(main, /The store link must use HTTPS without credentials/);
-  assert.match(main, /soul:openExternal[\s\S]*httpsOnlyUrl/);
+  assert.match(main, /soul:openExternal[\s\S]*requireAgeGate[\s\S]*httpsOnlyUrl/);
   assert.match(read('src/core/updater.js'), /url\.username \|\| url\.password/);
+});
+
+test('desktop does not create a Soul profile until 18+ is accepted', () => {
+  const main = read('src/electron/main.js');
+  assert.match(main, /function ensureEngine/);
+  assert.match(main, /if \(config\.ageGateAccepted === true\) ensureEngine\(\)/);
+  assert.match(main, /soul:snapshot[\s\S]*defaultProfile/);
+  assert.match(main, /acceptAgeGate[\s\S]*ensureEngine\(\)/);
+  assert.doesNotMatch(main, /loadConfig\(\);\s*const dataDir = path\.join\(app\.getPath\('userData'\), 'profiles'\)/);
 });

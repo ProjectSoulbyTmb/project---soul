@@ -10,7 +10,8 @@ test('public site tells users to download Windows or build from source, not use 
   assert.match(site, /Get Eidovara/);
   assert.match(site, /local-first Windows desktop app/);
   assert.match(site, /not a hosted chat account/);
-  assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/latest\/download\/Eidovara-0\.18\.2-Windows-x64-Setup\.exe/);
+  assert.match(site, /href="download.html"/);
+  assert.match(site, /Eidovara-0\.18\.2-Windows-x64-Setup\.exe/);
   assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/latest/);
   assert.match(site, /unsigned Stable Alpha/);
   assert.match(site, /Authenticode-unsigned/);
@@ -96,7 +97,7 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   const homeDownloadPrimary = [...home.matchAll(/<a class="primary[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)]
     .filter(([, , text]) => /download|installer|windows alpha|setup\.exe/i.test(text));
   assert.ok(homeDownloadPrimary.length >= 1);
-  assert.ok(homeDownloadPrimary.some(([, href]) => isInstallerHref(href) || href === 'download.html'));
+  assert.ok(homeDownloadPrimary.some(([, href]) => href === 'download.html'), 'home primary download CTA must use the 18+ Download page');
   for (const [, href, text] of homeDownloadPrimary) {
     assert.equal(repoRoot.test(href), false, `home primary "${text.trim()}" must not be the repo root`);
   }
