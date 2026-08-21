@@ -1,3 +1,14 @@
-.brand-icon { width: 28px; height: 28px; object-fit: contain; }
+.brand-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--separator) 80%, transparent);
+}
 .studio-line { display: flex; align-items: center; gap: 8px; }
-.studio-icon { width: 28px; height: 28px; object-fit: contain; }
+.studio-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  border-radius: 8px;
+}
