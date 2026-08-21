@@ -33,7 +33,7 @@ You may run an official unmodified Windows release for personal evaluation and l
 
 ## 4. Adult Mode
 
-Adult Mode is off by default. Access requires all three gates: local age-of-majority confirmation, explicit enablement of Adult Soul, and **current revocable consent**. Revoking consent immediately disables Adult Mode presentation. A setting never makes content legal in a jurisdiction.
+Adult Mode is off by default. Access requires all three gates: local age-of-majority confirmation, explicit enablement of Adult Soul, and **current revocable consent**. Revoking consent immediately disables Adult Mode presentation. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields). A setting never makes content legal in a jurisdiction.
 
 ## 5. Third-party content and software
 
@@ -57,7 +57,9 @@ Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (the soft
 
 ## 7. Platform, signing, and export
 
-The official advertised product is **Authenticode-unsigned Windows 10/11 x64 desktop software**. Linux and macOS packaging scripts in this repository are development targets, not official signed products. You are responsible for export-control, sanctions, and local law applicable to downloading and running unsigned desktop software.
+The official advertised product is **Authenticode-unsigned Windows 10/11 x64 desktop software**. Linux and macOS packaging scripts in this repository are development targets, not official signed products. Authenticode signing, EV signing, and Microsoft certification are not claimed.
+
+You are responsible for export-control, sanctions, and local law applicable to downloading and running this unsigned desktop software, including U.S. Export Administration Regulations and OFAC sanctions where they apply. This repository does not publish an export-license number, EAR classification, or a claim that every jurisdiction permits the download. Do not use Eidovara if applicable law prohibits you from receiving or running U.S.-origin encryption software. This paragraph is product notice, not an export-compliance certification.
 
 ## 8. Commerce in v0.19.1
 

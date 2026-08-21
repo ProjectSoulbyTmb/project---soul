@@ -69,3 +69,19 @@ test('desktop does not create a Soul profile until 18+ is accepted', () => {
   assert.match(main, /acceptAgeGate[\s\S]*ensureEngine\(\)/);
   assert.doesNotMatch(main, /loadConfig\(\);\s*const dataDir = path\.join\(app\.getPath\('userData'\), 'profiles'\)/);
 });
+
+test('desktop log redacts bearer tokens and obvious secrets', async () => {
+  const { redactSecretsForLog } = await import('../src/core/log-redact.js');
+  assert.match(redactSecretsForLog('Authorization: Bearer sk-live-abc123'), /Bearer \[redacted\]/);
+  assert.doesNotMatch(redactSecretsForLog('Authorization: Bearer sk-live-abc123'), /sk-live-abc123/);
+  assert.match(redactSecretsForLog('api_key=supersecret'), /api_key=\[redacted\]/i);
+  const main = read('src/electron/main.js');
+  assert.match(main, /redactSecretsForLog/);
+  assert.match(main, /function log\(message, error\)/);
+});
+
+test('desktop main process requests a single instance lock', () => {
+  const main = read('src/electron/main.js');
+  assert.match(main, /requestSingleInstanceLock/);
+  assert.match(main, /second-instance/);
+});

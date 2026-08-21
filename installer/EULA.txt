@@ -1,5 +1,5 @@
 EIDOVARA WINDOWS INSTALLER NOTICE
-Version 0.19.1 Stable Alpha
+Version 0.22.2 Stable Alpha
 
 This Setup program installs unsigned Windows 10/11 x64 desktop software.
 It is source-available for lawful evaluation, NOT open source, and is
@@ -40,7 +40,9 @@ BY CLICKING I AGREE / INSTALL YOU CONFIRM THAT:
 If you are under 18, click Decline / Cancel and do not install.
 
 These statements are product terms, not legal advice. Mandatory consumer
-rights remain unaffected.
+rights remain unaffected. You are responsible for export-control and
+sanctions law applicable to this unsigned Windows download. This Setup
+program does not publish an export-license number.
 
 ======== LICENSE ========
 

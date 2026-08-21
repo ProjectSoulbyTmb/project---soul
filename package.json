@@ -1,6 +1,6 @@
 {
   "name": "eidovara",
-  "version": "0.19.1",
+  "version": "0.22.2",
   "description": "Eidovara privacy-focused desktop assistant and media workspace.",
   "author": "Tyler Michael Bosworth, project creator and product director. Soul Consciousness Studios is the intended publisher name, not a formed IP-owning entity.",
   "license": "SEE LICENSE IN LICENSE",
@@ -106,6 +106,16 @@
     },
     "portable": {
       "artifactName": "Eidovara-${version}-Windows-${arch}-Portable.${ext}"
+    },
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true,
+      "loadBrowserProcessSpecificV8Snapshot": false,
+      "grantFileProtocolExtraPrivileges": false
     },
     "afterPack": "scripts/after-pack.cjs",
     "linux": {

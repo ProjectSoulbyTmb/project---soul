@@ -2,6 +2,11 @@ name = "eidovara-api"
 main = "worker.js"
 compatibility_date = "2026-08-20"
 
+# Official API hostname only — never compile preview hosts into the app or public JS.
+[[routes]]
+pattern = "api.eidovara.org"
+custom_domain = true
+
 [vars]
 WEBSITE_URL = "https://eidovara.org/"
 STRIPE_PAYMENT_URL = ""

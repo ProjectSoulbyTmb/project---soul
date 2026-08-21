@@ -22,7 +22,9 @@
   ],
   "product": {
     "name": "Eidovara",
-    "version": "0.19.1",
+    "version": "0.22.2",
+    "sourceVersion": "0.22.2",
+    "liveInstallerVersion": "0.19.1",
     "appId": "com.soulconsciousnessstudios.eidovara",
     "platform": "Windows 10/11 x64",
     "installer": "Eidovara-0.19.1-Windows-x64-Setup.exe",
@@ -69,7 +71,13 @@
     { "id": "cla", "path": "docs/CONTRIBUTOR_ASSIGNMENT.md", "status": "unsigned-template" },
     { "id": "entity-assignment", "path": "docs/ENTITY_IP_ASSIGNMENT.md", "status": "unsigned-template" },
     { "id": "company-formation", "path": "docs/COMPANY_FORMATION.md", "status": "not-filed" },
-    { "id": "codeowners", "path": ".github/CODEOWNERS", "status": "in-repo" }
+    { "id": "codeowners", "path": ".github/CODEOWNERS", "status": "in-repo" },
+    { "id": "security-txt", "path": "docs/.well-known/security.txt", "status": "in-repo" },
+    { "id": "dependabot", "path": ".github/dependabot.yml", "status": "in-repo" },
+    { "id": "security-workflow", "path": ".github/workflows/security.yml", "status": "in-repo" },
+    { "id": "codeql-workflow", "path": ".github/workflows/codeql.yml", "status": "in-repo" },
+    { "id": "scorecards-workflow", "path": ".github/workflows/scorecards.yml", "status": "in-repo" },
+    { "id": "dependency-review-workflow", "path": ".github/workflows/dependency-review.yml", "status": "in-repo" }
   ],
   "ownerActionRequired": [
     "copyright-office-registration",
@@ -79,6 +87,7 @@
     "executed-cla-before-inbound-code",
     "entity-formation-plus-signed-assignment",
     "github-dependency-graph",
+    "github-private-vulnerability-reporting",
     "www-dns-cname"
   ]
 }

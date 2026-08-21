@@ -9,7 +9,7 @@ Eidovara is **adult-only software**. You must be at least **18 years old** to do
 - The Windows installer EULA, first-run desktop gate, and CLI `--i-am-18-or-older` flag require an affirmative local confirmation.
 - If you decline the desktop gate, the application exits.
 - If the CLI is invoked without a stored confirmation or `--i-am-18-or-older`, it refuses to run product commands.
-- Adult Mode is a **separate** triple gate (age of majority where located + explicit enablement + current revocable consent) and stays off unless all three are active.
+- Adult Mode is a **separate** triple gate (age of majority where located + explicit enablement + current revocable consent) and stays off unless all three are active. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields).
 
 ## What this is not
 

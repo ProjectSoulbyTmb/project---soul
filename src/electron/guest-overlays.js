@@ -234,6 +234,7 @@ export function createGuestOverlayManager({
         nodeIntegration: false,
         sandbox: true,
         webSecurity: true,
+        allowRunningInsecureContent: false,
         spellcheck: false
       }
     });
@@ -373,6 +374,7 @@ export function createGuestOverlayManager({
           nodeIntegration: false,
           sandbox: true,
           webSecurity: true,
+          allowRunningInsecureContent: false,
           spellcheck: false
         }
       });

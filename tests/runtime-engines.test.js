@@ -113,6 +113,6 @@ test('blocked engines are not imported and stay-awake uses Electron powerSaveBlo
   assert.match(read('src/electron/preload.cjs'), /stayAwake:/);
   assert.match(read('src/renderer/index.html'), /id="adultAmbientHeartbeat"/);
   assert.match(read('src/renderer/index.html'), /id="adultGamepadStatus"/);
-  assert.match(pkg, /"version": "0\.19\.1"/);
+  assert.match(pkg, /"version": "0\.22\.2"/);
   assert.doesNotMatch(pkg, /"react"|"vue"|"three"|"babylonjs"/);
 });

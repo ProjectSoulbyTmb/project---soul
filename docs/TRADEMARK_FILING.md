@@ -29,7 +29,7 @@ Use: "Eidovara is a trademark of Tyler Michael Bosworth (unregistered)." Do not 
 
 These Nice / USPTO class numbers are **starting points**, not a filing:
 
-| Class | Typical identification theme | Relevance to Eidovara as of v0.18.2 |
+| Class | Typical identification theme | Relevance to Eidovara as of v0.19.1 |
 | --- | --- | --- |
 | **9** | Downloadable computer software | Closest fit for the advertised Windows desktop app |
 | **42** | Software as a service; providing temporary use of online software | **Not** the current product: there is no hosted Soul account; Assist is not Soul; the Worker is optional and fail-closed |

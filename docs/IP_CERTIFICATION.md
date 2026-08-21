@@ -20,16 +20,18 @@ Machine-readable companion: [ip-certification.json](ip-certification.json).
 | Chain of title vs third-party layers | Yes — Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded | Ownership of those third-party layers |
 | Contributor / entity assignments | Templates exist and are **unsigned** | Any executed CLA or company assignment |
 | Advertised Windows installer v0.19.1 | Filename, SHA-256, Authenticode-**unsigned** | Microsoft certification, EV signing, SmartScreen pre-approval |
+| Source version 0.22.2 | `package.json` / Worker health / website helper | A published `Eidovara-0.22.2-Windows-x64-Setup.exe` (does not exist yet; do not invent a SHA) |
 | Inbound GitHub patches | Policy: not accepted until private written assignment | Transfer of copyright by opening a PR |
 
-## Certified product record (advertised v0.19.1)
+## Certified product record (source v0.22.2; live installer v0.19.1)
 
-These facts match the live advertised unsigned Windows installer. They are integrity facts, not a government certificate.
+These facts match the live advertised unsigned Windows installer plus this source cut. They are integrity facts, not a government certificate.
 
 | Field | Value |
 | --- | --- |
 | Product | Eidovara |
-| Version | 0.19.1 |
+| Source version | 0.22.2 |
+| Live advertised installer version | 0.19.1 |
 | App id | `com.soulconsciousnessstudios.eidovara` |
 | Official platform | Windows 10/11 x64 |
 | Installer | `Eidovara-0.19.1-Windows-x64-Setup.exe` |
@@ -84,6 +86,12 @@ Status values used below:
 | Company formation checklist | [COMPANY_FORMATION.md](COMPANY_FORMATION.md) | not-filed |
 | SPDX first-party headers | `src/**/*.js`, `src/**/*.cjs`, `docs/*.js`, first-party HTML/CSS, `scripts/*`, `server/*` | in-repo |
 | CODEOWNERS | [.github/CODEOWNERS](../.github/CODEOWNERS) | in-repo (`@ProjectSoulbyTmb` only) |
+| security.txt | [docs/.well-known/security.txt](.well-known/security.txt) | in-repo (no PGP key published) |
+| Dependabot | [.github/dependabot.yml](../.github/dependabot.yml) | in-repo (npm + GitHub Actions) |
+| Security checks workflow | [.github/workflows/security.yml](../.github/workflows/security.yml) | in-repo |
+| CodeQL workflow | [.github/workflows/codeql.yml](../.github/workflows/codeql.yml) | in-repo |
+| OpenSSF Scorecards workflow | [.github/workflows/scorecards.yml](../.github/workflows/scorecards.yml) | in-repo |
+| Dependency review workflow | [.github/workflows/dependency-review.yml](../.github/workflows/dependency-review.yml) | in-repo (needs Dependency graph owner click) |
 | U.S. Copyright Office registration | — | owner-action-required |
 | USPTO trademark application | — | owner-action-required |
 | Patent application | — | owner-action-required (do not claim a filing until one exists) |
@@ -114,7 +122,7 @@ Complete these privately with qualified counsel. Do not paste certificates, seri
 4. **Contributors.** Do not merge inbound copyrightable work until a privately signed assignment exists.
 5. **Authenticode.** Obtain an identity-validated code-signing certificate. Never commit the private key.
 6. **Patents.** Consult a registered patent attorney before additional public disclosure of patent-sensitive mechanisms and before any statement that a patent has been filed.
-7. **Hosting clicks** still on the owner: GitHub Dependency graph, Cloudflare `npx wrangler deploy` after Worker edits, `www` DNS CNAME. See [LIVE.md](../LIVE.md).
+7. **Hosting clicks** still on the owner: GitHub Dependency graph, GitHub private vulnerability reporting, Cloudflare `npx wrangler deploy` after Worker edits, `www` DNS CNAME. See [LIVE.md](../LIVE.md). Scorecards/CodeQL SARIF upload does not turn those toggles on.
 
 ## How this repository already protects the claim
 
@@ -125,6 +133,7 @@ Complete these privately with qualified counsel. Do not paste certificates, seri
 - Brand-asset SHA-256 register
 - Public/private split and gitignore for keys, deposits, and executed paperwork
 - CODEOWNERS requiring `@ProjectSoulbyTmb` on legal paths
+- CodeQL, OpenSSF Scorecards (SARIF), Dependabot (npm and GitHub Actions), license inventory, and a prohibited-secret scan whose regex cannot self-match `security.yml`
 - Installer SHA-256 and GitHub/Sigstore provenance (provenance is **not** Authenticode)
 - Issue template for IP notices; GitHub DMCA process for official takedowns
 

@@ -29,7 +29,10 @@ jobs:
       - name: Reject private key material
         shell: pwsh
         run: |
-          $matches = git grep -n -I -E 'BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY|BEGIN PKCS12' -- ':!pnpm-lock.yaml' ':!.github/workflows/security.yml'
+          # This file is excluded from the grep because the pattern lives here.
+          # Do not remove that exclusion; Dependabot PRs failed when an older
+          # regex self-matched this workflow. Do not weaken the scan.
+          $matches = git grep -n -I -E 'BEGIN (RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY|BEGIN PKCS12|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|sk_live_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}' -- ':!pnpm-lock.yaml' ':!.github/workflows/security.yml'
           if ($LASTEXITCODE -eq 0) { $matches; throw 'Private key material found in tracked files.' }
           if ($LASTEXITCODE -ne 1) { throw 'Secret scan failed.' }
           exit 0

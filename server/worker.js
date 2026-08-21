@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { answerAssist, assistMeta, MAX_ASSIST_BODY } from './knowledge.js';
+import { answerAssist, assistMeta, MAX_ASSIST_BODY, ASSIST_VERSION } from './knowledge.js';
 
+const CORS_METHODS = 'GET, HEAD, POST, OPTIONS';
+const CORS_GET_METHODS = 'GET, HEAD, OPTIONS';
 const CORS = {
   'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, OPTIONS',
-  'access-control-allow-headers': 'content-type',
+  'access-control-allow-methods': CORS_METHODS,
+  'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': '600'
 };
 const JSON_HEADERS = {
@@ -17,6 +19,8 @@ const JSON_HEADERS = {
   'x-frame-options': 'DENY',
   'referrer-policy': 'no-referrer',
   'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()',
+  'cross-origin-resource-policy': 'cross-origin',
+  'cross-origin-opener-policy': 'same-origin',
   ...CORS
 };
 const ENDPOINTS = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
@@ -27,13 +31,20 @@ function publicPayload(extra = {}) {
   return {
     service: 'Eidovara',
     status: 'ok',
-    version: '0.19.1',
+    online: true,
+    version: ASSIST_VERSION,
+    liveInstallerVersion: '0.19.1',
+    liveInstaller: 'Eidovara-0.19.1-Windows-x64-Setup.exe',
     time: new Date().toISOString(),
     localFirst: true,
     conversations: false,
     conversationsStored: false,
     paymentsEnabled: false,
     checkoutEnabled: false,
+    ageRestricted: true,
+    minimumAge: 18,
+    authenticodeSigned: false,
+    unsignedWindows: true,
     endpoints: ENDPOINTS.slice(),
     ...extra
   };
@@ -74,21 +85,29 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     env ||= {};
-    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...JSON_HEADERS, allow: 'GET, POST, OPTIONS' } });
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...JSON_HEADERS, allow: CORS_METHODS } });
     if (url.pathname === '/v1/assist') {
       if (request.method !== 'GET' && request.method !== 'POST') return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, POST, OPTIONS' });
       return handleAssist(request, url);
     }
-    if (request.method !== 'GET') return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, OPTIONS' });
-    if (url.pathname === '/health' || url.pathname === '/v1/health') return response(publicPayload(), 200, { 'cache-control': 'public, max-age=30' });
-    if (url.pathname === '/v1/status') return response(publicPayload({
-      pages: 'Official site is https://eidovara.org (Cloudflare Pages from docs/). Official API is https://api.eidovara.org. GitHub Pages publishes the same docs/ on main. No workers.dev host is compiled into the app or public JS.',
+    if (request.method !== 'GET' && request.method !== 'HEAD') return response({ error: 'method_not_allowed' }, 405, { allow: CORS_GET_METHODS });
+    const send = (body, extra = {}) => {
+      const res = response(body, 200, extra);
+      if (request.method !== 'HEAD') return res;
+      return new Response(null, { status: res.status, headers: res.headers });
+    };
+    if (url.pathname === '/health' || url.pathname === '/v1/health') return send(publicPayload(), { 'cache-control': 'public, max-age=30' });
+    if (url.pathname === '/v1/status') return send(publicPayload({
+      pages: 'Official site is https://eidovara.org (Cloudflare Pages from docs/). Official API is https://api.eidovara.org. GitHub Pages publishes the same docs/ on main. No preview Worker host is compiled into the app or public JS.',
       releases: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest',
       installer: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe',
-      assist: '/v1/assist knowledge-only, no transcripts'
-    }), 200, { 'cache-control': 'public, max-age=30' });
-    if (url.pathname === '/v1/config') return response({
-      version: '0.19.1',
+      assist: '/v1/assist knowledge-only, no transcripts',
+      heartbeat: 'Desktop Connect uses GET /health, /v1/config, and /v1/status. After 18+, a main-process liveness loop repeats GET /health and GET /v1/status. Conversations are not sent. No dedicated /v1/heartbeat route.'
+    }), { 'cache-control': 'private, no-store' });
+    if (url.pathname === '/v1/config') return send({
+      version: ASSIST_VERSION,
+      liveInstallerVersion: '0.19.1',
+      liveInstaller: 'Eidovara-0.19.1-Windows-x64-Setup.exe',
       website: httpsUrl(env.WEBSITE_URL),
       store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) },
       paymentsEnabled: false,
@@ -105,7 +124,7 @@ export default {
       premium: 'local-admin-testing-only',
       privacy: 'No payment-card data is accepted by this service. Conversations are not stored here. Network use is user-directed except official update checks. Website assist answers from an allowlisted knowledge pack and does not store transcripts.',
       terms: 'Use is limited to users 18 or older under the Eidovara Source-Available Evaluation License. Research uses public Wikipedia/Wikimedia unless the user supplies a Premium search key. Application launching is user-confirmed local Windows apps.'
-    }, 200, { 'cache-control': 'public, max-age=300' });
+    }, { 'cache-control': 'public, max-age=300' });
     return response({ error: 'not_found' }, 404);
   }
 };

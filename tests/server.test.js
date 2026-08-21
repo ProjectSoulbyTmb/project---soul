@@ -15,6 +15,48 @@ test('server fails closed for writes and unknown paths', async () => {
   assert.equal((await worker.fetch(new Request('https://api.test/private'), {})).status, 404);
 });
 
+test('Worker health/status support HEAD, CORS, honesty flags, and private status cache', async () => {
+  const healthHead = await worker.fetch(new Request('https://api.example.test/health', { method: 'HEAD' }), {});
+  assert.equal(healthHead.status, 200);
+  assert.equal(await healthHead.text(), '');
+  assert.match(healthHead.headers.get('access-control-allow-origin'), /\*/);
+  assert.match(healthHead.headers.get('access-control-allow-methods'), /HEAD/);
+
+  const preflight = await worker.fetch(new Request('https://api.example.test/v1/status', {
+    method: 'OPTIONS',
+    headers: { origin: 'https://eidovara.org', 'access-control-request-method': 'GET' }
+  }), {});
+  assert.equal(preflight.status, 204);
+  assert.equal(preflight.headers.get('access-control-allow-origin'), '*');
+  assert.match(preflight.headers.get('access-control-allow-methods'), /GET/);
+  assert.match(preflight.headers.get('access-control-allow-methods'), /HEAD/);
+  assert.match(preflight.headers.get('access-control-allow-headers'), /accept/i);
+
+  const statusRes = await worker.fetch(new Request('https://api.example.test/v1/status'), {});
+  const status = await statusRes.json();
+  assert.equal(statusRes.status, 200);
+  assert.match(statusRes.headers.get('cache-control'), /private/);
+  assert.match(statusRes.headers.get('cache-control'), /no-store/);
+  assert.equal(status.status, 'ok');
+  assert.equal(status.online, true);
+  assert.equal(status.paymentsEnabled, false);
+  assert.equal(status.checkoutEnabled, false);
+  assert.equal(status.conversationsStored, false);
+  assert.equal(status.ageRestricted, true);
+  assert.equal(status.minimumAge, 18);
+  assert.equal(status.authenticodeSigned, false);
+  assert.equal(status.version, '0.22.2');
+  assert.equal(status.liveInstallerVersion, '0.19.1');
+  assert.ok(!status.endpoints.includes('/v1/heartbeat'));
+  assert.match(status.heartbeat, /No dedicated \/v1\/heartbeat/);
+  assert.doesNotMatch(JSON.stringify(status), /Eidovara-0\.22\.2-Windows/);
+  assert.doesNotMatch(JSON.stringify(status), /workers\.dev/i);
+
+  const statusHead = await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'HEAD' }), {});
+  assert.equal(statusHead.status, 200);
+  assert.equal(await statusHead.text(), '');
+});
+
 test('server health is stateless and sends hardened headers', async () => {
   const res = await worker.fetch(new Request('https://api.test/health'));
   const body = await res.json();

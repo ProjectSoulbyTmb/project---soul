@@ -15,13 +15,14 @@
   <meta property="og:description" content="Public status for eidovara.org (Cloudflare Pages) and GitHub Releases. Official API default is https://api.eidovara.org for /health and /v1/status. Override with another HTTPS base. Fail closed on invalid URLs.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://eidovara.org/status.html">
-  <meta property="og:image" content="https://eidovara.org/eidovara-icon.png">
+  <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
   <link rel="canonical" href="https://eidovara.org/status.html">
   <title>Status · Eidovara</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="site.css">
   <link rel="stylesheet" href="brand.css">
   <link rel="icon" type="image/png" href="eidovara-icon.png">
+  <link rel="apple-touch-icon" href="eidovara-mark.png">
 </head>
 <body class="site" data-page="status">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -32,7 +33,6 @@
       <nav id="site-nav" aria-label="Primary">
         <a href="./" data-nav="home">Home</a>
         <a href="product.html" data-nav="product">Product</a>
-        <a href="download.html" data-nav="download">Download</a>
         <a href="assist.html" data-nav="assist">Assist</a>
         <a href="help.html" data-nav="help">Help</a>
         <a href="faq.html" data-nav="faq">FAQ</a>
@@ -48,11 +48,12 @@
           </div>
         </details>
         <a href="status.html" data-nav="status">Status</a>
+        <a class="nav-cta" href="download.html" data-nav="download">Download</a>
       </nav>
     </div>
   </header>
   <main id="main" class="site-main">
-    <p class="eyebrow">Public surfaces</p>
+    <p class="eyebrow">Public surfaces · source v0.22.2</p>
     <h1 class="section-title">Pages and Releases first. Official API default is api.eidovara.org.</h1>
     <p class="lead">Official hostname is <a href="https://eidovara.org/">eidovara.org</a> (Cloudflare Pages project <code>eidovara</code> from the same <code>docs/</code>). GitHub Pages remains a mirror. The Status field defaults to <code>https://api.eidovara.org</code>. Paste another HTTPS base to override. No <code>workers.dev</code> host is compiled in. Invalid URLs fail closed.</p>
     <div class="status-panel panel">
@@ -67,7 +68,7 @@
         </div>
         <pre id="statusOut" aria-live="polite"></pre>
       </form>
-      <p class="muted">Saved in this browser only (<code>eidovara.serviceBase</code>). Check calls <code>/health</code> and <code>/v1/status</code>. The website helper may call <code>/v1/assist</code> with a single question. Desktop conversations are never sent. v0.19.1 payments stay off.</p>
+      <p class="muted">Saved in this browser only (<code>eidovara.serviceBase</code>). Check calls <code>/health</code> and <code>/v1/status</code> and keeps polling until you Clear. Presence is Online, Reconnecting, or Offline — fail closed if the URL is invalid or the fetch fails. The website helper may call <code>/v1/assist</code> with a single question. Desktop conversations are never sent. Source v0.22.2 payments stay off. The live installer remains v0.19.1.</p>
     </div>
     <div class="trust-links">
       <a href="download.html"><strong>Official Windows installer</strong><span>Eidovara-0.19.1-Windows-x64-Setup.exe after the 18+ gate (about 101.3 MiB, SHA-256 on Download) →</span></a>

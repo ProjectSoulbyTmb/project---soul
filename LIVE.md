@@ -6,17 +6,17 @@ This is an operator note, not a consumer marketing page. It does not claim Authe
 
 | Surface | Status |
 | --- | --- |
-| `main` | PR #10 (`cursor/engine-product-surface-c180`) merged. Merge commit: `394cf3a287fa6fc665aed7568201e93df4165884`. Current product version on this snapshot is `0.19.1`. |
+| `main` | PR #10 (`cursor/engine-product-surface-c180`) merged. Merge commit: `394cf3a287fa6fc665aed7568201e93df4165884`. Current **source** version on this snapshot is `0.22.2`. Live advertised installer remains `0.19.1`. |
 | GitHub Pages | `docs/` from **main only** via `.github/workflows/pages.yml`. Do not retarget Pages at a feature branch. Do not invent a second production site. Mirror: `https://projectsoulbytmb.github.io/project---soul/`. |
 | Cloudflare Pages | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). Production also at `https://eidovara.pages.dev`. Redeploy with `npx wrangler pages deploy docs --project-name=eidovara`. Worker API stays separate (`eidovara-api`, `https://api.eidovara.org`) and fail-closed. Do not add `docs/CNAME` — a GitHub Pages custom-domain file would fight this Cloudflare zone. `www.eidovara.org` has no DNS record yet. |
-| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Custom hostname `https://api.eidovara.org`. Redeploy with `npx wrangler deploy` from `server/` after Worker `version` changes. Health JSON version is `0.19.1`. `WEBSITE_URL` is `https://eidovara.org/`. |
+| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Custom hostname `https://api.eidovara.org`. Redeploy with `npx wrangler deploy` from `server/` after Worker `version` changes. Health JSON source version is `0.22.2`; `liveInstallerVersion` stays `0.19.1`. `WEBSITE_URL` is `https://eidovara.org/`. |
 | Windows installer | Tag `v0.19.1` publishes unsigned `Eidovara-0.19.1-Windows-x64-Setup.exe` (~101.3 MiB). Primary site CTA is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe`. Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.1/Eidovara-0.19.1-Windows-x64-Setup.exe`. SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8` (`SHA256SUMS.txt` on the GitHub Release). Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. Tags `v0.18.0`, `v0.18.1`, `v0.18.2`, `v0.18.3`, and `v0.19.0` already exist and must not be force-moved. |
 
 Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service (or Ctrl+A Test service) still accepts another HTTPS base as an override; empty/default resolves to the official host. No `workers.dev` host is compiled into the Electron app or public site JS. Ask Eidovara `/v1/assist` stays paste/save-only. Conversations are not sent.
 
 ## Official site (HTTPS eidovara.org)
 
-Cloudflare Pages project `eidovara` serves the same `docs/` IA as GitHub Pages. After `npx wrangler pages deploy docs --project-name=eidovara`, these should return HTTP 200 with the v0.19.1 product surface (not the retired Ask Soul homepage):
+Cloudflare Pages project `eidovara` serves the same `docs/` IA as GitHub Pages. After `npx wrangler pages deploy docs --project-name=eidovara`, these should return HTTP 200 with the current product surface (source v0.22.2; live installer still v0.19.1; not the retired Ask Soul homepage):
 
 - https://eidovara.org/
 - https://eidovara.org/index.html
