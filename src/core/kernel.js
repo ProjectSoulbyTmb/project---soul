@@ -140,7 +140,7 @@ export const KERNEL_ACTION_TYPES = Object.freeze([
   'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
   'open-diagnostics', 'pick-local-media', 'discover-apps',
   'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
-  'open-external'
+  'open-external', 'open-guest', 'play-online'
 ]);
 
 function action(type, extra = {}) {
@@ -164,7 +164,8 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
     case 'entertainment':
       return [
         action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
-        action('pick-local-media', { label: 'Open local media' })
+        action('pick-local-media', { label: 'Open local media' }),
+        action('open-guest', { label: 'Open online viewing window' })
       ];
     case 'mood':
     case 'favorites':
@@ -444,11 +445,13 @@ export function kernelPublicMeta(route) {
       hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
       snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
       label: String(item.label || '').slice(0, 80),
-      auto: item.type === 'open-external' ? false : Boolean(item.auto)
-    })).filter(item => item.type && (
-      KERNEL_ACTION_TYPES.includes(item.type)
-      || (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))
-    )) : [],
+      auto: item.type === 'open-external' || item.type === 'open-guest' ? false : Boolean(item.auto)
+    })).filter(item => {
+      if (!item.type || !KERNEL_ACTION_TYPES.includes(item.type)) return false;
+      if (item.type === 'open-external' || item.type === 'play-online') return /^https:\/\//i.test(item.url || '');
+      if (item.type === 'open-guest') return !item.url || /^https:\/\//i.test(item.url);
+      return true;
+    }) : [],
     soul: {
       enabled: Boolean(value.overlay?.enabled),
       name: value.overlay?.enabled ? String(value.overlay?.name || 'Soul') : null,

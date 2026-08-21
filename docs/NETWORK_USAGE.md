@@ -20,7 +20,9 @@ Network access is user-directed except the official GitHub update-manifest check
 | Optional desktop `POST /v1/assist` | After 18+: pasted HTTPS base in Settings **and** Soul-online opt-in **and** the per-message send checkbox (all default off) | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
 | Optional desktop helper `POST /v1/assist` | User pastes a Worker HTTPS base **and** enables **Allow one-shot Worker helper** (default off), then checks **Ask the Worker helper** on one send | The typed query only (about 32 KiB bound). Conversations, memories, and chat history stay local. Transcripts are not stored. |
 | `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
-| Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
+| Spotify or YouTube web service | User opens the isolated media guest window (or clicks those media buttons) | Current track search text, IP address, platform cookies/account state in the guest partition only |
+| Isolated media guest (`persist:eidovara-media-guest`) | User (or companion after an explicit ask) opens **Pop out / Online** or pastes an HTTPS URL | URL request, IP address, Chrome user agent in the guest session only. Isolated cookies. HTTP, file, localhost, and private/link-local/metadata hosts fail closed. Not the workspace renderer. |
+| Public HTTPS audio/video file | User pastes a direct `.mp4` / `.webm` / `.mp3` (etc.) for the workspace player | URL request via main-process `eidovara-online:` proxy (`credentials: 'omit'`). Catalog sites stay in the guest window. |
 
 No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Empty/default Settings → Eidovara service resolves to `https://api.eidovara.org`. If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.19.1; the app never enables live checkout from a remote flag.
 
@@ -40,7 +42,8 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Optional website `GET`/`POST /v1/assist` after a pasted HTTPS base
 - Optional desktop `POST /v1/assist` after a pasted HTTPS base, Soul-online opt-in, and a per-message send checkbox (default off; Assist is not Soul)
 - Optional desktop `POST /v1/assist` only after pasted HTTPS base **and** explicit helper opt-in (default off); conversations are not sent
-- Spotify/YouTube official HTTPS search links (no stream ripping)
+- Isolated media guest window for user-chosen HTTPS pages (YouTube, Spotify Web, Archive, news video pages). Workspace renderer CSP stays `connect-src 'none'`, `media-src eidovara-media: eidovara-online:`, never `media-src 'self'`, and never `https:` in that window’s media-src
+- Direct HTTPS media files through `eidovara-online:` into the workspace player (no yt-dlp, no Widevine decrypt)
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure
 
@@ -52,5 +55,6 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Live payments, card collection, webhook entitlement, or PCI processing
 - Weakening the renderer sandbox, 18+ gates, or `.github/workflows/dependency-review.yml`
 - App CSP `media-src 'self'` (local media stays on `eidovara-media:`)
+- Opening the workspace renderer to the whole web (`default-src *`, `connect-src https:`, or `media-src 'self'`)
 - Fake registered-mark, patent, or PCI-DSS claims
 - A hardcoded `workers.dev` Worker URL in the desktop app or public site

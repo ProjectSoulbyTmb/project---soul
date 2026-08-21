@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'none'; media-src 'none'; object-src 'none'" />
+  <title>Eidovara online viewing</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="media-guest.css" />
+</head>
+<body>
+  <header class="guest-bar" id="guestBar">
+    <div class="guest-lights" aria-label="Window controls">
+      <button type="button" class="light close" id="guestClose" aria-label="Close"></button>
+      <button type="button" class="light dock" id="guestDock" aria-label="Dock"></button>
+      <button type="button" class="light pin" id="guestPin" aria-label="Always on top"></button>
+    </div>
+    <button type="button" id="guestBack">Back</button>
+    <button type="button" id="guestHome">Home</button>
+    <form id="guestForm" class="guest-address">
+      <input id="guestUrl" type="text" spellcheck="false" autocomplete="off" placeholder="https:// or search YouTube, Spotify, Archive…" />
+    </form>
+    <button type="button" id="guestGo">Open</button>
+    <button type="button" id="guestLocal">Play local</button>
+    <strong id="guestCaption">Online viewing</strong>
+  </header>
+  <section class="guest-home" id="guestHomePanel">
+    <p class="guest-copy" id="guestCopy">Online viewing uses a separate window. The workspace itself stays offline-to-the-web.</p>
+    <p class="guest-caveat" id="guestCaveat">The guest session uses a Chrome user agent so public HTTPS pages can run as they do in a browser. Some sites still refuse Electron or require browser DRM that Eidovara does not ship.</p>
+    <h2>Recents</h2>
+    <p class="guest-empty" id="guestEmpty">Addresses you open here are stored on this PC only. HTTP, file, and private hosts are blocked.</p>
+    <div id="guestRecents" class="guest-recents"></div>
+  </section>
+  <script src="media-guest.js"></script>
+</body>
+</html>

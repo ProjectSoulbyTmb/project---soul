@@ -41,7 +41,7 @@ Eidovara does not grant rights in anyone else's material. You are responsible fo
 
 - **User-supplied** local media files and linked applications;
 - **Wikipedia/Wikimedia** content under the licenses those projects publish;
-- **YouTube and Spotify** official HTTPS search/handoff links (not ripping, not embedded unofficial clients);
+- **YouTube and Spotify** official HTTPS pages in the isolated media guest window (not ripping, not embedded unofficial clients);
 - **Windows-installed** speech voices; neural TTS packs, VRM, and MakeHuman models are **not bundled**;
 - Electron, Chromium, Node.js, and other runtime components under [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 

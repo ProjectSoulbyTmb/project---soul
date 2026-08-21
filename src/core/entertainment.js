@@ -63,7 +63,7 @@ export function mixBriefing(state, intent = 'mood') {
     skipped,
     idea: ideas[intent] || ideas.mood,
     empty: !seeds.length && !recent.length,
-    handoff: 'Spotify, YouTube, and Internet Archive open official HTTPS searches in your browser. Eidovara does not capture credentials, download protected streams, inject into other players, or imply affiliation.'
+    handoff: 'Spotify, YouTube, and Internet Archive open official HTTPS pages in a separate online viewing window. The workspace itself stays offline-to-the-web. Eidovara does not capture credentials, download protected streams, inject into other players, or imply affiliation.'
   };
 }
 

@@ -12,6 +12,7 @@ import { buildSystemContext } from '../providers/context.js';
 import { researchInternet, researchOpenActions, citeResearchInReply } from '../providers/internet.js';
 import { entertainmentSummary, recordMediaEvent, discoverMedia, mergeMediaDiscovery } from './entertainment.js';
 import { isExplicitInternetRequest, isMediaDiscoveryRequest } from './workspace.js';
+import { citeOnlinePlayback, onlinePlaybackFromInput } from './online-media.js';
 import {
   configureKernelState,
   createRuntimeRegistry,
@@ -275,6 +276,7 @@ export class SoulEngine {
     let internetError = null;
     let webResearch = null;
     let mediaDiscovery = null;
+    const onlinePlayback = policyReply ? null : onlinePlaybackFromInput(text, this.state);
     const companionTurn = answerCompanion(text, { state: this.state });
     if (!reply && route.enabled === false && route.moduleId) {
       reply = disabledModuleReply(route, locale);
@@ -326,21 +328,28 @@ export class SoulEngine {
     if (!policyReply) {
       reply = applyPhrasing(reply, this.state.kernel?.registry?.phrasing, locale);
       reply = citeResearchInReply(reply, webResearch || mediaDiscovery, internetError);
+      reply = citeOnlinePlayback(reply, onlinePlayback);
     }
 
     const displayResearch = webResearch || mediaDiscovery;
+    const guestAction = onlinePlayback?.kind === 'guest-page' && onlinePlayback.url
+      ? [{ type: 'open-guest', url: onlinePlayback.url, hostname: (() => { try { return new URL(onlinePlayback.url).hostname; } catch { return ''; } })(), label: `${onlinePlayback.provider || 'Web'} · online window`, auto: false }]
+      : [];
+    const playAction = onlinePlayback?.kind === 'playable' && onlinePlayback.sourceUrl
+      ? [{ type: 'play-online', url: onlinePlayback.sourceUrl, title: onlinePlayback.hostname || 'Online media', auto: false }]
+      : [];
     const kernelActions = route.intent === 'research'
-      ? [...researchResultActions(webResearch || {}, route.overlay).filter(item => item.type !== 'open-external'), ...researchOpenActions(displayResearch)]
-      : [...(route.actions || []), ...researchOpenActions(mediaDiscovery && !webResearch ? mediaDiscovery : null)];
+      ? [...researchResultActions(webResearch || {}, route.overlay).filter(item => item.type !== 'open-external'), ...researchOpenActions(displayResearch), ...guestAction, ...playAction]
+      : [...(route.actions || []), ...researchOpenActions(mediaDiscovery && !webResearch ? mediaDiscovery : null), ...guestAction, ...playAction];
     const kernel = kernelPublicMeta({ ...route, actions: kernelActions, view: route.intent === 'research' ? 'research' : route.view });
     if (webResearch) kernel.webLookup = true;
     const done = new Date().toISOString();
-    conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, actions: kernel.actions, kernelIntent: route.intent });
+    conv.messages.push({ id: uid('msg'), role: 'assistant', content: reply, at: done, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, onlinePlayback, actions: kernel.actions, kernelIntent: route.intent });
     conv.updatedAt = done;
     const companion = companionPublicMeta(companionTurn);
     this.state.audit.push({ at: done, type: 'conversation.turn', details: { conversationId: conv.id, input: text.slice(0, 240), reply: reply.slice(0, 240), providerError, internetError, kernelIntent: route.intent, kernelModule: route.moduleId, webLookup: Boolean(webResearch), companionIntent: companion.intent, companionNetwork: false } });
     if (this.state.audit.length > 5000) this.state.audit = this.state.audit.slice(-5000);
     this.store.save(this.state);
-    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, companion, kernel, adultAllowed: adultAllowed(this.state), state: this.snapshot() };
+    return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, onlinePlayback, companion, kernel, adultAllowed: adultAllowed(this.state), state: this.snapshot() };
   }
 }

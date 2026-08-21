@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Isolated **media guest** window for fluid online viewing: a separate sandboxed Electron surface (`partition: persist:eidovara-media-guest`, `sandbox: true`, `nodeIntegration: false`) can load user-chosen HTTPS pages (YouTube, Spotify Web, Archive, a direct mp4, a news video page). The workspace renderer stays `connect-src 'none'` and uses `media-src eidovara-media: eidovara-online:` (never `media-src 'self'`, never `https:` in that window’s media-src). HTTP, file, localhost, and private/link-local/metadata hosts fail closed. Adult Mode / the 18+ gate destroys the guest immediately. Direct HTTPS audio/video files can still play in the workspace through `eidovara-online:`. Honest copy: “Online viewing uses a separate window. The workspace itself stays offline-to-the-web.” The guest session uses a Chrome UA; some sites may still refuse Electron or require Widevine that Eidovara does not ship. No yt-dlp, googlevideo scrape, or DRM decrypt.
+
 ## v0.19.1
 
 - Next-layer similar-app desktop chrome on the advertised v0.19.0 kernel (not a cloned launcher or streaming brand): Windows tray stay-running, always-on-top, pin companion dock, Recents (confirm-launched apps, local media titles, opened memories), in-app notice drawer (focus / sleep / backup — not OS toast spam or telemetry), local-media sleep timer for `eidovara-media`, palette calculator and length/mass/temperature conversions (no live FX), and Windows-only open-at-login via Electron `setLoginItemSettings`. No Recall screenshots, DRM rip, VLC/Spotify/iTunes process control, global hotkeys into other apps, lyrics dumps, romantic companion, or live checkout.

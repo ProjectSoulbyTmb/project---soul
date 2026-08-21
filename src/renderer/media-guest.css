@@ -1,0 +1,115 @@
+/* Isolated media-guest chrome. Eidovara tokens, not a streaming-brand clone. */
+html, body {
+  margin: 0;
+  height: 100%;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--font-ui);
+  font-size: var(--footnote);
+  overflow: hidden;
+}
+
+.guest-bar {
+  display: grid;
+  grid-template-columns: auto auto auto minmax(0, 1fr) auto auto minmax(120px, 0.8fr);
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  height: 56px;
+  box-sizing: border-box;
+  -webkit-app-region: drag;
+  background: color-mix(in srgb, var(--nav-bar) 88%, transparent);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border-bottom: var(--hairline) solid var(--separator);
+}
+
+.guest-bar button,
+.guest-bar input,
+.guest-lights {
+  -webkit-app-region: no-drag;
+}
+
+.guest-lights {
+  display: flex;
+  gap: 6px;
+}
+
+.light {
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.light.close { background: #ff453a; }
+.light.dock { background: #ffd60a; }
+.light.pin { background: #30d158; }
+
+.guest-bar button:not(.light) {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--btn-gray);
+  color: var(--text);
+  padding: 6px 10px;
+  min-height: 32px;
+  cursor: pointer;
+}
+
+#guestGo {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.guest-address { min-width: 0; }
+#guestUrl {
+  width: 100%;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--fill);
+  color: var(--text);
+  padding: 8px 12px;
+}
+
+#guestCaption {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.guest-home {
+  padding: 16px 18px 12px;
+  color: var(--text);
+  background: color-mix(in srgb, var(--panel) 70%, transparent);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+}
+
+.hidden { display: none !important; }
+.guest-home.hidden { display: none; }
+
+.guest-copy { margin: 0 0 8px; font-weight: 600; }
+.guest-caveat, .guest-empty { margin: 0 0 12px; color: var(--muted); }
+.guest-home h2 { margin: 0 0 8px; font-size: 15px; }
+.guest-recents { display: flex; flex-wrap: wrap; gap: 8px; }
+.guest-recents button {
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--fill);
+  color: var(--text);
+  padding: 8px 12px;
+  cursor: pointer;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

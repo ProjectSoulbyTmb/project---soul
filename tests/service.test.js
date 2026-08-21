@@ -279,5 +279,5 @@ test('desktop binds through the baked official default, overridable, never a wor
     assert.doesNotMatch(text, /[a-z0-9.-]+\.workers\.dev/i);
   }
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
-  assert.match(html, /media-src https: eidovara-media:/);
+  assert.match(html, /media-src eidovara-media: eidovara-online:/);
 });

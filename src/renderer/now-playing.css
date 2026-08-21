@@ -1,0 +1,63 @@
+/* Persistent workspace now-playing bar. Eidovara tokens, not a streaming-brand clone. */
+
+body.has-now-playing .workspace {
+  padding-bottom: 96px;
+}
+
+body.age-gated .media-dock.now-playing-bar {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.media-dock.now-playing-bar {
+  top: auto;
+  right: auto;
+  bottom: 10px;
+  left: 12px;
+  width: auto;
+  max-height: none;
+  inset: auto 12px 10px 12px;
+  position: fixed;
+  z-index: 40;
+  grid-template-columns: minmax(0, 1.4fr) repeat(6, auto);
+  transform: translateY(8px) scale(0.98);
+  opacity: 0.98;
+  transition: transform var(--motion) var(--ease), opacity var(--motion) var(--ease);
+}
+
+.media-dock.now-playing-bar:not(.hidden) {
+  transform: translateY(0) scale(1);
+  opacity: 1;
+}
+
+.media-dock.now-playing-bar .np-honesty {
+  grid-column: 1 / -1;
+  margin: 0;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+#mediaPopOutBtn,
+#mediaOpenGuestBtn {
+  font-weight: 600;
+}
+
+#mediaPlayBtn {
+  background: var(--accent);
+  color: var(--on-accent);
+  min-width: 44px;
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .media-dock.now-playing-bar {
+    transition: none;
+    transform: none;
+  }
+}
+
+@media (max-width: 720px) {
+  .media-dock.now-playing-bar {
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+  }
+}

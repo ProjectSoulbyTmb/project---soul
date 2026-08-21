@@ -656,8 +656,9 @@ export function researchOpenActions(webResearch) {
     }
     if (!hostname) return null;
     const title = sanitizeSnippet(source.title || hostname, 80);
+    const catalog = hostnameAllowed(url, ['youtube.com', 'youtu.be', 'spotify.com', 'archive.org']);
     return {
-      type: 'open-external',
+      type: catalog ? 'open-guest' : 'open-external',
       url,
       hostname,
       snippet: sanitizeSnippet(source.description || source.extract || '', 180),
@@ -669,8 +670,9 @@ export function researchOpenActions(webResearch) {
     const url = publicHttpsUrl(item.url);
     if (!url) return null;
     const hostname = sourceHost(url);
+    const catalog = hostnameAllowed(url, ['youtube.com', 'youtu.be', 'spotify.com', 'archive.org']);
     return {
-      type: 'open-external',
+      type: catalog ? 'open-guest' : 'open-external',
       url,
       hostname,
       snippet: sanitizeSnippet(item.title || item.provider || '', 180),

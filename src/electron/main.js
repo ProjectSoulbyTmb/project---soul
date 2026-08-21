@@ -1,11 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, WebContentsView, ipcMain, dialog, safeStorage, shell, protocol, net, session, Tray, Menu, nativeImage } from 'electron';
 import fs from 'node:fs';
+import { createReadStream } from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { execFile } from 'node:child_process';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { Readable } from 'node:stream';
+import { fileURLToPath } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { defaultProfile } from '../core/schema.js';
@@ -15,14 +17,29 @@ import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnl
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 import { defaultDesktopChrome, evaluatePaletteCalc, loginItemPayload, normalizeDesktopChrome } from '../core/desktop-chrome.js';
+import { parseByteRange, rangeResponseHeaders, isMediaId } from '../core/media-protocol.js';
+import {
+  ONLINE_MEDIA_SCHEME,
+  adultLockStopsOnline,
+  authorizePlayableMedia,
+  classifyOnlineMediaUrl,
+  followRedirectUrl,
+  lookupPublicAddresses,
+  MAX_ONLINE_DECLARED_BYTES,
+  MAX_ONLINE_REDIRECTS,
+  requestHeadersForOnlineMedia
+} from '../core/online-media.js';
+import { attachMediaGuest } from './media-guest.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
 const allowedLocalMedia = new Map();
+const allowedOnlineMedia = new Map();
 protocol.registerSchemesAsPrivileged([
-  { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
+  { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } },
+  { scheme: ONLINE_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
-let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false;
+let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false, mediaGuest = null;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
 let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, desktop: defaultDesktopChrome() };
@@ -282,7 +299,7 @@ function createWindow() {
         mainWindow.hide();
       }
     });
-    mainWindow.on('closed', () => { allowedLocalMedia.clear(); mainWindow = null; });
+    mainWindow.on('closed', () => { allowedLocalMedia.clear(); allowedOnlineMedia.clear(); mediaGuest?.destroyGuest(); mainWindow = null; });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
     mainWindow.webContents.on('will-attach-webview', e => e.preventDefault());
@@ -292,22 +309,132 @@ function createWindow() {
   } catch (err) { fatal('Eidovara startup error', err); }
 }
 
+async function fetchOnlineWithRedirects(targetUrl, incoming, hops = 0) {
+  if (hops > MAX_ONLINE_REDIRECTS) return new Response('Redirect limit', { status: 400 });
+  const classified = classifyOnlineMediaUrl(targetUrl);
+  if (classified.kind !== 'playable' || !classified.url || classified.protocol) return new Response('Forbidden', { status: 403 });
+  try { await lookupPublicAddresses(classified.hostname); } catch { return new Response('Forbidden', { status: 403 }); }
+  const res = await net.fetch(classified.url, {
+    method: incoming.method || 'GET',
+    headers: requestHeadersForOnlineMedia(incoming),
+    redirect: 'manual',
+    credentials: 'omit'
+  });
+  if ([301, 302, 303, 307, 308].includes(res.status)) {
+    const next = followRedirectUrl(classified.url, res.headers.get('location'));
+    if (!next) return new Response('Redirect limit', { status: 400 });
+    return fetchOnlineWithRedirects(next, incoming, hops + 1);
+  }
+  const declared = Number(res.headers.get('content-length') || 0);
+  if (declared > MAX_ONLINE_DECLARED_BYTES) return new Response('Too large', { status: 413 });
+  return res;
+}
+async function resolveOnlineMediaPayload(input = {}) {
+  requireAgeGate();
+  const state = ensureEngine().snapshot();
+  const authorized = await authorizePlayableMedia(String(input.url || input.sourceUrl || '').trim(), {
+    explicit: true,
+    adultLock: adultLockStopsOnline(state)
+  });
+  if (authorized.kind === 'guest-page') return { ...authorized, playbackUrl: '' };
+  if (authorized.kind !== 'playable') {
+    const err = new Error(authorized.copy || authorized.message || 'That media cannot play inside the workspace player.');
+    err.reason = authorized.reason;
+    throw err;
+  }
+  if (authorized.protocol) {
+    const err = new Error('That address is not a public HTTPS media file.');
+    err.reason = 'https-only';
+    throw err;
+  }
+  const id = crypto.randomBytes(16).toString('hex');
+  allowedOnlineMedia.set(id, { url: authorized.url, type: authorized.type });
+  const title = String(input.title || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 200)
+    || decodeURIComponent((authorized.url.split('/').pop() || 'Online media').split('?')[0]).slice(0, 200);
+  return {
+    type: authorized.type === 'video' ? 'video' : 'audio',
+    title,
+    url: `${ONLINE_MEDIA_SCHEME}://${id}/`,
+    sourceUrl: authorized.url,
+    local: false,
+    remote: true
+  };
+}
+function registerOnlineMediaProtocol() {
+  protocol.handle(ONLINE_MEDIA_SCHEME, async request => {
+    let id = '';
+    try { id = new URL(request.url).hostname; } catch { return new Response('Bad request', { status: 400 }); }
+    if (!/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
+    const entry = allowedOnlineMedia.get(id);
+    if (!entry?.url) return new Response('Not found', { status: 404 });
+    try {
+      const state = engine ? engine.snapshot() : null;
+      if (!state || adultLockStopsOnline(state)) return new Response('Forbidden', { status: 403 });
+      return await fetchOnlineWithRedirects(entry.url, request);
+    } catch {
+      return new Response('Unavailable', { status: 502 });
+    }
+  });
+}
 function registerLocalMediaProtocol() {
   protocol.handle(LOCAL_MEDIA_SCHEME, async request => {
     let id = '';
     try { id = new URL(request.url).hostname; } catch { return new Response('Bad request', { status: 400 }); }
-    if (!/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
+    if (!isMediaId(id) && !/^[a-f0-9]{32}$/.test(id)) return new Response('Not found', { status: 404 });
     const filePath = allowedLocalMedia.get(id);
     if (!filePath || !fs.existsSync(filePath)) return new Response('Not found', { status: 404 });
-    return net.fetch(pathToFileURL(filePath).toString());
+    const size = fs.statSync(filePath).size;
+    const range = parseByteRange(request.headers.get('range'), size);
+    if (!range) return new Response('Range Not Satisfiable', { status: 416, headers: { 'Content-Range': `bytes */${size}` } });
+    const { status, headers } = rangeResponseHeaders(filePath, range);
+    if (range.length <= 0) return new Response(null, { status, headers });
+    const stream = createReadStream(filePath, { start: range.start, end: range.end });
+    return new Response(Readable.toWeb(stream), { status, headers });
   });
+}
+function chooseLocalMediaFile(parent) {
+  return dialog.showOpenDialog(parent || mainWindow, { title: 'Open local media in Eidovara', properties: ['openFile'], filters: [{ name: 'Audio and video', extensions: ['mp3','m4a','aac','wav','flac','ogg','opus','mp4','m4v','webm','mov','mkv'] }] });
+}
+async function selectLocalMediaItem(parent) {
+  const chosen = await chooseLocalMediaFile(parent);
+  if (chosen.canceled || !chosen.filePaths[0]) return null;
+  const filePath = path.resolve(chosen.filePaths[0]);
+  const extension = path.extname(filePath).toLowerCase();
+  const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
+  if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
+  retainCompanionMedia();
+  const id = crypto.randomBytes(16).toString('hex');
+  allowedLocalMedia.set(id, filePath);
+  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
 }
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
 process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
-app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).catch(err => fatal('Eidovara initialization error', err));
-app.on('before-quit', () => { quitting = true; destroyTray(); });
+app.whenReady().then(() => {
+  registerLocalMediaProtocol();
+  registerOnlineMediaProtocol();
+  mediaGuest = attachMediaGuest({
+    BrowserWindow,
+    WebContentsView,
+    session,
+    ipcMain,
+    shell,
+    dialog,
+    getMainWindow: () => mainWindow,
+    requireAgeGate,
+    getEngine: () => engine,
+    getConfig: () => config,
+    userDataPath: app.getPath('userData'),
+    versions: process.versions,
+    selectLocalMedia: selectLocalMediaItem,
+    log
+  });
+  createWindow();
+}).catch(err => fatal('Eidovara initialization error', err));
+app.on('before-quit', () => { quitting = true; mediaGuest?.destroyGuest(); destroyTray(); });
 app.on('window-all-closed', () => {
   allowedLocalMedia.clear();
+  allowedOnlineMedia.clear();
+  mediaGuest?.destroyGuest();
   if (process.platform !== 'darwin' && !(config.desktop?.trayStay === true && process.platform === 'win32' && !quitting)) app.quit();
 });
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
@@ -317,6 +444,7 @@ ipcMain.handle('soul:send', async (_e, m, opts) => {
   applyInternetOptions();
   const result = await ensureEngine().respond(m, opts && typeof opts === 'object' ? opts : {});
   if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); }
+  if (result.adultAllowed) mediaGuest?.hideIfAdult(result.state || result);
   return result;
 });
 ipcMain.handle('soul:snapshot', () => (config.ageGateAccepted === true ? ensureEngine().snapshot() : defaultProfile('default')));
@@ -334,7 +462,7 @@ ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return
 ipcMain.handle('soul:deleteConversation', (_e, id) => { requireAgeGate(); return ensureEngine().deleteConversation(String(id)); });
 ipcMain.handle('soul:getSettings', () => publicConfig());
 ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); ensureEngine(); return publicConfig(); });
-ipcMain.handle('soul:declineAgeGate', () => { setImmediate(() => app.quit()); return true; });
+ipcMain.handle('soul:declineAgeGate', () => { mediaGuest?.destroyGuest(); setImmediate(() => app.quit()); return true; });
 ipcMain.handle('soul:adminLogin', (_e, password) => {
   requireAgeGate();
   if (!adminConfigured()) throw new Error('Create an administrator password for this installation first.');
@@ -448,17 +576,9 @@ ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ ver
 ipcMain.handle('soul:openDataFolder', () => { requireAgeGate(); return shell.openPath(app.getPath('userData')); });
 ipcMain.handle('soul:selectLocalMedia', async () => {
   requireAgeGate();
-  const chosen = await dialog.showOpenDialog(mainWindow, { title: 'Open local media in Eidovara', properties: ['openFile'], filters: [{ name: 'Audio and video', extensions: ['mp3','m4a','aac','wav','flac','ogg','opus','mp4','m4v','webm','mov','mkv'] }] });
-  if (chosen.canceled || !chosen.filePaths[0]) return null;
-  const filePath = path.resolve(chosen.filePaths[0]);
-  const extension = path.extname(filePath).toLowerCase();
-  const video = new Set(['.mp4','.m4v','.webm','.mov','.mkv']).has(extension);
-  if (!fs.existsSync(filePath)) throw new Error('The selected media file is unavailable.');
-  const id = crypto.randomBytes(16).toString('hex');
-  retainCompanionMedia();
-  allowedLocalMedia.set(id, filePath);
-  return { type: video ? 'video' : 'audio', title: path.basename(filePath).slice(0, 200), url: `${LOCAL_MEDIA_SCHEME}://${id}/`, sourceUrl: '', local: true };
+  return selectLocalMediaItem(mainWindow);
 });
+ipcMain.handle('soul:resolveOnlineMedia', async (_e, input) => resolveOnlineMediaPayload(input || {}));
 ipcMain.handle('soul:createBackup', () => { requireAgeGate(); return ensureEngine().createBackup(); });
 ipcMain.handle('soul:listBackups', () => { requireAgeGate(); return ensureEngine().listBackups(); });
 ipcMain.handle('soul:restoreBackup', (_e, name) => { requireAgeGate(); return ensureEngine().restoreBackup(String(name || '')); });

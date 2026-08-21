@@ -42,9 +42,14 @@ function latestResearch(){
 function hostnameOf(href){
   try { return new URL(String(href||'')).hostname; } catch { return ''; }
 }
+function isCatalogGuestHost(href){
+  const host=hostnameOf(href).toLowerCase();
+  return host==='youtube.com'||host.endsWith('.youtube.com')||host==='youtu.be'||host.endsWith('.youtu.be')||host==='spotify.com'||host.endsWith('.spotify.com')||host==='archive.org'||host.endsWith('.archive.org');
+}
 function openResearchLink(url, title){
   const href=String(url||'');
   if(!href) return;
+  if(isCatalogGuestHost(href)){ openGuestWindow(href); return; }
   const host=hostnameOf(href);
   const line=[title, host].filter(Boolean).join(' · ');
   const ok=window.confirm(`${t('confirmOpenLink','Open this HTTPS page in your browser?')}${line?`\n${line}`:''}\n${href}`);
@@ -90,6 +95,8 @@ function runKernelAction(action){
   else if(action.type==='open-palette'){ openPalette(); }
   else if(action.type==='open-cheatsheet'){ openShortcutSheet(); }
   else if(action.type==='open-external'&&action.url) openResearchLink(action.url);
+  else if(action.type==='open-guest'){ openGuestWindow(action.url||''); }
+  else if(action.type==='play-online'&&action.url) playOnlineFile(action.url, action.title);
 }
 window.eidovaraRunAction=runKernelAction;
 function setupCategories(){return $$('input[name="setupCategory"]:checked').map(x=>x.value);}
@@ -100,9 +107,34 @@ async function openAdmin(){const status=await window.soul.adminStatus();$('#admi
 function renderConversations(){ const list=$('#conversationList'); list.textContent=''; const onlyOne=(state.conversations||[]).length<=1; for(const c of state.conversations){ const row=el('button','conversation'+(c.id===state.activeConversationId?' active':'')); row.type='button'; const label=el('span','label',c.title||'Conversation'); const del=el('button','delete','×'); del.type='button'; del.title='Delete conversation'; del.hidden=onlyOne; del.disabled=onlyOne; del.addEventListener('click',async e=>{e.stopPropagation(); if(state.conversations.length<=1)return; state=await window.soul.deleteConversation(c.id); renderAll();}); row.append(label,del); row.addEventListener('click',async()=>{state=await window.soul.selectConversation(c.id); renderAll();setView('chat');}); list.append(row); } }
 function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>openResearchLink(url));return a;}
 function currentPlayer(){return mediaQueue[mediaIndex]?.type==='video'?$('#videoPlayer'):$('#audioPlayer');}
+function isPlayerUrl(value){return /^(eidovara-media|eidovara-online):/i.test(String(value||''));}
+function adultModeOn(){const p=state?.policy||{};return p.mode==='adult'&&p.adultSoulEnabled===true&&p.adultStatusConfirmed===true&&p.currentConsent===true;}
+function closeGuestIfLocked(){if(document.body.classList.contains('age-gated')||adultModeOn()) window.soul.dockMediaGuest?.();}
+function openGuestWindow(url){
+  closeGuestIfLocked();
+  if(document.body.classList.contains('age-gated')||adultModeOn()) return;
+  window.soul.openMediaGuest({url:url||'',reducedMotion:reducedMotion()}).catch(err=>alert(String(err?.message||err)));
+}
+async function playOnlineFile(url,title){
+  try{
+    const item=await window.soul.resolveOnlineMedia({url,title});
+    if(item?.kind==='guest-page'&&item.url){ openGuestWindow(item.url); return; }
+    if(item?.url) playMedia([item],0,{alreadyConfirmed:true});
+  }catch(err){ alert(String(err?.message||err)); }
+}
+async function handleEnginePlayback(onlinePlayback){
+  if(!onlinePlayback) return;
+  if(onlinePlayback.kind==='guest-page'&&onlinePlayback.url){
+    openGuestWindow(onlinePlayback.url);
+    return;
+  }
+  if(onlinePlayback.kind==='playable'&&(onlinePlayback.sourceUrl||onlinePlayback.url)){
+    await playOnlineFile(onlinePlayback.sourceUrl||onlinePlayback.url, onlinePlayback.hostname);
+  }
+}
 function mediaSignal(event,item=mediaQueue[mediaIndex]){if(!item||!['audio','video'].includes(item.type))return;window.soul.recordMedia({event,type:item.type,title:item.title,sourceUrl:item.sourceUrl}).catch(()=>{});}
-function loadMedia(index,autoplay=true){if(!mediaQueue.length)return;const previous=mediaQueue[mediaIndex];if(previous&&index!==mediaIndex)mediaSignal('skip',previous);mediaIndex=(index+mediaQueue.length)%mediaQueue.length;const item=mediaQueue[mediaIndex],audio=$('#audioPlayer'),video=$('#videoPlayer'),player=item.type==='video'?video:audio;audio.pause();video.pause();audio.classList.toggle('hidden',item.type==='video');video.classList.toggle('hidden',item.type!=='video');player.src=item.url;$('#mediaTitle').textContent=item.title||'Untitled media';$('#mediaKind').textContent=`${item.local?'local ':''}${item.type} · ${mediaIndex+1} of ${mediaQueue.length}`;$('#mediaFavoriteBtn').textContent='♡';$('#mediaSourceBtn').disabled=!item.sourceUrl;$('#mediaDock').classList.remove('hidden');mediaSignal('play',item);window.eidovaraChrome?.recordMedia?.(item);if(autoplay)player.play().catch(()=>{});}
-function playMedia(items,index,opts={}){const mode=state?.assistant?.capabilities?.mediaPlayback||'confirm';if(mode==='disabled'){alert(t('mediaDisabled','Media playback is disabled in Soul behavior settings.'));return;}const selected=items[index];if(mode==='confirm'&&!opts.alreadyConfirmed){if(!window.confirm(`${t('mediaConfirm','Play this media in Eidovara:')} ${selected?.title||''}`.trim()))return;}mediaQueue=items.filter(m=>m.type==='audio'||m.type==='video');loadMedia(Math.max(0,mediaQueue.indexOf(selected)));}
+function loadMedia(index,autoplay=true){if(!mediaQueue.length)return;const previous=mediaQueue[mediaIndex];if(previous&&index!==mediaIndex)mediaSignal('skip',previous);mediaIndex=(index+mediaQueue.length)%mediaQueue.length;const item=mediaQueue[mediaIndex],audio=$('#audioPlayer'),video=$('#videoPlayer'),player=item.type==='video'?video:audio;audio.pause();video.pause();audio.classList.toggle('hidden',item.type==='video');video.classList.toggle('hidden',item.type!=='video');player.src=item.url;$('#mediaTitle').textContent=item.title||'Untitled media';$('#mediaKind').textContent=`${item.local?'local ':''}${item.type} · ${mediaIndex+1} of ${mediaQueue.length}`;$('#mediaFavoriteBtn').textContent='♡';$('#mediaSourceBtn').disabled=!item.sourceUrl;$('#mediaDock').classList.remove('hidden');document.body.classList.add('has-now-playing');mediaSignal('play',item);window.eidovaraChrome?.recordMedia?.(item);if(autoplay)player.play().catch(()=>{});}
+async function playMedia(items,index,opts={}){const mode=state?.assistant?.capabilities?.mediaPlayback||'confirm';if(mode==='disabled'){alert(t('mediaDisabled','Media playback is disabled in Soul behavior settings.'));return;}const selected=items[index];if(mode==='confirm'&&!opts.alreadyConfirmed){if(!window.confirm(`${t('mediaConfirm','Play this media in Eidovara:')} ${selected?.title||''}`.trim()))return;}if(selected?.url&&/^https:/i.test(selected.url)&&!isPlayerUrl(selected.url)){await playOnlineFile(selected.url,selected.title);return;}mediaQueue=items.filter(m=>(m.type==='audio'||m.type==='video')&&isPlayerUrl(m.url));if(!mediaQueue.length){if(selected?.url) openGuestWindow(selected.sourceUrl||selected.url);return;}const start=Math.max(0,mediaQueue.findIndex(m=>m.url===selected?.url));loadMedia(start);}
 function renderResearch(target,research){
   if(!research)return;
   const remote=Boolean(research.fetchedAt);
@@ -115,15 +147,15 @@ function renderResearch(target,research){
     if(s.hostname||s.provider) row.append(el('small','research-host',s.provider?`${s.provider}${s.hostname?` · ${s.hostname}`:''}`:s.hostname));
     row.append(el('p','research-snippet',s.description||s.extract||''));
     if(s.extract && s.extract!==s.description) row.append(el('p','research-extract',s.extract));
-    if(s.url) row.append(externalLink(s.url, t('openInBrowser','Open in browser')));
+    if(s.url) row.append(externalLink(s.url, isCatalogGuestHost(s.url) ? t('openInGuest','Open in online window') : t('openInBrowser','Open in browser')));
     panel.append(row);
   }
   for(const h of research.handoffs||[]){
     const row=el('article','research-source research-card');
     row.append(el('strong','',h.title||h.provider||'Search'));
     if(h.provider) row.append(el('small','research-host',h.provider));
-    row.append(el('p','research-snippet',t('handoffNote','Official HTTPS search in your browser. Eidovara does not fetch that site’s HTML or capture logins.')));
-    if(h.url) row.append(externalLink(h.url, t('openInBrowser','Open in browser')));
+    row.append(el('p','research-snippet',t('handoffNote','Official HTTPS search in the online viewing window. Eidovara does not fetch that site’s HTML or capture logins in the workspace.')));
+    if(h.url) row.append(externalLink(h.url, t('openInGuest','Open in online window')));
     panel.append(row);
   }
   if(research.local?.length){
@@ -347,7 +379,7 @@ function renderEntertainment(){
   if(!favorites.children.length)favorites.append(el('div','empty',t('emptyFavorites','Favorite media will appear here after you heart something in the player.')));
   if(!recent.children.length)recent.append(el('div','empty',t('emptyRecent','Play, skip, and complete events will appear here. Local file paths are not stored in taste records.')));
   const seeds=Object.entries(e.taste||{}).sort((a,b)=>b[1]-a[1]).filter(([,score])=>score>0).slice(0,4).map(([title])=>title);
-  if(mix) mix.textContent=seeds.length?`${seeds.join(', ')}. Spotify, YouTube, and Internet Archive remain official HTTPS searches in your browser.` : t('mixEmpty','Play or favorite something to grow a local mix. Suggestions stay on this device.');
+  if(mix) mix.textContent=seeds.length?`${seeds.join(', ')}. Spotify, YouTube, and Internet Archive open as official HTTPS pages in the online viewing window.` : t('mixEmpty','Play or favorite something to grow a local mix. Suggestions stay on this device.');
   const library=$('#entertainmentLibrary');
   if(library){
     library.textContent='';
@@ -368,7 +400,7 @@ function renderEntertainment(){
     else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
   }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ closeGuestIfLocked(); window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -429,6 +461,8 @@ async function send(text, opts={}){
     const replyText=replies.at(-1)?.content;
     const assistNote='';
     window.eidovaraCompanion?.noteExchange?.(text, replyText, assistNote, { research: res.webResearch || res.mediaDiscovery, actions: res.kernel?.actions });
+    if(res.adultAllowed) window.soul.dockMediaGuest?.();
+    await handleEnginePlayback(res.onlinePlayback);
     if(res.kernel?.intent==='research' || res.kernel?.view==='research') setView('research');
     else if(surface==='companion') setView('dashboard');
   }catch(err){
@@ -563,7 +597,7 @@ $('#diagnosticsBtn').addEventListener('click',async()=>{
 async function checkUpdates(silent=false){try{const u=await window.soul.checkForUpdates();if(!u.configured){if(!silent)$('#updateStatus').textContent='This development build has no published release channel.';return;}if(u.available){$('#updateStatus').textContent=`Version ${u.version} is available.${u.notes?' '+u.notes:''}`;$('#installUpdateBtn').classList.remove('hidden');}else if(!silent){ $('#updateStatus').textContent=`Eidovara ${u.currentVersion} is current.`;}}catch(err){if(!silent)$('#updateStatus').textContent=String(err?.message||err);}}
 $('#checkUpdateBtn').addEventListener('click',()=>checkUpdates(false));$('#installUpdateBtn').addEventListener('click',async()=>{try{$('#updateStatus').textContent='Downloading and verifying update…';const result=await window.soul.installUpdate();$('#updateStatus').textContent=result.cancelled?'Update cancelled.':'Verified installer launched.';}catch(err){$('#updateStatus').textContent=String(err?.message||err);}});
 $$('input[name="setupCategory"]').forEach(x=>x.addEventListener('change',toggleStreamSetup));$('#openSetupBtn').addEventListener('click',()=>openSetup(true));$('#cancelSetupBtn').addEventListener('click',()=>$('#setupOverlay').classList.add('hidden'));$('#setupForm').addEventListener('submit',async e=>{e.preventDefault();const categories=setupCategories();const access=$('#setupAccessibility')?.value.trim()||'';if(!categories.length&&!$('#setupCustomNeeds').value.trim()&&!access){$('#setupStatus').textContent='Choose at least one role or describe what you need.';return;}try{$('#setupStatus').textContent='Saving…';state=await window.soul.configureSetup({categories,customNeeds:$('#setupCustomNeeds').value,obsWebSocketUrl:$('#setupObsUrl').value,streamGoals:$('#setupStreamGoals').value});if(access||categories.includes('accessibility')) state=await window.soul.configureAssistant(assistantPayload({accessibility:access || state.assistant?.preferences?.accessibility || ''}));$('#setupOverlay').classList.add('hidden');renderAll();}catch(err){$('#setupStatus').textContent=String(err?.message||err);}});
-$('#mediaPrevBtn').addEventListener('click',()=>loadMedia(mediaIndex-1));$('#mediaNextBtn').addEventListener('click',()=>loadMedia(mediaIndex+1));$('#mediaPlayBtn').addEventListener('click',()=>{const p=currentPlayer();if(!p)return;p.paused?p.play().catch(()=>{}):p.pause();});$('#mediaFavoriteBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;await window.soul.recordMedia({event:'favorite',type:item.type,title:item.title,sourceUrl:item.sourceUrl});$('#mediaFavoriteBtn').textContent='♥';});$('#mediaSimilarBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;const taste=await window.soul.entertainment();const favorites=taste.topTitles.slice(0,3).map(x=>x.title).join(', ');send(`Find something similar to my favorite music: ${item.title}${favorites?`, considering ${favorites}`:''}`);});$('#mediaSpotifyBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://open.spotify.com/search/${encodeURIComponent(item.title)}`);});$('#mediaYouTubeBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`);});$('#mediaSourceBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(item.sourceUrl);});$('#mediaCloseBtn').addEventListener('click',()=>{const p=currentPlayer();p?.pause();$('#mediaDock').classList.add('hidden');});function completeMedia(){const next=mediaIndex+1;mediaSignal('complete');mediaIndex=-1;loadMedia(next);}$('#audioPlayer').addEventListener('ended',completeMedia);$('#videoPlayer').addEventListener('ended',completeMedia);
+$('#mediaPrevBtn').addEventListener('click',()=>loadMedia(mediaIndex-1));$('#mediaNextBtn').addEventListener('click',()=>loadMedia(mediaIndex+1));$('#mediaPlayBtn').addEventListener('click',()=>{const p=currentPlayer();if(!p)return;p.paused?p.play().catch(()=>{}):p.pause();});$('#mediaFavoriteBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;await window.soul.recordMedia({event:'favorite',type:item.type,title:item.title,sourceUrl:item.sourceUrl});$('#mediaFavoriteBtn').textContent='♥';});$('#mediaSimilarBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;const taste=await window.soul.entertainment();const favorites=taste.topTitles.slice(0,3).map(x=>x.title).join(', ');send(`Find something similar to my favorite music: ${item.title}${favorites?`, considering ${favorites}`:''}`);});$('#mediaPopOutBtn')?.addEventListener('click',()=>openGuestWindow(''));$('#mediaOpenGuestBtn')?.addEventListener('click',()=>{const item=mediaQueue[mediaIndex];openGuestWindow(item?.sourceUrl||'');});$('#mediaSpotifyBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];openGuestWindow(`https://open.spotify.com/search/${encodeURIComponent(item?.title||'')}`);});$('#mediaYouTubeBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];openGuestWindow(`https://www.youtube.com/results?search_query=${encodeURIComponent(item?.title||'')}`);});$('#mediaSourceBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item?.sourceUrl)openGuestWindow(item.sourceUrl);});$('#mediaCloseBtn').addEventListener('click',()=>{const p=currentPlayer();p?.pause();$('#mediaDock').classList.add('hidden');document.body.classList.remove('has-now-playing');});function completeMedia(){const next=mediaIndex+1;mediaSignal('complete');mediaIndex=-1;loadMedia(next);}$('#audioPlayer').addEventListener('ended',completeMedia);$('#videoPlayer').addEventListener('ended',completeMedia);
 $('#backupBtn').addEventListener('click',async()=>{try{$('#backupStatus').textContent='Creating local snapshot…';const b=await window.soul.createBackup();$('#backupStatus').textContent=`Created ${b.name} (${Math.ceil(b.bytes/1024)} KB). Restore is available from the list below.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});
 $('#refreshBackupsBtn').addEventListener('click',()=>refreshBackups().then(()=>{$('#backupStatus').textContent=backupCount?`${backupCount} local snapshot${backupCount===1?'':'s'} available.` : t('noBackups');renderDashboard();}).catch(err=>{$('#backupStatus').textContent=String(err?.message||err);}));
 $('#restoreBackupBtn').addEventListener('click',async()=>{const name=$('#backupSelect').value;if(!name||name.startsWith('No backups')||!confirm('Restore this backup and replace the current profile state?'))return;try{state=await window.soul.restoreBackup(name);renderAll();$('#backupStatus').textContent=`Restored ${name}. Conversations, memories, and Soul continuity now match that snapshot.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});
@@ -577,7 +611,8 @@ const PALETTE_COMMANDS = [
   { id:'dashboard', title:'Dashboard', hint:'Home after 18+', run:()=>setView('dashboard') },
   { id:'talk', title:'Talk with Soul', hint:'Right dock — local assistant, not Assist', run:()=>focusCompanion() },
   { id:'apps', title:'Apps & Gaming', hint:'Launch still asks you to confirm', run:()=>setView('apps') },
-  { id:'entertainment', title:'Entertainment', hint:'Local media and official searches', run:()=>setView('entertainment') },
+  { id:'entertainment', title:'Entertainment', hint:'Local media and the online viewing window', run:()=>setView('entertainment') },
+  { id:'online-viewing', title:'Online viewing window', hint:'Separate guest window; workspace stays offline-to-the-web', run:()=>openGuestWindow('') },
   { id:'memory', title:'Memory', hint:'Facts Soul can keep', run:()=>setView('memory') },
   { id:'identity', title:'Identity & consent', hint:'Adult Mode stays a triple gate', run:()=>setView('identity') },
   { id:'service', title:'Service URL', hint:'Default https://api.eidovara.org', run:()=>jumpSettings('#serviceForm') },
@@ -759,9 +794,10 @@ function setAgeGated(on){
   document.body.classList.toggle('age-gated',on);
   document.querySelector('.app')?.toggleAttribute('inert',on);
   $('#ageGateOverlay').classList.toggle('hidden',!on);
-  if(on) $('#ageGateTermsCheck')?.focus();
+  if(on){ window.soul.dockMediaGuest?.(); $('#ageGateTermsCheck')?.focus(); }
 }
 $('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
 $('#ageGateDeclineBtn').addEventListener('click',()=>window.soul.declineAgeGate());
+window.soul.onPlayLocalFromGuest?.(item=>{ if(item) playMedia([item],0,{alreadyConfirmed:true}); });
 
 (async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();

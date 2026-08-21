@@ -199,7 +199,8 @@ test('desktop age gate requires terms checkbox and main-process enforcement', ()
   assert.match(renderer, /ageGateTermsCheck/);
   assert.match(renderer, /showLegal\('terms'\)/);
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
-  assert.match(html, /media-src https: eidovara-media:/);
+  assert.match(html, /media-src eidovara-media: eidovara-online:/);
+  assert.doesNotMatch(html, /media-src [^"]*\bhttps:/);
 });
 
 test('in-app legal overlay does not claim Apple, payments, or consciousness', () => {
@@ -276,7 +277,7 @@ test('network, security, and licensing docs match current fail-closed v0.19.1 su
   assert.match(security, /sandboxed/i);
   assert.match(security, /fail-closed/);
   assert.match(security, /paymentsEnabled/);
-  assert.match(security, /media-src https: eidovara-media:/);
+  assert.match(security, /media-src eidovara-media:/);
   assert.match(security, /\/v1\/assist/);
   assert.match(security, /fail-on-severity: moderate/);
   assert.match(security, /Settings → Code security/);
@@ -316,7 +317,7 @@ test('network, security, and licensing docs match current fail-closed v0.19.1 su
   assert.match(securityPage, /Source-available, not open source/);
   assert.match(securityPage, /Authenticode-unsigned/);
   assert.match(securityPage, /\/v1\/assist/);
-  assert.match(securityPage, /media-src https: eidovara-media:/);
+  assert.match(securityPage, /media-src eidovara-media:/);
   assert.match(read('PRIVACY.md'), /fail-closed/);
   assert.match(read('PRIVACY.md'), /\/v1\/assist/);
   assert.match(read('docs/privacy.html'), /fail-closed/);

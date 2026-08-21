@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src https: eidovara-media:; connect-src 'none'; object-src 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src eidovara-media: eidovara-online:; connect-src 'none'; object-src 'none'" />
   <title>Eidovara v0.19.1</title>
   <link rel="stylesheet" href="tokens.css" />
   <link rel="stylesheet" href="styles.css" />
@@ -12,6 +12,7 @@
   <link rel="stylesheet" href="internet.css" />
   <link rel="stylesheet" href="companion.css" />
   <link rel="stylesheet" href="layers.css" />
+  <link rel="stylesheet" href="now-playing.css" />
 </head>
 <body>
   <div class="app">
@@ -188,7 +189,7 @@
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
-      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, queue helpers, and lawful platform handoff — Spotify, YouTube, and Internet Archive stay official HTTPS searches.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div></section>
+      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, a workspace now-playing bar, and an isolated online viewing window — Spotify, YouTube, and Internet Archive stay official HTTPS pages in that guest window.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Online viewing uses a separate window. The workspace itself stays offline-to-the-web. Spotify, YouTube, and Internet Archive open as official HTTPS pages in that guest window. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div></section>
 
       <section class="view panel-view" id="memoryView">
         <div class="panel-head"><div><h2>Memory</h2><p>Durable facts and preferences Soul can carry across conversations.</p></div></div>
@@ -316,7 +317,7 @@
       <div class="setup-actions"><button type="button" class="secondary hidden" id="cancelSetupBtn" data-i18n="cancel">Cancel</button><button type="submit" data-i18n="saveContinue">Save and continue</button></div>
     </form>
   </div>
-  <section class="media-dock hidden" id="mediaDock" aria-label="Soul media player">
+  <section class="media-dock now-playing-bar hidden" id="mediaDock" aria-label="Eidovara now playing">
     <div class="media-now"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small><span id="nowPlayingLabel" class="now-playing-tag" data-i18n="nowPlaying">Now playing</span></div>
     <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
     <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
@@ -334,10 +335,13 @@
     </label>
     <audio id="audioPlayer" controls preload="metadata"></audio>
     <video id="videoPlayer" controls preload="metadata"></video>
+    <button type="button" id="mediaPopOutBtn">Pop out / Online</button>
+    <button type="button" id="mediaOpenGuestBtn">Open this in browser window</button>
     <button type="button" id="mediaSpotifyBtn">Spotify</button>
     <button type="button" id="mediaYouTubeBtn">YouTube</button>
     <button type="button" id="mediaSourceBtn">Source</button>
     <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
+    <p class="np-honesty" id="mediaHonesty">Online viewing uses a separate window. The workspace itself stays offline-to-the-web.</p>
   </section>
   <div class="setup-overlay hidden" id="adminOverlay" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
     <form class="setup-dialog admin-dialog" id="adminLoginForm">
@@ -374,7 +378,7 @@
         <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed on this OS. Optional Worker <code>/v1/assist</code> is off unless you opt in; it is not Soul and never receives conversation history.</p>
       </div>
       <div class="legal-panel hidden" id="legalTermsPanel">
-        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia plus optional keyed search and HTTPS pages you open. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify buttons open official HTTPS searches and do not rip streams.</p>
+        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia plus optional keyed search and HTTPS pages you open. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify buttons open official HTTPS searches in a separate guest window and do not rip streams. Online viewing uses a separate window. The workspace itself stays offline-to-the-web.</p>
         <p>Adult Mode stays off unless age-of-majority confirmation, enablement, and current revocable consent are all active. User-supplied media and apps remain your responsibility. Full terms ship as TERMS.md with the release.</p>
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
