@@ -22,7 +22,9 @@
   ],
   "product": {
     "name": "Eidovara",
-    "version": "0.19.1",
+    "version": "0.22.2",
+    "sourceVersion": "0.22.2",
+    "liveInstallerVersion": "0.19.1",
     "appId": "com.soulconsciousnessstudios.eidovara",
     "platform": "Windows 10/11 x64",
     "installer": "Eidovara-0.19.1-Windows-x64-Setup.exe",

@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { INSTALLER_NAME, INSTALLER_SHA256, INSTALLER_LATEST_URL, INSTALLER_PINNED_URL, LIVE_INSTALLER_VERSION, SOURCE_VERSION } from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 
@@ -74,11 +75,12 @@ test('operator runbook covers Pages merge, Dependency graph, wrangler, custom do
 });
 
 test('primary download CTAs point at the official Windows installer .exe, not only the repo root', () => {
-  const version = JSON.parse(read('package.json')).version;
-  const installerName = `Eidovara-${version}-Windows-x64-Setup.exe`;
-  const installerUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${installerName}`;
-  const pinnedUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${version}/${installerName}`;
-  const sha = '72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8';
+  assert.equal(JSON.parse(read('package.json')).version, SOURCE_VERSION);
+  assert.equal(LIVE_INSTALLER_VERSION, '0.19.1');
+  const installerName = INSTALLER_NAME;
+  const installerUrl = INSTALLER_LATEST_URL;
+  const pinnedUrl = INSTALLER_PINNED_URL;
+  const sha = INSTALLER_SHA256;
   const latest = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
   const repoRoot = /^https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/?$/i;
   const isInstallerHref = href => href === installerUrl

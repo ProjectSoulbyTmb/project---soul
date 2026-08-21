@@ -45,10 +45,11 @@ test('Worker health/status support HEAD, CORS, honesty flags, and private status
   assert.equal(status.ageRestricted, true);
   assert.equal(status.minimumAge, 18);
   assert.equal(status.authenticodeSigned, false);
-  assert.equal(status.version, '0.19.1');
+  assert.equal(status.version, '0.22.2');
+  assert.equal(status.liveInstallerVersion, '0.19.1');
   assert.ok(!status.endpoints.includes('/v1/heartbeat'));
   assert.match(status.heartbeat, /No dedicated \/v1\/heartbeat/);
-  assert.doesNotMatch(JSON.stringify(status), /0\.22\.2/);
+  assert.doesNotMatch(JSON.stringify(status), /Eidovara-0\.22\.2-Windows/);
   assert.doesNotMatch(JSON.stringify(status), /workers\.dev/i);
 
   const statusHead = await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'HEAD' }), {});

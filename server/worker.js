@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { answerAssist, assistMeta, MAX_ASSIST_BODY } from './knowledge.js';
+import { answerAssist, assistMeta, MAX_ASSIST_BODY, ASSIST_VERSION } from './knowledge.js';
 
 const CORS_METHODS = 'GET, HEAD, POST, OPTIONS';
 const CORS_GET_METHODS = 'GET, HEAD, OPTIONS';
@@ -32,7 +32,9 @@ function publicPayload(extra = {}) {
     service: 'Eidovara',
     status: 'ok',
     online: true,
-    version: '0.19.1',
+    version: ASSIST_VERSION,
+    liveInstallerVersion: '0.19.1',
+    liveInstaller: 'Eidovara-0.19.1-Windows-x64-Setup.exe',
     time: new Date().toISOString(),
     localFirst: true,
     conversations: false,
@@ -103,7 +105,9 @@ export default {
       heartbeat: 'Desktop Connect uses GET /health, /v1/config, and /v1/status. After 18+, a main-process liveness loop repeats GET /health and GET /v1/status. Conversations are not sent. No dedicated /v1/heartbeat route.'
     }), { 'cache-control': 'private, no-store' });
     if (url.pathname === '/v1/config') return send({
-      version: '0.19.1',
+      version: ASSIST_VERSION,
+      liveInstallerVersion: '0.19.1',
+      liveInstaller: 'Eidovara-0.19.1-Windows-x64-Setup.exe',
       website: httpsUrl(env.WEBSITE_URL),
       store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) },
       paymentsEnabled: false,

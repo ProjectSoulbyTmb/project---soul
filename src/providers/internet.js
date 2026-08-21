@@ -2,8 +2,9 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { isExplicitInternetRequest } from '../core/workspace.js';
 import { officialSearchHandoffs } from '../core/entertainment.js';
+import { SOURCE_VERSION } from '../core/release.js';
 
-const AGENT = 'Eidovara/0.18 (desktop research client)';
+const AGENT = `Eidovara/${SOURCE_VERSION} (desktop research client)`;
 export const PAGE_BYTE_LIMIT = 512 * 1024;
 export const PAGE_TIMEOUT_MS = 15_000;
 export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.';

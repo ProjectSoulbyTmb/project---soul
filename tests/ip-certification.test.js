@@ -26,7 +26,9 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.claimant, 'Tyler Michael Bosworth');
   assert.equal(cert.licenseSpdx, 'LicenseRef-Eidovara-Source-Available-1.0');
   assert.equal(cert.notLegalAdvice, true);
-  assert.equal(cert.product.version, '0.19.1');
+  assert.equal(cert.product.version, '0.22.2');
+  assert.equal(cert.product.sourceVersion, '0.22.2');
+  assert.equal(cert.product.liveInstallerVersion, '0.19.1');
   assert.equal(cert.product.installer, INSTALLER_NAME);
   assert.equal(cert.product.sha256, INSTALLER_SHA256);
   assert.equal(cert.product.authenticode, 'unsigned');

@@ -1,4 +1,4 @@
-# Eidovara v0.19.1
+# Eidovara v0.22.2
 
 Eidovara is a customizable Windows desktop workspace for applications, gaming, media, research, accessibility, and optional personal assistance. It is created and owned by Tyler Michael Bosworth and published under the intended business name Soul Consciousness Studios™.
 
@@ -26,7 +26,7 @@ Adult Mode is off by default and appears only after legal-adult confirmation, ex
 
 ## Legal use
 
-Eidovara is **source-available, not open source**, and restricted to users **18 or older**. Official advertised distribution is an **Authenticode-unsigned Windows 10/11 x64** desktop build. Linux/macOS scripts are development targets, not official products. Premium in v0.19.1 is local-admin testing only; there is no live payment or automatic paid unlock.
+Eidovara is **source-available, not open source**, and restricted to users **18 or older**. Official advertised distribution is an **Authenticode-unsigned Windows 10/11 x64** desktop build. Linux/macOS scripts are development targets, not official products. This source cut is **v0.22.2**. The live advertised installer remains **v0.19.1** `Eidovara-0.19.1-Windows-x64-Setup.exe` until a newer tagged Setup.exe exists. Premium in this source is local-admin testing only; there is no live payment or automatic paid unlock.
 
 Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is public Wikipedia/Wikimedia after an explicit internet/web/online request. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, or Electron and is not an iOS/iPhone product. Soul is a first-party kernel, not a third-party film or assistant brand.
 

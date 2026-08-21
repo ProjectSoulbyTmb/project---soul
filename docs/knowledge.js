@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** Eidovara website helper knowledge pack (v0.19.1). Same answers for Pages and Worker. */
-export const ASSIST_VERSION = '0.19.1';
+/** Eidovara website helper knowledge pack (source v0.22.2). Same answers for Pages and Worker. Live advertised installer remains v0.19.1. */
+export const ASSIST_VERSION = '0.22.2';
 export const MAX_ASSIST_QUERY = 800;
 export const MAX_ASSIST_BODY = 4096;
 export const STORAGE_KEY = 'eidovara.serviceBase';
@@ -23,7 +23,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['what', 'eidovara', 'product', 'workspace', 'desktop', 'windows', 'soul', 'hosted', 'account', 'cloud', 'chat', 'website', 'online'],
     title: 'What Eidovara is',
-    reply: 'Eidovara v0.19.1 is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is not a hosted chat account. Visiting this website does not create an account or store conversations. Soul is an optional assistant layer that runs on your PC. Free / Offline Soul works with no cloud URL.',
+    reply: `Eidovara v${ASSIST_VERSION} is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is not a hosted chat account. Visiting this website does not create an account or store conversations. Soul is an optional assistant layer that runs on your PC. Free / Offline Soul works with no cloud URL. The live advertised Windows installer remains ${INSTALLER_NAME} until a newer tagged Setup.exe exists.`,
     links: [{ href: 'product.html', label: 'Product' }, { href: 'download.html', label: 'Download' }]
   },
   {
@@ -63,7 +63,7 @@ export const ENTRIES = [
     modes: ['download', 'help', 'legal'],
     tags: ['unsigned', 'authenticode', 'smartscreen', 'sign', 'certificate', 'checksum', 'sha', 'certified', 'microsoft'],
     title: 'Unsigned Windows build',
-    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for v0.19.1, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Confirm 18+ on the Download page, then get ${INSTALLER_NAME} (${INSTALLER_SIZE}) from the official GitHub Releases asset and verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
+    reply: `Official advertised installers are Authenticode-unsigned. That is intentional for this Alpha, not a claim that a signed or Microsoft-certified build exists. We cannot Authenticode-sign until the owner provides a code-signing certificate. Windows SmartScreen may warn. Confirm 18+ on the Download page, then get ${INSTALLER_NAME} (${INSTALLER_SIZE}) from the official GitHub Releases asset and verify SHA-256 ${INSTALLER_SHA256}. GitHub/Sigstore provenance is not Authenticode. No software is perfectly secure.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: 'security.html', label: 'Security' }]
   },
   {
@@ -71,7 +71,7 @@ export const ENTRIES = [
     modes: ['help', 'legal', 'download'],
     tags: ['pay', 'payment', 'premium', 'checkout', 'stripe', 'paypal', 'gumroad', 'buy', 'price', 'subscription', 'card', 'pci'],
     title: 'Payments stay off',
-    reply: 'v0.19.1 does not sell Premium and does not process payments. There is no live checkout on this website or in the app. Free is $0. Premium feature gates exist for local administrator testing only (Ctrl+A). That override is not payment or PCI processing. Payment-card data is not accepted. Store URLs on the optional Worker stay empty.',
+    reply: `v${ASSIST_VERSION} does not sell Premium and does not process payments. There is no live checkout on this website or in the app. Free is $0. Premium feature gates exist for local administrator testing only (Ctrl+A). That override is not payment or PCI processing. Payment-card data is not accepted. Store URLs on the optional Worker stay empty.`,
     links: [{ href: './#plans', label: 'Free vs Premium' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
@@ -79,7 +79,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['premium', 'free', 'edition', 'rgb', 'brave', 'apps', 'unlimited', 'remote', 'model'],
     title: 'Free vs Premium',
-    reply: 'Eidovara Free includes the workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research, and up to three linked applications. Premium (local-admin test only) adds compatible remote-model endpoints, broad keyed web search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v0.19.1.',
+    reply: `Eidovara Free includes the workspace, media, gaming mode, backups, updates, offline and local-model assistance, public Wikipedia/Wikimedia research, and up to three linked applications. Premium (local-admin test only) adds compatible remote-model endpoints, broad keyed web search, unlimited linked apps, and RGB lighting. No live checkout unlocks Premium in v${ASSIST_VERSION}.`,
     links: [{ href: './#plans', label: 'Plans' }]
   },
   {
@@ -111,7 +111,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['media', 'music', 'video', 'entertainment', 'spotify', 'youtube', 'queue', 'playback'],
     title: 'Media and entertainment',
-    reply: 'Play user-selected local files in Eidovara and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube/Internet Archive HTTPS search chips. Playback can require confirmation. Those chips do not rip streams or inject into other players. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v0.19.1.',
+    reply: `Play user-selected local files in Eidovara and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube/Internet Archive HTTPS search chips. Playback can require confirmation. Those chips do not rip streams or inject into other players. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v${ASSIST_VERSION}.`,
     links: [{ href: 'product.html', label: 'Product' }]
   },
   {
@@ -183,7 +183,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['attestation', 'self-attestation', 'certification', 'ip-certify', 'uspto', 'copyright-office', 'registered', 'registration', 'deposit', 'infringement', 'dmca'],
     title: 'Repository IP self-attestation',
-    reply: 'docs/IP_CERTIFICATION.md is a dated repository self-attestation: it inventories licenses, unsigned templates, and owner-only leftovers for Eidovara v0.19.1. It is not a U.S. Copyright Office registration, USPTO filing, patent, Authenticode certificate, or executed assignment. Eidovara is not registered with the Copyright Office or USPTO. Marks stay unregistered ™. The owner can file at copyright.gov and USPTO privately; this helper cannot. CLA and entity assignment files remain unsigned templates. See also docs/INFRINGEMENT.md for DMCA pointers.',
+    reply: `docs/IP_CERTIFICATION.md is a dated repository self-attestation: it inventories licenses, unsigned templates, and owner-only leftovers for Eidovara v${ASSIST_VERSION}. It is not a U.S. Copyright Office registration, USPTO filing, patent, Authenticode certificate, or executed assignment. Eidovara is not registered with the Copyright Office or USPTO. Marks stay unregistered ™. The owner can file at copyright.gov and USPTO privately; this helper cannot. CLA and entity assignment files remain unsigned templates. See also docs/INFRINGEMENT.md for DMCA pointers.`,
     links: [{ href: 'IP_CERTIFICATION.md', label: 'IP self-attestation' }, { href: 'licensing.html', label: 'Licensing' }]
   },
   {
@@ -238,8 +238,8 @@ export const ENTRIES = [
     id: 'forbidden-features',
     modes: ['help', 'legal'],
     tags: ['tts', 'neural', 'vrm', 'obs', 'makehuman', 'consciousness', 'vr'],
-    title: 'What v0.19.1 does not include',
-    reply: 'v0.19.1 does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode is a separate triple gate and stays off by default. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields).',
+    title: `What v${ASSIST_VERSION} does not include`,
+    reply: `v${ASSIST_VERSION} does not bundle neural TTS, VRM, MakeHuman, or OBS websocket control. It does not claim scientific consciousness. It does not offer an official Linux or macOS product, Authenticode signing, or live payments. Adult Mode is a separate triple gate and stays off by default. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields).`,
     links: [{ href: 'product.html', label: 'Product' }, { href: 'licensing.html', label: 'Licensing' }]
   }
 ];
@@ -285,7 +285,7 @@ const ABUSE = [
 ];
 
 const REFUSALS = {
-  empty: 'Ask a short product question about Eidovara v0.19.1 (download, 18+, local desktop use, payments, or legal pointers).',
+  empty: `Ask a short product question about Eidovara v${ASSIST_VERSION} (download, 18+, local desktop use, payments, or legal pointers).`,
   too_large: 'That question is too long for this website helper. Ask a shorter product question (under 800 characters).',
   refused: 'I cannot help with criminal activity, unauthorized access, or bypassing security controls. Eidovara is 18+ local Windows software. Read the Terms. This helper is not Soul and is not legal advice.',
   invalid: 'That request was not a usable product question.'
