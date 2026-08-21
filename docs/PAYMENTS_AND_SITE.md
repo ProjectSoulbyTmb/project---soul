@@ -1,6 +1,6 @@
 # Owner runbook: public website, Windows download, Worker, and payments
 
-Eidovara v0.18.2 is a **local-first Windows desktop app**. Making it “online for all users” means a public HTTPS site, a public Windows download, and an optional public Worker for `/health`, `/v1/config`, `/v1/status`, and website-helper `/v1/assist`. It does **not** mean hosting everyone’s Soul, chat, or memories in the cloud. Free / Offline Soul works with no Worker URL. The desktop app can attach to that service for status/config while remaining local-first. Ask Eidovara on GitHub Pages works with zero secrets.
+Eidovara v0.18.2 is a **local-first Windows desktop app**. Making it “online for all users” means a public HTTPS site, a public Windows download, and an optional public Worker for `/health`, `/v1/config`, `/v1/status`, and website-helper `/v1/assist`. It does **not** mean hosting everyone’s Soul, chat, or memories in the cloud. Free / Offline Soul works with no Worker URL. The desktop app can attach to that service for status/config while remaining local-first. Ask Eidovara on GitHub Pages and eidovara.org works with zero secrets.
 
 Do not commit API tokens, Wrangler credentials, or payment secrets. Do not hard-code `dreambot333.workers.dev` in the app or public HTML/JS.
 
@@ -10,11 +10,12 @@ GitHub Pages deploys `docs/` from **`main` via `.github/workflows/pages.yml`**. 
 
 | Surface | Live now |
 | --- | --- |
+| Cloudflare Pages `https://eidovara.org/` | Official consumer hostname. Project `eidovara` publishes the same `docs/` (Home, Product, Download, Assist, Help, FAQ, Status, Legal). Deploy: `npx wrangler pages deploy docs --project-name=eidovara`. Worker API stays separate. |
 | GitHub Pages `https://projectsoulbytmb.github.io/project---soul/` | Product-surface `docs/` from `main`. `pages.yml` publishes on push to `main` (HTTPS). |
 | Cloudflare Worker (`npx wrangler deploy` from `server/`) | Optional public `/health` `/v1/config` `/v1/status` `/v1/assist`. Paste the HTTPS **base** — no host is compiled into the app or public JS. Redeploy after `worker.js` changes so the live Worker does not drift. |
 | Desktop app | Settings → Eidovara service **Connect** after 18+; launch retry; Ctrl+A **Test service**. Offline fallback. Paste-base still required. |
 
-Owner merge path completed: PR #10 merged to `main` → `Deploy project website` uploaded `docs/` → github.io updated. Do not invent another production site.
+Owner merge path completed: PR #10 merged to `main` → `Deploy project website` uploaded `docs/` → github.io updated. Official `https://eidovara.org` is the same `docs/` on Cloudflare Pages. Do not invent another production site.
 
 ## Remaining owner clicks (solution paths git cannot finish)
 
@@ -24,7 +25,7 @@ These cannot be completed from source code. Each item is a **solution path**, no
 2. **GitHub Pages still serves `main`** — `.github/workflows/pages.yml` already deploys `docs/` on push to `main` (and `workflow_dispatch`). The live URL `https://projectsoulbytmb.github.io/project---soul/` therefore shows whatever `main` last published. PR #10 (`cursor/engine-product-surface-c180`) is already merged; do not retarget Pages at a feature branch. If Pages was never enabled: Settings → Pages → Build and deployment → **GitHub Actions**.
 3. **Worker vs git drift** — `server/worker.js` serves `/health`, `/v1/config`, `/v1/status`, and `/v1/assist`. A previously deployed Worker can lag until you redeploy. **Fix:** from `server/`, `npx wrangler login` or a local `CLOUDFLARE_API_TOKEN` (never committed), then `npx wrangler deploy`. Copy the HTTPS **base** (no path) into desktop **Settings → Eidovara service** and **Connect**, or Ctrl+A **Soul HTTPS service** → **Test service**. Optional: the same base in the website Status page or Ask Eidovara sheet (localStorage) for `/v1/assist`. Skip deploy if you have no token; the Pages helper still works.
 4. **GitHub Releases** — Push a `v*` tag on `main` (for example `v0.18.2`) so `Release Windows` builds unsigned NSIS on `windows-latest` and publishes `Eidovara-*-Windows-x64-Setup.exe`. Tags `v0.18.0` and `v0.18.1` already exist and must not be force-moved. `workflow_dispatch` on a branch only uploads unsigned build artifacts; it does not Authenticode-sign and does not publish a Release unless the ref is a `v*` tag.
-5. **Optional custom domain** — In Cloudflare, put a hostname in front of GitHub Pages and (separately) a Worker route. Paste the Worker base into Settings → Eidovara service (or Ctrl+A). Do not hard-code it in the Electron app.
+5. **www custom domain** — Apex `eidovara.org` already points at Cloudflare Pages project `eidovara`. `www.eidovara.org` does not resolve. **Fix:** Cloudflare Dashboard → Pages → `eidovara` → Custom domains → add `www.eidovara.org`, and DNS CNAME `www` → `eidovara.pages.dev` (proxied). Do not add `docs/CNAME` and do not retarget GitHub Pages at this hostname. Paste the Worker base into Settings → Eidovara service (or Ctrl+A). Do not hard-code it in the Electron app.
 
 NSIS overwrite-on-reinstall for existing installs is tracked on pull request #9, not in this runbook.
 
@@ -38,15 +39,17 @@ Leave these documented. Do not “fix” them in git by claiming they exist:
 - **Neural TTS / VRM / OBS websocket control** — Not bundled; adapters stay document-only.
 - **Consciousness** — Soul is software, not a scientific or legal claim of sentience.
 
-## 1. Public HTTPS website (GitHub Pages)
+## 1. Public HTTPS website (Cloudflare Pages + GitHub Pages)
 
-Source: `docs/`. Live URL: `https://projectsoulbytmb.github.io/project---soul/`.
+Source: `docs/`. Official live URL: `https://eidovara.org/`. GitHub Pages mirror: `https://projectsoulbytmb.github.io/project---soul/`.
 
-- Edit HTML/CSS under `docs/`, review locally, **merge to `main`**. The `Deploy project website` workflow uploads `docs/` as the Pages artifact. `https://projectsoulbytmb.github.io/project---soul/` serves the product-surface site from `main` (Home, Product, Download, Assist, Help, FAQ, Status, Legal).
+- Edit HTML/CSS under `docs/`, review locally, **merge to `main`**. The `Deploy project website` workflow uploads `docs/` as the GitHub Pages artifact. `https://projectsoulbytmb.github.io/project---soul/` serves the product-surface site from `main` (Home, Product, Download, Assist, Help, FAQ, Status, Legal).
+- Publish the official hostname with `npx wrangler pages deploy docs --project-name=eidovara` (Cloudflare Pages project `eidovara`, custom domain `eidovara.org`). Keep the Worker API (`eidovara-api`) on a separate hostname. Wrangler is not an Eidovara runtime dependency. Never commit `CLOUDFLARE_API_TOKEN`.
 - If Pages was never enabled: Settings → Pages → Source **GitHub Actions** (not “Deploy from a branch” unless you also change the workflow). GitHub enforces HTTPS on `*.github.io`.
 - The site tells visitors: visit Home → read Product → confirm 18+ on Download → install the unsigned Windows Alpha or build with `npm run dist:win:installer` → the desktop app is the product → cloud is optional config/health only.
 - Ask Eidovara is a website helper (`docs/knowledge.js`, `docs/assist.js`) with `script-src 'self'`. No API key. Optional Worker assist is visitor-paste only.
 - Do not put `workers.dev` URLs in the public site as a required API. Operator-example Worker URLs belong in this owner guide only. Status and the helper fail closed when no base is pasted.
+- Do not add `docs/CNAME`. GitHub Pages custom-domain files would fight the live Cloudflare zone for `eidovara.org`.
 
 ## 2. Public Windows download (GitHub Releases)
 
@@ -68,25 +71,25 @@ Source: `server/worker.js` plus `server/wrangler.toml` (`name = "eidovara-api"`)
 4. Copy the generated HTTPS **base** URL (no path) into Eidovara **Settings → Eidovara service** and **Connect**, or the private Ctrl+A panel **Soul HTTPS service**, then **Test service**. After the 18+ gate the app requests `{base}/health`, `{base}/v1/config`, and `{base}/v1/status`. Health JSON is `{ "service": "Eidovara", "status": "ok", "version": "0.18.2" }`. If those requests fail, Offline Soul continues locally. The public site’s Ask Eidovara widget can `POST {base}/v1/assist` after a visitor pastes the same base; if that fetch fails, the on-page knowledge pack still answers.
 5. `/v1/config` returns the public website URL and optional provider-hosted checkout links. Leave Stripe/PayPal/Gumroad empty until a real store exists.
 
-The desktop product and the public HTML/JS never hard-code `workers.dev`. Users do not need a Worker URL. GitHub Pages Ask Eidovara works with zero secrets via `docs/knowledge.js`.
+The desktop product and the public HTML/JS never hard-code `workers.dev`. Users do not need a Worker URL. Ask Eidovara on eidovara.org and GitHub Pages works with zero secrets via `docs/knowledge.js`.
 
 Operator example (operator paste only, not a user-required server, not compiled into the app): `https://eidovara-api.dreambot333.workers.dev` currently serves `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` on Workers Free **after** you re-deploy `worker.js` from `main` (`npx wrangler deploy`). A live Worker can drift behind git until that command runs. Prefer a later custom domain if you add one.
 
-## 4. Optional custom domain (Cloudflare in front)
+## 4. Custom domain (already on Cloudflare Pages)
 
-Keep Pages and the Worker on separate hostnames if you add a domain you control.
+Keep the marketing site and the Worker on separate hostnames.
 
-**Website (Pages)**
+**Website (Cloudflare Pages project `eidovara`)**
 
-1. Register the domain in an account you control and add it to Cloudflare DNS.
-2. GitHub → Settings → Pages → Custom domain → `www.example.com` (or apex if you use A/ALIAS records GitHub documents).
-3. In Cloudflare DNS, CNAME `www` to `projectsoulbytmb.github.io` (or follow GitHub’s current Pages custom-domain records). Enable Cloudflare proxy only after GitHub has issued the Pages certificate, or follow GitHub’s custom-domain HTTPS notes so you do not break issuance.
-4. Update `server/wrangler.toml` `WEBSITE_URL` and re-deploy the Worker so `/v1/config` points at the custom site.
+1. Apex `eidovara.org` is already attached to project `eidovara` (`eidovara.pages.dev`). Publish with `npx wrangler pages deploy docs --project-name=eidovara`.
+2. Do **not** set GitHub → Settings → Pages → Custom domain to `eidovara.org` and do **not** add `docs/CNAME`. That would fight this Cloudflare zone.
+3. `www.eidovara.org` still needs an owner DNS click: CNAME `www` → `eidovara.pages.dev` (proxied) plus Pages → Custom domains → `www.eidovara.org`.
+4. `server/wrangler.toml` `WEBSITE_URL` should be `https://eidovara.org/` so `/v1/config` points at the official site after `npx wrangler deploy`.
 
 **Worker (API)**
 
-1. In the Cloudflare dashboard, add a route such as `api.example.com/*` to the `eidovara-api` Worker, or set a custom domain on the Worker.
-2. Paste `https://api.example.com` (base only) into Settings → Eidovara service or Ctrl+A **Test service**. Still do not hard-code it in the app.
+1. Keep `eidovara-api` off the marketing hostname. A custom Worker hostname is operator-paste only.
+2. Paste that HTTPS **base** (no path) into Settings → Eidovara service or Ctrl+A **Test service**. Still do not hard-code it in the app.
 
 ## Payment management (still off)
 

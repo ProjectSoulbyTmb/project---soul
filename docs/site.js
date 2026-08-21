@@ -14,6 +14,12 @@
     if (legal) legal.setAttribute('data-current', 'true');
   }
 
+  if (header) {
+    const compact = () => header.classList.toggle('is-compact', window.scrollY > 10);
+    compact();
+    window.addEventListener('scroll', compact, { passive: true });
+  }
+
   if (toggle && header && nav) {
     const close = () => {
       header.classList.remove('nav-open');
@@ -26,6 +32,16 @@
     nav.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
     doc.addEventListener('keydown', event => {
       if (event.key === 'Escape') close();
+    });
+  }
+
+  const legalMenu = doc.querySelector('.nav-legal');
+  if (legalMenu) {
+    doc.addEventListener('click', event => {
+      if (legalMenu.open && !legalMenu.contains(event.target)) legalMenu.removeAttribute('open');
+    });
+    doc.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && legalMenu.open) legalMenu.removeAttribute('open');
     });
   }
 
@@ -84,7 +100,7 @@
     const failClosed = message => {
       if (out) out.textContent = message;
     };
-    failClosed('Not configured. This site is GitHub Pages; Windows downloads come from GitHub Releases. No Worker URL is compiled in. Paste an HTTPS base only if you operate one — otherwise no request is sent.');
+    failClosed('Not configured. This site is Cloudflare Pages (eidovara.org) with a GitHub Pages mirror; Windows downloads come from GitHub Releases. No Worker URL is compiled in. Paste an HTTPS base only if you operate one — otherwise no request is sent.');
 
     const saveBase = event => {
       event.preventDefault();
@@ -104,7 +120,7 @@
       event.preventDefault();
       if (input) input.value = '';
       writeStoredBase('');
-      failClosed('Cleared. GitHub Pages + GitHub Releases only. Fail closed — no service request will be sent.');
+      failClosed('Cleared. eidovara.org + GitHub Pages mirror + GitHub Releases only. Fail closed — no service request will be sent.');
     });
     probe?.addEventListener('click', async event => {
       event.preventDefault();
@@ -114,7 +130,7 @@
         return;
       }
       if (!base) {
-        failClosed('No service base configured. Fail closed — nothing was fetched. Pages and Releases do not require a Worker.');
+        failClosed('No service base configured. Fail closed — nothing was fetched. eidovara.org, GitHub Pages, and Releases do not require a Worker.');
         return;
       }
       writeStoredBase(base);
@@ -144,7 +160,7 @@
         ];
         failClosed(lines.join('\n'));
       } catch (error) {
-        failClosed(`Unreachable (${error.name === 'AbortError' ? 'timeout' : (error.message || 'fetch failed')}). Fail closed. Offline Soul and this Pages site still work.`);
+        failClosed(`Unreachable (${error.name === 'AbortError' ? 'timeout' : (error.message || 'fetch failed')}). Fail closed. Offline Soul and this website still work.`);
       } finally {
         clearTimeout(timer);
       }

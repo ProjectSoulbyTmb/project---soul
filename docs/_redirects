@@ -1,0 +1,5 @@
+# Cloudflare Pages only. GitHub Pages ignores this file.
+# The retired /download/windows shortcut skipped the 18+ Download gate and
+# pointed at the v0.18.0 Setup.exe. Send it to download.html instead.
+/download/windows    /download.html    302
+/download/windows/   /download.html    302

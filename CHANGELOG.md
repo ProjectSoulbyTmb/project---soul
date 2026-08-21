@@ -3,7 +3,7 @@
 ## Unreleased
 
 - Desktop no longer constructs a Soul profile before the in-app 18+ gate; `soul:openExternal` is age-gated; Wikipedia/Wikimedia result URLs must match wiki/wikimedia hostnames.
-- Home and Status funnel installer clicks through the Download 18+ checkbox. Nested GitHub Pages 404s keep site CSS via `<base href>`.
+- Official consumer hostname is `https://eidovara.org` (Cloudflare Pages project `eidovara` from `docs/`). GitHub Pages github.io remains the same `docs/` from `main`. Home and Status funnel installer clicks through the Download 18+ checkbox. Nested 404s use `<base href="https://eidovara.org/">`. Retired `/download/windows` redirects to the Download 18+ page.
 - Marketing site lists installer size (~101.3 MiB), pinned `v0.18.2` asset URL, and SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711` on public pages. FAQ no longer skips the 18+ gate with a raw `.exe` href.
 
 ## v0.18.2

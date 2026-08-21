@@ -175,3 +175,35 @@ test('desktop app still has no workers.dev default endpoint', () => {
   assert.doesNotMatch(html, /dreambot333\.workers\.dev/);
   assert.match(html, /placeholder="https:\/\/eidovara-api\.example\.workers\.dev"/);
 });
+
+test('eidovara.org is the official Cloudflare Pages hostname for the same docs/ IA', () => {
+  assert.equal(fs.existsSync('docs/CNAME'), false, 'GitHub Pages CNAME would fight the live Cloudflare zone');
+  const redirects = read('docs/_redirects');
+  assert.match(redirects, /\/download\/windows\s+\/download\.html\s+302/);
+  assert.doesNotMatch(redirects, /Setup\.exe/);
+  assert.doesNotMatch(redirects, /v0\.18\.0/);
+  assert.doesNotMatch(redirects, /\/\* \/index\.html/);
+  const home = read('docs/index.html');
+  assert.match(home, /rel="canonical" href="https:\/\/eidovara\.org\/"/);
+  assert.doesNotMatch(home, /\/download\/windows/);
+  assert.doesNotMatch(home, /Ask Soul/);
+  assert.match(read('docs/404.html'), /<base href="https:\/\/eidovara\.org\/">/);
+  assert.match(read('docs/robots.txt'), /https:\/\/eidovara\.org\/sitemap\.xml/);
+  assert.match(read('docs/sitemap.xml'), /https:\/\/eidovara\.org\/download\.html/);
+  assert.match(read('docs/knowledge.js'), /const SITE = 'https:\/\/eidovara\.org\/'/);
+  assert.match(read('docs/_headers'), /script-src 'self'/);
+  assert.match(read('LIVE.md'), /Cloudflare Pages/);
+  assert.match(read('LIVE.md'), /eidovara\.org/);
+  assert.match(read('LIVE.md'), /npx wrangler pages deploy docs --project-name=eidovara/);
+  assert.match(read('LIVE.md'), /projectsoulbytmb\.github\.io\/project---soul/);
+  assert.match(read('LIVE.md'), /Do not add `docs\/CNAME`/);
+  assert.match(read('docs/PAYMENTS_AND_SITE.md'), /npx wrangler pages deploy docs --project-name=eidovara/);
+  assert.match(read('docs/PAYMENTS_AND_SITE.md'), /Do not add `docs\/CNAME`/);
+  assert.match(read('docs/status.html'), /projectsoulbytmb\.github\.io\/project---soul/);
+  assert.match(read('docs/status.html'), /eidovara\.org/);
+  assert.doesNotMatch(read('docs/status.html'), /href="[^"]+\.exe"/);
+  assert.match(read('server/wrangler.toml'), /WEBSITE_URL = "https:\/\/eidovara\.org\/"/);
+  assert.doesNotMatch(read('docs/knowledge.js'), /dreambot333\.workers\.dev/);
+  assert.match(read('.github/workflows/pages.yml'), /branches: \[main\]/);
+  assert.match(read('.github/workflows/dependency-review.yml'), /fail-on-severity: moderate/);
+});

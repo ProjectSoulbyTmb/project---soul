@@ -8,22 +8,22 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Public status for GitHub Pages and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
+  <meta name="description" content="Public status for eidovara.org (Cloudflare Pages) and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
   <meta property="og:title" content="Status · Eidovara">
-  <meta property="og:description" content="Public status for GitHub Pages and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
+  <meta property="og:description" content="Public status for eidovara.org (Cloudflare Pages) and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/status.html">
-  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
-  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/status.html">
+  <meta property="og:url" content="https://eidovara.org/status.html">
+  <meta property="og:image" content="https://eidovara.org/eidovara-icon.png">
+  <link rel="canonical" href="https://eidovara.org/status.html">
   <title>Status · Eidovara</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="site.css">
   <link rel="stylesheet" href="brand.css">
   <link rel="icon" type="image/png" href="eidovara-icon.png">
 </head>
-<body data-page="status">
+<body class="site" data-page="status">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header">
+  <header class="site-header site-chrome">
     <div class="site-header-inner">
       <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
@@ -49,12 +49,12 @@
       </nav>
     </div>
   </header>
-  <main id="main">
+  <main id="main" class="site-main">
     <p class="eyebrow">Public surfaces</p>
     <h1 class="section-title">Pages and Releases first. Worker only if you paste one.</h1>
-    <p class="lead">This GitHub Pages site does not compile a Worker host. Default public surfaces are the website and GitHub Releases. If no HTTPS service base is saved, this page fails closed and sends no request.</p>
-    <div class="status-panel">
-      <p class="status-default">Not configured. GitHub Pages publishes this site. Windows downloads come from GitHub Releases. Paste an HTTPS base only if you operate a Worker — otherwise no request is sent.</p>
+    <p class="lead">Official hostname is <a href="https://eidovara.org/">eidovara.org</a> (Cloudflare Pages project <code>eidovara</code> from the same <code>docs/</code>). GitHub Pages remains a mirror. No Worker host is compiled in. If no HTTPS service base is saved, this page fails closed and sends no request.</p>
+    <div class="status-panel panel">
+      <p class="status-default">Not configured. Cloudflare Pages publishes eidovara.org. Windows downloads come from GitHub Releases. Paste an HTTPS base only if you operate a Worker — otherwise no request is sent.</p>
       <form id="statusForm">
         <label for="statusBase">Optional service base (HTTPS)</label>
         <input id="statusBase" name="base" type="url" maxlength="200" autocomplete="off" spellcheck="false" placeholder="https://eidovara-api.example.workers.dev">
@@ -69,11 +69,11 @@
     </div>
     <div class="trust-links">
       <a href="download.html"><strong>Official Windows installer</strong><span>Eidovara-0.18.2-Windows-x64-Setup.exe after the 18+ gate (about 101.3 MiB, SHA-256 on Download) →</span></a>
-      <a href="https://projectsoulbytmb.github.io/project---soul/"><strong>GitHub Pages</strong><span>This website →</span></a>
+      <a href="https://projectsoulbytmb.github.io/project---soul/"><strong>GitHub Pages</strong><span>Same docs/ from main →</span></a>
       <a href="assist.html"><strong>Website helper</strong><span>Knowledge pack, optional /v1/assist →</span></a>
     </div>
   </main>
-  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
+  <footer class="site-footer site-end"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
   <script src="site.js" defer></script>
   <script type="module" src="assist.js"></script>
 </body>
