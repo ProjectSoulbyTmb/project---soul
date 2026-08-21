@@ -27,7 +27,15 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
 | Website | Working | GitHub Pages from `docs/` at `https://projectsoulbytmb.github.io/project---soul/` with Home, Product, Download, Assist, FAQ, Status, Legal, 404, robots/sitemap, and Ask Eidovara (client knowledge pack; optional pasted `/v1/assist`). Get Eidovara: Releases + unsigned Stable Alpha + 18+ + build-from-source. |
 | Public Windows download | Working when a Release exists | `releases/latest` hosts `Eidovara-*-Windows-x64-Setup.exe` for v0.18.0; unsigned; tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. |
-| Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+; website assist is paste-only; not required to run the app; not hard-coded. Neural TTS/VRM/OBS/live payments stay documented only. |
+| Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+; website assist is paste-only; not required to run the app; not hard-coded. Redeploy with `npx wrangler deploy` after merge so the live Worker does not drift. Neural TTS/VRM/OBS/live payments stay documented only. |
+
+## Owner clicks git cannot finish
+
+| Problem | Solution path |
+| --- | --- |
+| Dependency review CI fails (“Dependency graph” off) | Settings → Code security → enable Dependency graph. Keep `.github/workflows/dependency-review.yml`. |
+| Live GitHub Pages still shows the old `main` homepage | Merge this PR (`cursor/engine-product-surface-c180`, #10) to `main`. `pages.yml` already deploys `docs/` from `main`. |
+| Deployed Worker lags this branch | From `server/`, `npx wrangler deploy` after login/token. Never commit the token. |
 
 ## Not yet production-complete
 
