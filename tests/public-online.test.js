@@ -46,7 +46,7 @@ test('operator runbook covers Pages merge, Dependency graph, wrangler, custom do
   assert.match(runbook, /Live payments/);
   assert.match(runbook, /Authenticode/);
   assert.match(runbook, /consciousness/i);
-  assert.doesNotMatch(runbook, /dreambot333\.workers\.dev is compiled|hard-code `dreambot333/);
+  assert.match(runbook, /Do not hard-code `dreambot333\.workers\.dev`/);
   assert.match(read('SECURITY.md'), /Settings → Code security/);
   assert.match(read('SECURITY.md'), /Dependency graph/);
   assert.match(read('docs/GITHUB_RELEASES.md'), /Authenticode-unsigned/);
