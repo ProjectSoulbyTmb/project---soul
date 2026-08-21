@@ -1,4 +1,4 @@
-export const CURRENT_SCHEMA_VERSION = 16;
+export const CURRENT_SCHEMA_VERSION = 17;
 
 export function defaultProfile(profileId = 'default') {
   const now = new Date().toISOString();
@@ -27,6 +27,7 @@ export function defaultProfile(profileId = 'default') {
     assistant: { autonomy: 'balanced', initiativeEnabled: true, reflectionEnabled: true, identityDescription: 'persistent simulated continuity', ethicalFramework: ['lawfulness', 'human safety', 'consent', 'privacy', 'honesty', 'fairness', 'user autonomy'], preferences: { responseLength: 'balanced', tone: 'natural', focusMode: 'general', accessibility: '' }, capabilities: { webResearch: 'ask', appLaunch: 'confirm', mediaPlayback: 'confirm', memoryLearning: 'enabled' } },
     policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false, boundaries: [], revokedAt: null, consentScope: null, lawfulUseRequired: true, localSafetyReports: [] },
     setup: { completed: false, completedAt: null, categories: [], customNeeds: '', stream: { enabled: false, obsWebSocketUrl: 'ws://127.0.0.1:4455', goals: '' } },
+    entertainment: { favorites: [], history: [], taste: {} },
     memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
     activeConversationId: 'main',
     audit: [{ at: now, type: 'profile.created', details: { profileId } }]
@@ -43,7 +44,8 @@ export function migrateProfile(input, profileId = 'default') {
     relationship: { ...base.relationship, ...(input.relationship || {}) },
     assistant: { ...base.assistant, ...(input.assistant || {}), preferences: { ...base.assistant.preferences, ...(input.assistant?.preferences || {}) }, capabilities: { ...base.assistant.capabilities, ...(input.assistant?.capabilities || {}) } },
     policy: { ...base.policy, ...(input.policy || {}) },
-    setup: { ...base.setup, ...(input.setup || {}), stream: { ...base.setup.stream, ...(input.setup?.stream || {}) } }
+    setup: { ...base.setup, ...(input.setup || {}), stream: { ...base.setup.stream, ...(input.setup?.stream || {}) } },
+    entertainment: { ...base.entertainment, ...(input.entertainment || {}) }
   };
   if (!Array.isArray(merged.memories)) merged.memories = [];
   if (!Array.isArray(merged.feedback)) merged.feedback = [];
@@ -58,6 +60,9 @@ export function migrateProfile(input, profileId = 'default') {
   if (!Array.isArray(merged.policy.boundaries)) merged.policy.boundaries = [];
   if (!Array.isArray(merged.policy.localSafetyReports)) merged.policy.localSafetyReports = [];
   if (!Array.isArray(merged.setup.categories)) merged.setup.categories = [];
+  if (!Array.isArray(merged.entertainment.favorites)) merged.entertainment.favorites = [];
+  if (!Array.isArray(merged.entertainment.history)) merged.entertainment.history = [];
+  if (!merged.entertainment.taste || typeof merged.entertainment.taste !== 'object' || Array.isArray(merged.entertainment.taste)) merged.entertainment.taste = {};
   if (!Array.isArray(merged.relationship.auditTrail)) merged.relationship.auditTrail = [];
   if (!['user-led', 'balanced', 'proactive'].includes(merged.assistant.autonomy)) merged.assistant.autonomy = 'balanced';
   if (!Array.isArray(merged.assistant.ethicalFramework)) merged.assistant.ethicalFramework = [...base.assistant.ethicalFramework];

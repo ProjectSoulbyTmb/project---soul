@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https:; media-src https:; connect-src 'none'; object-src 'none'" />
-  <title>Eidovara v0.17.1</title>
+  <title>Eidovara v0.17.2</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="internet.css" />
 </head>
@@ -13,13 +13,14 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand-row">
         <div class="soul-mark" aria-hidden="true"><span></span></div>
-        <div><strong>Eidovara</strong><small>v0.17.1 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
+        <div><strong>Eidovara</strong><small>v0.17.2 · Soul Consciousness Studios · created and owned by Tyler Michael Bosworth</small></div>
       </div>
       <button class="new-chat" id="newChatBtn">＋ New conversation</button>
       <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
       <div class="sidebar-footer">
         <button class="nav-btn" data-view="dashboard">Dashboard</button>
         <button class="nav-btn" data-view="apps">Apps & Gaming</button>
+        <button class="nav-btn" data-view="entertainment">Entertainment</button>
         <button class="nav-btn" data-view="memory">Memory</button>
         <button class="nav-btn" data-view="identity">Identity</button>
         <button class="nav-btn" data-view="settings">Settings</button>
@@ -65,6 +66,8 @@
         <p class="settings-status" id="appsStatus"></p>
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
+
+      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2>Entertainment</h2><p>Your local taste profile, media shortcuts, and Soul-powered discovery in one place.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why.">Mood mix</button><button data-quick="Find something similar to my favorite music.">From favorites</button><button data-quick="Find a video worth watching about one of my interests.">Watch something</button><button data-quick="Help me create a focused gaming soundtrack.">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack.">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media.">Surprise me</button></div><div class="identity-grid"><div class="card"><h3>Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3>Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3>Platform connections</h3><p>Spotify and YouTube open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, or imply affiliation.</p></div></section>
 
       <section class="view panel-view" id="memoryView">
         <div class="panel-head"><div><h2>Memory</h2><p>Durable facts and preferences Soul can carry across conversations.</p></div></div>

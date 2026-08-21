@@ -6,7 +6,7 @@ Updated: 2026-08-20
 
 Soul remains the adaptive assistant personality inside Eidovara. Its protected identity, local continuity, reviewable memory, configurable tone/focus/autonomy, consent boundaries, and relationship model remain separate from the Eidovara product name and Soul Consciousness Studios publishing identity. User-authored memories and setup text are treated as untrusted data, not system authority.
 
-## Working in v0.17.1
+## Working in v0.17.2
 
 | Area | Status | Evidence |
 | --- | --- | --- |
@@ -14,7 +14,7 @@ Soul remains the adaptive assistant personality inside Eidovara. Its protected i
 | Memory and restart continuity | Working | Atomic JSON persistence, migrations, corrupt-state recovery, backup/restore, restart tests. |
 | Safety, consent, and lawful-use boundaries | Working within documented scope | Illegal facilitation block/report locally; adult mode gates and revocable consent; no automatic external reporting claim. |
 | Internet research and media discovery | Working | Explicit-request detection, public sources, optional keyed search, citations, image/audio/video result handling. |
-| Media player and DJ helpers | Working | Audio/video dock, queue controls, favorites, similar-search prompts, Spotify/YouTube external search links. |
+| Media player and DJ helpers | Working | Audio/video dock, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube external search links. |
 | Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf and confirmation-based launching; no process injection. |
 | Companion and accessibility | Working | Hideable 2D/3D-styled avatar, motion controls, installed Windows voices, optional narration and detected dictation. |
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |
@@ -39,4 +39,4 @@ Soul remains the adaptive assistant personality inside Eidovara. Its protected i
 
 ## Release decision
 
-v0.17.1 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, or Authenticode-signed binary.
+v0.17.2 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, or Authenticode-signed binary.

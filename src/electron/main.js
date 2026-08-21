@@ -43,7 +43,7 @@ function createWindow() {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
     engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default' }), provider: makeProvider(), internetOptions: { searchApiKey: getSearchApiKey() } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.1', backgroundColor: '#0b1020', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.17.2', backgroundColor: '#0b1020', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
@@ -65,6 +65,8 @@ app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) creat
 
 ipcMain.handle('soul:send', (_e, m) => engine.respond(m));
 ipcMain.handle('soul:snapshot', () => engine.snapshot());
+ipcMain.handle('soul:recordMedia', (_e, input) => engine.recordMedia(input));
+ipcMain.handle('soul:entertainment', () => engine.entertainment());
 ipcMain.handle('soul:reset', () => engine.reset());
 ipcMain.handle('soul:remember', (_e, c) => engine.remember(String(c || '').slice(0, 1000)));
 ipcMain.handle('soul:forget', (_e, x) => engine.forget(String(x || '').slice(0, 1000)));

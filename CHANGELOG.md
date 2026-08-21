@@ -1,5 +1,11 @@
 # Eidovara
 
+## v0.17.2
+
+- Added a persistent entertainment taste engine for plays, skips, completions, favorites, and better similar-media prompts.
+- Added a dedicated Entertainment workspace for mood mixes, favorites, recent media, and lawful platform handoffs.
+- Deepened Soul's original emotional-attunement and wisdom framework while explicitly preventing dependency, false emotion claims, or third-party character imitation.
+
 ## v0.17.1
 
 - Refined the consumer presentation around working capabilities and removed speculative product claims.

@@ -8,6 +8,7 @@ import { uid } from './schema.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { buildSystemContext } from '../providers/context.js';
 import { researchInternet } from '../providers/internet.js';
+import { entertainmentSummary, recordMediaEvent } from './entertainment.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
@@ -25,6 +26,8 @@ export class SoulEngine {
   createBackup() { return this.store.createBackup(this.state); }
   listBackups() { return this.store.listBackups(); }
   restoreBackup(name) { this.state = this.store.restoreBackup(name); return this.snapshot(); }
+  recordMedia(input) { const event = recordMediaEvent(this.state, input); this.state.audit.push({ at: event.at, type: `media.${event.event}`, details: { type: event.type, title: event.title } }); this.store.save(this.state); return entertainmentSummary(this.state); }
+  entertainment() { return entertainmentSummary(this.state); }
   configureSetup(input = {}) {
     const allowed = ['gaming-editing', 'stream-helper', 'studying', 'personal', 'creative', 'work-productivity', 'accessibility'];
     const categories = Array.isArray(input.categories) ? [...new Set(input.categories.filter(x => allowed.includes(x)))] : [];
