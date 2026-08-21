@@ -173,7 +173,8 @@ test('desktop app still has no workers.dev default endpoint', () => {
   assert.doesNotMatch(read('src/renderer/renderer.js'), /dreambot333\.workers\.dev/);
   const html = read('src/renderer/index.html');
   assert.doesNotMatch(html, /dreambot333\.workers\.dev/);
-  assert.match(html, /placeholder="https:\/\/eidovara-api\.example\.workers\.dev"/);
+  assert.match(html, /placeholder="https:\/\/api\.eidovara\.org"/);
+  assert.doesNotMatch(html, /workers\.dev/);
 });
 
 test('eidovara.org is the official Cloudflare Pages hostname for the same docs/ IA', () => {

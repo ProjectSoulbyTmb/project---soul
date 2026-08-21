@@ -40,7 +40,15 @@
       companionTitle: 'Soul companion', companionLead: 'Always-on session kernel on this PC. Software, not a person. Assist is not Soul.',
       companionEmpty: 'Ask from this dock. Local kernel answers on this PC. Assist is not Soul.',
       companionNote: 'Local kernel · Assist is not Soul · no live payments · voices from Windows',
-      companionAskLabel: 'Ask Soul', presenceCaption: 'Decorative presence — not a conscious figure.'
+      companionAskLabel: 'Ask Soul', presenceCaption: 'Decorative presence — not a conscious figure.',
+      kernelLive: 'Workspace kernel live on this PC', soulSoftware: 'Software self-model, not a mind.', soulSetupOff: 'Optional Soul setup is off. This kernel is software, not a configured Soul.',
+      soulOnlineOff: 'Online helper off. Local kernel stays the source of truth.', soulOnlineNeedUrl: 'Opt-in is on, but no service URL is saved. Paste https://api.eidovara.org or your override in Settings.',
+      soulOnlineDisconnected: 'Service unreachable. Offline kernel continues locally. Assist is not Soul.', soulOnlineOn: 'Service attached. Assist stays off unless you tick the composer box. Conversations are not sent.',
+      companionHere: 'What you can do here', whatHere: 'What can you do here?', companionEmptyHint: 'Type a next step, or ask “what can you do here?” Local kernel only. Assist is not Soul.',
+      serviceSettings: 'Service settings', softwareUpdates: 'Software updates', ageNotice: 'Age 18+', openSetup: 'Optional Soul setup',
+      modelIssue: 'Model connection issue:', offlineContinues: 'Offline kernel continues locally.', researchIssue: 'Internet search issue:',
+      assistNotSoul: 'Assist from your pasted service (not Soul)', assistOptInOff: 'Assist opt-in is off. Local kernel stays the source of truth.',
+      assistNoService: 'No service URL saved. Paste an HTTPS base in Settings.', assistUnavailable: 'Assist unavailable. Local kernel continues.', assistError: 'Worker helper:'
     },
     es: {
       newConversation: '＋ Nueva conversación', dashboard: 'Panel', apps: 'Aplicaciones y juegos', entertainment: 'Entretenimiento', memory: 'Memoria', identity: 'Identidad', settings: 'Configuración', language: 'Idioma de la interfaz', save: 'Guardar configuración',
@@ -82,7 +90,15 @@
       companionTitle: 'Compañero Soul', companionLead: 'Núcleo de sesión siempre disponible en este PC. Software, no una persona. Assist no es Soul.',
       companionEmpty: 'Pregunta desde este panel. El núcleo local responde en este PC. Assist no es Soul.',
       companionNote: 'Núcleo local · Assist no es Soul · sin pagos en vivo · voces de Windows',
-      companionAskLabel: 'Preguntar a Soul', presenceCaption: 'Presencia decorativa: no es una figura consciente.'
+      companionAskLabel: 'Preguntar a Soul', presenceCaption: 'Presencia decorativa: no es una figura consciente.',
+      kernelLive: 'Núcleo del espacio en vivo en este PC', soulSoftware: 'Automodelo de software, no una mente.', soulSetupOff: 'Soul opcional está apagado. Este núcleo es software, no un Soul configurado.',
+      soulOnlineOff: 'Ayuda en línea apagada. El núcleo local sigue siendo la fuente de verdad.', soulOnlineNeedUrl: 'El opt-in está activo, pero no hay URL de servicio. Pega https://api.eidovara.org u otro en Configuración.',
+      soulOnlineDisconnected: 'Servicio inalcanzable. El núcleo local continúa. Assist no es Soul.', soulOnlineOn: 'Servicio conectado. Assist sigue apagado salvo que marques la casilla. No se envían conversaciones.',
+      companionHere: 'Qué puedes hacer aquí', whatHere: '¿Qué puedes hacer aquí?', companionEmptyHint: 'Escribe un siguiente paso, o pregunta “qué puedes hacer aquí”. Solo núcleo local. Assist no es Soul.',
+      serviceSettings: 'Ajustes de servicio', softwareUpdates: 'Actualizaciones', ageNotice: 'Edad 18+', openSetup: 'Configuración opcional de Soul',
+      modelIssue: 'Problema de conexión del modelo:', offlineContinues: 'El núcleo local continúa.', researchIssue: 'Problema de búsqueda en internet:',
+      assistNotSoul: 'Assist de tu servicio (no es Soul)', assistOptInOff: 'El opt-in de Assist está apagado. El núcleo local sigue siendo la fuente de verdad.',
+      assistNoService: 'No hay URL de servicio. Pega una base HTTPS en Configuración.', assistUnavailable: 'Assist no disponible. El núcleo local continúa.', assistError: 'Ayuda Worker:'
     },
     fr: {
       newConversation: '＋ Nouvelle conversation', dashboard: 'Tableau de bord', apps: 'Applications et jeux', entertainment: 'Divertissement', memory: 'Mémoire', identity: 'Identité', settings: 'Paramètres', language: 'Langue de l’interface', save: 'Enregistrer',
@@ -124,7 +140,15 @@
       companionTitle: 'Compagnon Soul', companionLead: 'Noyau de session toujours disponible sur ce PC. Logiciel, pas une personne. Assist n’est pas Soul.',
       companionEmpty: 'Demandez depuis ce panneau. Le noyau local répond sur ce PC. Assist n’est pas Soul.',
       companionNote: 'Noyau local · Assist n’est pas Soul · pas de paiements live · voix Windows',
-      companionAskLabel: 'Demander à Soul', presenceCaption: 'Présence décorative — pas une figure consciente.'
+      companionAskLabel: 'Demander à Soul', presenceCaption: 'Présence décorative — pas une figure consciente.',
+      kernelLive: 'Noyau d’espace actif sur ce PC', soulSoftware: 'Auto-modèle logiciel, pas un esprit.', soulSetupOff: 'Soul facultatif est désactivé. Ce noyau est un logiciel, pas un Soul configuré.',
+      soulOnlineOff: 'Aide en ligne désactivée. Le noyau local reste la source de vérité.', soulOnlineNeedUrl: 'L’opt-in est actif, mais aucune URL de service n’est enregistrée. Collez https://api.eidovara.org ou un autre dans Paramètres.',
+      soulOnlineDisconnected: 'Service injoignable. Le noyau local continue. Assist n’est pas Soul.', soulOnlineOn: 'Service attaché. Assist reste off sauf case cochée. Les conversations ne sont pas envoyées.',
+      companionHere: 'Ce que vous pouvez faire ici', whatHere: 'Que pouvez-vous faire ici ?', companionEmptyHint: 'Saisissez une prochaine étape, ou demandez « que pouvez-vous faire ici ? » Noyau local seulement. Assist n’est pas Soul.',
+      serviceSettings: 'Réglages service', softwareUpdates: 'Mises à jour', ageNotice: 'Âge 18+', openSetup: 'Configuration Soul facultative',
+      modelIssue: 'Problème de connexion au modèle :', offlineContinues: 'Le noyau hors ligne continue localement.', researchIssue: 'Problème de recherche internet :',
+      assistNotSoul: 'Assist de votre service collé (pas Soul)', assistOptInOff: 'L’opt-in Assist est désactivé. Le noyau local reste la source de vérité.',
+      assistNoService: 'Aucune URL de service. Collez une base HTTPS dans Paramètres.', assistUnavailable: 'Assist indisponible. Le noyau local continue.', assistError: 'Aide Worker :'
     },
     de: {
       newConversation: '＋ Neue Unterhaltung', dashboard: 'Übersicht', apps: 'Apps und Gaming', entertainment: 'Unterhaltung', memory: 'Erinnerungen', identity: 'Identität', settings: 'Einstellungen', language: 'Oberflächensprache', save: 'Einstellungen speichern',
@@ -166,7 +190,15 @@
       companionTitle: 'Soul-Begleiter', companionLead: 'Sitzungs-Kernel immer auf diesem PC. Software, keine Person. Assist ist nicht Soul.',
       companionEmpty: 'Fragen Sie über dieses Dock. Der lokale Kernel antwortet auf diesem PC. Assist ist nicht Soul.',
       companionNote: 'Lokaler Kernel · Assist ist nicht Soul · keine Live-Zahlungen · Windows-Stimmen',
-      companionAskLabel: 'Soul fragen', presenceCaption: 'Dekorative Präsenz — keine bewusste Figur.'
+      companionAskLabel: 'Soul fragen', presenceCaption: 'Dekorative Präsenz — keine bewusste Figur.',
+      kernelLive: 'Arbeitsbereichs-Kernel auf diesem PC aktiv', soulSoftware: 'Software-Selbstmodell, kein Geist.', soulSetupOff: 'Optionales Soul-Setup ist aus. Dieser Kernel ist Software, kein konfiguriertes Soul.',
+      soulOnlineOff: 'Online-Hilfe aus. Der lokale Kernel bleibt die Quelle der Wahrheit.', soulOnlineNeedUrl: 'Opt-in ist an, aber keine Dienst-URL gespeichert. Fügen Sie https://api.eidovara.org oder Ihren Override in Einstellungen ein.',
+      soulOnlineDisconnected: 'Dienst nicht erreichbar. Lokaler Kernel läuft weiter. Assist ist nicht Soul.', soulOnlineOn: 'Dienst verbunden. Assist bleibt aus, bis Sie das Kästchen setzen. Gespräche werden nicht gesendet.',
+      companionHere: 'Was Sie hier tun können', whatHere: 'Was können Sie hier tun?', companionEmptyHint: 'Tippen Sie einen nächsten Schritt oder fragen Sie „was können Sie hier tun?“. Nur lokaler Kernel. Assist ist nicht Soul.',
+      serviceSettings: 'Diensteinstellungen', softwareUpdates: 'Softwareupdates', ageNotice: 'Alter 18+', openSetup: 'Optionales Soul-Setup',
+      modelIssue: 'Modellverbindungsproblem:', offlineContinues: 'Der Offline-Kernel läuft lokal weiter.', researchIssue: 'Internetsuche-Problem:',
+      assistNotSoul: 'Assist von Ihrem eingefügten Dienst (nicht Soul)', assistOptInOff: 'Assist-Opt-in ist aus. Der lokale Kernel bleibt die Quelle der Wahrheit.',
+      assistNoService: 'Keine Dienst-URL. Fügen Sie eine HTTPS-Basis in Einstellungen ein.', assistUnavailable: 'Assist nicht verfügbar. Der lokale Kernel läuft weiter.', assistError: 'Worker-Hilfe:'
     }
   };
   let locale = 'en';

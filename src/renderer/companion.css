@@ -143,6 +143,34 @@
 .companion-log .companion-turn.assistant {
   background: color-mix(in srgb, var(--accent) 12%, var(--fill));
 }
+.companion-follow-label {
+  margin: 0 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.kernel-chips,
+.companion-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.kernel-chip,
+.kernel-chips button,
+.companion-chips button {
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: 6px 10px;
+  background: var(--fill);
+  color: var(--text);
+  font-size: 12px;
+}
+.kernel-chip:hover,
+.kernel-chips button:hover {
+  background: color-mix(in srgb, var(--accent) 18%, var(--fill));
+}
+.message .kernel-chips { margin: 8px 0 0; }
 .companion-error {
   margin: 0;
   font-size: 12px;
