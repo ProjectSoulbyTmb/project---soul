@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Gaming/productivity overlays: floating Eidovara windows for Soul chat, HTTPS browsing, and Discord’s own site in a sandboxed guest session (not an official Discord overlay, not game-process injection). Companion and Ctrl+Shift+O / Ctrl+K can open them. Assist stays opt-in and does not receive Discord tokens or guest DOM. Workspace CSP is unchanged (`media-src https: eidovara-media:`, never `'self'`).
+- Gaming/productivity workspace overlays: floating Eidovara windows for Soul chat, HTTPS browsing, and Discord’s own site in a sandboxed guest session (`persist:eidovara-guest` / `persist:eidovara-guest-discord`). Not an official Discord overlay, not game-process injection, no OS-wide hotkeys. Play desk lists confirm-launched apps plus this process’s CPU/memory. Companion chips include `open-chat-overlay`, `open-browse-overlay`, `open-discord-overlay`, and `set-always-on-top`. Ctrl+Shift+O / Ctrl+K open them. Adult Mode closes guest overlays. Assist stays opt-in and does not receive Discord tokens or guest DOM. Workspace CSP is unchanged (`media-src https: eidovara-media:`, never `'self'`).
 
 ## v0.19.1
 

@@ -11,5 +11,11 @@ contextBridge.exposeInMainWorld('soul', {
   adminLogin: password => ipcRenderer.invoke('soul:adminLogin', password), adminConfigure: password => ipcRenderer.invoke('soul:adminConfigure', password), adminStatus: () => ipcRenderer.invoke('soul:adminStatus'), adminSave: input => ipcRenderer.invoke('soul:adminSave', input), adminLogout: () => ipcRenderer.invoke('soul:adminLogout'), checkService: () => ipcRenderer.invoke('soul:checkService'), connectService: input => ipcRenderer.invoke('soul:connectService', input),
   evalCalc: query => ipcRenderer.invoke('soul:evalCalc', query),
   openOverlay: input => ipcRenderer.invoke('soul:openOverlay', input || {}),
-  overlayStatus: () => ipcRenderer.invoke('soul:overlayStatus')
+  closeOverlay: input => ipcRenderer.invoke('soul:closeOverlay', input || {}),
+  overlayNavigate: url => ipcRenderer.invoke('soul:overlayNavigate', url),
+  overlayChrome: input => ipcRenderer.invoke('soul:overlayChrome', input || {}),
+  overlayState: () => ipcRenderer.invoke('soul:overlayState'),
+  overlayStatus: () => ipcRenderer.invoke('soul:overlayState'),
+  overlayOpenExternal: url => ipcRenderer.invoke('soul:overlayOpenExternal', url),
+  processMetrics: () => ipcRenderer.invoke('soul:processMetrics')
 });

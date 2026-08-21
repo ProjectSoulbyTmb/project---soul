@@ -140,7 +140,8 @@ export const KERNEL_ACTION_TYPES = Object.freeze([
   'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
   'open-diagnostics', 'pick-local-media', 'discover-apps',
   'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
-  'open-overlay', 'open-external'
+  'open-overlay', 'open-chat-overlay', 'open-browse-overlay', 'open-discord-overlay',
+  'set-always-on-top', 'open-now-playing', 'open-external'
 ]);
 
 function action(type, extra = {}) {
@@ -255,25 +256,37 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
         soulStep(overlay)
       ];
     case 'overlay-chat':
-      return [action('open-overlay', { kind: 'chat', label: 'Soul chat overlay', auto: true })];
+      return [
+        action('open-chat-overlay', { label: 'Soul chat overlay', auto: true }),
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })
+      ];
     case 'overlay-browse':
-      return [action('open-overlay', { kind: 'browse', label: 'Browse overlay', auto: true })];
+      return [
+        action('open-browse-overlay', { label: 'Browse overlay', auto: true, url: '' }),
+        action('open-overlay', { kind: 'browse', label: 'Browse overlay' })
+      ];
     case 'overlay-discord':
-      return [action('open-overlay', { kind: 'discord', label: 'Discord guest overlay', auto: true })];
+      return [
+        action('open-discord-overlay', { label: 'Discord guest overlay', auto: true }),
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })
+      ];
     case 'overlays':
       return [
-        action('open-view', { view: 'apps', label: 'Apps & Gaming', auto: true }),
-        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
-        action('open-overlay', { kind: 'browse', label: 'Browse overlay' }),
-        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })
+        action('open-view', { view: 'apps', label: 'Play desk', auto: true }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
+        action('open-browse-overlay', { label: 'Browse overlay' }),
+        action('open-discord-overlay', { label: 'Discord guest overlay' }),
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })
       ];
     case 'gaming':
       return [
-        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
-        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
-        action('open-overlay', { kind: 'browse', label: 'Browse overlay' }),
+        action('open-view', { view: 'apps', label: 'Play desk' }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
+        action('open-browse-overlay', { label: 'Browse overlay' }),
+        action('open-discord-overlay', { label: 'Discord guest overlay' }),
         action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
         action('discover-apps', { label: 'Discover installed apps' }),
+        action('set-always-on-top', { on: true, label: 'Keep Eidovara on top' }),
         action('open-setup', { label: overlay.enabled ? 'Adjust roles' : 'Optional Soul setup' })
       ];
     case 'research':
@@ -295,18 +308,30 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
 export function suggestionsForView(view, overlay = {}) {
   const current = String(view || 'dashboard');
   switch (current) {
+    case 'dashboard':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Stay on Dashboard' }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
+        action('start-focus', { minutes: 25, label: 'Focus session' }),
+        action('open-now-playing', { label: 'Now playing' }),
+        soulStep(overlay)
+      ];
     case 'apps':
       return [
         action('discover-apps', { label: 'Discover installed apps' }),
+        action('open-discord-overlay', { label: 'Discord guest overlay' }),
+        action('open-browse-overlay', { label: 'Browse overlay' }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
         action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
-        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
+        action('set-always-on-top', { on: true, label: 'Keep Eidovara on top' }),
         action('open-view', { view: 'entertainment', label: 'Entertainment' }),
         action('open-view', { view: 'settings', label: 'Settings' })
       ];
     case 'entertainment':
       return [
         action('pick-local-media', { label: 'Open local media' }),
-        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('open-now-playing', { label: 'Now playing' }),
+        action('open-view', { view: 'apps', label: 'Play desk' }),
         action('open-view', { view: 'chat', label: 'Conversation' })
       ];
     case 'memory':
@@ -459,6 +484,7 @@ export function kernelPublicMeta(route) {
       panel: item.panel || undefined,
       minutes: item.minutes || undefined,
       kind: item.kind ? String(item.kind).slice(0, 20) : undefined,
+      on: item.on === true || item.on === false ? item.on : undefined,
       url: item.url ? String(item.url).slice(0, 500) : undefined,
       hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
       snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,

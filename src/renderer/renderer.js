@@ -90,6 +90,19 @@ function runKernelAction(action){
   else if(action.type==='open-palette'){ openPalette(); }
   else if(action.type==='open-cheatsheet'){ openShortcutSheet(); }
   else if(action.type==='open-overlay'){ openEidovaraOverlay(action.kind, action.url); }
+  else if(action.type==='open-chat-overlay'){ openEidovaraOverlay('chat'); }
+  else if(action.type==='open-browse-overlay'){ openEidovaraOverlay('browse', action.url); }
+  else if(action.type==='open-discord-overlay'){ openEidovaraOverlay('discord', action.url); }
+  else if(action.type==='set-always-on-top'){
+    const on=action.on!==false;
+    if($('#alwaysOnTopInput')) $('#alwaysOnTopInput').checked=on;
+    window.eidovaraChrome?.setAlwaysOnTop?.(on);
+  }
+  else if(action.type==='open-now-playing'){
+    setView('entertainment');
+    $('#mediaDock')?.classList.remove('hidden');
+    $('#mediaDock')?.scrollIntoView({block:'nearest'});
+  }
   else if(action.type==='open-external'&&action.url) openResearchLink(action.url);
 }
 window.eidovaraRunAction=runKernelAction;
@@ -217,7 +230,53 @@ function rendererCapabilities(){
     browser:{mediaSession:'mediaSession' in navigator,logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null}
   };
 }
+function renderPlayDesk(){
+  const list=$('#playRecents');
+  if(list){
+    list.textContent='';
+    const recents=(state?.kernel?.workspace?.recents||[]).filter(item=>item.kind==='app').slice(0,8);
+    if(!recents.length){
+      list.append(el('p','settings-help',t('playRecentsEmpty','Confirm-launch a linked app to see it here. Eidovara does not scrape other games.')));
+    }else{
+      recents.forEach(item=>{
+        const row=el('button','');
+        row.type='button';
+        row.textContent=item.title||item.id;
+        row.addEventListener('click',()=>{
+          const app=(settings?.apps||[]).find(a=>a.id===item.id);
+          if(app) window.soul.launchApplication(app.id).catch(err=>{$('#appsStatus').textContent=String(err?.message||err);});
+        });
+        list.append(row);
+      });
+    }
+  }
+  const recentsBox=$('#overlayRecents');
+  if(recentsBox){
+    recentsBox.textContent='';
+    const urls=(settings?.overlayRecents||[]).slice(0,8);
+    if(!urls.length) recentsBox.append(el('p','settings-help',t('overlayRecentsEmpty','HTTPS pages you open in the browse overlay appear here. Local only.')));
+    else urls.forEach(item=>{
+      const b=el('button','secondary');
+      b.type='button';
+      b.textContent=item.title||item.url;
+      b.addEventListener('click',()=>openEidovaraOverlay(item.kind||'browse', item.url));
+      recentsBox.append(b);
+    });
+  }
+  void refreshEidovaraMetrics();
+}
+async function refreshEidovaraMetrics(){
+  const node=$('#eidovaraMetrics');
+  if(!node || !window.soul?.processMetrics) return;
+  try{
+    const m=await window.soul.processMetrics();
+    node.textContent=`Eidovara process: ${Math.round(m.percentCPUUsage||0)}% CPU · ${m.rssMb||0} MB RSS. ${m.note||''}`;
+  }catch{
+    node.textContent=t('overlayMetricsOff','Process metrics unavailable in this session.');
+  }
+}
 function renderApps(){
+  renderPlayDesk();
   const grid=$('#appsGrid');grid.textContent='';const apps=settings?.apps||[];
   if(!apps.length){
     const empty=el('div','empty-state');
@@ -590,6 +649,7 @@ function bindOverlayButtons(){
   $$('[data-overlay]').forEach(b=>b.addEventListener('click',()=>openEidovaraOverlay(b.dataset.overlay, b.dataset.overlayUrl||'')));
   $('#overlayGoBtn')?.addEventListener('click',()=>openEidovaraOverlay('browse', $('#overlayUrlInput')?.value||''));
   $('#overlayUrlInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); openEidovaraOverlay('browse', e.currentTarget.value||''); } });
+  $('#refreshMetricsBtn')?.addEventListener('click',()=>refreshEidovaraMetrics());
 }
 const PALETTE_COMMANDS = [
   { id:'dashboard', title:'Dashboard', hint:'Home after 18+', run:()=>setView('dashboard') },
@@ -598,6 +658,9 @@ const PALETTE_COMMANDS = [
   { id:'overlay-chat', title:'Soul chat overlay', hint:'Floating local kernel — not Assist', run:()=>openEidovaraOverlay('chat') },
   { id:'overlay-browse', title:'Browse overlay', hint:'HTTPS guest window; workspace stays locked', run:()=>openEidovaraOverlay('browse') },
   { id:'overlay-discord', title:'Discord guest overlay', hint:'discord.com in a sandbox — not affiliated', run:()=>openEidovaraOverlay('discord') },
+  { id:'focus', title:'Focus timer', hint:'Quiet 25-minute block — no other-process control', run:()=>window.eidovaraLayers?.startFocus?.(25) },
+  { id:'scratch', title:'Scratchpad', hint:'Local capture on the Dashboard', run:()=>{ setView('dashboard'); $('#scratchpadInput')?.focus(); } },
+  { id:'now-playing', title:'Now playing', hint:'Local media dock — eidovara-media stays locked', run:()=>{ setView('entertainment'); $('#mediaDock')?.classList.remove('hidden'); $('#mediaDock')?.scrollIntoView({block:'nearest'}); } },
   { id:'entertainment', title:'Entertainment', hint:'Local media and official searches', run:()=>setView('entertainment') },
   { id:'memory', title:'Memory', hint:'Facts Soul can keep', run:()=>setView('memory') },
   { id:'identity', title:'Identity & consent', hint:'Adult Mode stays a triple gate', run:()=>setView('identity') },

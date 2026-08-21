@@ -6,9 +6,27 @@ export const OVERLAY_KINDS = Object.freeze(['chat', 'browse', 'discord']);
 export const DISCORD_HOME = 'https://discord.com/app';
 export const DISCORD_LOGIN = 'https://discord.com/login';
 export const GUEST_PARTITIONS = Object.freeze({
-  browse: 'persist:eidovara-guest-browse',
+  browse: 'persist:eidovara-guest',
   discord: 'persist:eidovara-guest-discord'
 });
+
+export function chromeUserAgent(chromeVersion) {
+  const version = String(chromeVersion || '').replace(/[^\d.]/g, '') || '120.0.0.0';
+  return `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${version} Safari/537.36`;
+}
+
+export function guestWebPreferences(kind) {
+  const id = normalizeOverlayKind(kind);
+  return {
+    partition: id && id !== 'chat' ? GUEST_PARTITIONS[id] : undefined,
+    sandbox: true,
+    nodeIntegration: false,
+    contextIsolation: true,
+    webSecurity: true,
+    allowRunningInsecureContent: false,
+    spellcheck: id === 'discord'
+  };
+}
 
 export function overlayWindowOptions(kind) {
   const id = normalizeOverlayKind(kind);
@@ -76,6 +94,12 @@ export function classifyGuestNavigation(raw) {
       return { ok: false, reason: 'invalid' };
     }
   }
+  if (parsed.protocol === 'about:') {
+    if (text === 'about:blank' || parsed.pathname === 'blank') {
+      return { ok: true, url: 'about:blank', hostname: '', blank: true };
+    }
+    return { ok: false, reason: 'about' };
+  }
   if (parsed.protocol === 'https:') {
     if (parsed.username || parsed.password) return { ok: false, reason: 'credentials' };
     if (isPrivateOrLocalHostname(parsed.hostname) || isBlockedResearchHost(parsed)) {
@@ -115,6 +139,7 @@ export function guestNavigateAllowed(kind, raw) {
   if (id === 'chat') return { ok: false, reason: 'local-only' };
   const nav = classifyGuestNavigation(raw);
   if (!nav.ok) return { ...nav, kind: id };
+  if (nav.blank) return { ok: true, kind: id, url: 'about:blank', hostname: '' };
   if (id === 'discord' && !isDiscordHostname(nav.hostname)) return { ok: false, reason: 'not-discord', kind: id };
   return { ok: true, kind: id, url: nav.url, hostname: nav.hostname };
 }

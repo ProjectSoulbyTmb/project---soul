@@ -5,7 +5,8 @@ contextBridge.exposeInMainWorld('overlay', {
   close: () => ipcRenderer.invoke('overlay:close'),
   toggleTop: () => ipcRenderer.invoke('overlay:toggleTop'),
   navigate: url => ipcRenderer.invoke('overlay:navigate', url),
-  openExternal: url => ipcRenderer.invoke('soul:openExternal', url),
+  history: dir => ipcRenderer.invoke('overlay:history', dir),
+  openExternal: url => ipcRenderer.invoke('soul:overlayOpenExternal', url),
   status: () => ipcRenderer.invoke('overlay:status'),
   onStatus: handler => {
     const listen = (_e, payload) => handler(payload);

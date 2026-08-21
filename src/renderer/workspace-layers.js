@@ -307,6 +307,12 @@
     if (type === 'confirm-launch-app' && action.appId && window.soul?.launchApplication) {
       try { await window.soul.launchApplication(action.appId); } catch (err) { alert(String(err?.message || err)); }
     }
+    if (typeof window.eidovaraRunAction === 'function' && [
+      'open-overlay', 'open-chat-overlay', 'open-browse-overlay', 'open-discord-overlay',
+      'set-always-on-top', 'open-now-playing'
+    ].includes(type)) {
+      window.eidovaraRunAction(action);
+    }
   }
 
   async function startFocus(minutes, label) {

@@ -14,20 +14,21 @@ import { composeOfflineReply } from '../src/providers/offline.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 
-test('overlay phrases classify and emit open-overlay kernel actions', () => {
+test('overlay phrases classify and emit overlay kernel actions', () => {
   assert.equal(classifyWorkspaceIntent('Open the Discord overlay'), 'overlay-discord');
   assert.equal(classifyWorkspaceIntent('Open the chat overlay'), 'overlay-chat');
   assert.equal(classifyWorkspaceIntent('Open the browse overlay'), 'overlay-browse');
   assert.equal(classifyWorkspaceIntent('Show overlays'), 'overlays');
   const overlay = soulOverlay(defaultProfile());
   const discord = actionsForIntent('overlay-discord', overlay);
-  assert.equal(discord[0].type, 'open-overlay');
-  assert.equal(discord[0].kind, 'discord');
+  assert.equal(discord[0].type, 'open-discord-overlay');
+  assert.ok(discord.some(item => item.type === 'open-overlay' && item.kind === 'discord'));
   assert.equal(discord[0].auto, true);
   assert.ok(KERNEL_ACTION_TYPES.includes('open-overlay'));
+  assert.ok(KERNEL_ACTION_TYPES.includes('open-discord-overlay'));
   const routed = routeKernel('Open the Discord overlay', defaultProfile());
   assert.equal(routed.intent, 'overlay-discord');
-  assert.equal(routed.actions[0].kind, 'discord');
+  assert.equal(routed.actions[0].type, 'open-discord-overlay');
 });
 
 test('guest overlay policy blocks private, loopback, http, file, and non-Discord hosts', () => {
@@ -60,7 +61,7 @@ test('guest overlay policy blocks private, loopback, http, file, and non-Discord
   assert.equal(chat.transparent, true);
   assert.equal(chat.nodeIntegration, false);
   assert.equal(chat.sandbox, true);
-  assert.equal(overlayWindowOptions('browse').partition, 'persist:eidovara-guest-browse');
+  assert.equal(overlayWindowOptions('browse').partition, 'persist:eidovara-guest');
   assert.equal(overlayWindowOptions('discord').partition, 'persist:eidovara-guest-discord');
 });
 
@@ -73,9 +74,12 @@ test('overlay HTML keeps media-src off self and the workspace renderer stays loc
   assert.match(read('src/renderer/index.html'), /media-src https: eidovara-media:/);
   assert.match(read('src/renderer/index.html'), /id="overlayPanel"/);
   assert.match(read('src/renderer/renderer.js'), /action\.type==='open-overlay'/);
+  assert.match(read('src/renderer/renderer.js'), /action\.type==='open-discord-overlay'/);
   assert.match(read('src/electron/preload.cjs'), /openOverlay:/);
   const main = read('src/electron/main.js');
   assert.match(main, /createGuestOverlayManager/);
+  assert.match(main, /attachOverlayWindows/);
+  assert.doesNotMatch(main, /globalShortcut/);
   assert.doesNotMatch(main, /CreateRemoteThread|WriteProcessMemory|dll inject/i);
   const guest = read('src/electron/guest-overlays.js');
   assert.match(guest, /nodeIntegration: false/);

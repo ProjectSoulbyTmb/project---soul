@@ -10,7 +10,20 @@ function line(role, text) {
   log.append(p);
   log.scrollTop = log.scrollHeight;
 }
-document.getElementById('closeBtn').addEventListener('click', () => window.close());
+document.getElementById('closeBtn').addEventListener('click', () => {
+  if (window.soul?.closeOverlay) window.soul.closeOverlay({ kind: 'chat' });
+  else window.close();
+});
+document.getElementById('topBtn')?.addEventListener('click', () => {
+  window.soul?.overlayChrome?.({ op: 'toggle-top', kind: 'chat' });
+});
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (e.target?.closest?.('textarea, input')) return;
+  e.preventDefault();
+  if (window.soul?.closeOverlay) window.soul.closeOverlay({ kind: 'chat' });
+  else window.close();
+});
 form.addEventListener('submit', async e => {
   e.preventDefault();
   const text = String(input.value || '').trim();

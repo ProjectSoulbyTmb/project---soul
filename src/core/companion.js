@@ -25,7 +25,7 @@ const NAV_RULES = [
 const WORKSPACE_KEEP = new Set([
   'focus', 'gaming', 'study', 'create', 'research', 'mood', 'favorites', 'watch',
   'gaming-ost', 'study-ost', 'surprise', 'talk', 'reassure', 'growth', 'remember',
-  'apps', 'memory'
+  'apps', 'memory', 'overlay-chat', 'overlay-browse', 'overlay-discord', 'overlays'
 ]);
 
 export function soulOverlay(state = {}) {
@@ -98,13 +98,13 @@ export function actionsForIntent(intent, overlay = {}) {
     case 'gaming':
       return [action('open-view', { view: 'apps', label: 'Apps & Gaming' })];
     case 'overlay-chat':
-      return [action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })];
+      return [action('open-chat-overlay', { label: 'Soul chat overlay' }), action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })];
     case 'overlay-browse':
-      return [action('open-overlay', { kind: 'browse', label: 'Browse overlay' })];
+      return [action('open-browse-overlay', { label: 'Browse overlay' }), action('open-overlay', { kind: 'browse', label: 'Browse overlay' })];
     case 'overlay-discord':
-      return [action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })];
+      return [action('open-discord-overlay', { label: 'Discord guest overlay' }), action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })];
     case 'overlays':
-      return [action('open-view', { view: 'apps', label: 'Apps & Gaming', auto: true })];
+      return [action('open-view', { view: 'apps', label: 'Play desk', auto: true }), action('open-chat-overlay', { label: 'Soul chat overlay' })];
     case 'research':
       return [action('open-view', { view: 'chat', label: 'Open conversation' })];
     default: {

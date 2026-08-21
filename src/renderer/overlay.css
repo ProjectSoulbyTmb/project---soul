@@ -90,6 +90,14 @@ html, body {
   background: color-mix(in srgb, #000 40%, transparent);
   color: inherit;
 }
+.overlay-banner {
+  margin: 4px 10px 0;
+  font-size: 11px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: color-mix(in srgb, #b45309 35%, transparent);
+}
+.overlay-banner.hidden, .hidden { display: none; }
 @media (prefers-reduced-motion: reduce) {
   .overlay-bar, .chat-float-log { backdrop-filter: none; }
 }
