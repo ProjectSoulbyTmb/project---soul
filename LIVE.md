@@ -1,4 +1,4 @@
-# Eidovara live snapshot (post PR #10)
+# Eidovara live snapshot — v0.22.2
 
 This is an operator note, not a consumer marketing page. It does not claim Authenticode signing, live checkout, official Linux/macOS products, patents, registered marks, or consciousness.
 
@@ -6,17 +6,19 @@ This is an operator note, not a consumer marketing page. It does not claim Authe
 
 | Surface | Status |
 | --- | --- |
-| `main` | PR #10 (`cursor/engine-product-surface-c180`) merged. Merge commit: `394cf3a287fa6fc665aed7568201e93df4165884`. Current **source** version on this snapshot is `0.22.2`. Live advertised installer remains `0.19.1`. |
-| GitHub Pages | `docs/` from **main only** via `.github/workflows/pages.yml`. Do not retarget Pages at a feature branch. Do not invent a second production site. Mirror: `https://projectsoulbytmb.github.io/project---soul/`. |
-| Cloudflare Pages | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). Production also at `https://eidovara.pages.dev`. Redeploy with `npx wrangler pages deploy docs --project-name=eidovara`. Worker API stays separate (`eidovara-api`, `https://api.eidovara.org`) and fail-closed. Do not add `docs/CNAME` — a GitHub Pages custom-domain file would fight this Cloudflare zone. `www.eidovara.org` has no DNS record yet. |
-| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Custom hostname `https://api.eidovara.org`. Redeploy with `npx wrangler deploy` from `server/` after Worker `version` changes. Health JSON source version is `0.22.2`; `liveInstallerVersion` stays `0.19.1`. `WEBSITE_URL` is `https://eidovara.org/`. |
-| Windows installer | Tag `v0.19.1` publishes unsigned `Eidovara-0.19.1-Windows-x64-Setup.exe` (~101.3 MiB). Primary site CTA is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe`. Pinned tag asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.1/Eidovara-0.19.1-Windows-x64-Setup.exe`. SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8` (`SHA256SUMS.txt` on the GitHub Release). Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. Tags `v0.18.0`, `v0.18.1`, `v0.18.2`, `v0.18.3`, and `v0.19.0` already exist and must not be force-moved. |
+| `main` | Canonical source version is `0.22.2`. The published Windows release is also `0.22.2`. |
+| GitHub Pages | `docs/` from **main only** via `.github/workflows/pages.yml`. Do not retarget Pages at a feature branch. Mirror: `https://projectsoulbytmb.github.io/project---soul/`. |
+| Cloudflare Pages | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). Production also at `https://eidovara.pages.dev`. `.github/workflows/cloudflare-pages.yml` deploys `docs/` after website changes reach `main`; manual fallback remains `npx wrangler pages deploy docs --project-name=eidovara --branch=main`. Worker API stays separate (`eidovara-api`, `https://api.eidovara.org`) and fail-closed. Do not add `docs/CNAME` because the Cloudflare zone owns the public hostname. |
+| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Custom hostname `https://api.eidovara.org`. Redeploy from `server/` after Worker contract/version changes. Health/config/status source version and live installer version are `0.22.2`. `WEBSITE_URL` is `https://eidovara.org/`. |
+| Windows installer | Tag `v0.22.2` publishes unsigned `Eidovara-0.22.2-Windows-x64-Setup.exe` (106,691,429 bytes, about 101.75 MiB). Primary site CTA is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe`. Pinned asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/Eidovara-0.22.2-Windows-x64-Setup.exe`. SHA-256 `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. Historical tags must not be force-moved. |
 
-Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service (or Ctrl+A Test service) still accepts another HTTPS base as an override; empty/default resolves to the official host. No `workers.dev` host is compiled into the Electron app or public site JS. Ask Eidovara `/v1/assist` stays paste/save-only. Conversations are not sent.
+Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service still accepts another HTTPS base as an override; empty/default resolves to the official host. No `workers.dev` host is compiled into the Electron app or public site JS. Conversations are not sent automatically.
 
 ## Official site (HTTPS eidovara.org)
 
-Cloudflare Pages project `eidovara` serves the same `docs/` IA as GitHub Pages. After `npx wrangler pages deploy docs --project-name=eidovara`, these should return HTTP 200 with the current product surface (source v0.22.2; live installer still v0.19.1; not the retired Ask Soul homepage):
+Cloudflare Pages project `eidovara` serves the same `docs/` information architecture as GitHub Pages. The current product surface should identify v0.22.2 as the published Windows release while keeping the consumer site restrained around Adult-mode functionality.
+
+Expected public pages:
 
 - https://eidovara.org/
 - https://eidovara.org/index.html
@@ -29,7 +31,19 @@ Cloudflare Pages project `eidovara` serves the same `docs/` IA as GitHub Pages. 
 - https://eidovara.org/faq.html
 - https://eidovara.pages.dev/
 
-`/download/windows` must 302 to `/download.html` (18+ gate), not to a raw `.exe`. Nested 404s use `<base href="https://eidovara.org/">`.
+`/download/windows` must 302 to `/download.html` so the 18+ confirmation remains in front of the installer rather than redirecting directly to a raw `.exe`. Nested 404s keep site assets working through the configured base URL.
+
+Public release facts that must remain consistent across Home, Product, Download, Status, FAQ/help, release metadata, and tests:
+
+- version `0.22.2`
+- `Eidovara-0.22.2-Windows-x64-Setup.exe`
+- 106,691,429 bytes / about 101.75 MiB
+- SHA-256 `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`
+- Authenticode-unsigned
+- GitHub/Sigstore provenance available
+- Windows 10/11 x64
+- 18+ gate remains
+- payments remain fail-closed / no live checkout
 
 ## Pages URLs (HTTPS github.io mirror)
 
@@ -45,31 +59,31 @@ GitHub Pages mirror (same `docs/` from `main`):
 - https://projectsoulbytmb.github.io/project---soul/help.html
 - https://projectsoulbytmb.github.io/project---soul/faq.html
 
-`www.eidovara.org` is added on the Pages project but still pending a proxied CNAME `www` → `eidovara.pages.dev` (DNS write is owner-only for this API token).
+Do not add a GitHub Pages custom-domain CNAME for `eidovara.org`; Cloudflare Pages owns the official domain.
 
-Ask Eidovara works from `docs/knowledge.js` with no Worker URL. Status prefills `https://api.eidovara.org` for `/health` and `/v1/status`. Optional `/v1/assist` stays fail-closed until a visitor saves an HTTPS base.
+Ask Eidovara works from `docs/knowledge.js` without requiring a Worker URL. Status uses `https://api.eidovara.org` for `/health` and `/v1/status`. Optional `/v1/assist` remains fail-closed until the visitor explicitly enables the relevant connection path.
 
 ## Worker contract
 
 `server/worker.js` must stay compatible with `src/core/service.js` and `docs/assist.js`:
 
-- Desktop Connect / launch / Ctrl+A Test service: GET `/health`, `/v1/config`, `/v1/status` (HTTPS except loopback). Default base `https://api.eidovara.org`. Conversations are not sent.
-- Website helper: optional POST `/v1/assist` after a pasted base. GET `/v1/assist` is metadata or `?q=`. Does not accept `history` / `messages` / `conversations`.
-- `/v1/config` keeps `paymentsEnabled: false`, `checkoutEnabled: false`, `authenticodeSigned: false`, `minimumAge: 18`, empty store URLs.
-- Other methods/paths: 405 / 404.
+- Desktop service/status: GET `/health`, `/v1/config`, `/v1/status` (HTTPS except allowed loopback development). Default base `https://api.eidovara.org`. Conversations are not sent by the heartbeat.
+- Website helper: optional POST `/v1/assist` only through explicit use. It must not accept full history / messages / conversations as an automatic transcript surface.
+- `/v1/config` keeps `paymentsEnabled: false`, `checkoutEnabled: false`, `authenticodeSigned: false`, `minimumAge: 18`, and no live store URLs.
+- Other methods/paths remain fail-closed with 405 / 404 behavior.
 
-Operator paste example (not baked into the app or public JS): see [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md). Never commit `CLOUDFLARE_API_TOKEN`.
+Never commit Cloudflare credentials. The Cloudflare Pages workflow expects repository/environment secrets named `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
 
-## Remaining owner clicks
+## Remaining owner/environment actions
 
-Git cannot finish these:
+Git cannot manufacture external credentials or legal filings. Keep these truthful:
 
-1. **Dependency graph** — Settings → Code security → enable Dependency graph (`https://github.com/ProjectSoulbyTmb/project---soul/settings/security_analysis`). Keep `.github/workflows/dependency-review.yml` at `fail-on-severity: moderate`. Do not weaken it.
-2. **Official API default** — Desktop already defaults to `https://api.eidovara.org`. After `npx wrangler deploy` from `server/`, Connect / launch / Test service hit that host unless overridden. Do not compile a `workers.dev` host. Ask Eidovara `/v1/assist` still needs a saved HTTPS base.
-3. **www.eidovara.org DNS** — Apex `eidovara.org` is already a Cloudflare Pages custom domain. `www` does not resolve. Owner click: Cloudflare Dashboard → Pages → `eidovara` → Custom domains → add `www.eidovara.org` if needed, and DNS CNAME `www` → `eidovara.pages.dev` (proxied). Do not point GitHub Pages at this hostname (no `docs/CNAME`).
-4. **Authenticode certificate** — Official advertised installers stay unsigned until the owner obtains a code-signing identity outside this repository. Do not claim Microsoft certification.
-5. **Live payments / company filings** — remain cannot-ship. Do not enable live checkout.
+1. **Cloudflare deployment credentials** — `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` must exist in the GitHub production environment/repository for automatic `eidovara.org` deployment. If unavailable, use the manual Wrangler Pages deployment from an authenticated owner environment.
+2. **Worker deployment** — redeploy `server/` when its source contract changes so `api.eidovara.org` does not drift from desktop/site expectations.
+3. **www.eidovara.org DNS** — optional; configure in Cloudflare only if the `www` hostname is desired. Do not point GitHub Pages at the public hostname.
+4. **Authenticode certificate** — official installers remain unsigned until the owner obtains a real code-signing identity outside the repository. Do not claim Microsoft certification.
+5. **Live payments / company filings** — remain separate owner/legal actions. Do not enable checkout by code or copy alone.
 
 ## Honest cannot-ship
 
-Leave documented, do not fake: live payments, Authenticode, official Linux/macOS product, neural TTS / VRM / OBS websocket, scientific consciousness claims.
+Leave documented, do not fake: live payments, Authenticode, official Linux/macOS product status unless separately built/tested/released, scientific consciousness claims, or third-party certifications/registrations that have not actually occurred.
