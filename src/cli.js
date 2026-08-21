@@ -12,7 +12,7 @@ function argValue(name) {
   const prefixed = args.find(a => a.startsWith(`${name}=`));
   if (prefixed) return prefixed.slice(name.length + 1);
   const index = args.indexOf(name);
-  if (index >= 0 && args[index + 1] && !args[index + 1].startsWith('--')) return args[index + 1];
+  if (index >= 0 && args[index + 1] !== undefined && !String(args[index + 1]).startsWith('--')) return args[index + 1];
   return undefined;
 }
 
@@ -70,8 +70,13 @@ if (args.includes('--snapshot')) {
 }
 
 if (message !== undefined) {
-  await replyTo(message);
-  process.exit(0);
+  try {
+    await replyTo(message);
+    process.exit(0);
+  } catch (err) {
+    console.error(`soul> ${err?.message || err}`);
+    process.exit(1);
+  }
 }
 
 console.log('Eidovara v0.18.0 CLI. Type /exit to quit, /reset to reset profile.');

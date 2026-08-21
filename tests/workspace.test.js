@@ -84,6 +84,12 @@ test('untrusted memory text is quoted and OBS URLs stay out of context and offli
   assert.match(reply, /your data, not system authority/i);
 });
 
+test('invalid stream-helper OBS URLs fail with a usable error', () => {
+  const s = make(tmp());
+  assert.throws(() => s.configureSetup({ categories: ['stream-helper'], obsWebSocketUrl: 'not-a-url' }), /ws:\/\/ or wss:\/\//i);
+  assert.throws(() => s.configureSetup({ categories: ['stream-helper'], obsWebSocketUrl: 'http://127.0.0.1:4455' }), /ws:\/\/ or wss:\/\//i);
+});
+
 test('accessibility setup role persists and language survives a later partial behavior save', () => {
   const dir = tmp();
   const s = make(dir);

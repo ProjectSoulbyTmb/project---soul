@@ -33,7 +33,11 @@ export class SoulEngine {
     const allowed = ['gaming-editing', 'stream-helper', 'studying', 'personal', 'creative', 'work-productivity', 'accessibility'];
     const categories = Array.isArray(input.categories) ? [...new Set(input.categories.filter(x => allowed.includes(x)))] : [];
     const obsWebSocketUrl = String(input.obsWebSocketUrl || 'ws://127.0.0.1:4455').trim().slice(0, 300);
-    if (categories.includes('stream-helper')) { const url = new URL(obsWebSocketUrl); if (!['ws:', 'wss:'].includes(url.protocol)) throw new Error('OBS WebSocket must use ws:// or wss://.'); }
+    if (categories.includes('stream-helper')) {
+      let url;
+      try { url = new URL(obsWebSocketUrl); } catch { throw new Error('OBS WebSocket must be a valid ws:// or wss:// URL.'); }
+      if (!['ws:', 'wss:'].includes(url.protocol)) throw new Error('OBS WebSocket must use ws:// or wss://.');
+    }
     this.state.setup = { completed: true, completedAt: new Date().toISOString(), categories, customNeeds: String(input.customNeeds || '').trim().slice(0, 2000), stream: { enabled: categories.includes('stream-helper'), obsWebSocketUrl, goals: String(input.streamGoals || '').trim().slice(0, 1000) } };
     this.state.audit.push({ at: this.state.setup.completedAt, type: 'setup.configured', details: { categories } }); this.store.save(this.state); return this.snapshot();
   }
@@ -97,8 +101,8 @@ export class SoulEngine {
 
     let policyReply = safetyReport ? 'I can’t help plan or facilitate illegal abuse, violence, exploitation, theft, fraud, or unauthorized access. This request was blocked and recorded in the local safety audit. If someone is in immediate danger, contact local emergency services.' : null;
     if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_enable_blocked')) policyReply = 'Adult Soul cannot be enabled until adult status is explicitly confirmed.';
-    else if (policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. I’m returning to a non-adult, pressure-free interaction stance.';
-    else if (policyEvents.some(([type]) => type === 'policy.consent_blocked')) policyReply = 'Current consent cannot be activated until the adult gate is complete.';
+    else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. I’m returning to a non-adult, pressure-free interaction stance.';
+    else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_blocked')) policyReply = 'Current consent cannot be activated until the adult gate is complete.';
 
     const conv = this.activeConversation();
     conv.messages.push({ id: uid('msg'), role: 'user', content: text, at: now });

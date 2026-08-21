@@ -11,21 +11,30 @@ async function json(url, timeoutMs = 15000, headers = {}) {
   try { const res = await fetch(url, { signal: controller.signal, redirect: 'error', headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'application/json', ...headers } }); if (!res.ok) throw new Error(`Internet source returned ${res.status}.`); const limit=5*1024*1024; const declared=Number(res.headers?.get?.('content-length')||0); if(declared>limit)throw new Error('Internet response is too large.'); if(typeof res.arrayBuffer!=='function')return await res.json(); const bytes=Buffer.from(await res.arrayBuffer()); if(bytes.length>limit)throw new Error('Internet response is too large.'); return JSON.parse(bytes.toString('utf8')); }
   finally { clearTimeout(timer); }
 }
+function orderedPages(data) {
+  const raw = data?.pages || data?.query?.pages || {};
+  const list = Array.isArray(raw) ? raw : Object.values(raw);
+  return list.sort((a, b) => (Number(a.index) || 0) - (Number(b.index) || 0));
+}
+function wikiUrl(page) {
+  if (page?.fullurl && /^https:\/\//i.test(page.fullurl)) return page.fullurl;
+  const title = String(page?.title || '').replace(/ /g, '_');
+  return title ? `https://en.wikipedia.org/wiki/${encodeURIComponent(title)}` : '';
+}
 async function searchArticles(query) {
-  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrsearch: query, gsrlimit: '5', prop: 'extracts|description|pageimages', exintro: '1', explaintext: '1', exsentences: '3', piprop: 'thumbnail', pithumbsize: '600' });
+  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrsearch: query, gsrlimit: '5', prop: 'extracts|description|pageimages|info', inprop: 'url', exintro: '1', explaintext: '1', exsentences: '3', piprop: 'thumbnail', pithumbsize: '600' });
   const data = await json(`https://en.wikipedia.org/w/api.php?${params}`);
-  const pages = data.pages || Object.values(data.query?.pages || {});
-  return pages.slice(0, 5).map(p => ({
+  return orderedPages(data).slice(0, 5).map(p => ({
     type: 'source', title: plain(p.title), description: plain(p.description || p.extract || p.excerpt),
-    url: `https://en.wikipedia.org/wiki/${encodeURIComponent(p.key || p.title).replace(/%20/g, '_')}`,
+    url: wikiUrl(p),
     thumbnail: p.thumbnail?.source || (p.thumbnail?.url ? `https:${String(p.thumbnail.url).replace(/^https?:/, '')}` : null)
-  }));
+  })).filter(p => p.title && p.url);
 }
 async function searchMedia(query, kind) {
   const type = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'bitmap';
   const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime', iiurlwidth: '900' });
   const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`);
-  return Object.values(data.query?.pages || {}).map(p => { const i = p.imageinfo?.[0] || {}; return { type: kind, title: plain(String(p.title || '').replace(/^File:/, '')), url: i.thumburl || i.url, sourceUrl: i.descriptionurl, mime: i.mime }; }).filter(x => x.url && x.sourceUrl).slice(0, 4);
+  return orderedPages(data).map(p => { const i = p.imageinfo?.[0] || {}; return { type: kind, title: plain(String(p.title || '').replace(/^File:/, '')), url: i.thumburl || i.url, sourceUrl: i.descriptionurl, mime: i.mime }; }).filter(x => x.url && x.sourceUrl).slice(0, 4);
 }
 async function searchBroad(query, apiKey, wantsImages) {
   const params = new URLSearchParams({ q: query, count: '10', search_lang: 'en', safesearch: 'strict' });
