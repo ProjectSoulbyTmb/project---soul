@@ -87,7 +87,7 @@
     const actions = $('#soulQuickActions');
     if (!beat || !kernel) return;
     const live = kernel.live === true;
-    beat.innerHTML = '';
+    beat.textContent = '';
     const strong = document.createElement('strong');
     strong.textContent = live ? t('soulLive', 'Soul is live on this PC') : t('soulIdle', 'Soul kernel idle');
     const pulses = Number(kernel.pulseCount) > 0 ? ` Pulse ${kernel.pulseCount}.` : '';
@@ -420,6 +420,10 @@
     }
   };
 
+  $('#companionCheckUpdatesBtn')?.addEventListener('click', () => {
+    if (typeof window.eidovaraCheckUpdates === 'function') window.eidovaraCheckUpdates();
+    else $('#checkUpdateBtn')?.click();
+  });
   $('#companionForm')?.addEventListener('submit', e => {
     e.preventDefault();
     const text = $('#companionInput')?.value;

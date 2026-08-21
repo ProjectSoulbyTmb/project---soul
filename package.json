@@ -22,13 +22,17 @@
     "release:configure": "node scripts/configure-release-channel.js",
     "release:manifest": "node scripts/create-update-manifest.js",
     "release:evidence": "node scripts/create-release-evidence.js",
-    "dist:win": "electron-builder --win nsis portable --x64",
+    "ip:deposit": "node scripts/prepare-copyright-deposit.js",
+    "dist:win": "electron-builder --win nsis portable --x64 --publish never",
     "dist:win:installer": "electron-builder --win nsis --x64 --publish never",
     "dist": "npm run dist:win",
     "dist:linux": "electron-builder --linux AppImage deb --x64",
     "dist:mac:x64": "electron-packager . 'Eidovara' --platform=darwin --arch=x64 --out=dist-mac --overwrite --asar --prune=true",
     "dist:mac:arm64": "electron-packager . 'Eidovara' --platform=darwin --arch=arm64 --out=dist-mac --overwrite --asar --prune=true",
     "dist:dir": "electron-builder --dir"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
   },
   "devDependencies": {
     "@electron/packager": "20.3.0",
@@ -62,7 +66,8 @@
       "AUTHORS.md",
       "TRADEMARKS.md",
       "OWNERSHIP.md",
-      "NETWORK-USAGE.md"
+      "NETWORK-USAGE.md",
+      "docs/IP_CERTIFICATION.md"
     ],
     "win": {
       "icon": "assets/branding/eidovara.ico",
@@ -81,6 +86,13 @@
           ]
         }
       ]
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "ProjectSoulbyTmb",
+      "repo": "project---soul",
+      "private": false,
+      "releaseType": "release"
     },
     "nsis": {
       "artifactName": "Eidovara-${version}-Windows-${arch}-Setup.${ext}",

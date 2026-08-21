@@ -84,6 +84,8 @@ test('voice persist uses voiceURI and honors mute against a mock speechSynthesis
   assert.equal(spoken.at(-1).rate, 1.4);
   assert.equal(FUTURE_VOICE_BACKEND.bundled, false);
   assert.match(FUTURE_VOICE_BACKEND.note, /does not ship a neural TTS engine/i);
+  const s = make(tmp());
+  assert.equal(s.kernelStatus().engines.find(item => item.id === 'vrm-makehuman').shipped, false);
 });
 
 test('presence looks stay first-party and freeze under reduced motion', () => {

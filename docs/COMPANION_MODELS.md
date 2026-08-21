@@ -2,6 +2,27 @@
 
 Eidovara 0.19.1 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled. Kokoro, Piper, VRM, and MakeHuman runtimes are documented future adapters only.
 
+## Shipped first-party / Chromium engines (vanilla Electron ESM)
+
+Electron 43.4.1 embeds Chromium 150. These are wired in-app. They are not extra npm UI or game-engine frameworks.
+
+| Engine | Role | Honest limit |
+| --- | --- | --- |
+| Soul kernel | Session, modules, local self-model | Software, not consciousness |
+| Offline Soul | Local replies | Optional Ollama / OpenAI-compatible HTTP stay user-pasted |
+| WebGL2 lathe + CPU life | Adult Soul figure | Not VRM, Three.js, Babylon, Mixamo |
+| Web Audio Feel Sync | Loudness → pad / figure | One `MediaElementSource` per media element |
+| Procedural ambient | Heartbeat / breath / drone oscillators | Not a neural TTS pack |
+| Chromium HTML5 media + Media Session | `eidovara-media:` / https: playback, media keys | No ffmpeg, yt-dlp, Widevine rip, tube embeds |
+| OS `speechSynthesis` | Coaching lines | Windows-installed voices only |
+| Chromium `SpeechRecognition` | Optional hold-to-talk | Microphone stays audio-only |
+| Electron `powerSaveBlocker` | Stay-awake during playback / Adult Soul sessions | Fail closed; not an overlay |
+| Chromium Gamepad API | Optional Feel pad steer + dual-rumble | Not Lovense, not game-process haptics |
+| WebGPU | Diagnostics probe only | Figure renderer stays WebGL |
+| electron-updater | GitHub Releases | Authenticode-unsigned |
+
+The in-app catalog is `src/core/runtime-engines.js` (also on kernel status and Diagnostics).
+
 ## Screened future adapters
 
 | Candidate | Use | Upstream license | Decision |

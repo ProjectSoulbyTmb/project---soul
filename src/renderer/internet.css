@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 .research-panel {
   margin-top: 12px;
   background: var(--panel);
@@ -119,7 +121,7 @@
   box-shadow: var(--shadow);
   padding: 12px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) repeat(7, auto);
+  grid-template-columns: minmax(0, 1fr) repeat(10, auto);
   gap: 8px;
   align-items: center;
 }
@@ -245,6 +247,46 @@
   color: var(--text);
 }
 body.age-gated .app { pointer-events: none; user-select: none; }
+.research-handoffs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.handoff-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--btn-gray);
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  min-height: 36px;
+}
+.handoff-chip:hover,
+.handoff-chip:focus-visible {
+  background: color-mix(in srgb, var(--accent) 18%, var(--btn-gray));
+}
+.local-library {
+  display: grid;
+  gap: 8px;
+}
+.local-library .kv,
+.local-library-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.local-library .handoff-chip {
+  flex: 0 0 auto;
+}
+
 #legalOverlay { z-index: 130; }
 .legal-dialog { max-height: min(88vh, 760px); overflow: auto; }
 .legal-panel p { margin: 0 0 10px; }
@@ -566,7 +608,7 @@ button.dashboard-card {
 }
 .quick-grid button:hover { opacity: 0.88; }
 
-.admin-dialog { max-width: 680px; }
+.admin-dialog { max-width: 720px; }
 .admin-dialog > p { color: var(--muted); line-height: 1.45; }
 .admin-dialog input, .admin-dialog select {
   width: 100%;
@@ -577,3 +619,7 @@ button.dashboard-card {
   padding: 10px;
 }
 .admin-dialog .dashboard-grid { margin: 4px 0; }
+#adminPanelForm {
+  max-height: min(88vh, 920px);
+  overflow: auto;
+}

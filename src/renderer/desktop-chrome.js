@@ -186,7 +186,7 @@
   }
 
   async function setSleepPreset(preset) {
-    const ms = { off: 0, '15': 15 * 60_000, '30': 30 * 60_000, '60': 60 * 60_000 }[String(preset)] || 0;
+    const ms = { off: 0, '15': 15 * 60_000, '30': 30 * 60_000, '45': 45 * 60_000, '60': 60 * 60_000, '90': 90 * 60_000 }[String(preset)] || 0;
     const sleepUntil = ms ? new Date(Date.now() + ms).toISOString() : null;
     await persistDesktop({ sleepUntil });
     if (sleepUntil) {
@@ -324,6 +324,7 @@
     recordMedia,
     recordView,
     recordRecent,
+    setAlwaysOnTop: async on => persistDesktop({ alwaysOnTop: on === true }),
     paintCalc
   };
 

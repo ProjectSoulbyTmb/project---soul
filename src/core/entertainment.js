@@ -1,5 +1,9 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+import { adultAllowed } from './policy.js';
+import { rememberContinue } from './adult-media.js';
+import { adultOfficialHandoffs, classifyAdultMediaIntent } from './adult-media.js';
+
 const clean = (value, limit = 500) => String(value || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, limit);
 const allowedTypes = new Set(['audio', 'video']);
 const allowedEvents = new Set(['play', 'complete', 'favorite', 'skip']);
@@ -17,7 +21,10 @@ export function normalizeMediaEvent(input = {}) {
 export function recordMediaEvent(state, input) {
   const item = normalizeMediaEvent(input);
   state.entertainment ||= { favorites: [], history: [], taste: {} };
-  state.entertainment.history = [...(state.entertainment.history || []), item].slice(-500);
+  const hideHistory = state.adultSoul?.feel?.stealth?.autoClearHistory === true && adultAllowed(state) === true;
+  if (!hideHistory) {
+    state.entertainment.history = [...(state.entertainment.history || []), item].slice(-500);
+  }
   if (item.event === 'favorite' && !(state.entertainment.favorites || []).some(x => x.title.toLowerCase() === item.title.toLowerCase())) {
     state.entertainment.favorites = [...state.entertainment.favorites, item].slice(-200);
   }
@@ -25,6 +32,9 @@ export function recordMediaEvent(state, input) {
   const weight = { play: 1, complete: 2, favorite: 4, skip: -1 }[item.event];
   state.entertainment.taste ||= {};
   state.entertainment.taste[key] = Math.max(-5, Math.min(20, Number(state.entertainment.taste[key] || 0) + weight));
+  if (adultAllowed(state) === true && item.event === 'play') {
+    state.entertainment.adult = rememberContinue(state, { ...item, url: input.url || '', type: item.type });
+  }
   return item;
 }
 
@@ -103,8 +113,12 @@ export function isPlayableLocalUrl(value) {
   return /^eidovara-media:/i.test(String(value || '').trim());
 }
 
+function isGenericDiscoveryQuery(query) {
+  return /^(?:music|songs?|video|videos?|audio|soundtrack|mix|media|watch)$/i.test(String(query || '').trim());
+}
+
 export function matchLocalLibrary(query, { entertainment, localLibrary } = {}) {
-  const tokens = queryTokens(query);
+  const tokens = isGenericDiscoveryQuery(query) ? [] : queryTokens(query);
   const hits = [];
   const seen = new Set();
   const push = item => {
@@ -138,7 +152,7 @@ export function matchLocalLibrary(query, { entertainment, localLibrary } = {}) {
 export function discoveryQuery(input, entertainment) {
   const stripped = String(input || '')
     .replace(/https:\/\/[^\s<>"'`]+/gi, ' ')
-    .replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to|fits|my|current|mood|explain|why|something|worth|watching|youtube|spotify|archive)\b/gi, ' ')
+    .replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to|fits|my|current|mood|explain|why|something|worth|watching|youtube|spotify|archive|that|this|with|a|an|or|is|are|it)\b/gi, ' ')
     .replace(/[^\p{L}\p{N}\s'_-]/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim()
@@ -148,17 +162,24 @@ export function discoveryQuery(input, entertainment) {
   return seeds[0] || 'music';
 }
 
-export function discoverMedia(input, { entertainment, localLibrary, query } = {}) {
+export function discoverMedia(input, { entertainment, localLibrary, query, adultAllowed: adultOn } = {}) {
   const q = clean(query, 180) || discoveryQuery(input, entertainment);
   const local = matchLocalLibrary(q, { entertainment, localLibrary });
   const handoffs = officialSearchHandoffs(q);
+  const adultIntent = classifyAdultMediaIntent(input) || classifyAdultMediaIntent(q);
+  const adultHandoffs = adultOn === true && adultIntent && adultIntent !== 'adult-media-blocked'
+    ? adultOfficialHandoffs(q)
+    : [];
   const playable = local.filter(item => item.playable);
   const context = [
     local.length
       ? `Local library matches:\n${local.map((item, index) => `${index + 1}. ${item.title}${item.playable ? ' (play in Eidovara)' : ' (taste title; open the local file to play in Eidovara)'}`).join('\n')}`
       : 'No local library titles matched. Open a local audio or video file in Entertainment to play it in Eidovara (eidovara-media, never media-src \'self\').',
-    `Official search links (browser handoff — not Spotify/iTunes/VLC/Windows Media Player injection, not stream ripping):\n${handoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`
-  ].join('\n\n');
+    `Official search links (browser handoff — not Spotify/iTunes/VLC/Windows Media Player injection, not stream ripping):\n${handoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`,
+    adultHandoffs.length
+      ? `Adult official searches (system browser after confirm; not embeds, not HTML scrape):\n${adultHandoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`
+      : ''
+  ].filter(Boolean).join('\n\n');
   return {
     query: q,
     fetchedAt: null,
@@ -167,6 +188,7 @@ export function discoverMedia(input, { entertainment, localLibrary, query } = {}
     media: playable,
     local,
     handoffs,
+    adultHandoffs,
     context
   };
 }

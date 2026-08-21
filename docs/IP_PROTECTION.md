@@ -1,6 +1,6 @@
 # Eidovara intellectual-property protection plan
 
-This operational checklist is not legal advice.
+This operational checklist is not legal advice. The dated inventory of what is already in git — and what only the owner can file — is [IP_CERTIFICATION.md](IP_CERTIFICATION.md). That self-attestation is not a Copyright Office or USPTO certificate.
 
 ## Public repository boundary
 

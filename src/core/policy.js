@@ -1,16 +1,23 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-export function applyPolicyCommand(state, text) {
+export function applyPolicyCommand(state, text, opts = {}) {
   const t = text.toLowerCase();
   const now = new Date().toISOString();
   const events = [];
+  const admin = opts.adminAuthorized === true;
 
   if (/(adult status confirmed|i am an adult|i'm an adult|confirm adult)/.test(t)) {
-    state.policy.adultStatusConfirmed = true;
-    events.push(['policy.adult_status_confirmed', {}]);
+    if (!admin) {
+      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
+    } else {
+      state.policy.adultStatusConfirmed = true;
+      events.push(['policy.adult_status_confirmed', {}]);
+    }
   }
   if (/(enable adult soul|adult mode on|switch to adult soul)/.test(t)) {
-    if (state.policy.adultStatusConfirmed) {
+    if (!admin) {
+      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
+    } else if (state.policy.adultStatusConfirmed) {
       state.policy.adultSoulEnabled = true;
       state.policy.mode = 'adult';
       events.push(['policy.adult_enabled', {}]);
@@ -26,7 +33,9 @@ export function applyPolicyCommand(state, text) {
     events.push(['policy.standard_enabled', {}]);
   }
   if (/(i consent|consent granted|grant consent)/.test(t)) {
-    if (state.policy.mode === 'adult' && state.policy.adultSoulEnabled && state.policy.adultStatusConfirmed) {
+    if (!admin) {
+      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
+    } else if (state.policy.mode === 'adult' && state.policy.adultSoulEnabled && state.policy.adultStatusConfirmed) {
       state.policy.currentConsent = true;
       state.policy.revokedAt = null;
       state.policy.consentScope = 'current-interaction';

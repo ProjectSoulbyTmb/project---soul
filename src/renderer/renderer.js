@@ -4,8 +4,8 @@ const $ = s => document.querySelector(s);
 const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
 let state = null, settings = null, sending = false, backupCount = 0;
-let mediaQueue = [], mediaIndex = -1;
-const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), settings: $('#settingsView') };
+let mediaQueue = [], mediaIndex = -1, sessionLibrary = [];
+const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), adultSoul: $('#adultSoulView'), settings: $('#settingsView') };
 const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 const assistantPayload = (extra = {}) => {
   const p = state?.assistant?.preferences || {}, c = state?.assistant?.capabilities || {};
@@ -16,15 +16,54 @@ function activeConversation(){ return state?.conversations?.find(c=>c.id===state
 function fmt(ts){ try{return new Intl.DateTimeFormat(undefined,{hour:'numeric',minute:'2-digit'}).format(new Date(ts));}catch{return '';} }
 function currentView(){ return Object.keys(views).find(name=>views[name]?.classList.contains('active')) || 'dashboard'; }
 function reducedMotion(){ return Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches); }
+function adminSessionActive(){ return document.body.classList.contains('admin-session'); }
+function fillAdminAdultStatus(){
+  const node=$('#adminAdultStatus');
+  if(!node) return;
+  const p=state?.policy||{};
+  const on=p.mode==='adult'&&p.adultSoulEnabled===true&&p.adultStatusConfirmed===true&&p.currentConsent===true;
+  node.textContent=on
+    ? 'Adult Mode triple gate is on. Studio and Adult Media stay in this admin session until a later release.'
+    : 'Adult Mode is off. Enable it here. Identity still has Revoke and Standard mode.';
+}
+function applyAdminSession(authorized){
+  document.body.classList.toggle('admin-session', Boolean(authorized));
+  fillAdminAdultStatus();
+  if(!authorized && currentView()==='adultSoul'){
+    const identity=views.identity;
+    if(identity){
+      Object.values(views).forEach(v=>v.classList.remove('active'));
+      identity.classList.add('active');
+      $('#viewTitle').textContent='Identity & continuity';
+      $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view==='identity'));
+    }
+  }
+}
+async function refreshAdminSession(){
+  try{
+    const status=await window.soul.adminStatus();
+    applyAdminSession(status?.authorized===true);
+    return status;
+  }catch{
+    applyAdminSession(false);
+    return {authorized:false};
+  }
+}
 function setView(name){
+  if(name==='adultSoul' && !adminSessionActive()){
+    openAdmin().catch(()=>{});
+    name='identity';
+  }
   if(!views[name])return;
   Object.values(views).forEach(v=>v.classList.remove('active'));
   views[name].classList.add('active');
-  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',settings:'Settings'}[name]);
+  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',adultSoul:'Adult Soul',settings:'Settings'}[name]);
   $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
   if(innerWidth<861) $('#sidebar').classList.remove('open');
   window.eidovaraCompanion?.renderFollowups?.(name);
   if(name==='research') renderResearchView();
+  if(name==='adultSoul') window.eidovaraAdultSoul?.onShow?.();
+  if(name==='entertainment') window.eidovaraAdultMedia?.onShow?.();
   window.eidovaraChrome?.recordView?.(name);
 }
 function el(tag, cls, text){ const n=document.createElement(tag); if(cls)n.className=cls; if(text!==undefined)n.textContent=text; return n; }
@@ -67,6 +106,10 @@ function appendKernelActions(target, actions){
 function runKernelAction(action){
   if(!action||!action.type)return;
   const smooth=reducedMotion()?'auto':'smooth';
+  if((action.view==='adultSoul' || action.panel==='adultMediaDesk') && !adminSessionActive()){
+    openAdmin().catch(()=>{});
+    return;
+  }
   if(action.type==='open-view'&&action.view){
     setView(action.view);
     if(action.panel){
@@ -81,7 +124,7 @@ function runKernelAction(action){
   else if(action.type==='open-setup') openSetup(true);
   else if(action.type==='open-diagnostics'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
   else if(action.type==='open-service'){ setView('settings'); $('#serviceForm')?.scrollIntoView({behavior:smooth,block:'center'}); $('#serviceUrlInput')?.focus(); }
-  else if(action.type==='open-updates'){ setView('settings'); $('#checkUpdateBtn')?.scrollIntoView({behavior:smooth,block:'center'}); $('#checkUpdateBtn')?.focus(); }
+  else if(action.type==='open-updates'||action.type==='check-updates'){ if(typeof window.eidovaraCheckUpdates==='function') window.eidovaraCheckUpdates(); else { setView('settings'); $('#checkUpdateBtn')?.scrollIntoView({behavior:smooth,block:'center'}); $('#checkUpdateBtn')?.focus(); } }
   else if(action.type==='pick-local-media'){ setView('entertainment'); $('#openLocalMediaBtn')?.click(); }
   else if(action.type==='discover-apps'){ setView('apps'); $('#discoverAppsBtn')?.click(); }
   else if(action.type==='start-focus'){ window.eidovaraLayers?.startFocus?.(action.minutes || 25, action.label); }
@@ -89,26 +132,41 @@ function runKernelAction(action){
   else if(action.type==='capture-scratch'){ window.eidovaraLayers?.captureScratch?.(); }
   else if(action.type==='open-palette'){ openPalette(); }
   else if(action.type==='open-cheatsheet'){ openShortcutSheet(); }
+  else if(action.type==='open-overlay'){ openEidovaraOverlay(action.kind, action.url); }
+  else if(action.type==='open-chat-overlay'){ openEidovaraOverlay('chat'); }
+  else if(action.type==='open-browse-overlay'){ openEidovaraOverlay('browse', action.url); }
+  else if(action.type==='open-discord-overlay'){ openEidovaraOverlay('discord', action.url); }
+  else if(action.type==='set-always-on-top'){
+    const on=action.on!==false;
+    if($('#alwaysOnTopInput')) $('#alwaysOnTopInput').checked=on;
+    window.eidovaraChrome?.setAlwaysOnTop?.(on);
+  }
+  else if(action.type==='open-now-playing'){
+    setView('entertainment');
+    $('#mediaDock')?.classList.remove('hidden');
+    $('#mediaDock')?.scrollIntoView({block:'nearest'});
+  }
+  else if(action.type==='confirm-launch-app'&&action.appId&&window.soul?.launchApplication) window.soul.launchApplication(action.appId);
+  else if(action.type==='run-command'&&action.command&&typeof window.eidovaraSend==='function'){ setView(action.view||'chat'); window.eidovaraSend(action.command); }
   else if(action.type==='open-external'&&action.url) openResearchLink(action.url);
 }
 window.eidovaraRunAction=runKernelAction;
 function setupCategories(){return $$('input[name="setupCategory"]:checked').map(x=>x.value);}
 function toggleStreamSetup(){$('#setupStreamFields').classList.toggle('hidden',!setupCategories().includes('stream-helper'));}
 function openSetup(reconfigure=false){const setup=state.setup||{};$$('input[name="setupCategory"]').forEach(x=>{x.checked=(setup.categories||[]).includes(x.value);});$('#setupCustomNeeds').value=setup.customNeeds||'';if($('#setupAccessibility'))$('#setupAccessibility').value=state.assistant?.preferences?.accessibility||'';$('#setupObsUrl').value=setup.stream?.obsWebSocketUrl||'ws://127.0.0.1:4455';$('#setupStreamGoals').value=setup.stream?.goals||'';$('#cancelSetupBtn').classList.toggle('hidden',!reconfigure&&!setup.completed);$('#setupStatus').textContent='';toggleStreamSetup();$('#setupOverlay').classList.remove('hidden');}
-async function openAdmin(){const status=await window.soul.adminStatus();$('#adminOverlay').classList.remove('hidden');$('#adminLoginStatus').textContent='';$('#adminPassword').value='';$('#adminLoginForm').classList.toggle('hidden',status.authorized);$('#adminPanelForm').classList.toggle('hidden',!status.authorized);$('#adminTitle').textContent=status.configured?'Private administration':'Create administrator password';$('#adminLoginHelp').textContent=status.configured?'Local access only. This session automatically locks after 15 minutes.':'Create a unique password of at least 12 characters for this installation. Eidovara cannot recover it.';$('#adminLoginButton').textContent=status.configured?'Unlock':'Create and unlock';$('#adminLoginForm').dataset.configured=String(Boolean(status.configured));if(status.authorized){$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;}else $('#adminPassword').focus();}
+async function openAdmin(){const status=await window.soul.adminStatus();applyAdminSession(status.authorized===true);$('#adminOverlay').classList.remove('hidden');$('#adminLoginStatus').textContent='';$('#adminPassword').value='';$('#adminLoginForm').classList.toggle('hidden',status.authorized);$('#adminPanelForm').classList.toggle('hidden',!status.authorized);$('#adminTitle').textContent=status.configured?'Private administration':'Create administrator password';$('#adminLoginHelp').textContent=status.configured?'Local access only. This session automatically locks after 15 minutes.':'Create a unique password of at least 12 characters for this installation. Eidovara cannot recover it.';$('#adminLoginButton').textContent=status.configured?'Unlock':'Create and unlock';$('#adminLoginForm').dataset.configured=String(Boolean(status.configured));if(status.authorized){$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;fillAdminAdultStatus();}else $('#adminPassword').focus();}
 
 function renderConversations(){ const list=$('#conversationList'); list.textContent=''; const onlyOne=(state.conversations||[]).length<=1; for(const c of state.conversations){ const row=el('button','conversation'+(c.id===state.activeConversationId?' active':'')); row.type='button'; const label=el('span','label',c.title||'Conversation'); const del=el('button','delete','×'); del.type='button'; del.title='Delete conversation'; del.hidden=onlyOne; del.disabled=onlyOne; del.addEventListener('click',async e=>{e.stopPropagation(); if(state.conversations.length<=1)return; state=await window.soul.deleteConversation(c.id); renderAll();}); row.append(label,del); row.addEventListener('click',async()=>{state=await window.soul.selectConversation(c.id); renderAll();setView('chat');}); list.append(row); } }
 function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>openResearchLink(url));return a;}
-function currentPlayer(){return mediaQueue[mediaIndex]?.type==='video'?$('#videoPlayer'):$('#audioPlayer');}
-function mediaSignal(event,item=mediaQueue[mediaIndex]){if(!item||!['audio','video'].includes(item.type))return;window.soul.recordMedia({event,type:item.type,title:item.title,sourceUrl:item.sourceUrl}).catch(()=>{});}
-function loadMedia(index,autoplay=true){if(!mediaQueue.length)return;const previous=mediaQueue[mediaIndex];if(previous&&index!==mediaIndex)mediaSignal('skip',previous);mediaIndex=(index+mediaQueue.length)%mediaQueue.length;const item=mediaQueue[mediaIndex],audio=$('#audioPlayer'),video=$('#videoPlayer'),player=item.type==='video'?video:audio;audio.pause();video.pause();audio.classList.toggle('hidden',item.type==='video');video.classList.toggle('hidden',item.type!=='video');player.src=item.url;$('#mediaTitle').textContent=item.title||'Untitled media';$('#mediaKind').textContent=`${item.local?'local ':''}${item.type} · ${mediaIndex+1} of ${mediaQueue.length}`;$('#mediaFavoriteBtn').textContent='♡';$('#mediaSourceBtn').disabled=!item.sourceUrl;$('#mediaDock').classList.remove('hidden');mediaSignal('play',item);window.eidovaraChrome?.recordMedia?.(item);if(autoplay)player.play().catch(()=>{});}
-function playMedia(items,index,opts={}){const mode=state?.assistant?.capabilities?.mediaPlayback||'confirm';if(mode==='disabled'){alert(t('mediaDisabled','Media playback is disabled in Soul behavior settings.'));return;}const selected=items[index];if(mode==='confirm'&&!opts.alreadyConfirmed){if(!window.confirm(`${t('mediaConfirm','Play this media in Eidovara:')} ${selected?.title||''}`.trim()))return;}mediaQueue=items.filter(m=>m.type==='audio'||m.type==='video');loadMedia(Math.max(0,mediaQueue.indexOf(selected)));}
+function currentPlayer(){return window.eidovaraPlayer?.currentPlayer?.() || (mediaQueue[mediaIndex]?.type==='video'?$('#videoPlayer'):$('#audioPlayer'));}
+function loadMedia(index,autoplay=true){if(window.eidovaraPlayer?.loadMedia) return window.eidovaraPlayer.loadMedia(index,autoplay);}
+function playMedia(items,index,opts={}){if(window.eidovaraPlayer?.playMedia) return window.eidovaraPlayer.playMedia(items,index,opts);}
 function renderResearch(target,research){
   if(!research)return;
   const remote=Boolean(research.fetchedAt);
   const panel=el('div','research-panel');
   panel.append(el('div','research-title',`${remote?t('researchResults','Internet results'):t('discoveryTitle','Local library & official searches')} · ${fmt(research.fetchedAt)||t('localNow','this device')}`));
-  panel.append(el('p','research-copy',research.disclaimer||t('researchCopy','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.')));
+  panel.append(el('p','research-copy',research.disclaimer||t('researchCopy','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.')));
   for(const s of research.sources||[]){
     const row=el('article','research-source research-card');
     row.append(el('strong','',s.title||''));
@@ -118,19 +176,22 @@ function renderResearch(target,research){
     if(s.url) row.append(externalLink(s.url, t('openInBrowser','Open in browser')));
     panel.append(row);
   }
-  for(const h of research.handoffs||[]){
-    const row=el('article','research-source research-card');
-    row.append(el('strong','',h.title||h.provider||'Search'));
-    if(h.provider) row.append(el('small','research-host',h.provider));
-    row.append(el('p','research-snippet',t('handoffNote','Official HTTPS search in your browser. Eidovara does not fetch that site’s HTML or capture logins.')));
-    if(h.url) row.append(externalLink(h.url, t('openInBrowser','Open in browser')));
-    panel.append(row);
+  if((research.handoffs||[]).length){
+    const chips=el('div','research-handoffs');
+    for(const h of research.handoffs){
+      const chip=el('button','handoff-chip',`${h.provider||'Search'}: ${h.title||h.provider||'Open search'}`);
+      chip.type='button';
+      chip.title=t('handoffNote','Official HTTPS search in your browser. Eidovara does not fetch that site’s HTML or capture logins.');
+      if(h.url) chip.addEventListener('click',()=>openResearchLink(h.url, h.title||h.provider));
+      chips.append(chip);
+    }
+    panel.append(chips);
   }
   if(research.local?.length){
     const localBox=el('div','local-library');
     localBox.append(el('div','research-title',t('sessionLibrary','This session’s local library')));
     for(const item of research.local){
-      const row=el('div','kv');
+      const row=el('div','kv local-library-item');
       row.append(el('span','',item.playable?t('playInEidovara','Play in Eidovara'):item.type||'audio'), el('span','',item.title));
       if(item.playable){
         const play=el('button','handoff-chip',t('playLocal','Play'));
@@ -160,13 +221,14 @@ function renderResearch(target,research){
 }
 window.eidovaraRenderDiscovery=renderResearch;
 window.eidovaraPlayMedia=playMedia;
+window.eidovaraSend=function(text,opts){ return send(text,opts); };
 function renderResearchView(){
   const box=$('#researchResults');
   if(!box) return;
   box.textContent='';
   const research=latestResearch();
   const copy=$('#researchLead');
-  if(copy) copy.textContent=t('researchLead','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.');
+  if(copy) copy.textContent=t('researchLead','Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.');
   if(!research){
     box.append(el('div','empty-state'));
     box.lastChild.append(el('strong','',t('researchEmptyTitle','No lookup yet')), el('p','',t('researchEmpty','Ask me to search the internet for a topic, or include an HTTPS URL after an explicit internet/web/online request. This is not a crawl of the whole internet.')));
@@ -213,10 +275,57 @@ function rendererCapabilities(){
     video:{h264:supported(video,'video/mp4; codecs="avc1.42E01E"'),hevc:supported(video,'video/mp4; codecs="hvc1"'),vp9:supported(video,'video/webm; codecs="vp9"'),av1:supported(video,'video/mp4; codecs="av01.0.05M.08"'),pictureInPicture:'pictureInPictureEnabled' in document,fullscreen:document.fullscreenEnabled},
     audio:{aac:supported(audio,'audio/mp4; codecs="mp4a.40.2"'),mp3:supported(audio,'audio/mpeg'),opus:supported(audio,'audio/webm; codecs="opus"'),flac:supported(audio,'audio/flac'),webAudio:Boolean(window.AudioContext||window.webkitAudioContext)},
     input:{gamepadApi:'getGamepads' in navigator,connectedGamepads:'getGamepads' in navigator?[...navigator.getGamepads()].filter(Boolean).length:0},
-    browser:{mediaSession:'mediaSession' in navigator,logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null}
+    gpu:{webgl:Boolean(window.WebGLRenderingContext),webgl2:Boolean(window.WebGL2RenderingContext),webgpu:Boolean(navigator.gpu),wakeLock:Boolean(navigator.wakeLock)},
+    browser:{mediaSession:'mediaSession' in navigator,logicalProcessors:navigator.hardwareConcurrency||null,deviceMemoryGiB:navigator.deviceMemory||null,speechSynthesis:'speechSynthesis' in window,speechRecognition:Boolean(window.SpeechRecognition||window.webkitSpeechRecognition)}
   };
 }
+function renderPlayDesk(){
+  const list=$('#playRecents');
+  if(list){
+    list.textContent='';
+    const recents=(state?.kernel?.workspace?.recents||[]).filter(item=>item.kind==='app').slice(0,8);
+    if(!recents.length){
+      list.append(el('p','settings-help',t('playRecentsEmpty','Confirm-launch a linked app to see it here. Eidovara does not scrape other games.')));
+    }else{
+      recents.forEach(item=>{
+        const row=el('button','');
+        row.type='button';
+        row.textContent=item.title||item.id;
+        row.addEventListener('click',()=>{
+          const app=(settings?.apps||[]).find(a=>a.id===item.id);
+          if(app) window.soul.launchApplication(app.id).catch(err=>{$('#appsStatus').textContent=String(err?.message||err);});
+        });
+        list.append(row);
+      });
+    }
+  }
+  const recentsBox=$('#overlayRecents');
+  if(recentsBox){
+    recentsBox.textContent='';
+    const urls=(settings?.overlayRecents||[]).slice(0,8);
+    if(!urls.length) recentsBox.append(el('p','settings-help',t('overlayRecentsEmpty','HTTPS pages you open in the browse overlay appear here. Local only.')));
+    else urls.forEach(item=>{
+      const b=el('button','secondary');
+      b.type='button';
+      b.textContent=item.title||item.url;
+      b.addEventListener('click',()=>openEidovaraOverlay(item.kind||'browse', item.url));
+      recentsBox.append(b);
+    });
+  }
+  void refreshEidovaraMetrics();
+}
+async function refreshEidovaraMetrics(){
+  const node=$('#eidovaraMetrics');
+  if(!node || !window.soul?.processMetrics) return;
+  try{
+    const m=await window.soul.processMetrics();
+    node.textContent=`Eidovara process: ${Math.round(m.percentCPUUsage||0)}% CPU · ${m.rssMb||0} MB RSS. ${m.note||''}`;
+  }catch{
+    node.textContent=t('overlayMetricsOff','Process metrics unavailable in this session.');
+  }
+}
 function renderApps(){
+  renderPlayDesk();
   const grid=$('#appsGrid');grid.textContent='';const apps=settings?.apps||[];
   if(!apps.length){
     const empty=el('div','empty-state');
@@ -339,6 +448,7 @@ function renderCompanionPanel(){
   log.scrollTop=log.scrollHeight;
 }
 function renderEntertainment(){
+  window.eidovaraSessionLibrary = sessionLibrary;
   const favorites=$('#entertainmentFavorites'),recent=$('#entertainmentRecent'),mix=$('#entertainmentMix');
   favorites.textContent='';recent.textContent='';if(mix)mix.textContent='';
   const e=state.entertainment||{};
@@ -352,11 +462,26 @@ function renderEntertainment(){
   if(library){
     library.textContent='';
     const discovery=latestResearch();
-    const items=discovery?.local||[];
+    const seen=new Set();
+    const items=[];
+    for(const item of [...sessionLibrary, ...(discovery?.local||[])]){
+      const key=item.url||item.title;
+      if(!key||seen.has(key)) continue;
+      seen.add(key);
+      items.push(item);
+    }
     if(!items.length) library.append(el('div','empty',t('emptyLibrary','Open a local audio or video file to play it in Eidovara. Paths stay out of taste records.')));
     else for(const item of items){
       const row=el('div','kv');
-      row.append(el('span','',item.playable?t('playInEidovara','Play in Eidovara'):item.type||'title'), el('span','',item.title));
+      const playable=Boolean(item.playable||item.local||/^eidovara-media:/i.test(item.url||''));
+      row.append(el('span','',playable?t('playInEidovara','Play in Eidovara'):item.type||'title'), el('span','',item.title));
+      if(playable && item.url){
+        const play=el('button','handoff-chip',t('playLocal','Play'));
+        play.type='button';
+        const playableItems=items.filter(x=>x.url);
+        play.addEventListener('click',()=>playMedia(playableItems, playableItems.indexOf(item), {alreadyConfirmed:true}));
+        row.append(play);
+      }
       library.append(row);
     }
   }
@@ -368,7 +493,7 @@ function renderEntertainment(){
     else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
   }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;const p=state?.policy||{};document.body.classList.toggle('adult-mode', p.mode==='adult'&&p.adultSoulEnabled===true&&p.adultStatusConfirmed===true&&p.currentConsent===true);fillAdminAdultStatus();window.eidovaraAdultSoul?.refresh?.();window.eidovaraAdultMedia?.refresh?.();renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -463,6 +588,7 @@ $$('[data-companion-nav]').forEach(b=>b.addEventListener('click',()=>{
   else if(nav==='memory') setView('memory');
   else if(nav==='legal') showLegal('about');
   else if(nav==='status'){ setView('settings'); $('#diagnosticsBtn')?.click(); }
+  else if(nav==='updates' && typeof window.eidovaraCheckUpdates==='function') window.eidovaraCheckUpdates();
 }));
 $$('[data-companion-ask]').forEach(b=>b.addEventListener('click',()=>{setView('dashboard');send(b.dataset.companionAsk,{surface:'companion'});}));$('#messageInput').addEventListener('input',autoSize);$('#messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send(e.currentTarget.value);}});
 $$('[data-starter]').forEach(b=>b.addEventListener('click',()=>send(b.dataset.starter)));
@@ -470,10 +596,10 @@ $$('.nav-btn').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)
 $('#menuBtn').addEventListener('click',()=>$('#sidebar').classList.toggle('open'));
 $('#newChatBtn').addEventListener('click',async()=>{state=await window.soul.newConversation();renderAll();setView('chat');$('#messageInput').focus();});
 $('#memoryForm').addEventListener('submit',async e=>{e.preventDefault();const v=$('#memoryInput').value.trim();if(!v)return;await window.soul.remember(v,{kind:'preference'});$('#memoryInput').value='';state=await window.soul.snapshot();renderAll();});
-$$('[data-command]').forEach(b=>b.addEventListener('click',async()=>{const command=b.dataset.command;if((command==='adult status confirmed'||command==='enable adult soul')&&!state.policy?.adultStatusConfirmed){const accepted=window.confirm(window.eidovaraI18n.t('adultWarning'));if(!accepted)return;if(command==='enable adult soul')await send('adult status confirmed');}setView('chat');await send(command);}));
+$$('[data-command]').forEach(b=>b.addEventListener('click',async()=>{const command=b.dataset.command;const enableCmd=command==='adult status confirmed'||command==='enable adult soul'||command==='I consent';if(enableCmd&&!adminSessionActive()){openAdmin().catch(err=>alert(String(err?.message||err)));return;}if((command==='adult status confirmed'||command==='enable adult soul')&&!state.policy?.adultStatusConfirmed){const accepted=window.confirm(window.eidovaraI18n.t('adultWarning'));if(!accepted)return;if(command==='enable adult soul')await send('adult status confirmed');}setView('chat');await send(command);}));
 $('#settingsForm').addEventListener('submit',async e=>{e.preventDefault();$('#settingsStatus').textContent='Saving…';try{const provider=$('#providerSelect').value, endpoint=$('#endpointInput').value.trim(), model=$('#modelInput').value.trim();settings=await window.soul.saveSettings({provider,endpoint,model,language:$('#languageSelect').value,apiKey:$('#apiKeyInput').value,clearApiKey:$('#clearKeyInput').checked,searchApiKey:$('#searchApiKeyInput').value,clearSearchApiKey:$('#clearSearchKeyInput').checked,assistOptIn:$('#assistOptIn')?$('#assistOptIn').checked:false,theme:{background:$('#themeBackground').value,panel:$('#themePanel').value,accent:$('#themeAccent').value,transparency:Number($('#themeTransparency').value),rgbEffects:$('#themeRgb').checked,gamingMode:$('#gamingModeInput').checked},companion:{avatarMode:$('#avatarMode').value,motion:$('#avatarMotion').value,voiceEnabled:$('#voiceMute')? !$('#voiceMute').checked : $('#voiceEnabled').checked,mute:$('#voiceMute')?$('#voiceMute').checked:!$('#voiceEnabled').checked,voiceName:$('#voiceSelect').value,voiceURI:$('#voiceSelect').value,lookId:$('#presenceLook')?.value||'orb',rate:Number($('#voiceRate').value),pitch:Number($('#voicePitch').value),adultPresentation:$('#adultPresentation').checked,bodyHeight:Number($('#bodyHeight').value),bodyBuild:Number($('#bodyBuild').value),bodyCurves:Number($('#bodyCurves').value)}});$('#apiKeyInput').value='';$('#searchApiKeyInput').value='';$('#clearKeyInput').checked=false;$('#clearSearchKeyInput').checked=false;const labels={offline:'Soul Offline',local:'Local model',compatible:'Connected model'};let note=`Settings saved. Provider: ${labels[settings.provider]||settings.provider}. Language: ${settings.language||'en'}.`;if(settings.provider!=='offline'&&(!endpoint||!model)) note+=' Add an endpoint and model before leaving offline fallback.';$('#settingsStatus').textContent=note;applyTheme();applyCompanion();renderStatus();renderDashboard();}catch(err){$('#settingsStatus').textContent=String(err?.message||err);}});
 $('#addAppBtn').addEventListener('click',async()=>{try{settings=await window.soul.addApplication();applyTheme();renderApps();$('#appsStatus').textContent='Application list updated.';}catch(err){$('#appsStatus').textContent=String(err?.message||err);}});
-const localMediaButton=el('button','secondary',t('openLocalMedia','Open local media'));localMediaButton.type='button';localMediaButton.id='openLocalMediaBtn';localMediaButton.addEventListener('click',async()=>{try{const item=await window.soul.selectLocalMedia();if(item)playMedia([item],0,{alreadyConfirmed:true});}catch(err){alert(String(err?.message||err));}});$('#entertainmentView .panel-head').append(localMediaButton);
+const localMediaButton=el('button','secondary',t('openLocalMedia','Open local media'));localMediaButton.type='button';localMediaButton.id='openLocalMediaBtn';localMediaButton.addEventListener('click',async()=>{try{const item=await window.soul.selectLocalMedia();if(item){sessionLibrary=[{...item,playable:true},...sessionLibrary.filter(x=>x.url!==item.url)].slice(0,32);playMedia([item],0,{alreadyConfirmed:true});renderEntertainment();}}catch(err){alert(String(err?.message||err));}});$('#entertainmentView .panel-head').append(localMediaButton);
 $('#discoverAppsBtn').addEventListener('click',async()=>{
   const grid=$('#discoveredAppsGrid');
   try {
@@ -551,7 +677,12 @@ $('#diagnosticsBtn').addEventListener('click',async()=>{
     const rows=[
       ['Eidovara', `${d.version} · ${d.platform}/${d.arch}`],
       ['Chromium', `${d.chromium || 'n/a'} · GPU accel ${d.hardwareAcceleration?'on':'off'}`],
+      ['Engines', (d.engines||[]).filter(e=>e.shipped).map(e=>e.title).join(' · ') || 'Soul kernel'],
+      ['Not bundled', (d.engines||[]).filter(e=>e.blocked).map(e=>e.title).join(' · ') || 'neural TTS / VRM / Three.js'],
+      ['Stay-awake', d.stayAwake?.active?'display sleep blocked':'idle'],
       ['Codecs', `H.264 ${codecs.video?.h264?'yes':'no'} · VP9 ${codecs.video?.vp9?'yes':'no'} · AV1 ${codecs.video?.av1?'yes':'no'} · AAC ${codecs.audio?.aac?'yes':'no'}`],
+      ['WebGPU probe', codecs.gpu?.webgpu?'navigator.gpu present (figure still WebGL)':'not present'],
+      ['Gamepad', `${codecs.input?.gamepadApi?'API':'no API'} · ${codecs.input?.connectedGamepads||0} connected`],
       ['Protection', d.settings?.encryptionAvailable ? 'OS credential protection available' : 'OS credential protection unavailable'],
       ['Safety log', `${d.localSafetyReportCount||0} local reports (not sent automatically)`]
     ];
@@ -560,10 +691,67 @@ $('#diagnosticsBtn').addEventListener('click',async()=>{
   $('#diagnosticsText').textContent=JSON.stringify(d,null,2);
   $('#diagnosticsCard').classList.remove('hidden');
 });
-async function checkUpdates(silent=false){try{const u=await window.soul.checkForUpdates();if(!u.configured){if(!silent)$('#updateStatus').textContent='This development build has no published release channel.';return;}if(u.available){$('#updateStatus').textContent=`Version ${u.version} is available.${u.notes?' '+u.notes:''}`;$('#installUpdateBtn').classList.remove('hidden');}else if(!silent){ $('#updateStatus').textContent=`Eidovara ${u.currentVersion} is current.`;}}catch(err){if(!silent)$('#updateStatus').textContent=String(err?.message||err);}}
-$('#checkUpdateBtn').addEventListener('click',()=>checkUpdates(false));$('#installUpdateBtn').addEventListener('click',async()=>{try{$('#updateStatus').textContent='Downloading and verifying update…';const result=await window.soul.installUpdate();$('#updateStatus').textContent=result.cancelled?'Update cancelled.':'Verified installer launched.';}catch(err){$('#updateStatus').textContent=String(err?.message||err);}});
+function applyUpdateStatus(u){
+  if(!u) return;
+  const status=$('#updateStatus');
+  const install=$('#installUpdateBtn');
+  const banner=$('#updateReadyBanner');
+  const bannerText=$('#updateReadyText');
+  const phase=u.phase|| (u.available?'available':'idle');
+  if(install){
+    install.classList.toggle('hidden', !(u.available && (phase==='ready'||phase==='available'||phase==='downloading')));
+    install.textContent=phase==='ready'||u.provider==='electron-updater'?'Restart and install':'Download and install';
+    install.disabled=phase==='downloading';
+  }
+  if(banner){
+    const show=u.available===true && (phase==='ready'||phase==='available');
+    banner.classList.toggle('hidden', !show);
+    if(bannerText && show) bannerText.textContent=phase==='ready'
+      ?`Update ready: Eidovara ${u.version}. Checksum verified. Builds are Authenticode-unsigned.`
+      :`Eidovara ${u.version} is available from GitHub Releases.`;
+  }
+  if(!status) return;
+  if(u.error){ status.textContent=u.error; return; }
+  if(u.skipped && phase==='idle') return;
+  if(phase==='checking') status.textContent='Checking GitHub Releases…';
+  else if(phase==='downloading') status.textContent=`Downloading Eidovara ${u.version||''} and verifying checksum…${u.percent!=null?` ${u.percent}%`:''}`.trim();
+  else if(phase==='ready') status.textContent=`Update ready: Eidovara ${u.version}. Checksum verified. Builds are Authenticode-unsigned. Restart to apply.`;
+  else if(u.available) status.textContent=`Version ${u.version} is available.${u.notes?' '+u.notes:''}`;
+  else if(!u.configured) status.textContent='This development build has no published release channel.';
+  else status.textContent=`Eidovara ${u.currentVersion||''} is current.`.trim();
+}
+async function checkUpdates(silent=false){
+  try{
+    if(!silent && $('#updateStatus')) $('#updateStatus').textContent='Checking GitHub Releases…';
+    const u=await window.soul.checkForUpdates();
+    applyUpdateStatus(u);
+    if(silent && u?.error && $('#updateStatus')) $('#updateStatus').textContent=u.error;
+  }catch(err){
+    if($('#updateStatus')) $('#updateStatus').textContent=String(err?.message||err);
+  }
+}
+async function installUpdate(){
+  try{
+    if($('#updateStatus')) $('#updateStatus').textContent='Preparing the verified installer…';
+    const result=await window.soul.installUpdate();
+    if(result?.cancelled){ if($('#updateStatus')) $('#updateStatus').textContent='Update cancelled.'; return; }
+    if($('#updateStatus')) $('#updateStatus').textContent=result?.restarting?'Eidovara will quit to apply the verified Windows installer. Builds are Authenticode-unsigned.':'Verified installer launched. Builds are Authenticode-unsigned.';
+  }catch(err){ if($('#updateStatus')) $('#updateStatus').textContent=String(err?.message||err); }
+}
+window.eidovaraCheckUpdates=()=>{ jumpSettings('#settings-updates'); checkUpdates(false); };
+$('#checkUpdateBtn').addEventListener('click',()=>checkUpdates(false));
+$('#installUpdateBtn').addEventListener('click',()=>installUpdate());
+$('#updateReadyInstallBtn')?.addEventListener('click',()=>installUpdate());
+$('#updateReadyLaterBtn')?.addEventListener('click',()=>$('#updateReadyBanner')?.classList.add('hidden'));
+$('#autoCheckUpdates')?.addEventListener('change',async()=>{
+  try{
+    settings=await window.soul.setAutoCheckUpdates($('#autoCheckUpdates').checked);
+    window.eidovaraSettings=settings;
+    if($('#updateStatus')) $('#updateStatus').textContent=$('#autoCheckUpdates').checked?'Automatic GitHub checks are on. Installing still needs your confirmation.':'Automatic checks are off. You can still check manually.';
+  }catch(err){ if($('#updateStatus')) $('#updateStatus').textContent=String(err?.message||err); }
+});
+if(window.soul?.onUpdateStatus) window.soul.onUpdateStatus(payload=>{ applyUpdateStatus(payload); });
 $$('input[name="setupCategory"]').forEach(x=>x.addEventListener('change',toggleStreamSetup));$('#openSetupBtn').addEventListener('click',()=>openSetup(true));$('#cancelSetupBtn').addEventListener('click',()=>$('#setupOverlay').classList.add('hidden'));$('#setupForm').addEventListener('submit',async e=>{e.preventDefault();const categories=setupCategories();const access=$('#setupAccessibility')?.value.trim()||'';if(!categories.length&&!$('#setupCustomNeeds').value.trim()&&!access){$('#setupStatus').textContent='Choose at least one role or describe what you need.';return;}try{$('#setupStatus').textContent='Saving…';state=await window.soul.configureSetup({categories,customNeeds:$('#setupCustomNeeds').value,obsWebSocketUrl:$('#setupObsUrl').value,streamGoals:$('#setupStreamGoals').value});if(access||categories.includes('accessibility')) state=await window.soul.configureAssistant(assistantPayload({accessibility:access || state.assistant?.preferences?.accessibility || ''}));$('#setupOverlay').classList.add('hidden');renderAll();}catch(err){$('#setupStatus').textContent=String(err?.message||err);}});
-$('#mediaPrevBtn').addEventListener('click',()=>loadMedia(mediaIndex-1));$('#mediaNextBtn').addEventListener('click',()=>loadMedia(mediaIndex+1));$('#mediaPlayBtn').addEventListener('click',()=>{const p=currentPlayer();if(!p)return;p.paused?p.play().catch(()=>{}):p.pause();});$('#mediaFavoriteBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;await window.soul.recordMedia({event:'favorite',type:item.type,title:item.title,sourceUrl:item.sourceUrl});$('#mediaFavoriteBtn').textContent='♥';});$('#mediaSimilarBtn').addEventListener('click',async()=>{const item=mediaQueue[mediaIndex];if(!item)return;const taste=await window.soul.entertainment();const favorites=taste.topTitles.slice(0,3).map(x=>x.title).join(', ');send(`Find something similar to my favorite music: ${item.title}${favorites?`, considering ${favorites}`:''}`);});$('#mediaSpotifyBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://open.spotify.com/search/${encodeURIComponent(item.title)}`);});$('#mediaYouTubeBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`);});$('#mediaSourceBtn').addEventListener('click',()=>{const item=mediaQueue[mediaIndex];if(item)window.soul.openExternal(item.sourceUrl);});$('#mediaCloseBtn').addEventListener('click',()=>{const p=currentPlayer();p?.pause();$('#mediaDock').classList.add('hidden');});function completeMedia(){const next=mediaIndex+1;mediaSignal('complete');mediaIndex=-1;loadMedia(next);}$('#audioPlayer').addEventListener('ended',completeMedia);$('#videoPlayer').addEventListener('ended',completeMedia);
 $('#backupBtn').addEventListener('click',async()=>{try{$('#backupStatus').textContent='Creating local snapshot…';const b=await window.soul.createBackup();$('#backupStatus').textContent=`Created ${b.name} (${Math.ceil(b.bytes/1024)} KB). Restore is available from the list below.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});
 $('#refreshBackupsBtn').addEventListener('click',()=>refreshBackups().then(()=>{$('#backupStatus').textContent=backupCount?`${backupCount} local snapshot${backupCount===1?'':'s'} available.` : t('noBackups');renderDashboard();}).catch(err=>{$('#backupStatus').textContent=String(err?.message||err);}));
 $('#restoreBackupBtn').addEventListener('click',async()=>{const name=$('#backupSelect').value;if(!name||name.startsWith('No backups')||!confirm('Restore this backup and replace the current profile state?'))return;try{state=await window.soul.restoreBackup(name);renderAll();$('#backupStatus').textContent=`Restored ${name}. Conversations, memories, and Soul continuity now match that snapshot.`;await refreshBackups();renderDashboard();}catch(err){$('#backupStatus').textContent=String(err?.message||err);}});
@@ -573,11 +761,37 @@ function startPathDismissed(){ try { return localStorage.getItem(START_PATH_KEY)
 function setStartPathDismissed(on){ try { if(on) localStorage.setItem(START_PATH_KEY,'1'); else localStorage.removeItem(START_PATH_KEY); } catch {} $('#startPath')?.classList.toggle('hidden', on); }
 function jumpSettings(id){ setView('settings'); const node=$(id); if(node) node.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); }
 function focusCompanion(){ setView('dashboard'); $('#soulDock')?.scrollIntoView({block:'nearest'}); $('#companionInput')?.focus(); }
+async function openEidovaraOverlay(kind, url){
+  const status=$('#overlayStatus')||$('#appsStatus')||$('#companionError');
+  try{
+    await window.soul.openOverlay({kind, url});
+    if(status){ status.textContent='Overlay opened as an Eidovara window. Not affiliated. Does not inject into other games.'; status.classList.remove('hidden'); }
+  }catch(err){
+    if(status){ status.textContent=String(err?.message||err); status.classList.remove('hidden'); }
+  }
+}
+let overlayButtonsBound=false;
+function bindOverlayButtons(){
+  if(overlayButtonsBound) return;
+  overlayButtonsBound=true;
+  $$('[data-overlay]').forEach(b=>b.addEventListener('click',()=>openEidovaraOverlay(b.dataset.overlay, b.dataset.overlayUrl||'')));
+  $('#overlayGoBtn')?.addEventListener('click',()=>openEidovaraOverlay('browse', $('#overlayUrlInput')?.value||''));
+  $('#overlayUrlInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); openEidovaraOverlay('browse', e.currentTarget.value||''); } });
+  $('#refreshMetricsBtn')?.addEventListener('click',()=>refreshEidovaraMetrics());
+}
 const PALETTE_COMMANDS = [
   { id:'dashboard', title:'Dashboard', hint:'Home after 18+', run:()=>setView('dashboard') },
   { id:'talk', title:'Talk with Soul', hint:'Right dock — local assistant, not Assist', run:()=>focusCompanion() },
   { id:'apps', title:'Apps & Gaming', hint:'Launch still asks you to confirm', run:()=>setView('apps') },
+  { id:'overlay-chat', title:'Soul chat overlay', hint:'Floating local kernel — not Assist', run:()=>openEidovaraOverlay('chat') },
+  { id:'overlay-browse', title:'Browse overlay', hint:'HTTPS guest window; workspace stays locked', run:()=>openEidovaraOverlay('browse') },
+  { id:'overlay-discord', title:'Discord guest overlay', hint:'discord.com in a sandbox — not affiliated', run:()=>openEidovaraOverlay('discord') },
+  { id:'focus', title:'Focus timer', hint:'Quiet 25-minute block — no other-process control', run:()=>window.eidovaraLayers?.startFocus?.(25) },
+  { id:'scratch', title:'Scratchpad', hint:'Local capture on the Dashboard', run:()=>{ setView('dashboard'); $('#scratchpadInput')?.focus(); } },
+  { id:'now-playing', title:'Now playing', hint:'Local media dock — eidovara-media stays locked', run:()=>{ setView('entertainment'); $('#mediaDock')?.classList.remove('hidden'); $('#mediaDock')?.scrollIntoView({block:'nearest'}); } },
   { id:'entertainment', title:'Entertainment', hint:'Local media and official searches', run:()=>setView('entertainment') },
+  { id:'adult-soul', title:'Adult Soul', hint:'21+ studio, Feel Sync pad — triple gate', run:()=>setView('adultSoul') },
+  { id:'adult-media', title:'Adult Media', hint:'Local rails + official HTTPS searches', run:()=>{ setView('entertainment'); $('#adultMediaDesk')?.scrollIntoView({block:'start'}); } },
   { id:'memory', title:'Memory', hint:'Facts Soul can keep', run:()=>setView('memory') },
   { id:'identity', title:'Identity & consent', hint:'Adult Mode stays a triple gate', run:()=>setView('identity') },
   { id:'service', title:'Service URL', hint:'Default https://api.eidovara.org', run:()=>jumpSettings('#serviceForm') },
@@ -585,6 +799,7 @@ const PALETTE_COMMANDS = [
   { id:'modules', title:'Modules', hint:'Local feature toggles', run:()=>jumpSettings('#kernelCustomizeForm') },
   { id:'behavior', title:'Soul behavior', hint:'Tone, research, media confirm', run:()=>jumpSettings('#assistantBehaviorForm') },
   { id:'backups', title:'Backups', hint:'Local snapshots', run:()=>jumpSettings('#backupSection') },
+  { id:'updates', title:'Check for updates', hint:'GitHub Releases, checksum verified, unsigned', run:()=>window.eidovaraCheckUpdates() },
   { id:'chrome', title:'Desktop chrome', hint:'Tray, on-top, Windows open-at-login', run:()=>jumpSettings('#desktopChromeForm') },
   { id:'notices', title:'In-app notices', hint:'Local events, not OS spam', run:()=>window.eidovaraChrome?.openNotices?.() },
   { id:'legal', title:'About & legal', hint:'18+, unsigned, no payments', run:()=>showLegal('about') },
@@ -593,8 +808,9 @@ const PALETTE_COMMANDS = [
 let paletteIndex = 0;
 function filteredPalette(query){
   const q=String(query||'').trim().toLowerCase();
-  if(!q) return PALETTE_COMMANDS.slice();
-  return PALETTE_COMMANDS.filter(item => `${item.title} ${item.hint} ${item.id}`.toLowerCase().includes(q));
+  const list=PALETTE_COMMANDS.filter(item => adminSessionActive() || (item.id!=='adult-soul' && item.id!=='adult-media'));
+  if(!q) return list.slice();
+  return list.filter(item => `${item.title} ${item.hint} ${item.id}`.toLowerCase().includes(q));
 }
 function renderPaletteList(){
   const box=$('#paletteList'); if(!box) return;
@@ -671,6 +887,13 @@ document.addEventListener('keydown',e=>{
     } else openShortcutSheet();
     return;
   }
+  if(e.ctrlKey&&e.shiftKey&&!e.altKey&&e.key.toLowerCase()==='o'){
+    if(document.body.classList.contains('age-gated')) return;
+    e.preventDefault();
+    setView('apps');
+    $('#overlayPanel')?.scrollIntoView({block:'nearest'});
+    return;
+  }
   if(overlayOpen('#commandPalette')){
     const items=filteredPalette($('#paletteInput')?.value);
     if(e.key==='ArrowDown'){ e.preventDefault(); paletteIndex=Math.min(items.length-1, paletteIndex+1); renderPaletteList(); return; }
@@ -699,11 +922,36 @@ $$('[data-start]').forEach(b=>b.addEventListener('click',()=>{
 }));
 $('#dismissStartPath')?.addEventListener('click',()=>setStartPathDismissed(true));
 $('#adminCancelBtn').addEventListener('click',()=>$('#adminOverlay').classList.add('hidden'));
-$('#adminLoginForm').addEventListener('submit',async e=>{e.preventDefault();try{const password=$('#adminPassword').value;const status=$('#adminLoginForm').dataset.configured==='true'?await window.soul.adminLogin(password):await window.soul.adminConfigure(password);$('#adminPassword').value='';$('#adminLoginForm').classList.add('hidden');$('#adminPanelForm').classList.remove('hidden');$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;}catch(err){$('#adminLoginStatus').textContent=String(err?.message||err);}});
+$('#adminLoginForm').addEventListener('submit',async e=>{e.preventDefault();try{const password=$('#adminPassword').value;const status=$('#adminLoginForm').dataset.configured==='true'?await window.soul.adminLogin(password):await window.soul.adminConfigure(password);applyAdminSession(true);$('#adminPassword').value='';$('#adminLoginForm').classList.add('hidden');$('#adminPanelForm').classList.remove('hidden');$('#adminEdition').value=status.edition;$('#adminStoreUrl').value=status.storeUrl||'';$('#adminServiceUrl').value=status.serviceUrl||'';$('#adminPanelStatus').textContent=`Unlocked until ${new Date(status.expiresAt).toLocaleTimeString()}.`;fillAdminAdultStatus();}catch(err){$('#adminLoginStatus').textContent=String(err?.message||err);}});
 $('#adminPanelForm').addEventListener('submit',async e=>{e.preventDefault();try{const status=await window.soul.adminSave({edition:$('#adminEdition').value,storeUrl:$('#adminStoreUrl').value.trim(),serviceUrl:$('#adminServiceUrl').value.trim()});settings=await window.soul.getSettings();renderAll();$('#adminPanelStatus').textContent=`Saved ${status.edition} edition, store, and HTTPS service configuration.`;}catch(err){$('#adminPanelStatus').textContent=String(err?.message||err);}});
-$('#adminLockBtn').addEventListener('click',async()=>{await window.soul.adminLogout();$('#adminOverlay').classList.add('hidden');});
+$('#adminLockBtn').addEventListener('click',async()=>{await window.soul.adminLogout();applyAdminSession(false);$('#adminOverlay').classList.add('hidden');});
 $('#adminStoreBtn').addEventListener('click',()=>{const url=$('#adminStoreUrl').value.trim();if(!url){$('#adminPanelStatus').textContent='Configure an HTTPS store link first.';return;}window.soul.openExternal(url).catch(err=>{$('#adminPanelStatus').textContent=String(err?.message||err);});});
 $('#adminServiceBtn').addEventListener('click',async()=>{try{await window.soul.adminSave({edition:$('#adminEdition').value,storeUrl:$('#adminStoreUrl').value.trim(),serviceUrl:$('#adminServiceUrl').value.trim()});const result=await window.soul.checkService();settings=await window.soul.getSettings();applyServiceIndicator(result);$('#adminPanelStatus').textContent=!result.configured?'Configure a service URL first.':result.online?`${result.service||'Eidovara'} ${result.version||''} is online. Checkout stays off.`.replace(/\s+/g,' ').trim():(result.error||'Service is offline. Offline Soul continues locally.');}catch(err){$('#adminPanelStatus').textContent=String(err?.message||err);}});
+async function adminAdultCommand(command){
+  try{
+    const res=await window.soul.send(command,{view:'identity'});
+    state=res.state;
+    renderAll();
+    fillAdminAdultStatus();
+    if($('#adminPanelStatus')) $('#adminPanelStatus').textContent=res.reply||'Adult Mode updated.';
+  }catch(err){
+    if($('#adminPanelStatus')) $('#adminPanelStatus').textContent=String(err?.message||err);
+  }
+}
+$('#adminAdultConfirmBtn')?.addEventListener('click',()=>adminAdultCommand('adult status confirmed'));
+$('#adminAdultEnableBtn')?.addEventListener('click',async()=>{
+  if(!state?.policy?.adultStatusConfirmed){
+    const accepted=window.confirm(window.eidovaraI18n.t('adultWarning'));
+    if(!accepted)return;
+    await adminAdultCommand('adult status confirmed');
+  }
+  await adminAdultCommand('enable adult soul');
+});
+$('#adminAdultConsentBtn')?.addEventListener('click',()=>adminAdultCommand('I consent'));
+$('#adminAdultRevokeBtn')?.addEventListener('click',()=>adminAdultCommand('revoke consent'));
+$('#adminAdultStandardBtn')?.addEventListener('click',()=>adminAdultCommand('standard mode'));
+$('#adminOpenAdultSoulBtn')?.addEventListener('click',()=>{$('#adminOverlay').classList.add('hidden');setView('adultSoul');});
+$('#adminOpenAdultMediaBtn')?.addEventListener('click',()=>{$('#adminOverlay').classList.add('hidden');setView('entertainment');$('#adultMediaDesk')?.scrollIntoView({block:'start'});});
 let serviceRetryTimer=0;
 async function refreshServiceStatus(silent=false){
   if(!settings?.ageGateAccepted) return;
@@ -743,6 +991,8 @@ function showLegal(section){
   $('#legalOverlay').classList.remove('hidden');
 }
 window.eidovaraSetView=setView;
+window.eidovaraOpenAdmin=openAdmin;
+window.eidovaraAdminSession=adminSessionActive;
 window.eidovaraSend=send;
 window.eidovaraOpenSetup=openSetup;
 window.eidovaraShowLegal=showLegal;
@@ -761,7 +1011,7 @@ function setAgeGated(on){
   $('#ageGateOverlay').classList.toggle('hidden',!on);
   if(on) $('#ageGateTermsCheck')?.focus();
 }
-$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
+$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshAdminSession().catch(()=>{});await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
 $('#ageGateDeclineBtn').addEventListener('click',()=>window.soul.declineAgeGate());
 
-(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();
+(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;if($('#autoCheckUpdates'))$('#autoCheckUpdates').checked=settings.autoCheckUpdates!==false;if(settings.updateStatus)applyUpdateStatus(settings.updateStatus);setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshAdminSession();void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();

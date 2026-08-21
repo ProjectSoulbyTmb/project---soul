@@ -13,13 +13,11 @@ Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available;
 - **Works claimed:** qualifying original first-party Eidovara expression (source, tests, first-party docs, first-party UI assets, release materials he authored)
 - **Not claimed:** ideas, methods, systems, facts, names, titles, short phrases; Electron, Chromium, Node.js, Windows; Wikipedia/Wikimedia content; user content; third-party marks and media
 
-See [OWNERSHIP.md](../OWNERSHIP.md), [NOTICE.md](../NOTICE.md), [COPYRIGHT.txt](../COPYRIGHT.txt), and [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md).
+See [OWNERSHIP.md](../OWNERSHIP.md), [NOTICE.md](../NOTICE.md), [COPYRIGHT.txt](../COPYRIGHT.txt), [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md), and the dated repository self-attestation [IP_CERTIFICATION.md](IP_CERTIFICATION.md) (not a government registration).
 
 ## Standard file header (single block)
 
-Use **one** header. Do not stack multiple copyright blocks or paste third-party licenses into first-party files. The first-party JavaScript already in `src/` and `docs/*.js` uses this SPDX pair (applied on `cursor/secure-ip-c180`). **Do not restamp those files** with a second header.
-
-JavaScript / CSS / CJS (first two lines):
+Use **one** header. Do not stack multiple copyright blocks or paste third-party licenses into first-party files. JavaScript / CSS / CJS (first two lines):
 
 ```
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
@@ -28,7 +26,7 @@ JavaScript / CSS / CJS (first two lines):
 
 That SPDX identifier names the Eidovara Source-Available Evaluation License in LICENSE. It is **not** MIT, Apache, GPL, or an OSI-approved license.
 
-HTML (optional comment after `<!doctype html>` on new first-party pages that lack a footer notice):
+HTML (comment after `<!doctype html>` on first-party pages):
 
 ```
 <!-- SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth -->
@@ -42,7 +40,7 @@ Rules:
 1. Apply only to **first-party** files. Do not stamp Electron, Chromium, Node.js, or other third-party trees.
 2. Do not add a second header to files that already carry the SPDX pair or an equivalent Tyler Michael Bosworth copyright line.
 3. Absence of a header does **not** mean a first-party file is unlicensed or third-party; LICENSE still governs.
-4. This instrument pack does **not** mass-stamp files the secure-IP sibling already headed.
+4. First-party `src/`, `docs/` HTML/CSS/JS, `scripts/`, and `server/` already carry this SPDX pair as of the IP self-attestation. **Do not restamp** those files with a second header.
 5. Do not add ®, a copyright-office registration number, or a patent number. Do not change the SPDX identifier to MIT or GPL.
 
 ## How to put a copyright notice on a work

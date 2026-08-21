@@ -7,11 +7,36 @@ import { processLearning } from './learning.js';
 import { reflectOnGrowth } from './growth.js';
 import { updateRelationship } from './relationship.js';
 import { uid } from './schema.js';
+import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { OfflineProvider } from '../providers/offline.js';
 import { buildSystemContext } from '../providers/context.js';
 import { researchInternet, researchOpenActions, citeResearchInReply } from '../providers/internet.js';
 import { entertainmentSummary, recordMediaEvent, discoverMedia, mergeMediaDiscovery } from './entertainment.js';
 import { isExplicitInternetRequest, isMediaDiscoveryRequest } from './workspace.js';
+import {
+  configureAdultSoul,
+  deactivateAdultSoul,
+  adultSoulView,
+  startAdultSession,
+  stopAdultSession,
+  tickAdultSession,
+  applyAdultCommand,
+  addAdultClip,
+  adultSoulReply
+} from './adult-soul.js';
+import {
+  buildAdultMediaDesk,
+  configureAdultMedia,
+  adultMediaReply
+} from './adult-media.js';
+import {
+  normalizeAdultFeel,
+  publicStealth,
+  feelSample,
+  feelToPace,
+  addBookmarkToFolder,
+  adultFeelReply
+} from './adult-feel.js';
 import {
   configureKernelState,
   createRuntimeRegistry,
@@ -57,7 +82,7 @@ export class SoulEngine {
     this.store.save(this.state);
   }
   setProvider(provider) { this.provider = provider || new OfflineProvider(); }
-  setInternetOptions(options = {}) { this.internetOptions = options; }
+  setInternetOptions(options = {}) { this.internetOptions = { ...(this.internetOptions || {}), ...options }; }
   registerModule(mod) { return this.modules.register(mod); }
   kernelStatus() { return kernelView(this.state, this.modules); }
   heartbeat({ persist = false, at } = {}) {
@@ -159,7 +184,13 @@ export class SoulEngine {
     return result;
   }
   reset() { this.state = this.store.reset(); startKernelSession(this.state); this.store.save(this.state); return this.snapshot(); }
-  snapshot() { return JSON.parse(JSON.stringify(this.state)); }
+  snapshot() {
+    const copy = JSON.parse(JSON.stringify(this.state));
+    if (copy.adultSoul?.feel?.stealth) {
+      copy.adultSoul.feel.stealth = publicStealth(copy.adultSoul.feel.stealth);
+    }
+    return copy;
+  }
   remember(content, opts = {}) { const m = addMemory(this.state, content, opts); this.store.save(this.state); return m; }
   forget(idOrText) { const count = forgetMemory(this.state, idOrText); this.store.save(this.state); return count; }
   createBackup() { return this.store.createBackup(this.state); }
@@ -208,6 +239,125 @@ export class SoulEngine {
     };
     const at = new Date().toISOString(); this.state.audit.push({ at, type: 'assistant.configured', details: { autonomy, initiativeEnabled: this.state.assistant.initiativeEnabled } }); this.store.save(this.state); return this.snapshot();
   }
+  adultSoulStatus() { return adultSoulView(this.state); }
+  configureAdultSoul(input = {}) {
+    const view = configureAdultSoul(this.state, input);
+    this.store.save(this.state);
+    return view;
+  }
+  startAdultSession(input = {}) {
+    const view = startAdultSession(this.state, input);
+    this.store.save(this.state);
+    return view;
+  }
+  stopAdultSession() {
+    const view = stopAdultSession(this.state);
+    this.store.save(this.state);
+    return view;
+  }
+  tickAdultSession(atMs) {
+    return tickAdultSession(this.state, atMs);
+  }
+  adultSoulCommand(command) {
+    const view = applyAdultCommand(this.state, command);
+    this.store.save(this.state);
+    return view;
+  }
+  addAdultClip(clip) {
+    const view = addAdultClip(this.state, clip);
+    this.store.save(this.state);
+    return view;
+  }
+  adultMediaDesk(input = {}) {
+    return buildAdultMediaDesk(this.state, input);
+  }
+  configureAdultMedia(input = {}) {
+    const desk = configureAdultMedia(this.state, input);
+    this.store.save(this.state);
+    return desk;
+  }
+  addAdultFolderBookmark(folderId, item) {
+    if (!adultAllowed(this.state)) throw new Error('Adult bookmarks stay locked until the triple gate is on.');
+    const feel = addBookmarkToFolder(this.state.adultSoul?.feel, folderId, item);
+    configureAdultSoul(this.state, { feel });
+    this.store.save(this.state);
+    return adultSoulView(this.state);
+  }
+  setAdultPin(pin, confirm) {
+    if (!adultAllowed(this.state)) throw new Error('Adult PIN stays locked until the triple gate is on.');
+    const a = String(pin || '').replace(/\D/g, '');
+    const b = String(confirm || '').replace(/\D/g, '');
+    if (a.length < 4 || a.length > 8) throw new Error('Adult PIN must be 4–8 digits.');
+    if (a !== b) throw new Error('Adult PIN confirmation did not match.');
+    const salt = randomBytes(16);
+    const hash = scryptSync(a, salt, 32);
+    const feel = normalizeAdultFeel(this.state.adultSoul?.feel);
+    feel.stealth = {
+      ...feel.stealth,
+      pinEnabled: true,
+      pinSalt: salt.toString('hex'),
+      pinHash: hash.toString('hex'),
+      locked: false,
+      blanked: false
+    };
+    configureAdultSoul(this.state, { feel });
+    this.store.save(this.state);
+    return adultSoulView(this.state);
+  }
+  unlockAdultStealth(pin) {
+    if (!adultAllowed(this.state)) throw new Error('Adult Mode is off.');
+    const feel = normalizeAdultFeel(this.state.adultSoul?.feel);
+    if (!feel.stealth.pinEnabled || !feel.stealth.pinHash || !feel.stealth.pinSalt) {
+      feel.stealth.locked = false;
+      feel.stealth.blanked = false;
+      configureAdultSoul(this.state, { feel });
+      this.store.save(this.state);
+      return adultSoulView(this.state);
+    }
+    const digits = String(pin || '').replace(/\D/g, '');
+    const salt = Buffer.from(feel.stealth.pinSalt, 'hex');
+    const expected = Buffer.from(feel.stealth.pinHash, 'hex');
+    const actual = scryptSync(digits, salt, 32);
+    if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
+      throw new Error('Adult PIN did not match.');
+    }
+    feel.stealth.locked = false;
+    feel.stealth.blanked = false;
+    configureAdultSoul(this.state, { feel });
+    this.store.save(this.state);
+    return adultSoulView(this.state);
+  }
+  lockAdultStealth() {
+    if (!adultAllowed(this.state)) return adultSoulView(this.state);
+    const feel = normalizeAdultFeel(this.state.adultSoul?.feel);
+    if (feel.stealth.pinEnabled !== true) return adultSoulView(this.state);
+    feel.stealth.locked = true;
+    feel.stealth.blanked = true;
+    configureAdultSoul(this.state, { feel });
+    this.store.save(this.state);
+    return adultSoulView(this.state);
+  }
+  applyFeelLevel(level, atMs) {
+    if (!adultAllowed(this.state)) return { level: 0, pace: 'stop', pattern: 'hold' };
+    const feel = normalizeAdultFeel(this.state.adultSoul?.feel);
+    const sample = feelSample(feel, atMs, level);
+    const pace = feelToPace(sample);
+    this.state.adultSoul = this.state.adultSoul || {};
+    this.state.adultSoul.feel = { ...feel, lastLevel: sample };
+    if (this.state.adultSoul.stage) {
+      this.state.adultSoul.stage = { ...this.state.adultSoul.stage, arousal: Math.round(sample * 100) };
+    }
+    if (this.state.adultSoul.session?.active) {
+      this.state.adultSoul.session = { ...this.state.adultSoul.session, pace, heat: Math.max(this.state.adultSoul.session.heat || 0, Math.round(sample * 100)) };
+    }
+    return { level: sample, pace, pattern: feel.pattern, syncMode: feel.syncMode };
+  }
+  adultFeelStatus() {
+    return {
+      honesty: adultFeelReply(this.state.adultSoul?.feel),
+      feel: adultSoulView(this.state).feel
+    };
+  }
   activeConversation() { return this.state.conversations.find(c => c.id === this.state.activeConversationId) || this.state.conversations[0]; }
   newConversation() {
     const now = new Date().toISOString();
@@ -230,7 +380,7 @@ export class SoulEngine {
     if (text.length > 12000) throw new Error('Message is too long.');
     const now = new Date().toISOString();
     this.state.continuity.lastActiveAt = now;
-    const policyEvents = applyPolicyCommand(this.state, text);
+    const policyEvents = applyPolicyCommand(this.state, text, { adminAuthorized: payload.adminAuthorized === true });
     const safetyReport = assessRequestSafety(this.state, text);
     const learning = this.state.assistant?.capabilities?.memoryLearning === 'disabled' ? [] : processLearning(this.state, text);
     const relationship = updateRelationship(this.state, text);
@@ -240,9 +390,13 @@ export class SoulEngine {
     if (/^forget:/i.test(text)) forgetMemory(this.state, text.replace(/^forget:/i, '').trim());
 
     let policyReply = safetyReport ? 'I can’t help plan or facilitate illegal abuse, violence, exploitation, theft, fraud, or unauthorized access. This request was blocked and recorded in the local safety audit. If someone is in immediate danger, contact local emergency services.' : null;
-    if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_enable_blocked')) policyReply = 'Adult Soul cannot be enabled until adult status is explicitly confirmed.';
+    if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_admin_blocked')) policyReply = 'Adult Soul cannot be enabled from chat. Use the private administrator panel (Ctrl+A, away from text fields) until a later release. Revoke consent and Standard mode stay available on Identity.';
+    else if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_enable_blocked')) policyReply = 'Adult Soul cannot be enabled until adult status is explicitly confirmed.';
     else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. I’m returning to a non-adult, pressure-free interaction stance.';
     else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_blocked')) policyReply = 'Current consent cannot be activated until the adult gate is complete.';
+    if (policyEvents.some(([type]) => type === 'policy.consent_revoked' || type === 'policy.standard_enabled')) {
+      deactivateAdultSoul(this.state);
+    }
 
     const conv = this.activeConversation();
     conv.messages.push({ id: uid('msg'), role: 'user', content: text, at: now });
@@ -298,6 +452,16 @@ export class SoulEngine {
     if (!reply && route.intent === 'scratch' && /^(note:|scratch:)/i.test(text)) {
       reply = 'Captured to Memory on this device from the scratchpad. Nothing was sent to the website helper.';
     }
+    if (!reply && (route.intent === 'adult-soul' || route.intent === 'adult-session')) {
+      reply = payload.adminAuthorized === true
+        ? adultSoulReply(text, this.state).reply
+        : 'Adult Soul stays in the private administrator panel (Ctrl+A, away from text fields) until a later release. Revoke consent and Standard mode stay on Identity.';
+    }
+    if (!reply && (route.intent === 'adult-media' || route.intent === 'adult-media-blocked')) {
+      reply = payload.adminAuthorized === true
+        ? adultMediaReply(text, this.state)
+        : 'Adult Media stays in the private administrator panel (Ctrl+A) until a later release. Guest overlays stay closed when Adult Mode is on.';
+    }
     if (!reply) {
       const wantRemote = route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text);
       if (wantRemote) {
@@ -307,7 +471,8 @@ export class SoulEngine {
         mediaDiscovery = discoverMedia(text, {
           entertainment: this.state.entertainment,
           localLibrary: this.internetOptions?.localLibrary,
-          query: webResearch?.query
+          query: webResearch?.query,
+          adultAllowed: adultAllowed(this.state)
         });
         if (webResearch) webResearch = mergeMediaDiscovery(webResearch, mediaDiscovery);
       }

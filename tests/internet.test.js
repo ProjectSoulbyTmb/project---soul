@@ -265,6 +265,18 @@ test('offline, timeout, and blocked hosts fail closed while the workspace keeps 
   );
 });
 
+test('research sanitizer source does not use HTML-tag regular expressions', () => {
+  const source = fs.readFileSync('src/providers/internet.js', 'utf8');
+  const renderer = fs.readFileSync('src/renderer/renderer.js', 'utf8');
+  assert.doesNotMatch(source, /<script\[\\s\\S\]\*\?<\/script>/);
+  assert.doesNotMatch(source, /replace\(\s*\/<\[\^>\]\+>\//);
+  assert.doesNotMatch(source, /replace\(\s*\/<script/i);
+  assert.match(source, /function dropHtmlToText/);
+  assert.match(source, /function stripAngleBrackets/);
+  assert.match(renderer, /textContent/);
+  assert.doesNotMatch(renderer, /innerHTML\s*=/);
+});
+
 test('research path does not compile workers.dev or renderer innerHTML of fetched pages', () => {
   const read = file => fs.readFileSync(file, 'utf8');
   for (const file of ['src/providers/internet.js', 'src/core/engine.js', 'src/renderer/renderer.js', 'src/renderer/companion.js']) {

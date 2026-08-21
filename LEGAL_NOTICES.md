@@ -4,7 +4,7 @@ Last updated: August 21, 2026
 
 Eidovara is restricted to users age 18 or older. It is alpha software, not a government-approved, professionally certified, or universally lawful service. These notices are product disclaimers, **not legal advice**. Mandatory legal rights remain unaffected.
 
-Read [TERMS.md](TERMS.md), [PRIVACY.md](PRIVACY.md), [AGE.md](AGE.md), [LICENSE](LICENSE), [OWNERSHIP.md](OWNERSHIP.md), [TRADEMARKS.md](TRADEMARKS.md), and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Read [TERMS.md](TERMS.md), [PRIVACY.md](PRIVACY.md), [AGE.md](AGE.md), [LICENSE](LICENSE), [OWNERSHIP.md](OWNERSHIP.md), [TRADEMARKS.md](TRADEMARKS.md), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and the dated [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) self-attestation (not a government registration).
 
 ## Use and ownership
 
@@ -12,7 +12,7 @@ Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available;
 
 Use is governed by LICENSE and TERMS.md. Tyler Michael Bosworth claims qualifying original first-party expression. Eidovara is a trademark of Tyler Michael Bosworth (unregistered); Soul (feature name) and Soul Consciousness Studios (intended publisher name) are likewise unregistered marks. Ideas, methods, facts, public-domain material, and third-party material—including Electron, Chromium, Node.js, Microsoft Windows, and Wikipedia/Wikimedia content—are excluded. Third-party software, services, media, and marks remain subject to their owners' terms. Compatibility references do not imply endorsement or partnership. Soul Consciousness Studios is an intended publishing name, not a claim of entity or trademark registration. Users retain rights in their own content. GitHub's terms continue to apply to this public repository. Inbound code is not accepted until a privately executed written agreement; [docs/CONTRIBUTOR_ASSIGNMENT.md](docs/CONTRIBUTOR_ASSIGNMENT.md) is an unsigned template only. First-party source carries SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Forks remain under LICENSE and may not be relicensed as MIT, Apache, GPL, or other open source.
 
-Users are responsible for applicable law, account authority, media rights, application licenses, and platform rules. Eidovara does not bypass subscriptions, access controls, anti-cheat systems, or authorization. Built-in research uses public Wikipedia/Wikimedia on explicit request. Application launching is user-confirmed local Windows apps. Output is general assistance, not legal, medical, financial, emergency, therapy, or other professional advice. Soul does not claim human consciousness or sentience.
+Users are responsible for applicable law, account authority, media rights, application licenses, and platform rules. Eidovara does not bypass subscriptions, access controls, anti-cheat systems, or authorization. Built-in research is a public web lookup after an explicit request (Wikipedia/Wikimedia, optional Internet Archive catalog search, optional keyed search, HTTPS pages you open, and official search chips). Application launching is user-confirmed local Windows apps. Output is general assistance, not legal, medical, financial, emergency, therapy, or other professional advice. Soul does not claim human consciousness or sentience.
 
 ## Adult Mode
 

@@ -25,7 +25,7 @@ const NAV_RULES = [
 const WORKSPACE_KEEP = new Set([
   'focus', 'gaming', 'study', 'create', 'research', 'mood', 'favorites', 'watch',
   'gaming-ost', 'study-ost', 'surprise', 'talk', 'reassure', 'growth', 'remember',
-  'apps', 'memory'
+  'apps', 'memory', 'overlay-chat', 'overlay-browse', 'overlay-discord', 'overlays'
 ]);
 
 export function soulOverlay(state = {}) {
@@ -97,6 +97,14 @@ export function actionsForIntent(intent, overlay = {}) {
       return [action('open-view', { view: 'dashboard', label: 'Stay on workspace' })];
     case 'gaming':
       return [action('open-view', { view: 'apps', label: 'Apps & Gaming' })];
+    case 'overlay-chat':
+      return [action('open-chat-overlay', { label: 'Soul chat overlay' }), action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })];
+    case 'overlay-browse':
+      return [action('open-browse-overlay', { label: 'Browse overlay' }), action('open-overlay', { kind: 'browse', label: 'Browse overlay' })];
+    case 'overlay-discord':
+      return [action('open-discord-overlay', { label: 'Discord guest overlay' }), action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })];
+    case 'overlays':
+      return [action('open-view', { view: 'apps', label: 'Play desk', auto: true }), action('open-chat-overlay', { label: 'Soul chat overlay' })];
     case 'research':
       return [action('open-view', { view: 'chat', label: 'Open conversation' })];
     default: {
@@ -160,6 +168,8 @@ export function companionPublicMeta(result) {
       type: String(item.type || ''),
       view: item.view || undefined,
       legal: item.legal || undefined,
+      kind: item.kind ? String(item.kind).slice(0, 20) : undefined,
+      url: item.url ? String(item.url).slice(0, 500) : undefined,
       label: String(item.label || '').slice(0, 80),
       auto: Boolean(item.auto)
     })).filter(item => item.type) : [],
