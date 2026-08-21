@@ -60,7 +60,7 @@ const ENTRIES = {
   },
   what: {
     title: 'What Eidovara is',
-    reply: 'Eidovara v0.19.0 is a local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device — not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.',
+    reply: 'Eidovara v0.19.0 is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device — not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.',
     actions: [{ type: 'open-setup', label: 'Configure Soul' }, { type: 'open-view', view: 'apps', label: 'Apps & Gaming' }]
   },
   help: {

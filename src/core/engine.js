@@ -283,8 +283,8 @@ export class SoulEngine {
       const hits = this.searchWorkspace(text, { apps: [] });
       const lines = hits.slice(0, 8).map(item => `• ${item.title} (${item.kind})`).join('\n');
       reply = hits.length
-        ? `Local workspace matches on this PC (no background crawler, no /v1/assist). Assist is not Soul.\n${lines}`
-        : 'No local matches for that query. Search stays on this device — it does not crawl other apps or POST /v1/assist.';
+        ? `Local workspace matches on this PC (no background crawler, no Worker helper). Assist is not Soul.\n${lines}`
+        : 'No local matches for that query. Search stays on this device — it does not crawl other apps or POST to the website helper.';
     }
     if (!reply && route.intent === 'focus-stop') {
       reply = 'Focus session stopped. Remaining time is cleared. Eidovara did not close, inject into, or throttle other processes.';
@@ -294,7 +294,7 @@ export class SoulEngine {
       reply = `Focus session started on this PC (${mins} minutes). The quiet bar shows remaining time. Other apps are not closed or injected into. Assist is not Soul.`;
     }
     if (!reply && route.intent === 'scratch' && /^(note:|scratch:)/i.test(text)) {
-      reply = 'Captured to Memory on this device from the scratchpad. Nothing was sent to /v1/assist.';
+      reply = 'Captured to Memory on this device from the scratchpad. Nothing was sent to the website helper.';
     }
     if (!reply) {
       const wantRemote = route.intent === 'research' && this.state.assistant?.capabilities?.webResearch !== 'disabled' && isExplicitInternetRequest(text);

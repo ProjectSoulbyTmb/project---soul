@@ -306,7 +306,7 @@ function renderCompanionPanel(){
   const messages=(activeConversation()?.messages||[]).slice(-8);
   if(!messages.length){
     const empty=el('div','companion-empty');
-    empty.append(el('strong','',t('companionEmptyTitle','Ask this workspace.')), el('p','',t('companionEmpty','Local answers from product facts and your on-device profile. Nothing is sent to the website helper or Worker /v1/assist.')));
+    empty.append(el('strong','',t('companionEmptyTitle','Ask this workspace.')), el('p','',t('companionEmpty','Local answers from product facts and your on-device profile. Nothing is sent to the website helper.')));
     log.append(empty);
     return;
   }
@@ -410,7 +410,9 @@ async function send(text, opts={}){
       }
     }
     applyCompanionResult(res,{applyAuto:surface==='companion'});
-    window.eidovaraCompanion?.noteExchange?.(text, replies.at(-1)?.content, '', { research: res.webResearch || res.mediaDiscovery, actions: res.kernel?.actions });
+    const replyText=replies.at(-1)?.content;
+    const assistNote='';
+    window.eidovaraCompanion?.noteExchange?.(text, replyText, assistNote, { research: res.webResearch || res.mediaDiscovery, actions: res.kernel?.actions });
     if(res.kernel?.intent==='research' || res.kernel?.view==='research') setView('research');
     else if(surface==='companion') setView('dashboard');
   }catch(err){

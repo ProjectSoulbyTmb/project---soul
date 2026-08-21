@@ -23,7 +23,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['what', 'eidovara', 'product', 'workspace', 'desktop', 'windows', 'soul', 'hosted', 'account', 'cloud', 'chat', 'website', 'online'],
     title: 'What Eidovara is',
-    reply: 'Eidovara v0.19.0 is a local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. It is not a hosted chat account. Visiting this website does not create an account or store conversations. Soul is an optional assistant layer that runs on your PC. Free / Offline Soul works with no cloud URL.',
+    reply: 'Eidovara v0.19.0 is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is not a hosted chat account. Visiting this website does not create an account or store conversations. Soul is an optional assistant layer that runs on your PC. Free / Offline Soul works with no cloud URL.',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'download.html', label: 'Download' }]
   },
   {
