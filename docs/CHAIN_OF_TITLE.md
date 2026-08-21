@@ -33,6 +33,27 @@ Copyright protects qualifying original expression, not the underlying idea, meth
 
 Inbound copyrightable work is not first-party until a privately executed assignment. [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) is an unsigned template only.
 
+## First-party schedule (claim, not registration)
+
+Record date: 21 August 2026. Claimant: Tyler Michael Bosworth. This schedule is evidence of a claim. It is **not** a U.S. Copyright Office registration, USPTO filing, executed assignment, or court judgment.
+
+| Work | Where | Claim |
+| --- | --- | --- |
+| Qualifying original Eidovara source, tests, and product documentation authored by Tyler Michael Bosworth | `src/`, `scripts/`, `tests/`, `server/`, root legal Markdown, `docs/` product pages | First-party copyright claim |
+| Approved brand assets | [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md) | First-party copyright claim in those files; hashes are provenance, not registration |
+| Claimed unregistered marks Eidovara™ and Soul Consciousness Studios™ | [TRADEMARKS.md](../TRADEMARKS.md) | Common-law ™ claim only; no ® |
+
+Excluded from this schedule: Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user content, and every other third-party or public-domain layer listed above.
+
+## Title instruments in this repository (all unsigned)
+
+| Instrument | File | Status in git |
+| --- | --- | --- |
+| Contributor copyright assignment (CLA) | [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) | Template only — not executed |
+| Assignment of pre-formation IP to a future entity | [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md) | Template only — not executed |
+
+Publishing these templates does **not** mean any contributor or entity has signed them. Do not commit completed copies here.
+
 ## Before commercial launch
 
 Have a qualified intellectual-property attorney review the source-available license, contributor assignment form (`docs/CONTRIBUTOR_ASSIGNMENT.md`, unsigned template), trademark search and filing strategy, copyright deposit strategy, patent disclosures, contractor agreements, and any transfer to a future company (`docs/ENTITY_IP_ASSIGNMENT.md`, unsigned template). Preserve signed originals in private storage with access logging and redundant backups. Do not commit executed agreements to this public repository.

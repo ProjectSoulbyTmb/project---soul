@@ -151,8 +151,24 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
     title: 'First-party owner',
-    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. Pull requests do not transfer copyright until a privately executed assignment. This is not legal advice, a court judgment, or a government registration.',
+    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless assigned. Eidovara does not own Electron, Chromium, Node.js, Windows, or Wikipedia/Wikimedia content. Users own their own files. Marks are claimed unregistered. GitHub still allows viewing and forking through GitHub. Pull requests do not transfer copyright until a privately executed assignment. The contributor CLA and entity assignment files are unsigned templates only; this repository does not contain executed copies. This is not legal advice, a court judgment, or a government registration.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
+  },
+  {
+    id: 'cla',
+    modes: ['legal', 'help'],
+    tags: ['cla', 'contributor', 'assignment', 'signed', 'execute', 'executed', 'template', 'inbound', 'pr', 'pull'],
+    title: 'Unsigned contributor assignment',
+    reply: 'The contributor copyright assignment in this repository is an unsigned template only. It is not executed. GitHub pull requests, issues, and “I agree” checkboxes do not transfer copyright. Eidovara does not accept inbound copyrightable work until Tyler Michael Bosworth gives prior written approval and both parties execute a separate written agreement. Do not commit completed copies to the public repository. This is not legal advice.',
+    links: [{ href: 'CONTRIBUTOR_ASSIGNMENT.md', label: 'CLA template' }, { href: 'legal.html', label: 'Legal hub' }]
+  },
+  {
+    id: 'pages-publish',
+    modes: ['help'],
+    tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing'],
+    title: 'Live GitHub Pages publishes from main',
+    reply: 'The public site is GitHub Pages publishing docs/ from the main branch. Product, Download, Assist, Help, FAQ, Status, and Legal pages live in this repository; they go live when that work is merged to main. Until merge, the live github.io URL may still show the older homepage. This helper cannot merge pull requests. pages.yml already deploys docs/ on push to main; do not retarget Pages at a feature branch.',
+    links: [{ href: './', label: 'Home' }, { href: 'status.html', label: 'Status' }]
   },
   {
     id: 'terms',

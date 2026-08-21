@@ -2,25 +2,35 @@
 
 Eidovara v0.18.0 is a **local-first Windows desktop app**. Making it “online for all users” means a public HTTPS site, a public Windows download, and an optional public Worker for `/health`, `/v1/config`, `/v1/status`, and website-helper `/v1/assist`. It does **not** mean hosting everyone’s Soul, chat, or memories in the cloud. Free / Offline Soul works with no Worker URL. The desktop app can attach to that service for status/config while remaining local-first. Ask Eidovara on GitHub Pages works with zero secrets.
 
-Do not enable GitHub Dependency graph from this document (that is a repository Settings click). Do not commit API tokens, Wrangler credentials, or payment secrets.
+Do not commit API tokens, Wrangler credentials, or payment secrets. Do not hard-code `dreambot333.workers.dev` in the app or public HTML/JS.
 
-## Remaining owner clicks
+## Remaining owner clicks (solution paths git cannot finish)
 
-These cannot be completed from source code:
+These cannot be completed from source code. Each item is a **solution path**, not an unsolved bug in this PR.
 
-1. **GitHub Pages** — Settings → Pages → Build and deployment → **GitHub Actions**. The workflow `.github/workflows/pages.yml` publishes `docs/` on push to `main` (and on `workflow_dispatch`). HTTPS is enforced on the default project URL. As of 2026-08-21 this is already on: `https://projectsoulbytmb.github.io/project---soul/`. Re-check after merging site changes to `main` (Home, Product, Download, Assist, FAQ, Help, Status, Legal, 404, robots.txt, sitemap.xml, and Ask Eidovara).
-2. **GitHub Releases** — Push a `v*` tag on `main` (for example `v0.18.0`) so `Release Windows` builds unsigned NSIS on `windows-latest` and publishes `Eidovara-*-Windows-x64-Setup.exe`. A v0.18.0 installer already exists on the Releases page; a later tag is required for a newer installer. `workflow_dispatch` on a branch only uploads unsigned build artifacts; it does not Authenticode-sign and does not publish a Release unless the ref is a `v*` tag.
-3. **Cloudflare Worker** — From `server/`, `npx wrangler login` or a local `CLOUDFLARE_API_TOKEN` (never committed), then `npx wrangler deploy`. Copy the HTTPS **base** (no path) into desktop **Settings → Eidovara service** and **Connect**, or the Ctrl+A field **Soul HTTPS service** and click **Test service**. Optional: paste the same base into the website Status page or Ask Eidovara sheet (localStorage) for `/v1/assist`. Skip deploy if you have no token; the Pages helper still works.
-4. **Optional custom domain** — In Cloudflare, put a hostname in front of GitHub Pages and (separately) a Worker route. Paste the Worker base into Settings → Eidovara service (or Ctrl+A). Do not hard-code it in the Electron app.
-5. **Payments** — Leave store URLs empty. v0.18.0 has no live checkout and is not PCI processing.
+1. **Dependency review CI (seen on pull request #5)** — GitHub Actions cannot turn on Dependency graph. Keep `.github/workflows/dependency-review.yml` (`fail-on-severity: moderate`); do not delete or weaken it. **Fix:** repository **Settings → Code security** (Code security and analysis) → enable **Dependency graph**. Direct link: `https://github.com/ProjectSoulbyTmb/project---soul/settings/security_analysis`. After that click, Dependency review can run on pull requests.
+2. **GitHub Pages still serves `main`** — `.github/workflows/pages.yml` already deploys `docs/` on push to `main` (and `workflow_dispatch`). The live URL `https://projectsoulbytmb.github.io/project---soul/` therefore shows whatever `main` last published, not this feature branch. **Fix:** merge this pull request (`cursor/engine-product-surface-c180`, PR #10) to `main`. Do not retarget Pages at a feature branch. If Pages was never enabled: Settings → Pages → Build and deployment → **GitHub Actions**.
+3. **Worker vs branch drift** — `server/worker.js` in this branch serves `/health`, `/v1/config`, `/v1/status`, and `/v1/assist`. A previously deployed Worker can lag until you redeploy. **Fix:** from `server/`, `npx wrangler login` or a local `CLOUDFLARE_API_TOKEN` (never committed), then `npx wrangler deploy`. Copy the HTTPS **base** (no path) into desktop **Settings → Eidovara service** and **Connect**, or Ctrl+A **Soul HTTPS service** → **Test service**. Optional: the same base in the website Status page or Ask Eidovara sheet (localStorage) for `/v1/assist`. Skip deploy if you have no token; the Pages helper still works.
+4. **GitHub Releases** — Push a `v*` tag on `main` (for example `v0.18.0`) so `Release Windows` builds unsigned NSIS on `windows-latest` and publishes `Eidovara-*-Windows-x64-Setup.exe`. A v0.18.0 installer already exists on the Releases page; a later tag is required for a newer installer. `workflow_dispatch` on a branch only uploads unsigned build artifacts; it does not Authenticode-sign and does not publish a Release unless the ref is a `v*` tag.
+5. **Optional custom domain** — In Cloudflare, put a hostname in front of GitHub Pages and (separately) a Worker route. Paste the Worker base into Settings → Eidovara service (or Ctrl+A). Do not hard-code it in the Electron app.
 
 NSIS overwrite-on-reinstall for existing installs is tracked on pull request #9, not in this runbook.
+
+## Honest cannot-ship (document, do not fake)
+
+Leave these documented. Do not “fix” them in git by claiming they exist:
+
+- **Live payments / automatic Premium** — Leave store URLs empty. v0.18.0 has no live checkout and is not PCI processing.
+- **Authenticode** — Official advertised Windows installers stay unsigned until the owner obtains a code-signing identity outside this repository.
+- **Official Linux/macOS product** — Packaging scripts are development targets only.
+- **Neural TTS / VRM / OBS websocket control** — Not bundled; adapters stay document-only.
+- **Consciousness** — Soul is software, not a scientific or legal claim of sentience.
 
 ## 1. Public HTTPS website (GitHub Pages)
 
 Source: `docs/`. Live URL: `https://projectsoulbytmb.github.io/project---soul/`.
 
-- Edit HTML/CSS under `docs/`, review locally, merge to `main`. The `Deploy project website` workflow uploads `docs/` as the Pages artifact.
+- Edit HTML/CSS under `docs/`, review locally, **merge this PR to `main`**. The `Deploy project website` workflow uploads `docs/` as the Pages artifact. Until merge, `https://projectsoulbytmb.github.io/project---soul/` still serves the older `main` homepage (no Product/Download/Assist/Help/FAQ/Status pages).
 - If Pages was never enabled: Settings → Pages → Source **GitHub Actions** (not “Deploy from a branch” unless you also change the workflow). GitHub enforces HTTPS on `*.github.io`.
 - The site tells visitors: visit Home → read Product → confirm 18+ on Download → install the unsigned Windows Alpha or build with `npm run dist:win:installer` → the desktop app is the product → cloud is optional config/health only.
 - Ask Eidovara is a website helper (`docs/knowledge.js`, `docs/assist.js`) with `script-src 'self'`. No API key. Optional Worker assist is visitor-paste only.
@@ -46,7 +56,7 @@ Source: `server/worker.js` plus `server/wrangler.toml` (`name = "eidovara-api"`)
 
 The desktop product and the public HTML/JS never hard-code `workers.dev`. Users do not need a Worker URL. GitHub Pages Ask Eidovara works with zero secrets via `docs/knowledge.js`.
 
-Operator example (operator paste only, not a user-required server, not compiled into the app): `https://eidovara-api.dreambot333.workers.dev` currently serves `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` on Workers Free after you re-deploy `worker.js`. Prefer a later custom domain if you add one.
+Operator example (operator paste only, not a user-required server, not compiled into the app): `https://eidovara-api.dreambot333.workers.dev` currently serves `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` on Workers Free **after** you re-deploy `worker.js` from this branch (`npx wrangler deploy`). A live Worker can drift behind git until that command runs. Prefer a later custom domain if you add one.
 
 ## 4. Optional custom domain (Cloudflare in front)
 

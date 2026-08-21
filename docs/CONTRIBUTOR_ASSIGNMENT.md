@@ -65,3 +65,11 @@ This public file has **no signatures**. Complete only on a private original.
 | Date | [date] | [date] |
 
 Store executed originals in private storage controlled by the Owner. Do not commit them here.
+
+### Exhibit A — Contribution schedule (complete privately)
+
+Leave this exhibit blank in the public repository. On a private original, list files, commit SHAs, or attach a schedule. Do not paste secrets, credentials, or third-party code the Contributor does not own.
+
+| Item | Description / path / SHA | Notes |
+| --- | --- | --- |
+| [item] | [description] | [original to Contributor / third-party excluded] |

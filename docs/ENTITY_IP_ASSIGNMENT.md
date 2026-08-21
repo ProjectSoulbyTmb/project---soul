@@ -39,3 +39,15 @@ This public file has **no signatures**.
 | Name | Tyler Michael Bosworth | [Authorized signatory / title] |
 | Signature | ______________________________ | ______________________________ |
 | Date | [date] | [date] |
+
+### Exhibit A — Assigned first-party schedule (complete privately)
+
+Leave this exhibit blank in the public repository. On a private original, attach or list:
+
+- Qualifying original Eidovara source, tests, and first-party documentation authored by Assignor
+- First-party brand assets listed in the project copyright asset register (with hashes as of the effective date)
+- Claimed unregistered marks Eidovara™ and Soul Consciousness Studios™, solely to the extent Assignor owns them
+
+**Still excluded:** Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created content, and all other third-party or public-domain material.
+
+Store executed originals in private storage. Do not commit them here.
