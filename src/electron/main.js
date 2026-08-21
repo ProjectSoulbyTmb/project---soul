@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { OfflineProvider } from '../providers/offline.js';
-import { callCompatibleProvider, callLocalProvider } from '../providers/http.js';
+import { callCompatibleProvider, callLocalProvider, normalizeProviderEndpoint, LOCAL_PROVIDER_DEFAULT_ENDPOINT } from '../providers/http.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 import { inspectLinuxHost } from './linux-runtime.js';
@@ -81,7 +81,7 @@ function publicConfig() { return { provider: config.provider, endpoint: config.e
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
-  if (config.provider === 'local') return { reply: ({ messages }) => callLocalProvider({ endpoint: config.endpoint || 'http://127.0.0.1:11434', model: config.model, messages }) };
+  if (config.provider === 'local') return { reply: ({ messages }) => callLocalProvider({ endpoint: config.endpoint || LOCAL_PROVIDER_DEFAULT_ENDPOINT, model: config.model, messages }) };
   if (config.provider === 'compatible' && entitlement() === 'premium') return { reply: ({ messages }) => callCompatibleProvider({ endpoint: config.endpoint, apiKey: getApiKey(), model: config.model, messages }) };
   return new OfflineProvider();
 }
@@ -203,6 +203,14 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   config.language = ['en','es','fr','de'].includes(incoming?.language) ? incoming.language : (config.language || 'en');
   config.endpoint = String(incoming?.endpoint || '').slice(0, 500);
   config.model = String(incoming?.model || '').slice(0, 200);
+  if (provider === 'local') {
+    if (!config.model) throw new Error('A local model name is required.');
+    if (config.endpoint) config.endpoint = normalizeProviderEndpoint(config.endpoint, { localOnly: true });
+  }
+  if (provider === 'compatible') {
+    if (!config.endpoint || !config.model) throw new Error('Compatible remote endpoints require an HTTPS base URL and a model name.');
+    config.endpoint = normalizeProviderEndpoint(config.endpoint);
+  }
   if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#080c16'), panel: color(incoming.theme.panel, '#101828'), accent: color(incoming.theme.accent, '#8f7cff'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
   if (incoming?.companion && typeof incoming.companion === 'object') {
     const policy = engine.snapshot().policy || {};

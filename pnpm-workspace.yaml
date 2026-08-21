@@ -1,6 +1,9 @@
 packages:
   - .
 
+# pnpm 10 ignores dependency lifecycle scripts unless listed here.
+# electron-winstaller must run its 7z vendor selector. electron is allowed so
+# an upstream postinstall, if restored, can fetch the desktop binary.
 allowBuilds:
   electron: true
   electron-winstaller: true

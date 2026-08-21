@@ -18,7 +18,7 @@ Open Eidovara's private administrator panel with Ctrl+A, enter the local adminis
 
 ## HTTPS service
 
-Deploy `server/worker.js` to Cloudflare Workers and copy the generated HTTPS base URL into **Soul HTTPS service** in the administrator panel. Use **Test service** to verify `/health`. Public checkout URLs can be configured in the Worker environment. Keep secrets out of `wrangler.toml` and source control.
+Deploy `server/worker.js` to Cloudflare Workers only when you choose to host it; this repository does not deploy the Worker. `pnpm run server:test` exercises the Worker locally without secrets. Copy a generated HTTPS base URL into **Soul HTTPS service** in the administrator panel. Use **Test service** to verify `/health`. Public checkout URLs can be configured in the Worker environment. Keep secrets out of `wrangler.toml` and source control. Optional deploy from `server/` is `npx wrangler deploy` after `npx wrangler login`.
 
 ## Required customer-facing decisions
 

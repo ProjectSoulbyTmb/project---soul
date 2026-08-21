@@ -17,7 +17,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Internet research and media discovery | Working | Explicit-request detection, public sources, optional keyed search, citations, image/audio/video result handling. |
 | Media player and DJ helpers | Working | Audio/video dock, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube external search links. |
 | Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf and confirmation-based launching; no process injection. |
-| Companion and accessibility | Working | Hideable 2D/3D-styled avatar, motion controls, installed Windows voices, optional narration and detected dictation. |
+| Companion and accessibility | Working | Hideable 2D/3D-styled avatar, motion controls, OS-installed Web Speech API voices when present, optional narration and detected dictation. Neural TTS packs are not bundled. |
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |
 | Appearance and gaming mode | Working | Colors, opacity, RGB option, low-overhead mode, GPU/media diagnostics. |
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |

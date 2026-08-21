@@ -36,17 +36,21 @@ Eidovara Free includes core workspace, offline/local assistance, public research
 
 ## Build and test
 
+The CLI, automated tests, and `pnpm run check` / `pnpm run smoke` run on **Node.js 20+**. Installing or packaging the Electron 43 desktop binary requires **Node.js >=22.12**, which is the engine declared by the `electron` npm package itself. Official CI uses **Node 22** and **pnpm 10** with `pnpm install --frozen-lockfile`. `npm install` can produce a one-off tree, but the committed lockfile and Windows release workflow are pnpm.
+
 ```powershell
-npm install
-npm test
-npm run check
-npm run smoke
-npm start
-npm run cli
-npm run dist:win:installer
+pnpm install
+pnpm test
+pnpm run check
+pnpm run smoke
+pnpm start
+pnpm run cli
+pnpm run dist:win:installer
 ```
 
-`run-gui.bat` and `run-cli.bat` install dependencies if needed and launch the documented Windows desktop or terminal app. Official CI uses `pnpm install --frozen-lockfile` with the committed lockfile. The app starts in the existing offline mode; optional local models, remote providers, keyed search, and the HTTPS service remain Settings/Ctrl+A configuration after launch. Linux and macOS development hosts can use `./run-gui.sh` or `./run-cli.sh`; on Linux, Chromium sandbox and GPU are reduced only when the host cannot provide them.
+On Node 20, `pnpm install` skips downloading the Electron binary so CLI and tests still work. Use Node 22.12+ for `pnpm start` and Windows packaging. `pnpm run server:test` runs the Cloudflare Worker unit tests without deploying or using secrets.
+
+`run-gui.bat` and `run-cli.bat` install dependencies if needed and launch the documented Windows desktop or terminal app. The app starts in the existing offline mode; optional local models, remote providers, keyed search, and the HTTPS service remain Settings/Ctrl+A configuration after launch. Linux and macOS development hosts can use `./run-gui.sh` or `./run-cli.sh`; on Linux, Chromium sandbox and GPU are reduced only when the host cannot provide them.
 
 The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 

@@ -1,6 +1,6 @@
 # Companion and voice integration policy
 
-Eidovara 0.17 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled.
+Eidovara 0.17 ships a dependency-free 2D/3D-styled companion and uses voices already installed on the device through the Web Speech API. The Windows release is the supported product; Linux/macOS development hosts can use the same APIs when Chromium exposes them. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled.
 
 ## Screened future adapters
 
