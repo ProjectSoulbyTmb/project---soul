@@ -1,4 +1,4 @@
-# Eidovara v0.17.7 — Current Release
+# Eidovara v0.17.8 — Current Release
 
 ## Project statement
 
@@ -60,7 +60,7 @@ Settings can create and restore timestamped local profile backups. Restores are 
 ## Build targets
 
 ### Windows 10/11 x64
-`npm run dist:win` creates an NSIS installer and a portable `.exe`.
+`npm run dist:win` creates an NSIS installer and a portable `.exe` for local testing. Official GitHub releases publish the standard setup installer directly, so users do not need to extract a ZIP.
 
 ### Linux x64
 `npm run dist:linux` creates an AppImage and Debian package.

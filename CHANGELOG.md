@@ -1,5 +1,11 @@
 # Eidovara
 
+## v0.17.8
+
+- Changed official GitHub releases from an extractable ready-folder ZIP to a standard Windows setup installer.
+- Made the updater manifest target the versioned installer `.exe` directly.
+- Kept checksum, SBOM, privacy, signing-status, and provenance evidence alongside the installer.
+
 ## v0.17.7
 
 - Tightened copyright claim boundaries around qualifying original expression, ideas, systems, methods, facts, and third-party material.

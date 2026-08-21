@@ -27,20 +27,15 @@ jobs:
       - run: pnpm run check
       - run: pnpm run smoke
       - run: pnpm run release:configure
-      - run: pnpm run dist:dir
-      - name: Create ready-to-run Windows package
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path dist | Out-Null
-          $version = '${{ github.ref_name }}'.TrimStart('v')
-          Compress-Archive -Path 'dist/win-unpacked/*' -DestinationPath "dist/Eidovara-$version-Windows-x64-Ready.zip" -CompressionLevel Optimal
+      - name: Build Windows installer
+        run: pnpm exec electron-builder --win nsis --x64
       - run: pnpm run release:manifest
       - run: pnpm run release:evidence
       - name: Sign build provenance
         uses: actions/attest-build-provenance@v4.1.1
         with:
           subject-path: |
-            dist/Eidovara-*-Windows-x64-Ready.zip
+            dist/Eidovara-*-Windows-x64-Setup.exe
             dist/update.json
             dist/SHA256SUMS.txt
             dist/SBOM.spdx.json
@@ -60,7 +55,7 @@ jobs:
           name: Eidovara by Soul Consciousness Studios ${{ github.ref_name }}
           generate_release_notes: true
           files: |
-            dist/Eidovara-*-Windows-x64-Ready.zip
+            dist/Eidovara-*-Windows-x64-Setup.exe
             dist/update.json
             dist/SHA256SUMS.txt
             dist/SBOM.spdx.json
