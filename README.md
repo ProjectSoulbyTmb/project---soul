@@ -36,7 +36,7 @@ Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices
 
 The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance.
 
-Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. Download `Eidovara-0.18.3-Windows-x64-Setup.exe` (~101.3 MiB) from GitHub Releases (SHA-256 `EF228574DCDF34B8A9039654F2B762FAB6D289CCA9A94B2ECCF048AE971FE711`) and verify checksums plus provenance. No software can guarantee perfect security.
+Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. Download `Eidovara-0.18.3-Windows-x64-Setup.exe` (~101.3 MiB) from GitHub Releases (SHA-256 `4C6D9FA2B0CB4667C1B6580551632618DEB12B5CF5947457474BAEC0DFA7740E`) and verify checksums plus provenance. No software can guarantee perfect security.
 
 ## Editions
 
