@@ -10,11 +10,11 @@ test('mediaPlayback confirm is required except after an explicit picker or when 
   assert.equal(mediaPlaybackDecision(undefined).needsConfirm, true);
 });
 
-test('Free edition keeps RGB, remote endpoints, and Brave search behind Premium', () => {
-  assert.equal(premiumFeatureAllowed('free', 'rgb'), false);
-  assert.equal(premiumFeatureAllowed('free', 'compatible'), false);
-  assert.equal(premiumFeatureAllowed('free', 'searchKey'), false);
-  assert.equal(premiumFeatureAllowed('free', 'offline'), true);
+test('v0.22.2 full free edition does not entitlement-lock implemented features', () => {
+  for (const feature of ['rgb', 'compatible', 'searchKey', 'unlimitedApps', 'offline']) {
+    assert.equal(premiumFeatureAllowed('free', feature), true, feature);
+  }
+  // Keep compatibility with profiles that previously stored the old edition label.
   assert.equal(premiumFeatureAllowed('premium', 'rgb'), true);
-  assert.equal(premiumFeatureAllowed('premium', 'searchKey'), true);
+  assert.equal(premiumFeatureAllowed(undefined, 'searchKey'), true);
 });
