@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Companion coverage: dock and conversation share one kernel; nav/intents reach dashboard, conversation, apps (confirm-launch + discover), entertainment (mood/favorites/watch/OST/surprise + local media), memory (review/add/forget), identity/Adult Mode, settings (provider/theme/service/updates/backups/customization), help/legal, diagnostics, research (explicit internet only), focus/study/create/gaming checklists, and accessibility. Every named next step ships a working chip. Suggested “what can you do here?” follows the current view. Optional Soul is not faked when setup is off. `/v1/assist` still requires opt-in.
 - Legal-instrument pack (templates and notices, not filings): strengthened source-available LICENSE (no trademark license; no patent license; contributions assigned only via privately executed docs/CONTRIBUTOR_ASSIGNMENT.md); NOTICE lists Electron/Node packages actually used; TRADEMARKS.md states Eidovara/Soul/Soul Consciousness Studios as unregistered marks of Tyler Michael Bosworth and disclaims Marvel/Jarvis/Apple/third-party marks; COPYRIGHT.txt plus docs/COPYRIGHT.md (copyright.gov checklist, not registered); docs/TRADEMARK_FILING.md (USPTO checklist, not filed); docs/BRAND_GUIDE.md; completed unsigned assignment templates. Owner must still register copyright, file trademarks, form an entity, and sign assignments.
 
 ## v0.18.3

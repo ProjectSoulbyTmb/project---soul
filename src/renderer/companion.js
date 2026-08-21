@@ -240,32 +240,122 @@
     pollTimer = setInterval(() => { if (document.body.classList.contains('age-gated')) return; refresh().catch(() => {}); }, 5000);
   }
 
+  function currentView() {
+    return ['dashboard', 'chat', 'apps', 'entertainment', 'memory', 'identity', 'settings'].find(name => document.getElementById(`${name}View`)?.classList.contains('active')) || 'dashboard';
+  }
+
+  function renderFollowups(view) {
+    const box = $('#companionFollowups');
+    if (!box) return;
+    box.textContent = '';
+    const heading = document.createElement('p');
+    heading.className = 'companion-follow-label';
+    heading.textContent = t('companionHere', 'What you can do here');
+    box.append(heading);
+    const chips = document.createElement('div');
+    chips.className = 'kernel-chips';
+    const here = document.createElement('button');
+    here.type = 'button';
+    here.className = 'kernel-chip';
+    here.textContent = t('whatHere', 'What can you do here?');
+    here.addEventListener('click', () => {
+      if (typeof window.eidovaraSend === 'function') window.eidovaraSend('What can you do here?', { surface: 'companion' });
+    });
+    chips.append(here);
+    const defaults = {
+      dashboard: [
+        { type: 'open-view', view: 'apps', label: t('apps', 'Apps & Gaming') },
+        { type: 'open-view', view: 'entertainment', label: t('entertainment', 'Entertainment') },
+        { type: 'open-view', view: 'memory', label: t('memory', 'Memory') },
+        { type: 'open-view', view: 'settings', label: t('settings', 'Settings') }
+      ],
+      apps: [
+        { type: 'discover-apps', label: t('discoverApps', 'Discover installed apps') },
+        { type: 'open-view', view: 'entertainment', label: t('entertainment', 'Entertainment') }
+      ],
+      entertainment: [
+        { type: 'pick-local-media', label: t('openLocalMedia', 'Open local media') },
+        { type: 'open-view', view: 'apps', label: t('apps', 'Apps & Gaming') }
+      ],
+      memory: [
+        { type: 'open-view', view: 'memory', label: t('reviewMemory', 'Review memory') },
+        { type: 'open-view', view: 'identity', label: t('identity', 'Identity') }
+      ],
+      identity: [
+        { type: 'open-legal', legal: 'age', label: t('ageNotice', 'Age 18+') },
+        { type: 'open-setup', label: t('openSetup', 'Optional Soul setup') }
+      ],
+      settings: [
+        { type: 'open-service', label: t('serviceSettings', 'Service settings') },
+        { type: 'open-updates', label: t('softwareUpdates', 'Software updates') },
+        { type: 'open-diagnostics', label: t('diagShow', 'Show diagnostics') }
+      ],
+      chat: [
+        { type: 'open-view', view: 'memory', label: t('memory', 'Memory') },
+        { type: 'open-view', view: 'dashboard', label: t('dashboard', 'Dashboard') }
+      ]
+    };
+    for (const action of defaults[view] || defaults.dashboard) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'kernel-chip';
+      b.textContent = action.label;
+      b.addEventListener('click', () => window.eidovaraRunAction?.(action));
+      chips.append(b);
+    }
+    box.append(chips);
+  }
+
+  function syncHistory(extra) {
+    const log = $('#companionLog');
+    if (!log) return;
+    log.textContent = '';
+    const messages = (window.eidovaraActiveConversation?.() || []).slice(-8);
+    if (!messages.length) {
+      log.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('companionEmpty', 'Ask from this dock. Local kernel answers on this PC. Assist is not Soul.') }));
+      return;
+    }
+    for (const m of messages) {
+      const p = document.createElement('p');
+      p.className = `companion-turn${m.role === 'assistant' ? ' assistant' : ''}`;
+      p.textContent = m.content;
+      log.append(p);
+      if (m.role === 'assistant' && m.actions?.length) {
+        const chips = document.createElement('div');
+        chips.className = 'kernel-chips';
+        for (const action of m.actions) {
+          const b = document.createElement('button');
+          b.type = 'button';
+          b.className = 'kernel-chip';
+          b.textContent = action.label || action.type;
+          b.addEventListener('click', () => window.eidovaraRunAction?.(action));
+          chips.append(b);
+        }
+        log.append(chips);
+      }
+    }
+    if (extra) log.append(Object.assign(document.createElement('p'), { className: 'companion-turn', textContent: extra }));
+    log.scrollTop = log.scrollHeight;
+  }
+
   window.eidovaraCompanion = {
     refresh,
     saveCustomization,
     startPolling,
+    renderFollowups,
+    syncHistory,
+    showEmpty(view) {
+      const log = $('#companionLog');
+      if (log) {
+        log.textContent = '';
+        log.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('companionEmptyHint', 'Type a next step, or ask “what can you do here?” Local kernel only. Assist is not Soul.') }));
+      }
+      renderFollowups(view || currentView());
+    },
     applyKernelActions(actions) {
       for (const item of actions || []) {
         if (!item.auto) continue;
-        if (item.type === 'open-view' && item.view && typeof window.eidovaraSetView === 'function') window.eidovaraSetView(item.view);
-        if (item.type === 'open-setup' && typeof window.eidovaraOpenSetup === 'function') window.eidovaraOpenSetup(true);
-        if (item.type === 'open-diagnostics') $('#diagnosticsBtn')?.click();
-        if (item.type === 'open-service') {
-          if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
-          $('#serviceForm')?.scrollIntoView({ behavior: reducedMotion() ? 'auto' : 'smooth', block: 'center' });
-        }
-        if (item.type === 'open-legal' && typeof window.eidovaraShowLegal === 'function') window.eidovaraShowLegal(item.legal || 'about');
-        if (item.type === 'open-palette' && typeof window.eidovaraLayers?.openPalette === 'function') window.eidovaraLayers.openPalette();
-        if (item.type === 'open-cheatsheet' && typeof window.eidovaraLayers?.openCheatsheet === 'function') window.eidovaraLayers.openCheatsheet();
-        if (item.type === 'start-focus' && typeof window.eidovaraLayers?.startFocus === 'function') window.eidovaraLayers.startFocus(item.minutes || 25, item.label);
-        if (item.type === 'stop-focus' && typeof window.eidovaraLayers?.stopFocus === 'function') window.eidovaraLayers.stopFocus();
-        if (item.type === 'capture-scratch' && typeof window.eidovaraLayers?.captureScratch === 'function') window.eidovaraLayers.captureScratch();
-        if (item.type === 'confirm-launch-app' && item.appId && window.soul?.launchApplication) window.soul.launchApplication(item.appId);
-        if (item.type === 'run-command' && item.command && typeof window.eidovaraSend === 'function') window.eidovaraSend(item.command);
-        if (item.type === 'open-updates') {
-          if (typeof window.eidovaraSetView === 'function') window.eidovaraSetView('settings');
-          $('#checkUpdateBtn')?.focus();
-        }
+        window.eidovaraRunAction?.(item);
       }
     },
     noteExchange(userText, reply, extra) {

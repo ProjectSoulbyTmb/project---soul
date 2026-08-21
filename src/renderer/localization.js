@@ -65,7 +65,8 @@
       startPathStep2: 'Soul (right dock) is the local software self-model. Ask it here. It is not a person and not the website helper.',
       startPathStep3: 'Assist is an optional Worker helper. It stays off unless you enable it in Settings. Assist is not Soul.',
       startTalk: 'Talk with Soul', startApps: 'Add a trusted app', startSettings: 'Open Settings', startDismiss: 'Hide this guide',
-      companionPanelTitle: 'Workspace companion'
+      companionPanelTitle: 'Workspace companion',
+      companionHere: 'What you can do here', whatHere: 'What can you do here?', companionEmptyHint: 'Type a next step, or ask “what can you do here?” Local kernel only. Assist is not Soul.'
 
     },
     es: {
