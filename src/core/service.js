@@ -319,9 +319,9 @@ export function createServiceHeartbeat({
     clearTimer();
     const delay = nextServiceHeartbeatDelay({ online, failureCount, random });
     const gen = generation;
-    timer = schedule(() => {
+    timer = schedule(async () => {
       if (gen !== generation || !running) return;
-      void tick();
+      await tick();
     }, delay);
   }
 

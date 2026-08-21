@@ -24,6 +24,7 @@ import { defaultOverlayLayout, normalizeOverlayLayout } from '../core/overlays.j
 import { attachOverlayWindows } from './overlay-windows.js';
 import { createGuestOverlayManager } from './guest-overlays.js';
 import { runtimeEngineCatalog } from '../core/runtime-engines.js';
+import { redactSecretsForLog } from '../core/log-redact.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
@@ -71,7 +72,15 @@ function releaseStayAwake() {
   }
 }
 
-function log(message, error) { try { if (!logPath) logPath = path.join(app.getPath('userData'), 'project-soul.log'); fs.mkdirSync(path.dirname(logPath), { recursive: true }); fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${message}${error ? `\n${error?.stack || error}` : ''}\n`); } catch {} }
+function log(message, error) {
+  try {
+    if (!logPath) logPath = path.join(app.getPath('userData'), 'project-soul.log');
+    fs.mkdirSync(path.dirname(logPath), { recursive: true });
+    const safeMessage = redactSecretsForLog(message);
+    const safeError = error ? redactSecretsForLog(error?.stack || error) : '';
+    fs.appendFileSync(logPath, `[${new Date().toISOString()}] ${safeMessage}${safeError ? `\n${safeError}` : ''}\n`);
+  } catch {}
+}
 function fatal(title, error) { log(title, error); try { dialog.showErrorBox(title, `${error?.stack || error}\n\nLog: ${logPath}`); } catch {} }
 function loadConfig() {
   configPath = path.join(app.getPath('userData'), 'settings.json');
@@ -399,10 +408,8 @@ function createWindow() {
   try {
     loadConfig();
     registerCompanionImage();
-    if (config.ageGateAccepted === true) {
-      ensureEngine();
-      void bootServiceHeartbeat();
-    }
+    if (config.ageGateAccepted === true) ensureEngine();
+    if (config.ageGateAccepted === true) void bootServiceHeartbeat();
     mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.19.1', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
@@ -470,6 +477,18 @@ playerWindows = attachPlayerWindows({
 ipcMain.on('soul:playerCommand', (_e, command) => {
   try { mainWindow?.webContents.send('soul:playerCommand', command); } catch {}
 });
+const gotSingleInstanceLock = app.requestSingleInstanceLock();
+if (!gotSingleInstanceLock) {
+  app.quit();
+} else {
+  app.on('second-instance', () => {
+    if (!mainWindow) return;
+    if (mainWindow.isMinimized()) mainWindow.restore();
+    mainWindow.show();
+    mainWindow.focus();
+  });
+}
+
 app.whenReady().then(() => {
   registerLocalMediaProtocol();
   overlayManager = attachOverlayWindows({
