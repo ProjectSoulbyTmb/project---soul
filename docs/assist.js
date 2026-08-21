@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 import { answerAssist, STORAGE_KEY, DEFAULT_SERVICE_BASE, safePublicHref } from './knowledge.js';
+=======
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+import { answerAssist, STORAGE_KEY, safePublicHref } from './knowledge.js';
+>>>>>>> origin/cursor/secure-ip-c180
 
 const suffixes = ['/health', '/v1/config', '/v1/status', '/v1/assist'];
 

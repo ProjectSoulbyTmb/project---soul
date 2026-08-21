@@ -8,6 +8,12 @@ This operational checklist is not legal advice.
 - Develop new patent-sensitive mechanisms in a separate private repository until a patent professional has reviewed them or an application supporting them has been filed.
 - Do not commit credentials, private patent drafts, inventor addresses, unpublished diagrams, customer data, or trade secrets to this repository.
 - Do not describe the project as “patent pending” until a qualifying patent application has actually been filed.
+- First-party `src/**/*.js` and `docs/*.js` carry SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Preserve them. Do not relicense first-party material as MIT, Apache, GPL, or other open source.
+- GitHub pull requests do not transfer ownership. `docs/CONTRIBUTOR_ASSIGNMENT.md` and `docs/ENTITY_IP_ASSIGNMENT.md` are unsigned templates for private wet-ink or counsel-supervised execution only.
+
+## What this repository can state vs what only the owner can do
+
+Repository notices, SPDX headers, LICENSE, TERMS, and git history are evidence of a claim. They do **not** form an LLC, register a trademark or copyright, e-sign an assignment, or enable GitHub's private CLA product. Owner-only actions remain: entity formation, USPTO/Copyright Office filings, privately executed assignments, a GitHub private CLA if desired, Authenticode identity, and secret rotation if a credential were ever committed.
 
 ## Evidence preservation
 

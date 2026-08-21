@@ -1,5 +1,8 @@
 # Ownership and provenance
 
+SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth  
+SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+
 Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
 
 Tyler Michael Bosworth is identified as Eidovara's owner, creator, and product director and claims qualifying original first-party expression. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless a signed assignment exists. Ideas, methods, facts, public-domain material, and third-party material (including Electron, Chromium, Node.js, Windows, and Wikimedia content) are excluded. Patent inventorship is determined claim by claim in an actual filing.

@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const clean = (value, limit = 500) => String(value || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, limit);
 const allowedTypes = new Set(['audio', 'video']);
 const allowedEvents = new Set(['play', 'complete', 'favorite', 'skip']);

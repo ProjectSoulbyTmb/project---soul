@@ -58,6 +58,6 @@ The Windows installer is generated in `dist/`. Linux and macOS packaging scripts
 
 ## Rights and project records
 
-Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party.
+Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party. Soul Consciousness Studios is the intended publisher name only.
 
-See [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice.
+See [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). First-party JavaScript carries SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Forks remain under LICENSE and may not be relicensed as open source. GitHub pull requests do not transfer ownership. These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice.
