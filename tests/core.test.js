@@ -87,7 +87,7 @@ test('wikipedia citations keep search order and canonical HTTPS URLs',async()=>{
   globalThis.fetch=async url=>{
     const target=String(url);
     if(target.includes('wikipedia.org')) return {ok:true,json:async()=>({query:{pages:{'999':{pageid:999,index:2,title:'Second Hit',extract:'later',fullurl:'https://en.wikipedia.org/wiki/Second_Hit'},'111':{pageid:111,index:1,title:'First Hit',extract:'earlier',fullurl:'https://en.wikipedia.org/wiki/First_Hit'}}}})};
-    return {ok:true,json:async()=>({query:{pages:{}}}}};
+    return {ok:true,json:async()=>({query:{pages:{}}})};
   };
   try{
     const r=await researchInternet('Search the internet for ordered results');
