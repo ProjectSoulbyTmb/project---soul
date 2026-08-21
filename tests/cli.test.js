@@ -55,3 +55,16 @@ test('package.json exposes the cli script', () => {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   assert.equal(pkg.scripts.cli, 'node src/cli.js');
 });
+
+test('cli help does not create a profile directory', () => {
+  const dir = path.join(os.tmpdir(), `soul-cli-help-${process.pid}-${Date.now()}`);
+  const result = run([`--data-dir=${dir}`, '--help']);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.equal(fs.existsSync(dir), false);
+});
+
+test('cli empty --message exits with an error', () => {
+  const result = run([`--data-dir=${tmp()}`, '--i-am-18-or-older', '--message', '']);
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /empty/i);
+});

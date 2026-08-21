@@ -7,7 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { OfflineProvider } from '../providers/offline.js';
-import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT } from '../providers/http.js';
+import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT, normalizeProviderEndpoint } from '../providers/http.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
@@ -124,7 +124,11 @@ ipcMain.handle('soul:snapshot', () => engine.snapshot());
 ipcMain.handle('soul:recordMedia', (_e, input) => { requireAgeGate(); return engine.recordMedia(input); });
 ipcMain.handle('soul:entertainment', () => { requireAgeGate(); return engine.entertainment(); });
 ipcMain.handle('soul:reset', () => { requireAgeGate(); return engine.reset(); });
-ipcMain.handle('soul:remember', (_e, c) => { requireAgeGate(); return engine.remember(String(c || '').slice(0, 1000)); });
+ipcMain.handle('soul:remember', (_e, c, opts) => {
+  requireAgeGate();
+  const kind = ['preference', 'observation', 'criticism', 'fact'].includes(opts?.kind) ? opts.kind : 'preference';
+  return engine.remember(String(c || '').slice(0, 1000), { kind });
+});
 ipcMain.handle('soul:forget', (_e, x) => { requireAgeGate(); return engine.forget(String(x || '').slice(0, 1000)); });
 ipcMain.handle('soul:newConversation', () => { requireAgeGate(); return engine.newConversation(); });
 ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return engine.selectConversation(String(id)); });
@@ -179,6 +183,9 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   config.provider = provider;
   config.language = ['en','es','fr','de'].includes(incoming?.language) ? incoming.language : (config.language || 'en');
   config.endpoint = String(incoming?.endpoint || '').slice(0, 500);
+  if (config.endpoint && (provider === 'local' || provider === 'compatible')) {
+    config.endpoint = normalizeProviderEndpoint(config.endpoint, { localOnly: provider === 'local' });
+  }
   config.model = String(incoming?.model || '').slice(0, 200);
   if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#000000'), panel: color(incoming.theme.panel, '#1C1C1E'), accent: color(incoming.theme.accent, '#0A84FF'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
   if (incoming?.companion && typeof incoming.companion === 'object') {
