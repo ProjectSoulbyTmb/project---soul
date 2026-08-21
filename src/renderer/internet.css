@@ -52,6 +52,8 @@ button.dashboard-card { width:100%; text-align:left; cursor:pointer; color:inher
 .empty-state { grid-column:1 / -1; border:1px dashed var(--line); border-radius:16px; padding:22px; display:grid; gap:12px; background:rgba(8,14,26,.45); }
 .empty-state ol { margin:0; padding-left:20px; color:var(--muted); display:grid; gap:6px; }
 .empty-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.empty-actions button { border:0; border-radius:9px; background:var(--accent); color:white; padding:9px 12px; cursor:pointer; }
+.empty-actions .secondary { background:#28354b; }
 .diagnostics-summary { display:grid; gap:8px; margin-bottom:12px; }
 .quick-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:10px; }.quick-grid button { min-height:62px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.035); color:var(--text); text-align:left; padding:14px; cursor:pointer; transition:transform .15s,border-color .15s; }.quick-grid button:hover { transform:translateY(-2px); border-color:var(--accent); }
 .admin-dialog{max-width:680px}.admin-dialog>p{color:var(--muted);line-height:1.55}.admin-dialog input,.admin-dialog select{width:100%;border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:10px;padding:10px}.admin-dialog .dashboard-grid{margin:4px 0}

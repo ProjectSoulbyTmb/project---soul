@@ -1,6 +1,6 @@
 # Eidovara / Soul requirements audit
 
-Updated: 2026-08-20
+Updated: 2026-08-21
 
 ## Product purpose — intact and modular
 
@@ -14,8 +14,8 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Memory and restart continuity | Working | Atomic JSON persistence, migrations, corrupt-state recovery, backup/restore, restart tests. |
 | Safety, consent, and lawful-use boundaries | Working within documented scope | Illegal facilitation block/report locally; adult mode gates and revocable consent; no automatic external reporting claim. |
 | Application age gate and adult avatar profile | Working within documented scope | App-wide local 18+ confirmation; Adult Mode requires local age of majority, enablement, and consent; bounded fictional-avatar profile controls. No photorealistic or anatomical model engine is bundled. |
-| Internet research and media discovery | Working | Explicit-request detection, public sources, optional keyed search, citations, image/audio/video result handling. |
-| Media player and DJ helpers | Working | Audio/video dock, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube external search links. |
+| Internet research and media discovery | Working | Explicit internet/web/online request detection; local mood/mix/apps/gaming/study/stream intents do not fire Wikipedia; public sources, optional Premium keyed search, citations, image/audio/video result handling. |
+| Media player and DJ helpers | Working | Audio/video dock, local `eidovara-media://` playback of user-selected files, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube HTTPS handoff. |
 | Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf and confirmation-based launching; no process injection. |
 | Companion and accessibility | Working | Hideable 2D/3D-styled avatar, motion controls, installed Windows voices, optional narration and detected dictation. |
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |

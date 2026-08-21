@@ -28,6 +28,13 @@ test('cli snapshot prints JSON profile state', () => {
   assert.ok(Array.isArray(state.conversations));
 });
 
+test('cli help documents message and snapshot flags', () => {
+  const result = run(['--help']);
+  assert.equal(result.status, 0, result.stderr || result.stdout);
+  assert.match(result.stdout, /--message/);
+  assert.match(result.stdout, /--snapshot/);
+});
+
 test('package.json exposes the cli script', () => {
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   assert.equal(pkg.scripts.cli, 'node src/cli.js');
