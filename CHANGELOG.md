@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Repository IP self-attestation: dated inventory of every legal instrument (present / unsigned-template / not-filed / owner-action-required), first-party SPDX on HTML/CSS/scripts/server, copyright-deposit helper (`npm run ip:deposit`, gitignored output), infringement/DMCA pointers, and tests that forbid fake USPTO/Copyright Office/patent/PCI claims. Not a government registration. Focus-session tests use wall-clock-relative timestamps so they do not expire on the record date.
+
 ## v0.19.1
 
 - Next-layer similar-app desktop chrome on the advertised v0.19.0 kernel (not a cloned launcher or streaming brand): Windows tray stay-running, always-on-top, pin companion dock, Recents (confirm-launched apps, local media titles, opened memories), in-app notice drawer (focus / sleep / backup — not OS toast spam or telemetry), local-media sleep timer for `eidovara-media`, palette calculator and length/mass/temperature conversions (no live FX), and Windows-only open-at-login via Electron `setLoginItemSettings`. No Recall screenshots, DRM rip, VLC/Spotify/iTunes process control, global hotkeys into other apps, lyrics dumps, romantic companion, or live checkout.

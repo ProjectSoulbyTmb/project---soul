@@ -179,6 +179,14 @@ export const ENTRIES = [
     links: [{ href: 'CONTRIBUTOR_ASSIGNMENT.md', label: 'CLA template' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
+    id: 'ip-certify',
+    modes: ['legal', 'help'],
+    tags: ['attestation', 'self-attestation', 'certification', 'ip-certify', 'uspto', 'copyright-office', 'registered', 'registration', 'deposit', 'infringement', 'dmca'],
+    title: 'Repository IP self-attestation',
+    reply: 'docs/IP_CERTIFICATION.md is a dated repository self-attestation: it inventories licenses, unsigned templates, and owner-only leftovers for Eidovara v0.19.1. It is not a U.S. Copyright Office registration, USPTO filing, patent, Authenticode certificate, or executed assignment. Eidovara is not registered with the Copyright Office or USPTO. Marks stay unregistered ™. The owner can file at copyright.gov and USPTO privately; this helper cannot. CLA and entity assignment files remain unsigned templates. See also docs/INFRINGEMENT.md for DMCA pointers.',
+    links: [{ href: 'IP_CERTIFICATION.md', label: 'IP self-attestation' }, { href: 'licensing.html', label: 'Licensing' }]
+  },
+  {
     id: 'pages-publish',
     modes: ['help'],
     tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing', 'eidovara', 'cloudflare', 'domain', 'www'],
@@ -241,6 +249,7 @@ export function safePublicHref(value) {
   if (!raw) return '';
   if (/^[a-z0-9][a-z0-9._-]*\.html(?:#[\w.-]*)?$/i.test(raw)) return raw;
   if (/^\.\/#[\w.-]+$/.test(raw)) return raw;
+  if (/^(?:IP_CERTIFICATION|INFRINGEMENT|COPYRIGHT|COPYRIGHT_DEPOSIT|CONTRIBUTOR_ASSIGNMENT|ENTITY_IP_ASSIGNMENT|CHAIN_OF_TITLE|TRADEMARK_FILING|IP_PROTECTION)\.md$/.test(raw)) return raw;
   try {
     const url = new URL(raw);
     if (url.protocol !== 'https:' || url.username || url.password) return '';

@@ -4,7 +4,7 @@ Last updated: August 21, 2026
 
 Eidovara is restricted to users age 18 or older. It is alpha software, not a government-approved, professionally certified, or universally lawful service. These notices are product disclaimers, **not legal advice**. Mandatory legal rights remain unaffected.
 
-Read [TERMS.md](TERMS.md), [PRIVACY.md](PRIVACY.md), [AGE.md](AGE.md), [LICENSE](LICENSE), [OWNERSHIP.md](OWNERSHIP.md), [TRADEMARKS.md](TRADEMARKS.md), and [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+Read [TERMS.md](TERMS.md), [PRIVACY.md](PRIVACY.md), [AGE.md](AGE.md), [LICENSE](LICENSE), [OWNERSHIP.md](OWNERSHIP.md), [TRADEMARKS.md](TRADEMARKS.md), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and the dated [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) self-attestation (not a government registration).
 
 ## Use and ownership
 

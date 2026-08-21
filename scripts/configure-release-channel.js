@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 
 const repository = String(process.argv[2] || process.env.GITHUB_REPOSITORY || '').trim();

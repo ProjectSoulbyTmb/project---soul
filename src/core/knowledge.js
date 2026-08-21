@@ -75,7 +75,7 @@ const ENTRIES = {
   },
   legal: {
     title: 'Legal pointers',
-    reply: 'This is not legal advice. Eidovara is 18+, source-available not open source, and Authenticode-unsigned. Copyright in qualifying original first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is the intended publisher only. Do not use it for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, anti-cheat, or authentication. Full TERMS, PRIVACY, AGE, and LICENSE ship with this installation and are also in the in-app legal overlay. GitHub pull requests do not transfer ownership.',
+    reply: 'This is not legal advice. Eidovara is 18+, source-available not open source, and Authenticode-unsigned. Copyright in qualifying original first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is the intended publisher only. The dated IP self-attestation in this installation is a repository record, not a Copyright Office or USPTO registration. Do not use it for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, anti-cheat, or authentication. Full TERMS, PRIVACY, AGE, and LICENSE ship with this installation and are also in the in-app legal overlay. GitHub pull requests do not transfer ownership.',
     actions: [{ type: 'open-legal', legal: 'terms', label: 'Terms' }, { type: 'open-legal', legal: 'privacy', label: 'Privacy' }]
   },
   privacy: {
@@ -113,7 +113,7 @@ const PRODUCT_RULES = [
   { id: 'premium', re: /\b(free\s+vs\s+premium|premium\s+(?:test|gate|edition|override)|eidovara\s+premium)\b/i },
   { id: 'privacy', re: /\b(telemetry|analytics|what\s+leaves|privacy\s+notice)\b/i },
   { id: 'status', re: /\b(diagnostics|service\s+status|is\s+(?:the\s+)?service\s+(?:up|down|online|offline))\b/i },
-  { id: 'legal', re: /\b(terms(?:\s+of\s+use)?|legal\s+notice|source-available|open\s+source|not\s+legal\s+advice)\b/i },
+  { id: 'legal', re: /\b(terms(?:\s+of\s+use)?|legal\s+notice|source-available|open\s+source|not\s+legal\s+advice|copyright\s+office|uspto|intellectual\s+property|self-attestation)\b/i },
   { id: 'offline', re: /\b(offline\s+soul|airplane|no\s+internet|local[ -]first|works?\s+offline)\b/i },
   { id: 'what', re: /\b(what\s+is\s+eidovara|what\s+does\s+eidovara|tell\s+me\s+about\s+eidovara|eidovara\s+workspace)\b/i },
   { id: 'help', re: /\b(what\s+can\s+(?:you|this\s+(?:companion|workspace|assistant|kernel))\s+do|how\s+do\s+i\s+use\s+(?:this|eidovara)|workspace\s+(?:helper|companion))\b/i }

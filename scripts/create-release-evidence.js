@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -18,6 +20,9 @@ for (const name of ['LICENSE','NOTICE.md','COPYRIGHT.txt','OWNERSHIP.md','AUTHOR
 fs.copyFileSync(path.join('docs', 'BRAND_ASSET_POLICY.md'), path.join('dist', 'BRAND-ASSET-POLICY.md'));
 fs.copyFileSync(path.join('docs', 'COPYRIGHT_ASSET_REGISTER.md'), path.join('dist', 'COPYRIGHT-ASSET-REGISTER.md'));
 fs.copyFileSync(path.join('docs', 'COPYRIGHT.md'), path.join('dist', 'COPYRIGHT.md'));
+fs.copyFileSync(path.join('docs', 'IP_CERTIFICATION.md'), path.join('dist', 'IP-CERTIFICATION.md'));
+fs.copyFileSync(path.join('docs', 'INFRINGEMENT.md'), path.join('dist', 'INFRINGEMENT.md'));
+fs.copyFileSync(path.join('docs', 'COPYRIGHT_DEPOSIT.md'), path.join('dist', 'COPYRIGHT-DEPOSIT.md'));
 fs.copyFileSync(path.join('docs', 'TRADEMARK_FILING.md'), path.join('dist', 'TRADEMARK-FILING.md'));
 fs.copyFileSync(path.join('docs', 'BRAND_GUIDE.md'), path.join('dist', 'BRAND-GUIDE.md'));
 console.log(`Release evidence created for ${files.length} files.`);

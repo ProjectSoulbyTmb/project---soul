@@ -4,6 +4,8 @@ Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available;
 
 This file is a **project record**, not a court judgment, signed assignment, government registration, or counsel opinion. **It is not legal advice.** A GitHub commit cannot make someone “safely” the owner of another party’s software or of user content.
 
+See [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) for the dated repository self-attestation (instrument inventory, v0.19.1 installer SHA, owner-only leftovers). That file is not a Copyright Office or USPTO registration.
+
 ## What is claimed
 
 Tyler Michael Bosworth claims copyright in **qualifying original first-party expression** in Eidovara (source, documentation, first-party UI assets, and release materials he authored). Soul Consciousness Studios™ is his **intended publisher name**. Until a formed legal entity exists **and** he executes a written assignment to it, that name does not own this IP. See [docs/COMPANY_FORMATION.md](docs/COMPANY_FORMATION.md) and the unsigned [docs/ENTITY_IP_ASSIGNMENT.md](docs/ENTITY_IP_ASSIGNMENT.md) template.
