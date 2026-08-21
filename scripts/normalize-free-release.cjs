@@ -7,9 +7,12 @@ const fs = require('node:fs');
 function patchFile(file, patches) {
   let text = fs.readFileSync(file, 'utf8');
   let changed = false;
-  for (const { from, to, label } of patches) {
+  for (const { from, to, label, optional = false } of patches) {
     if (text.includes(to)) continue;
-    if (!text.includes(from)) throw new Error(`Free-release normalization could not find ${label || from} in ${file}`);
+    if (!text.includes(from)) {
+      if (optional) continue;
+      throw new Error(`Free-release normalization could not find ${label || from} in ${file}`);
+    }
     text = text.replace(from, to);
     changed = true;
   }
@@ -59,12 +62,12 @@ patchFile('src/electron/main.js', [
   },
   {
     label: 'admin edition persistence',
+    optional: true,
     from: "  requireAgeGate(); requireAdmin(); config.edition = incoming?.edition === 'premium' ? 'premium' : 'free';\n  if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }",
     to: "  requireAgeGate(); requireAdmin(); config.edition = 'free';"
   }
 ]);
 
-// main.js contains the engine search-key expression twice. Normalize any second copy.
 {
   const file = 'src/electron/main.js';
   let text = fs.readFileSync(file, 'utf8');
