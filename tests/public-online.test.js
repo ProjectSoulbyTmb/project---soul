@@ -167,13 +167,13 @@ test('CI pnpm setup uses packageManager and does not pin a conflicting version',
   }
 });
 
-test('desktop app still has no workers.dev default endpoint', () => {
-  assert.doesNotMatch(read('src/electron/main.js'), /dreambot333\.workers\.dev/);
-  assert.doesNotMatch(read('src/electron/main.js'), /workers\.dev/);
-  assert.doesNotMatch(read('src/renderer/renderer.js'), /dreambot333\.workers\.dev/);
+test('desktop app has no workers.dev default and bakes api.eidovara.org', () => {
+  assert.doesNotMatch(read('src/electron/main.js'), /[a-z0-9.-]+\.workers\.dev/i);
+  assert.doesNotMatch(read('src/renderer/renderer.js'), /[a-z0-9.-]+\.workers\.dev/i);
   const html = read('src/renderer/index.html');
-  assert.doesNotMatch(html, /dreambot333\.workers\.dev/);
-  assert.match(html, /placeholder="https:\/\/eidovara-api\.example\.workers\.dev"/);
+  assert.doesNotMatch(html, /[a-z0-9.-]+\.workers\.dev/i);
+  assert.match(html, /placeholder="https:\/\/api\.eidovara\.org"/);
+  assert.match(read('src/core/service.js'), /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
 });
 
 test('eidovara.org is the official Cloudflare Pages hostname for the same docs/ IA', () => {

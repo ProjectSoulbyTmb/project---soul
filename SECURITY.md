@@ -18,7 +18,7 @@ Payment checkout is external and provider-hosted. In v0.18.2 checkout stays **fa
 
 ## Current network surface
 
-Documented destinations are in [NETWORK-USAGE.md](NETWORK-USAGE.md). In v0.18.2 they are: Wikipedia/Wikimedia after an explicit research request; optional pasted HTTPS or loopback model providers; Premium Brave Search with a user key; official GitHub update checks; optional Worker `GET /health`, `/v1/config`, `/v1/status` after a pasted HTTPS base; optional website `GET`/`POST /v1/assist` after a pasted HTTPS base; and Spotify/YouTube HTTPS search links. The desktop app does not call `/v1/assist`. No Worker URL is hardcoded.
+Documented destinations are in [NETWORK-USAGE.md](NETWORK-USAGE.md). In v0.18.2 they are: Wikipedia/Wikimedia after an explicit research request; optional pasted HTTPS or loopback model providers; Premium Brave Search with a user key; official GitHub update checks; Worker `GET /health`, `/v1/config`, `/v1/status` after 18+ against `https://api.eidovara.org` (or another HTTPS base you paste); optional website `GET`/`POST /v1/assist` after a pasted HTTPS base; and Spotify/YouTube HTTPS search links. The desktop app does not call `/v1/assist`. No `workers.dev` host is hardcoded.
 
 ## Enhancement limits
 

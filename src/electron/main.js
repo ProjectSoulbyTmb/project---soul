@@ -9,7 +9,7 @@ import { JsonStore } from '../core/store.js';
 import { defaultProfile } from '../core/schema.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT, normalizeProviderEndpoint } from '../providers/http.js';
-import { fetchServiceSnapshot, normalizeServiceUrl, httpsOnlyUrl } from '../core/service.js';
+import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
@@ -76,7 +76,7 @@ function validateNewAdminPassword(password) {
   if (value.length < 12 || value.length > 200) throw new Error('Use an administrator password between 12 and 200 characters.');
   return value;
 }
-function publicServiceUrl() { try { return normalizeServiceUrl(config.serviceUrl || ''); } catch { return ''; } }
+function publicServiceUrl() { try { return resolveServiceBase(config.serviceUrl); } catch { return ''; } }
 function publicServiceStatus() {
   const stored = config.serviceStatus && typeof config.serviceStatus === 'object' ? config.serviceStatus : {};
   return {

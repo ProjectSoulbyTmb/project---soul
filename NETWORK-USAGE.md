@@ -6,7 +6,7 @@ This self-declared network inventory is included in signed release provenance.
 
 ## Current egress (v0.18.2)
 
-Network access is user-directed except the official GitHub update-manifest check. No `workers.dev` host is compiled into the Electron app or the public site. Payments stay **fail-closed**: `paymentsEnabled` and `checkoutEnabled` remain false even if a remote `/v1/config` payload claims otherwise.
+Network access is user-directed except the official GitHub update-manifest check. No `workers.dev` host is compiled into the Electron app or the public site. The official Eidovara service default is `https://api.eidovara.org` (overridable). Payments stay **fail-closed**: `paymentsEnabled` and `checkoutEnabled` remain false even if a remote `/v1/config` payload claims otherwise.
 
 | Destination | Trigger | Data sent |
 | --- | --- | --- |
@@ -15,12 +15,12 @@ Network access is user-directed except the official GitHub update-manifest check
 | `api.search.brave.com` | Explicit web/image request when a Premium Brave Search key is configured | Search terms, API credential, IP address |
 | User-configured local model (`127.0.0.1` / `localhost` / `::1`, typically Ollama `/api/chat`) | User sends a conversation while Local is selected | Conversation context and selected model on loopback |
 | User-configured Premium HTTPS `/chat/completions` endpoint | User sends a conversation while Compatible is selected | Conversation context, selected model, credential when required |
-| Configured Eidovara service `GET /health`, `GET /v1/config`, `GET /v1/status` | After 18+ confirmation: launch retry, Settings **Connect**, or Ctrl+A **Test service** | No conversations or payment data; health/config/status JSON only |
+| Configured Eidovara service `GET /health`, `GET /v1/config`, `GET /v1/status` | After 18+ confirmation: launch retry, Settings **Connect**, or Ctrl+A **Test service**. Default base is `https://api.eidovara.org`; paste another HTTPS base to override | No conversations or payment data; health/config/status JSON only |
 | Optional website helper `GET`/`POST /v1/assist` | Visitor pastes an HTTPS Worker base on the public site (Status / Assist); knowledge-pack questions only | The typed question and mode. Desktop conversation history is refused. Transcripts are not stored. |
 | `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
 | Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
 
-No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Paste a service base into Settings → Eidovara service (or the local administrator panel). If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.18.2; the app never enables live checkout from a remote flag.
+No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Empty/default Settings → Eidovara service resolves to `https://api.eidovara.org`. Paste another HTTPS base to override. If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.18.2; the app never enables live checkout from a remote flag.
 
 ## Enhancement-allowed vs blocked
 
@@ -32,7 +32,8 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - User-pasted HTTPS (or loopback) model providers
 - Premium Brave Search with a user-supplied key
 - Official GitHub update checks and user-approved downloads
-- Optional Worker `GET /health`, `/v1/config`, `/v1/status` after a pasted HTTPS base
+- Official custom hostname `https://api.eidovara.org` as the baked default Eidovara service base (overridable; desktop still does not send conversations)
+- Optional Worker `GET /health`, `/v1/config`, `/v1/status` after 18+ (default or override)
 - Optional website `GET`/`POST /v1/assist` after a pasted HTTPS base
 - Spotify/YouTube official HTTPS search links (no stream ripping)
 - Fail-closed payments (`paymentsEnabled: false`)
@@ -47,4 +48,4 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Weakening the renderer sandbox, 18+ gates, or `.github/workflows/dependency-review.yml`
 - App CSP `media-src 'self'` (local media stays on `eidovara-media:`)
 - Fake registered-mark, patent, or PCI-DSS claims
-- A hardcoded `workers.dev` (or any) Worker URL in the desktop app or public site
+- A hardcoded `workers.dev` Worker URL in the desktop app or public site

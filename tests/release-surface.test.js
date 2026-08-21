@@ -55,8 +55,9 @@ test('advertised Free surface confirms launches and media, and does not hard-cod
   assert.match(renderer, /applyEditionGates/);
   assert.match(html, /Animated RGB lighting effects \(Premium\)/);
   assert.match(html, /Broad web-search key \(Premium\)/);
-  assert.doesNotMatch(main, /dreambot333\.workers\.dev/);
-  assert.doesNotMatch(renderer, /dreambot333\.workers\.dev/);
+  assert.doesNotMatch(main, /[a-z0-9.-]+\.workers\.dev/i);
+  assert.doesNotMatch(renderer, /[a-z0-9.-]+\.workers\.dev/i);
+  assert.match(read('src/core/service.js'), /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
   assert.match(read('NETWORK-USAGE.md'), /en\.wikipedia\.org/);
   assert.match(read('README.md'), /Premium RGB effects/);
 });

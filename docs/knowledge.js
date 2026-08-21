@@ -3,6 +3,7 @@ export const ASSIST_VERSION = '0.18.2';
 export const MAX_ASSIST_QUERY = 800;
 export const MAX_ASSIST_BODY = 4096;
 export const STORAGE_KEY = 'eidovara.serviceBase';
+export const DEFAULT_SERVICE_BASE = 'https://api.eidovara.org';
 export const ASSIST_MODES = ['help', 'download', 'legal'];
 
 const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
@@ -84,7 +85,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['connect', 'worker', 'service', 'health', 'config', 'status', 'settings', 'url', 'https', 'offline'],
     title: 'Connect service in Settings',
-    reply: 'After the 18+ gate, open Settings → Eidovara service (or Ctrl+A Test service). Paste an HTTPS base URL you choose. The desktop app calls /health, /v1/config, and /v1/status only. Conversations are not sent. The Worker URL is not compiled into the app or this website. If nothing is pasted, or the service is down, Free / Offline Soul and the workspace keep working.',
+    reply: 'After the 18+ gate, Settings → Eidovara service (or Ctrl+A Test service) uses https://api.eidovara.org by default. Paste another HTTPS base to override; empty/default resolves to that official host. The desktop app calls /health, /v1/config, and /v1/status only. Conversations are not sent. No workers.dev host is compiled in. If the service is down, Free / Offline Soul and the workspace keep working.',
     links: [{ href: 'faq.html', label: 'FAQ' }, { href: 'status.html', label: 'Status' }]
   },
   {
@@ -188,7 +189,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['privacy', 'telemetry', 'analytics', 'leave', 'network', 'conversation'],
     title: 'Privacy pointers',
-    reply: 'This is not legal advice. There are no owner-operated accounts, telemetry, advertising identifiers, or cloud memory. What can leave the machine: explicit Wikipedia/Wikimedia research, optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, and optional /health /v1/config /v1/status after you paste a service base. Conversations are not sent to the Worker. No payment-card collection.',
+    reply: 'This is not legal advice. There are no owner-operated accounts, telemetry, advertising identifiers, or cloud memory. What can leave the machine: explicit Wikipedia/Wikimedia research, optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, and /health /v1/config /v1/status after 18+ against https://api.eidovara.org (or another HTTPS base you paste). Conversations are not sent to the Worker. No payment-card collection.',
     links: [{ href: 'privacy.html', label: 'Privacy notice' }]
   },
   {
@@ -212,7 +213,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['status', 'pages', 'outage', 'uptime', 'releases'],
     title: 'Public status',
-    reply: `Default public surfaces are https://eidovara.org (Cloudflare Pages) plus the GitHub Pages github.io mirror, and the official unsigned Windows installer on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). No Worker URL is compiled into the site. The Status page can fetch /health and /v1/status only after you paste an HTTPS service base (saved in localStorage). If no URL is configured, it fails closed and does not call a host.`,
+    reply: `Default public surfaces are https://eidovara.org (Cloudflare Pages) plus the GitHub Pages github.io mirror, and the official unsigned Windows installer on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). The official API host is https://api.eidovara.org. The Status page prefills that HTTPS base for /health and /v1/status; paste another host to override. Ask Eidovara stays on this page until you save a base for optional /v1/assist. No workers.dev host is compiled in. Desktop conversations are never sent.`,
     links: [{ href: 'status.html', label: 'Status' }, { href: 'download.html', label: 'Download (18+)' }]
   },
   {

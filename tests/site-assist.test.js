@@ -74,10 +74,12 @@ test('site CSP allows only same-origin scripts and no unsafe-inline/eval', () =>
 });
 
 test('public HTML and site scripts do not compile a workers.dev default', () => {
-  assert.doesNotMatch(publicHtml, /dreambot333\.workers\.dev/);
-  assert.doesNotMatch(publicJs, /dreambot333\.workers\.dev/);
-  assert.match(read('docs/status.html'), /eidovara-api\.example\.workers\.dev/);
-  assert.match(read('docs/assist.js'), /eidovara-api\.example\.workers\.dev/);
+  assert.doesNotMatch(publicHtml, /[a-z0-9.-]+\.workers\.dev/i);
+  assert.doesNotMatch(publicJs, /[a-z0-9.-]+\.workers\.dev/i);
+  assert.match(read('docs/status.html'), /https:\/\/api\.eidovara\.org/);
+  assert.match(read('docs/assist.js'), /DEFAULT_SERVICE_BASE/);
+  assert.match(read('docs/knowledge.js'), /DEFAULT_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
+  assert.match(read('docs/site.js'), /https:\/\/api\.eidovara\.org/);
 });
 
 test('site assist and Worker share desktop path-strip and fail-closed fetch rules', () => {
@@ -98,9 +100,9 @@ test('site assist and Worker share desktop path-strip and fail-closed fetch rule
   assert.match(site, /32768/);
   assert.match(worker, /checkoutEnabled: false/);
   assert.match(worker, /conversationsStored: false/);
-  assert.doesNotMatch(assist, /dreambot333\.workers\.dev/);
+  assert.doesNotMatch(assist, /[a-z0-9.-]+\.workers\.dev/i);
   assert.match(assist, /safePublicHref/);
-  assert.doesNotMatch(read('src/renderer/renderer.js'), /workers\.dev/);
+  assert.doesNotMatch(read('src/renderer/renderer.js'), /[a-z0-9.-]+\.workers\.dev/i);
 });
 
 test('chatbot knowledge answers golden product questions', () => {
@@ -131,6 +133,11 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.equal(certified.ok, true);
   assert.match(certified.reply, /unsigned|Authenticode/i);
   assert.match(certified.reply, /not Microsoft-certified|cannot Authenticode-sign|Authenticode-unsigned/i);
+
+  const connect = answerAssist('How do I connect the Eidovara service in Settings?');
+  assert.equal(connect.ok, true);
+  assert.match(connect.reply, /https:\/\/api\.eidovara\.org/);
+  assert.doesNotMatch(connect.reply, /[a-z0-9.-]+\.workers\.dev/i);
 
   const hosted = answerAssist('Is this a hosted Soul chat account I log into in the browser?');
   assert.equal(hosted.ok, true);

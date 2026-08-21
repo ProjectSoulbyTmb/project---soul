@@ -44,7 +44,7 @@ function applyServiceIndicator(status){
   const siteBtn=$('#serviceSiteBtn'); if(siteBtn) siteBtn.classList.toggle('hidden',!snapshot.website);
   const note=$('#serviceStatusText');
   if(note){
-    if(!configured) note.textContent='No service URL saved. Offline Soul stays fully usable.';
+    if(!configured) note.textContent='Service URL is invalid. Default is https://api.eidovara.org. Offline Soul stays fully usable.';
     else if(online) note.textContent=`${snapshot.service||'Eidovara'} ${snapshot.version||''} connected. Checkout stays off. Conversations stay local.`.replace(/\s+/g,' ').trim();
     else note.textContent=snapshot.error||'Eidovara service is unreachable. Offline Soul continues locally.';
   }
