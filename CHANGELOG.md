@@ -4,6 +4,8 @@
 
 ## v0.22.2
 
+- Public site restyle plus version-honest pages: larger hero (one filled CTA and a quiet product link), three benefits instead of a five-card grid, quieter plans, and a `nav-cta` Download control. Every public `docs/*.html` page states **source v0.22.2** while the live advertised installer remains **v0.19.1** `Eidovara-0.19.1-Windows-x64-Setup.exe` SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`. No newer Setup.exe is advertised.
+
 - Honest two-track cut: **source v0.22.2** (this tree, Worker health, website helper, desktop chrome) while the live advertised Windows installer remains **v0.19.1** `Eidovara-0.19.1-Windows-x64-Setup.exe` SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`. No `Eidovara-0.22.2-Windows-x64-Setup.exe` exists yet; do not invent a hash. Tags `v0.18.0`–`v0.19.1` were not moved. After merge, deploy the Worker and Pages; a newer Setup.exe needs a real Windows build plus a measured SHA.
 - Incorporates website marks/wallpapers (#40), security/licensing completeness (#41), and honest online-status heartbeat plus log redaction / single-instance lock (#42).
 

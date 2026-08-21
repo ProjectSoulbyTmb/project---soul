@@ -10,9 +10,9 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Frequently asked questions for Eidovara v0.19.1: Windows download, 18+, unsigned builds, optional Worker, and the website helper.">
+  <meta name="description" content="Frequently asked questions for Eidovara source v0.22.2: Windows download (live installer v0.19.1), 18+, unsigned builds, optional Worker, and the website helper.">
   <meta property="og:title" content="FAQ · Eidovara">
-  <meta property="og:description" content="Frequently asked questions for Eidovara v0.19.1: Windows download, 18+, unsigned builds, optional Worker, and the website helper.">
+  <meta property="og:description" content="Frequently asked questions for Eidovara source v0.22.2: Windows download (live installer v0.19.1), 18+, unsigned builds, optional Worker, and the website helper.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://eidovara.org/faq.html">
   <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
@@ -33,7 +33,6 @@
       <nav id="site-nav" aria-label="Primary">
         <a href="./" data-nav="home">Home</a>
         <a href="product.html" data-nav="product">Product</a>
-        <a href="download.html" data-nav="download">Download</a>
         <a href="assist.html" data-nav="assist">Assist</a>
         <a href="help.html" data-nav="help">Help</a>
         <a href="faq.html" data-nav="faq">FAQ</a>
@@ -49,13 +48,14 @@
           </div>
         </details>
         <a href="status.html" data-nav="status">Status</a>
+        <a class="nav-cta" href="download.html" data-nav="download">Download</a>
       </nav>
     </div>
   </header>
   <main id="main" class="site-main">
     <p class="eyebrow">Frequently asked</p>
-    <h1 class="section-title">Straight answers for v0.19.1.</h1>
-    <p class="lead">These answers match the advertised Windows product. They are not legal advice. Use Ask Eidovara for the same knowledge pack.</p>
+    <h1 class="section-title">Straight answers for source v0.22.2.</h1>
+    <p class="lead">These answers match source v0.22.2 and the live advertised Windows installer v0.19.1. They are not legal advice. Use Ask Eidovara for the same knowledge pack.</p>
     <div class="faq faq-list">
       <details open><summary>What is Eidovara?</summary><p>A local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. Visiting this website does not create an account. Soul is optional software, not a consciousness claim.</p></details>
       <details><summary>How do I install Eidovara?</summary><p>Confirm you are 18 or older on the <a href="download.html">Download</a> page. After that gate, the primary button downloads the official unsigned installer <code>Eidovara-0.19.1-Windows-x64-Setup.exe</code> — the <code>.exe</code> (about 101.3 MiB), not the GitHub source tree. SHA-256 <code>72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8</code>. You can still build on Windows with <code>npm run dist:win:installer</code>. After install, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Adults 18+.</p></details>
@@ -63,7 +63,7 @@
       <details><summary>Is there a Linux, macOS, or iOS app?</summary><p>No official Linux or macOS product. Not an iOS, iPhone, iPad, or Apple product. Linux/macOS scripts are development targets.</p></details>
       <details><summary>Is Eidovara someone else’s assistant or a film character?</summary><p>No. Eidovara, Soul, and the Soul kernel are first-party software names. They are not third-party film or assistant products and are not affiliated with those owners. See <a href="licensing.html">Licensing</a> and the repository trademark notice.</p></details>
       <details><summary>Do I need the cloud?</summary><p>No. Free / Offline Soul works with no Worker URL. After 18+, Settings → Eidovara service defaults to <code>https://api.eidovara.org</code> for <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code> only. Paste another HTTPS base to override. Conversations are not sent.</p></details>
-      <details><summary>Can I pay for Premium here?</summary><p>No. v0.19.1 does not sell Premium and does not process payments. Ctrl+A local-admin testing is not checkout or PCI processing.</p></details>
+      <details><summary>Can I pay for Premium here?</summary><p>No. Source v0.22.2 does not sell Premium. The live installer remains v0.19.1 and does not process payments. Ctrl+A local-admin testing is not checkout or PCI processing.</p></details>
       <details><summary>What are the keyboard shortcuts?</summary><p>In the Windows app after 18+: Ctrl+K jumps to Dashboard, Settings groups, Apps, Soul, and legal. Ctrl+/ opens the cheatsheet. Ctrl+A opens private admin only when you are not typing in a field. Click the Soul face or type in the right dock to ask locally. Hold the mic to dictate. Enter sends a message. Esc closes a dialog. Launching an app still asks you to confirm.</p></details>
       <details><summary>Is the website helper Soul?</summary><p>No. Ask Eidovara is a website helper over a fixed knowledge pack. It is not Soul and not legal advice. Transcripts are not stored.</p></details>
       <details><summary>Who owns Eidovara? Is it open source?</summary><p>© 2026 Tyler Michael Bosworth. All rights reserved. Qualifying original first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name only, not a formed entity that owns this IP unless a privately signed assignment exists. The repository is source-available, not OSI open source, and is not MIT, Apache, or GPL. Forks stay under LICENSE. GitHub pull requests do not transfer ownership. Contributor and entity assignment files are unsigned templates. No ® or patent is claimed here. See <a href="licensing.html">Licensing</a> and the dated <a href="IP_CERTIFICATION.md">IP self-attestation</a> (not a government registration).</p></details>
