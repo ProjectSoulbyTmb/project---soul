@@ -1,0 +1,39 @@
+/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
+
+.web-view.panel-view {
+  overflow: hidden;
+  min-height: 0;
+  padding-bottom: 12px;
+}
+.web-view.panel-view.active {
+  display: flex;
+  flex-direction: column;
+}
+.web-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+.web-toolbar input {
+  flex: 1 1 220px;
+  min-width: 160px;
+  background: var(--fill-tertiary);
+  border: 0;
+  color: var(--text);
+  border-radius: var(--radius-md);
+  padding: 11px 12px;
+  outline: none;
+  min-height: 44px;
+}
+.web-toolbar input:focus {
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.web-stage {
+  flex: 1 1 auto;
+  min-height: 240px;
+  border-radius: var(--radius-lg);
+  background: var(--fill-tertiary);
+  border: var(--hairline) solid var(--separator);
+}

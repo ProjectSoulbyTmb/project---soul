@@ -6,7 +6,7 @@ const $ = id => document.getElementById(id);
 $('overlayTitle').textContent = kind === 'discord' ? 'Discord guest' : 'Browse overlay';
 $('overlayNote').textContent = kind === 'discord'
   ? 'Loads discord.com in a sandboxed Eidovara window. Not an official Discord overlay. Not affiliated. Does not inject into games.'
-  : 'HTTPS pages you open stay in this guest window. The workspace renderer stays locked. Does not inject into games.';
+  : 'HTTPS pages you open stay in this guest window. The workspace Web desk is a separate isolated view. Does not inject into games.';
 if (kind === 'discord') {
   $('overlayUrl').placeholder = 'https://discord.com/app or invite URL';
   $('overlayUrl').value = 'https://discord.com/app';

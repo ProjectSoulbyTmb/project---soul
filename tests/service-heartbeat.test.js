@@ -247,7 +247,9 @@ test('desktop and status page keep renderer CSP and honest poll wiring', () => {
   assert.match(renderer, /Reconnecting/);
   assert.match(renderer, /onServiceStatus/);
   assert.doesNotMatch(renderer, /fetch\(`\$\{.*\}\/health`/);
-  assert.match(html, /connect-src 'none'/);
+  assert.match(html, /connect-src https:/);
+  assert.doesNotMatch(html, /connect-src \*/);
+  assert.doesNotMatch(html, /connect-src 'none'/);
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
   assert.match(html, /media-src https: eidovara-media:/);
   assert.doesNotMatch(html, /eidovara-online:/);

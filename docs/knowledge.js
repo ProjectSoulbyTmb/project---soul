@@ -215,7 +215,7 @@ export const ENTRIES = [
     modes: ['legal', 'help'],
     tags: ['security', 'sandbox', 'csp', 'vulnerability', 'sbom', 'checksum'],
     title: 'Security pointers',
-    reply: 'The desktop renderer is sandboxed and isolated from Node.js. Workspace CSP uses media-src https: eidovara-media: and connect-src none. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance. Installers are Authenticode-unsigned. The public repository runs CodeQL, OpenSSF Scorecards, Dependabot, a license inventory, and a prohibited-secret scan. Dependency graph and private vulnerability reporting still need owner clicks; this helper cannot enable them. Report vulnerabilities through the repository private advisory channel when the owner has enabled it; do not post exploits or credentials in public issues. No software is guaranteed perfectly secure.',
+    reply: 'The desktop renderer is sandboxed and isolated from Node.js. Workspace CSP uses media-src https: eidovara-media: and connect-src https:. Optional in-app HTTPS browsing uses an isolated WebContentsView (persist:eidovara-web) without Soul APIs. Official releases publish SHA-256 checksums, an SPDX SBOM, and GitHub build provenance. Installers are Authenticode-unsigned. The public repository runs CodeQL, OpenSSF Scorecards, Dependabot, a license inventory, and a prohibited-secret scan. Dependency graph and private vulnerability reporting still need owner clicks; this helper cannot enable them. Report vulnerabilities through the repository private advisory channel when the owner has enabled it; do not post exploits or credentials in public issues. No software is guaranteed perfectly secure.',
     links: [{ href: 'security.html', label: 'Security center' }]
   },
   {

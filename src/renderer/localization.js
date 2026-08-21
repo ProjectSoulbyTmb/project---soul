@@ -3,7 +3,7 @@
 (() => {
   const messages = {
     en: {
-      newConversation: '＋ New conversation', dashboard: 'Dashboard', apps: 'Apps & Gaming', entertainment: 'Entertainment', memory: 'Memory', identity: 'Identity', settings: 'Settings', language: 'Interface language', save: 'Save settings',
+      newConversation: '＋ New conversation', dashboard: 'Dashboard', apps: 'Apps & Gaming', entertainment: 'Entertainment', webNav: 'Web', memory: 'Memory', identity: 'Identity', settings: 'Settings', language: 'Interface language', save: 'Save settings',
       adultConfirm: 'Confirm legal-adult status', adultEnable: 'Enable Adult Soul',
       adultWarning: 'Adult Soul is only for people who have reached the age of majority where they are located. It must not be used by minors. This local confirmation is not independent identity or age verification. Confirm that you are legally an adult to continue.',
       dashboardTitle: 'Your Eidovara workspace', dashboardLead: 'Apps, gaming, media, research, backups, and a local companion that can open those surfaces. Optional Soul is a software self-model — not consciousness, not the website helper.',
@@ -68,6 +68,11 @@
       researchCopy: 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.',
       researchEmptyTitle: 'No lookup yet', researchEmpty: 'Ask me to search the internet for a topic, or include an HTTPS URL after an explicit internet/web/online request. This is not a crawl of the whole internet.',
       researchIdle: 'no lookup yet', researchResults: 'Internet results', openInBrowser: 'Open in browser',
+      webTitle: 'Web', webLead: 'Paste an HTTPS address. Pages load in an isolated view inside this window, not as iframes in Soul chrome. Not a background crawler. Spotify and YouTube catalog buttons still open official searches in the system browser.',
+      webGo: 'Go', webBack: 'Back', webForward: 'Forward', webBrowser: 'Open in system browser', webClose: 'Close',
+      webAdultLock: 'Adult Mode is on, so in-app HTTPS browsing stays closed.',
+      webReady: 'Paste an HTTPS address. Isolated session persist:eidovara-web. Not a crawler.',
+      webHiddenForDialog: 'The page is paused while a dialog is open.',
       researchLookup: 'Look up', researchTopicLabel: 'Topic or HTTPS page', dashResearch: 'Research', nextResearch: 'Open Research',
       handoffNote: 'Official HTTPS search in your browser. Eidovara does not fetch that site’s HTML or capture logins.',
       sessionLibrary: 'This session’s local library', discoveryTitle: 'Local library & official searches',

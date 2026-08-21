@@ -288,7 +288,8 @@ test('research path does not compile workers.dev or renderer innerHTML of fetche
   assert.match(renderer, /openResearchLink/);
   assert.match(renderer, /id==='research'|researchView|setView\('research'\)/);
   assert.doesNotMatch(renderer, /innerHTML\s*=/);
-  assert.match(read('src/renderer/index.html'), /connect-src 'none'/);
+  assert.match(read('src/renderer/index.html'), /connect-src https:/);
+  assert.doesNotMatch(read('src/renderer/index.html'), /connect-src \*/);
   assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
   assert.match(read('src/renderer/index.html'), /id="researchView"/);
   assert.match(HONEST_RESEARCH_COPY, /pages you open/);

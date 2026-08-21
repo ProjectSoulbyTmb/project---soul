@@ -347,6 +347,7 @@ export function builtinPaletteItems({
     { id: 'view-chat', kind: 'view', title: 'Conversation', keywords: ['chat', 'talk', 'composer'], action: action('open-view', { view: 'chat', label: 'Open conversation' }) },
     { id: 'view-apps', kind: 'view', title: 'Apps & Gaming', keywords: ['launch', 'windows', 'start menu'], action: action('open-view', { view: 'apps', label: 'Open Apps & Gaming' }) },
     { id: 'view-entertainment', kind: 'view', title: 'Entertainment', keywords: ['media', 'music', 'mix'], action: action('open-view', { view: 'entertainment', label: 'Open Entertainment' }) },
+    { id: 'view-web', kind: 'view', title: 'Web', keywords: ['https', 'browser', 'internet', 'address bar'], action: action('open-view', { view: 'web', label: 'Open Web' }) },
     { id: 'view-memory', kind: 'view', title: 'Memory', keywords: ['notes', 'remember'], action: action('open-view', { view: 'memory', label: 'Open Memory' }) },
     { id: 'view-identity', kind: 'view', title: 'Identity & consent', keywords: ['adult mode', 'self-model'], action: action('open-view', { view: 'identity', label: 'Identity & consent' }) },
     { id: 'view-settings', kind: 'view', title: 'Settings', keywords: ['engine', 'provider', 'backups'], action: action('open-view', { view: 'settings', label: 'Open Settings' }) }

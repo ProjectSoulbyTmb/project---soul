@@ -70,14 +70,19 @@ test('guest overlay policy blocks private, loopback, http, file, and non-Discord
   assert.equal(overlayWindowOptions('discord').partition, 'persist:eidovara-guest-discord');
 });
 
-test('overlay HTML keeps media-src off self and the workspace renderer stays locked', () => {
-  for (const file of ['src/renderer/guest-chrome.html', 'src/renderer/chat-overlay.html', 'src/renderer/index.html']) {
+test('overlay HTML keeps media-src off self; workspace connect-src is HTTPS only', () => {
+  const workspace = read('src/renderer/index.html');
+  assert.doesNotMatch(workspace, /media-src [^"]*'self'/);
+  assert.match(workspace, /media-src https: eidovara-media:/);
+  assert.match(workspace, /connect-src https:/);
+  assert.doesNotMatch(workspace, /connect-src \*/);
+  assert.doesNotMatch(workspace, /connect-src 'none'/);
+  assert.match(workspace, /id="overlayPanel"/);
+  for (const file of ['src/renderer/guest-chrome.html', 'src/renderer/chat-overlay.html']) {
     const html = read(file);
     assert.doesNotMatch(html, /media-src [^"]*'self'/, file);
     assert.match(html, /connect-src 'none'/, file);
   }
-  assert.match(read('src/renderer/index.html'), /media-src https: eidovara-media:/);
-  assert.match(read('src/renderer/index.html'), /id="overlayPanel"/);
   assert.match(read('src/renderer/renderer.js'), /action\.type==='open-overlay'/);
   assert.match(read('src/renderer/renderer.js'), /action\.type==='open-discord-overlay'/);
   assert.match(read('src/electron/preload.cjs'), /openOverlay:/);

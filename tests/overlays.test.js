@@ -51,11 +51,12 @@ test('adult lock closes guest overlays while age-gate closes all', () => {
   assert.match(read('src/electron/guest-overlays.js'), /Adult Mode is on, so guest overlays stay closed/);
 });
 
-test('workspace CSP is not widened and overlay HTML stays locked', () => {
+test('workspace CSP allows HTTPS connect and overlay HTML stays locked', () => {
   const html = read('src/renderer/index.html');
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
   assert.doesNotMatch(html, /connect-src \*/);
-  assert.match(html, /connect-src 'none'/);
+  assert.match(html, /connect-src https:/);
+  assert.doesNotMatch(html, /connect-src 'none'/);
   for (const file of ['src/renderer/guest-chrome.html', 'src/renderer/chat-overlay.html']) {
     const page = read(file);
     assert.doesNotMatch(page, /media-src [^"]*'self'/, file);

@@ -6,7 +6,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <meta name="color-scheme" content="light dark" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src https: eidovara-media:; connect-src 'none'; object-src 'none'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: https: eidovara-media:; media-src https: eidovara-media:; connect-src https:; object-src 'none'" />
   <title>Eidovara v0.22.2</title>
   <link rel="stylesheet" href="tokens.css" />
   <link rel="stylesheet" href="styles.css" />
@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="now-playing.css" />
   <link rel="stylesheet" href="adult-soul.css" />
   <link rel="stylesheet" href="adult-media.css" />
+  <link rel="stylesheet" href="web.css" />
 </head>
 <body>
   <div class="app">
@@ -32,6 +33,7 @@
         <button class="nav-btn" data-view="research" data-i18n="researchNav">Research</button>
         <button class="nav-btn" data-view="apps" data-i18n="apps">Apps & Gaming</button>
         <button class="nav-btn" data-view="entertainment" data-i18n="entertainment">Entertainment</button>
+        <button class="nav-btn" data-view="web" data-i18n="webNav">Web</button>
         <button class="nav-btn adult-soul-nav" data-view="adultSoul">Adult Soul</button>
         <button class="nav-btn" data-view="memory" data-i18n="memory">Memory</button>
         <button class="nav-btn" data-view="identity" data-i18n="identity">Identity</button>
@@ -248,6 +250,25 @@
           </div>
           <div id="adultMediaCreators"></div>
         </div>
+      </section>
+
+      <section class="view panel-view web-view" id="webView">
+        <div class="panel-head">
+          <div>
+            <h2 data-i18n="webTitle">Web</h2>
+            <p data-i18n="webLead">Paste an HTTPS address. Pages load in an isolated view inside this window, not as iframes in Soul chrome. Not a background crawler. Spotify and YouTube catalog buttons still open official searches in the system browser.</p>
+          </div>
+        </div>
+        <div class="web-toolbar" role="toolbar" aria-label="Web navigation">
+          <button type="button" class="secondary" id="webBackBtn" data-i18n="webBack" disabled>Back</button>
+          <button type="button" class="secondary" id="webForwardBtn" data-i18n="webForward" disabled>Forward</button>
+          <input id="webUrl" type="url" maxlength="500" placeholder="https://example.com" autocomplete="off" spellcheck="false" aria-label="HTTPS address" />
+          <button type="button" id="webGoBtn" data-i18n="webGo">Go</button>
+          <button type="button" class="secondary" id="webBrowserBtn" data-i18n="webBrowser">Open in system browser</button>
+          <button type="button" class="secondary" id="webCloseBtn" data-i18n="webClose">Close</button>
+        </div>
+        <p class="settings-help" id="webNote">HTTPS only. Isolated partition persist:eidovara-web. No Soul APIs on foreign pages.</p>
+        <div class="web-stage" id="webStage" aria-label="Isolated HTTPS page"></div>
       </section>
 
       <section class="view panel-view" id="memoryView">
@@ -587,12 +608,12 @@
         <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed on this OS. Optional Worker <code>/v1/assist</code> is off unless you opt in; it is not Soul and never receives conversation history.</p>
       </div>
       <div class="legal-panel hidden" id="legalTermsPanel">
-        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify/Archive chips open official HTTPS searches and do not rip streams or inject into other players.</p>
+        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, HTTPS pages you open on the Web desk or in guest overlays, and official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify/Archive chips open official HTTPS searches and do not rip streams or inject into other players. The Web desk is user-directed browsing, not a background crawler, and not in-process Spotify/YouTube player embeds.</p>
         <p>Adult Mode stays off unless age-of-majority confirmation, enablement, and current revocable consent are all active. Until a later release, enablement is only in the private administrator panel (Ctrl+A, away from text fields). User-supplied media and apps remain your responsibility. Full terms ship as TERMS.md with the release.</p>
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
         <p>Local-first: conversations, memories, settings, safety records, linked-app shortcuts, Adult Mode state, and the 18+ flag stay on this device. No owner-operated accounts, telemetry, or analytics.</p>
-        <p>What can leave: public web lookup after you ask (Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, and HTTPS pages you open — not a full-internet index); optional pasted model endpoints; official GitHub update checks; Spotify/YouTube/Archive HTTPS search chips you click; Eidovara service health/config/status after you confirm age (default https://api.eidovara.org, overridable in Settings); optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
+        <p>What can leave: public web lookup after you ask (Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, and HTTPS pages you open — not a full-internet index); optional in-app HTTPS browsing you start on the Web desk (isolated partition persist:eidovara-web; first-party workspace JS may fetch HTTPS under connect-src https:); optional pasted model endpoints; official GitHub update checks; Spotify/YouTube/Archive HTTPS search chips you click; Eidovara service health/config/status after you confirm age (default https://api.eidovara.org, overridable in Settings); optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
       </div>
       <div class="legal-panel hidden" id="legalAgePanel">
         <p>You must be 18 or older. Declining this gate exits the app. Adult Mode is a separate triple gate. Local confirmation is not independent identity verification and is not a child-safety certification.</p>
@@ -647,6 +668,7 @@
   <script src="companion.js"></script>
   <script src="workspace-layers.js"></script>
   <script src="desktop-chrome.js"></script>
+  <script src="web.js"></script>
   <script type="module" src="adult-soul-app.js"></script>
   <script type="module" src="adult-media-app.js"></script>
 </body>

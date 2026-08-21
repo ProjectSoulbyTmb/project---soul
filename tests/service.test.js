@@ -284,8 +284,9 @@ test('desktop binds through the baked official default, overridable, never a wor
   assert.match(service, /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
   assert.match(service, /createServiceHeartbeat/);
   assert.match(service, /fetchServiceLiveness/);
-  assert.doesNotMatch(read('src/renderer/index.html'), /connect-src [^"]*https:/);
-  assert.match(read('src/renderer/index.html'), /connect-src 'none'/);
+  assert.match(read('src/renderer/index.html'), /connect-src https:/);
+  assert.doesNotMatch(read('src/renderer/index.html'), /connect-src \*/);
+  assert.doesNotMatch(read('src/renderer/index.html'), /connect-src 'none'/);
   for (const text of [main, renderer, html, preload, service]) {
     assert.doesNotMatch(text, /[a-z0-9.-]+\.workers\.dev/i);
   }

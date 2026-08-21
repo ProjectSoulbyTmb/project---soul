@@ -5,7 +5,7 @@ const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
 let state = null, settings = null, sending = false, backupCount = 0;
 let mediaQueue = [], mediaIndex = -1, sessionLibrary = [];
-const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), adultSoul: $('#adultSoulView'), settings: $('#settingsView') };
+const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), web: $('#webView'), memory: $('#memoryView'), identity: $('#identityView'), adultSoul: $('#adultSoulView'), settings: $('#settingsView') };
 const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 const assistantPayload = (extra = {}) => {
   const p = state?.assistant?.preferences || {}, c = state?.assistant?.capabilities || {};
@@ -55,15 +55,18 @@ function setView(name){
     name='identity';
   }
   if(!views[name])return;
+  const leavingWeb = currentView()==='web' && name!=='web';
   Object.values(views).forEach(v=>v.classList.remove('active'));
   views[name].classList.add('active');
-  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',memory:'Memory',identity:'Identity & continuity',adultSoul:'Adult Soul',settings:'Settings'}[name]);
+  $('#viewTitle').textContent = name==='chat' ? (activeConversation()?.title || 'Conversation') : ({dashboard:'Dashboard',research:t('researchTitle','Research'),apps:'Apps & Gaming',entertainment:'Entertainment',web:t('webTitle','Web'),memory:'Memory',identity:'Identity & continuity',adultSoul:'Adult Soul',settings:'Settings'}[name]);
   $$('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===name));
   if(innerWidth<861) $('#sidebar').classList.remove('open');
   window.eidovaraCompanion?.renderFollowups?.(name);
   if(name==='research') renderResearchView();
   if(name==='adultSoul') window.eidovaraAdultSoul?.onShow?.();
   if(name==='entertainment') window.eidovaraAdultMedia?.onShow?.();
+  if(name==='web') window.eidovaraWeb?.onShow?.();
+  else if(leavingWeb) window.eidovaraWeb?.onHide?.();
   window.eidovaraChrome?.recordView?.(name);
 }
 function el(tag, cls, text){ const n=document.createElement(tag); if(cls)n.className=cls; if(text!==undefined)n.textContent=text; return n; }
@@ -505,7 +508,7 @@ function renderEntertainment(){
     else discoveryBox.append(el('div','empty',t('emptyDiscovery','Ask for music, a watch, or a mood mix to show local matches and official YouTube/Spotify/Archive search chips.')));
   }
 }
-function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;const p=state?.policy||{};document.body.classList.toggle('adult-mode', p.mode==='adult'&&p.adultSoulEnabled===true&&p.adultStatusConfirmed===true&&p.currentConsent===true);fillAdminAdultStatus();window.eidovaraAdultSoul?.refresh?.();window.eidovaraAdultMedia?.refresh?.();renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
+function renderAll(){ window.eidovaraState=state;window.eidovaraSettings=settings;const p=state?.policy||{};document.body.classList.toggle('adult-mode', p.mode==='adult'&&p.adultSoulEnabled===true&&p.adultStatusConfirmed===true&&p.currentConsent===true);fillAdminAdultStatus();window.eidovaraAdultSoul?.refresh?.();window.eidovaraAdultMedia?.refresh?.();window.eidovaraWeb?.onPolicy?.();renderConversations();renderMessages();renderDashboard();renderResearchView();renderApps();renderEntertainment();renderMemory();renderIdentity();renderStatus();applyTheme();applyCompanion();window.eidovaraCompanion?.refresh?.();window.eidovaraLayers?.renderFocusBar?.();window.eidovaraChrome?.refresh?.();if($('#assistantAutonomy')){const p=state.assistant?.preferences||{},c=state.assistant?.capabilities||{};$('#assistantAutonomy').value=state.assistant?.autonomy||'balanced';$('#responseLength').value=p.responseLength||'balanced';$('#responseTone').value=p.tone||'natural';$('#focusMode').value=p.focusMode||'general';$('#assistantAccessibility').value=p.accessibility||'';$('#webResearchPolicy').value=c.webResearch||'ask';$('#mediaPlaybackPolicy').value=c.mediaPlayback||'confirm';$('#memoryLearning').checked=c.memoryLearning!=='disabled';$('#assistantInitiative').checked=state.assistant?.initiativeEnabled!==false;$('#assistantReflection').checked=state.assistant?.reflectionEnabled!==false;} const activeView=Object.keys(views).find(name=>views[name]?.classList.contains('active')); if(activeView==='chat') $('#viewTitle').textContent=activeConversation()?.title||'Conversation'; }
 function addTyping(){ const wrap=el('div','message assistant');const av=el('div','soul-mark avatar');av.append(el('span'));const b=el('div','bubble typing','Soul is thinking…');wrap.append(av,b);wrap.id='typing';$('#messages').append(wrap);$('#chatScroll').scrollTop=$('#chatScroll').scrollHeight; }
 function autoSize(){ const ta=$('#messageInput');if(!ta)return;ta.style.height='auto';ta.style.height=Math.min(180,ta.scrollHeight)+'px'; }
 async function send(text, opts={}){
@@ -796,12 +799,13 @@ const PALETTE_COMMANDS = [
   { id:'talk', title:'Talk with Soul', hint:'Right dock — local assistant, not Assist', run:()=>focusCompanion() },
   { id:'apps', title:'Apps & Gaming', hint:'Launch still asks you to confirm', run:()=>setView('apps') },
   { id:'overlay-chat', title:'Soul chat overlay', hint:'Floating local kernel — not Assist', run:()=>openEidovaraOverlay('chat') },
-  { id:'overlay-browse', title:'Browse overlay', hint:'HTTPS guest window; workspace stays locked', run:()=>openEidovaraOverlay('browse') },
+  { id:'overlay-browse', title:'Browse overlay', hint:'Floating HTTPS guest window', run:()=>openEidovaraOverlay('browse') },
   { id:'overlay-discord', title:'Discord guest overlay', hint:'discord.com in a sandbox — not affiliated', run:()=>openEidovaraOverlay('discord') },
   { id:'focus', title:'Focus timer', hint:'Quiet 25-minute block — no other-process control', run:()=>window.eidovaraLayers?.startFocus?.(25) },
   { id:'scratch', title:'Scratchpad', hint:'Local capture on the Dashboard', run:()=>{ setView('dashboard'); $('#scratchpadInput')?.focus(); } },
   { id:'now-playing', title:'Now playing', hint:'Local media dock — eidovara-media stays locked', run:()=>{ setView('entertainment'); $('#mediaDock')?.classList.remove('hidden'); $('#mediaDock')?.scrollIntoView({block:'nearest'}); } },
   { id:'entertainment', title:'Entertainment', hint:'Local media and official searches', run:()=>setView('entertainment') },
+  { id:'web', title:'Web', hint:'HTTPS pages in an isolated workspace view', run:()=>setView('web') },
   { id:'adult-soul', title:'Adult Soul', hint:'21+ studio, Feel Sync pad — triple gate', run:()=>setView('adultSoul') },
   { id:'adult-media', title:'Adult Media', hint:'Local rails + official HTTPS searches', run:()=>{ setView('entertainment'); $('#adultMediaDesk')?.scrollIntoView({block:'start'}); } },
   { id:'memory', title:'Memory', hint:'Facts Soul can keep', run:()=>setView('memory') },

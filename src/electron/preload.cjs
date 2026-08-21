@@ -33,5 +33,15 @@ contextBridge.exposeInMainWorld('soul', {
   lockAdultStealth: () => ipcRenderer.invoke('soul:lockAdultStealth'),
   applyFeelLevel: (level, atMs) => ipcRenderer.invoke('soul:applyFeelLevel', level, atMs),
   addAdultFolderBookmark: (folderId, item) => ipcRenderer.invoke('soul:addAdultFolderBookmark', folderId, item),
-  stayAwake: input => ipcRenderer.invoke('soul:stayAwake', input || {})
+  stayAwake: input => ipcRenderer.invoke('soul:stayAwake', input || {}),
+  webShow: input => ipcRenderer.invoke('soul:webShow', input || {}),
+  webHide: () => ipcRenderer.invoke('soul:webHide'),
+  webLayout: bounds => ipcRenderer.invoke('soul:webLayout', bounds || {}),
+  webNavigate: url => ipcRenderer.invoke('soul:webNavigate', url),
+  webHistory: dir => ipcRenderer.invoke('soul:webHistory', dir),
+  webBack: () => ipcRenderer.invoke('soul:webHistory', 'back'),
+  webForward: () => ipcRenderer.invoke('soul:webHistory', 'forward'),
+  webOpenExternal: url => ipcRenderer.invoke('soul:webOpenExternal', url),
+  webStatus: () => ipcRenderer.invoke('soul:webStatus'),
+  onWebStatus: handler => ipcRenderer.on('soul:webStatus', (_e, payload) => handler(payload))
 });

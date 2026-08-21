@@ -22,7 +22,8 @@ Network access is user-directed except the official GitHub update-manifest check
 | Optional desktop `POST /v1/assist` | After 18+: pasted HTTPS base in Settings **and** Soul-online opt-in **and** the per-message send checkbox (all default off) | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored. |
 | Optional desktop helper `POST /v1/assist` | User pastes a Worker HTTPS base **and** enables **Allow one-shot Worker helper** (default off), then checks **Ask the Worker helper** on one send | The typed query only (about 32 KiB bound). Conversations, memories, and chat history stay local. Transcripts are not stored. |
 | `github.com/ProjectSoulbyTmb/project---soul` | After 18+: automatic GitHub Releases check (startup + interval, default on) or Settings/companion **Check for updates**; user-approved installer download | App version through user agent, IP address; installer request after checksum metadata (`latest.yml` SHA-512 and/or `update.json` SHA-256). Builds are Authenticode-unsigned. |
-| User-opened HTTPS page in the browse or Discord **guest overlay** | User opens an overlay and navigates | URL request, IP, site cookies in an isolated Electron partition (`persist:eidovara-guest` / `persist:eidovara-guest-discord`). Workspace renderer stays locked. Discord tokens are not sent to Soul or Assist. |
+| User-opened HTTPS page in the workspace **Web** desk | User opens Web and navigates | URL request, IP, site cookies in an isolated Electron partition (`persist:eidovara-web`). First-party workspace JS may also `fetch`/XHR/WebSocket to HTTPS (`connect-src https:`). Not a background crawler. Foreign pages do not receive `window.soul`. |
+| User-opened HTTPS page in the browse or Discord **guest overlay** | User opens an overlay and navigates | URL request, IP, site cookies in an isolated Electron partition (`persist:eidovara-guest` / `persist:eidovara-guest-discord`). Discord tokens are not sent to Soul or Assist. |
 | Spotify, YouTube, or Internet Archive official search | User clicks a media-dock button or an official search chip in companion, Research, or Entertainment (constructed HTTPS search URLs; Eidovara does not fetch those sites’ HTML or inject into their apps) | Search terms, IP address, platform cookies/account state |
 | Adult official tube/creator search (Pornhub, XVideos, and similar constructed HTTPS search URLs) | After Adult Mode triple gate: user confirms an Adult Media chip. System browser only. Guest overlays stay closed. Eidovara does not fetch those sites’ HTML, embed players, or pair toys. | Search terms, IP address, platform cookies/account state |
 
@@ -46,7 +47,8 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Optional desktop `POST /v1/assist` only after pasted HTTPS base **and** explicit helper opt-in (default off); conversations are not sent
 - Spotify/YouTube/Internet Archive official HTTPS search chips (constructed search URLs; no HTML scrape, no stream ripping, no player injection)
 - Adult official HTTPS search chips after Adult Mode (constructed search URLs in the system browser; no HTML scrape, no embeds, no toy pairing, guest overlays stay closed)
-- User-opened HTTPS in the browse or Discord guest overlay (isolated partitions; workspace renderer CSP unchanged)
+- User-opened HTTPS in the workspace Web desk (isolated `persist:eidovara-web` WebContentsView; user-directed; workspace `connect-src https:`)
+- User-opened HTTPS in the browse or Discord guest overlay (isolated partitions)
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure
 

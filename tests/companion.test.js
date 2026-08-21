@@ -107,7 +107,9 @@ test('desktop companion and send path do not POST chat to the Worker', () => {
   assert.match(html, /id="companionPanel"/);
   assert.match(html, /id="companionForm"/);
   assert.match(html, /data-companion-nav="apps"/);
-  assert.match(html, /connect-src 'none'/);
+  assert.match(html, /connect-src https:/);
+  assert.doesNotMatch(html, /connect-src \*/);
+  assert.doesNotMatch(html, /connect-src 'none'/);
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
   assert.doesNotMatch(joined, /dreambot333\.workers\.dev/);
   assert.match(fs.readFileSync('src/renderer/renderer.js', 'utf8'), /e\.key==='\/'/);
