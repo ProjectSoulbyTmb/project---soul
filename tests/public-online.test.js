@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import {
   INSTALLER_NAME,
   INSTALLER_SHA256,
+  INSTALLER_SIZE_BYTES,
   INSTALLER_LATEST_URL,
   INSTALLER_PINNED_URL,
   LIVE_INSTALLER_VERSION,
@@ -19,8 +20,8 @@ test('public site presents the published local-first Windows release', () => {
   assert.match(site, /id="download"/);
   assert.match(site, /local-first Windows desktop app/);
   assert.match(site, /href="download.html"/);
-  assert.match(site, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
-  assert.match(site, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
+  assert.match(site, new RegExp(INSTALLER_NAME.replaceAll('.', '\\.')));
+  assert.match(site, new RegExp(INSTALLER_SHA256));
   assert.match(site, /Authenticode-unsigned/);
   assert.match(site, /18\+/);
   assert.doesNotMatch(site, /dreambot333\.workers\.dev/);
@@ -30,7 +31,8 @@ test('public site presents the published local-first Windows release', () => {
 test('primary download CTA points at the published v0.22.2 installer and keeps the age gate', () => {
   assert.equal(JSON.parse(read('package.json')).version, SOURCE_VERSION);
   assert.equal(INSTALLER_NAME, 'Eidovara-0.22.2-Windows-x64-Setup.exe');
-  assert.equal(INSTALLER_SHA256, 'A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE');
+  assert.equal(INSTALLER_SHA256, 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675');
+  assert.equal(INSTALLER_SIZE_BYTES, 106691524);
   assert.equal(INSTALLER_LATEST_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`);
   assert.equal(INSTALLER_PINNED_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/${INSTALLER_NAME}`);
 
@@ -38,8 +40,9 @@ test('primary download CTA points at the published v0.22.2 installer and keeps t
   const primary = downloadPage.match(/<a class="primary[^"]*" href="([^"]+)"/);
   assert.ok(primary, 'download page has a primary button');
   assert.equal(primary[1], INSTALLER_LATEST_URL);
-  assert.match(downloadPage, /106,691,429 bytes/);
+  assert.match(downloadPage, /106,691,524 bytes/);
   assert.match(downloadPage, /101\.75 MiB/);
+  assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
   assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.match(downloadPage, /id="ageConfirm"/);
   assert.match(downloadPage, /aria-disabled="true"/);
@@ -50,11 +53,11 @@ test('primary download CTA points at the published v0.22.2 installer and keeps t
   const home = read('docs/index.html');
   assert.match(home, /v0\.22\.2 is published/);
   assert.match(home, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
-  assert.match(home, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
+  assert.match(home, new RegExp(INSTALLER_SHA256));
 
   const product = read('docs/product.html');
   assert.match(product, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
-  assert.match(product, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
+  assert.match(product, new RegExp(INSTALLER_SHA256));
 
   const status = read('docs/status.html');
   assert.match(status, /GitHub Release v0\.22\.2/);
@@ -62,18 +65,22 @@ test('primary download CTA points at the published v0.22.2 installer and keeps t
   assert.doesNotMatch(status, /href="[^"]+\.exe"/);
 });
 
-test('Windows release workflow remains tag-published, dispatch-safe, and unsigned', () => {
+test('Windows release workflow remains tag-published, PR-tested, immutable, and unsigned', () => {
   const workflow = read('.github/workflows/release-windows.yml');
   assert.match(workflow, /tags: \['v\*'\]/);
   assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /pull_request:/);
   assert.match(workflow, /runs-on: windows-latest/);
   assert.match(workflow, /CSC_IDENTITY_AUTO_DISCOVERY: 'false'/);
-  assert.match(workflow, /softprops\/action-gh-release@v2/);
-  assert.match(workflow, /upload-artifact@v4/);
+  assert.match(workflow, /softprops\/action-gh-release@v3/);
+  assert.match(workflow, /overwrite_files: false/);
+  assert.match(workflow, /upload-artifact@v7/);
+  assert.match(workflow, /windows-install-smoke\.ps1/);
   assert.match(workflow, /eidovara-windows-unsigned/);
+  assert.doesNotMatch(workflow, /release\/publish-v0\.22\.2/);
   assert.match(read('.github/workflows/pages.yml'), /path: docs\b/);
   assert.match(read('.github/workflows/pages.yml'), /branches: \[main\]/);
-  assert.match(read('.github/workflows/pages.yml'), /deploy-pages@v4/);
+  assert.match(read('.github/workflows/pages.yml'), /deploy-pages@v5/);
 });
 
 test('desktop service remains fail-closed and uses the official HTTPS host', () => {
