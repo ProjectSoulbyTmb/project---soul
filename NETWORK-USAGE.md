@@ -1,0 +1,50 @@
+# Network usage
+
+This is the advertised path linked from README, PRIVACY.md, and LEGAL_NOTICES.md. The same inventory is maintained at [docs/NETWORK_USAGE.md](docs/NETWORK_USAGE.md).
+
+This self-declared network inventory is included in signed release provenance.
+
+## Current egress (v0.18.0)
+
+Network access is user-directed except the official GitHub update-manifest check. No `workers.dev` host is compiled into the Electron app or the public site. Payments stay **fail-closed**: `paymentsEnabled` and `checkoutEnabled` remain false even if a remote `/v1/config` payload claims otherwise.
+
+| Destination | Trigger | Data sent |
+| --- | --- | --- |
+| `en.wikipedia.org` | Explicit internet/web/online research request | Search terms, IP address, application user agent |
+| `commons.wikimedia.org` and `upload.wikimedia.org` | Explicit image/audio/video request or playback | Search terms or media URL request, IP address, application user agent |
+| `api.search.brave.com` | Explicit web/image request when a Premium Brave Search key is configured | Search terms, API credential, IP address |
+| User-configured local model (`127.0.0.1` / `localhost` / `::1`, typically Ollama `/api/chat`) | User sends a conversation while Local is selected | Conversation context and selected model on loopback |
+| User-configured Premium HTTPS `/chat/completions` endpoint | User sends a conversation while Compatible is selected | Conversation context, selected model, credential when required |
+| Configured Eidovara service `GET /health`, `GET /v1/config`, `GET /v1/status` | After 18+ confirmation: launch retry, Settings **Connect**, or Ctrl+A **Test service** | No conversations or payment data; health/config/status JSON only |
+| Optional website helper `GET`/`POST /v1/assist` | Visitor pastes an HTTPS Worker base on the public site (Status / Assist); knowledge-pack questions only | The typed question and mode. Desktop conversation history is refused. Transcripts are not stored. |
+| `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
+| Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
+
+No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Paste a service base into Settings → Eidovara service (or the local administrator panel). If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.18.0; the app never enables live checkout from a remote flag.
+
+## Enhancement-allowed vs blocked
+
+Documentation may describe the implemented surfaces above. It must not enable new live capabilities.
+
+**Allowed to document and keep using (already implemented):**
+
+- Explicit Wikipedia/Wikimedia research
+- User-pasted HTTPS (or loopback) model providers
+- Premium Brave Search with a user-supplied key
+- Official GitHub update checks and user-approved downloads
+- Optional Worker `GET /health`, `/v1/config`, `/v1/status` after a pasted HTTPS base
+- Optional website `GET`/`POST /v1/assist` after a pasted HTTPS base
+- Spotify/YouTube official HTTPS search links (no stream ripping)
+- Fail-closed payments (`paymentsEnabled: false`)
+- Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure
+
+**Blocked in v0.18.0 (screening records only — do not enable):**
+
+- Bundled neural TTS (Kokoro, Piper, sherpa-onnx) or cloud voice credentials
+- VRM / MakeHuman character engines or imported anatomical models
+- Direct OBS websocket control
+- Live payments, card collection, webhook entitlement, or PCI processing
+- Weakening the renderer sandbox, 18+ gates, or `.github/workflows/dependency-review.yml`
+- App CSP `media-src 'self'` (local media stays on `eidovara-media:`)
+- Fake registered-mark, patent, or PCI-DSS claims
+- A hardcoded `workers.dev` (or any) Worker URL in the desktop app or public site

@@ -2,51 +2,106 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Eidovara — a modular Windows workspace for applications, gaming, entertainment, media, research, and optional adaptive assistance.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Eidovara — a local-first Windows desktop workspace. Download the unsigned Stable Alpha (18+) or build from source. Cloud is optional config only.">
   <meta property="og:title" content="Eidovara — Your digital space, alive">
-  <meta property="og:description" content="A modular, local-first Windows workspace from Soul Consciousness Studios.">
+  <meta property="og:description" content="A local-first Windows desktop app from Soul Consciousness Studios. Not a hosted chat service.">
   <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/">
   <title>Eidovara · Soul Consciousness Studios</title>
+  <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="site.css">
   <link rel="stylesheet" href="brand.css">
   <link rel="icon" type="image/png" href="eidovara-icon.png">
 </head>
-<body>
-  <header>
-    <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
-    <nav><a href="#experience">Experience</a><a href="#trust">Trust</a><a href="#plans">Plans</a><a href="security.html">Security</a><a href="licensing.html">Licensing</a></nav>
+<body data-page="home">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav" aria-label="Primary">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <a href="help.html" data-nav="help">Help</a>
+        <a href="faq.html" data-nav="faq">FAQ</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
   </header>
-  <main>
+  <main id="main">
     <section class="hero">
       <p class="eyebrow studio-line"><img class="studio-icon" src="soul-consciousness-studios-icon.png" alt="">Soul Consciousness Studios presents</p>
       <h1>Your Windows space,<br><em>organized.</em></h1>
-      <p>Eidovara brings applications, gaming tools, local and online media, research, personalization, and diagnostics into one fluid workspace. Soul is available as an adaptive assistant layer when wanted—not a requirement for the rest of the product.</p>
-      <div class="actions"><a class="primary" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">Download the Alpha</a><a href="#experience">Explore capabilities</a></div>
-      <div class="trust-strip"><span>For users 18+</span><span>Local-first settings</span><span>User-directed internet</span><span>Low-overhead gaming mode</span><span>Verified updates</span><span>No card storage</span></div>
+      <p>Eidovara is a local-first Windows desktop app you install on your PC—not a hosted chat account. This site is the public home page. The workspace (apps, gaming tools, media, research, personalization, diagnostics) lives on your machine. Soul is an optional assistant layer. Free / Offline Soul works with no cloud URL.</p>
+      <div class="actions"><a class="primary btn-filled" href="download.html">Get Windows Alpha (18+)</a><a class="btn-gray" href="product.html">See the product</a></div>
+      <div class="trust-strip"><span>For users 18+</span><span>Source-available, not open source</span><span>Local-first settings</span><span>User-directed internet</span><span>Unsigned Windows build</span><span>No card storage</span></div>
+    </section>
+
+    <section id="download">
+      <p class="eyebrow">Get Eidovara · Windows 10/11 x64 · 18+</p>
+      <h2 class="section-title">Install the desktop app. Keep Soul on your PC.</h2>
+      <p class="lead">The product is the Windows application, not a multi-tenant web service. Conversations, memories, and workspace settings stay local by default. The desktop app can attach to the online Eidovara service for status and config while remaining local-first; you never need that attachment to use Free / Offline Soul. Adults 18+ only. Official installers are Authenticode-unsigned.</p>
+      <div class="get-grid">
+        <article>
+          <span class="number">1</span>
+          <h3>Download the unsigned Stable Alpha</h3>
+          <p>When a GitHub Release includes <code>Eidovara-*-Windows-x64-Setup.exe</code>, get it from the Releases page. That installer is Authenticode-unsigned. Windows SmartScreen may warn; verify SHA-256 and GitHub provenance. Adults 18+.</p>
+        </article>
+        <article>
+          <span class="number">2</span>
+          <h3>Or build from source</h3>
+          <p>If no Setup.exe is listed yet, clone the source-available repository and run <code>npm run dist:win:installer</code> on Windows 10/11 x64. Official advertised distribution is Windows only. Linux/macOS scripts are development targets, not products.</p>
+        </article>
+        <article>
+          <span class="number">3</span>
+          <h3>Cloud is optional config, not the app</h3>
+          <p>No account is created by visiting this site. There is no live checkout. After the 18+ gate, Settings → Eidovara service (or Ctrl+A Test service) can attach for <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code> only. If that service is down, the local workspace still works. Conversations are not sent. The Worker URL is not compiled into the app.</p>
+        </article>
+      </div>
+      <div class="actions"><a class="primary btn-filled" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">Download Windows Alpha (18+)</a><a class="btn-gray" href="download.html">18+ download gate</a><a class="btn-gray" href="https://github.com/ProjectSoulbyTmb/project---soul">View source</a></div>
     </section>
 
     <section id="experience">
       <p class="eyebrow">Independent modules · one workspace</p>
       <h2 class="section-title">Useful with or without a connected assistant.</h2>
       <div class="feature-grid">
-        <article class="feature large"><span class="number">01</span><h3>Apps & gaming</h3><p>Discover local Start Menu shortcuts, organize trusted applications, launch through Windows, and reduce Eidovara's own visual overhead while gaming. No process injection or anti-cheat interaction.</p></article>
-        <article class="feature"><span class="number">02</span><h3>Media & entertainment</h3><p>Play user-selected local files and properly sourced public audio or video, maintain queues and favorites, and inspect runtime codec and display support.</p></article>
-        <article class="feature"><span class="number">03</span><h3>Research & web handoff</h3><p>Retrieve requested information, pictures, audio, and video with visible sources, or open secure pages in the system browser.</p></article>
+        <article class="feature large"><span class="number">01</span><h3>Apps & gaming</h3><p>Discover local Start Menu shortcuts, organize trusted .exe/.lnk files, confirm, then ask Windows to launch them. Free keeps up to three apps. Low-overhead gaming mode reduces Eidovara visuals only. No process injection or anti-cheat interaction.</p></article>
+        <article class="feature"><span class="number">02</span><h3>Media & entertainment</h3><p>Play user-selected local files and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube HTTPS searches. Playback can require confirmation.</p></article>
+        <article class="feature"><span class="number">03</span><h3>Research & web handoff</h3><p>On an explicit internet, web, or online request, retrieve cited Wikipedia/Wikimedia results (pictures, audio, and video when asked), or open secure pages in the system browser. Broad keyed search is Premium.</p></article>
         <article class="feature"><span class="number">04</span><h3>Private continuity</h3><p>Keep reviewable preferences, conversations, backups, appearance, and workspace configuration local by default.</p></article>
-        <article class="feature large"><span class="number">05</span><h3>Optional Soul assistance</h3><p>Use configurable tone, focus, memory, voice, avatar, and initiative controls—or use the workspace modules without a remote model provider.</p></article>
+        <article class="feature large"><span class="number">05</span><h3>Optional Soul assistance</h3><p>Use configurable tone, focus, memory, voice, avatar, and initiative controls—or use the workspace modules without a remote model provider. Soul is software, not a consciousness claim.</p></article>
       </div>
     </section>
 
     <section id="trust" class="trust">
-      <div><p class="eyebrow">Trust by design</p><h2>Accurate boundaries, visible controls.</h2><p>Eidovara does not claim universal game compatibility, government certification, guaranteed legal compliance, scientific consciousness, perfect security, or ownership of third-party platforms. It uses visible permissions, HTTPS handoffs, update hashes, provenance records, and local-first storage.</p></div>
+      <div><p class="eyebrow">Trust by design</p><h2>Accurate boundaries, visible controls.</h2><p>Eidovara does not claim universal game compatibility, government certification, guaranteed legal compliance, scientific consciousness, perfect security, patents, registered trademarks, or ownership of third-party platforms. It is not affiliated with Apple, Microsoft, or Electron, and it is not an iOS or iPhone product. It uses visible permissions, HTTPS handoffs, update hashes, provenance records, and local-first storage. Official installers are Authenticode-unsigned Windows builds.</p></div>
       <div class="trust-links">
-        <a href="privacy.html"><strong>Privacy notice</strong><span>Data flow and controls →</span></a>
+        <a href="privacy.html"><strong>Privacy notice</strong><span>What stays local vs what can leave →</span></a>
+        <a href="age.html"><strong>Age 18+</strong><span>Adult-only gate →</span></a>
         <a href="security.html"><strong>Security center</strong><span>Architecture and verification →</span></a>
         <a href="licensing.html"><strong>Rights & licensing</strong><span>Ownership and third parties →</span></a>
-        <a href="terms.html"><strong>Website terms</strong><span>Use boundaries →</span></a>
+        <a href="terms.html"><strong>Terms of use</strong><span>Acceptable use →</span></a>
       </div>
     </section>
 
@@ -54,13 +109,15 @@
       <p class="eyebrow">Start free</p>
       <h2 class="section-title">A useful Alpha before an upgrade.</h2>
       <div class="plans">
-        <article><p class="plan-label">Eidovara Free</p><p class="price">$0</p><ul><li>Workspace, media, gaming mode, backups, and updates</li><li>Offline and local-model assistance</li><li>Built-in public research</li><li>Up to three linked applications</li></ul><a class="primary" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">Get the Windows release</a></article>
-        <article class="premium"><p class="plan-label">Eidovara Premium</p><p class="price">Coming later</p><ul><li>Everything in Free</li><li>Compatible remote-model endpoints</li><li>Broad keyed web search</li><li>Unlimited linked applications</li><li>Expanded customization</li></ul><span class="muted">No checkout is active until a secure provider-hosted store is configured.</span></article>
+        <article><p class="plan-label">Eidovara Free</p><p class="price">$0</p><ul><li>Workspace, media, gaming mode, backups, and updates</li><li>Offline and local-model assistance</li><li>Built-in public research</li><li>Up to three linked applications</li></ul><a class="primary" href="download.html">Get the Windows release</a></article>
+        <article class="premium"><p class="plan-label">Eidovara Premium</p><p class="price">Coming later</p><ul><li>Everything in Free</li><li>Compatible remote-model endpoints</li><li>Broad keyed web search</li><li>Unlimited linked applications</li><li>RGB lighting and expanded customization</li></ul><span class="muted">No checkout is active. v0.18.0 does not sell Premium or process payments. Premium can be tested locally with Ctrl+A; this is not payment or PCI processing.</span></article>
       </div>
     </section>
 
     <section class="creator"><p class="eyebrow">Creator record</p><h2>Created and owned by Tyler Michael Bosworth.</h2><p>Eidovara's qualifying original first-party material is identified in the project record as created and owned by Tyler Michael Bosworth and published under his intended business name, Soul Consciousness Studios. Third-party software, services, models, marks, and media retain their respective ownership and licenses.</p></section>
   </main>
-  <footer><span>© 2026 Tyler Michael Bosworth. All rights reserved.</span><span><a href="privacy.html">Privacy</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></footer>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
 </body>
 </html>

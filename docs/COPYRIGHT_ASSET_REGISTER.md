@@ -14,4 +14,4 @@ Publisher name: Soul Consciousness Studios
 
 Preserve this register with the corresponding Git commit, release tag, repository attestation, source files, and dated private design records. Recompute and record hashes whenever an approved asset changes; never silently replace a registered filename.
 
-This is a provenance record and ownership assertion, not a Copyright Office registration, trademark registration, or legal clearance opinion. Common geometric components, functional icon conventions, and independently created similar designs may remain available to others under applicable law.
+This is a provenance record and ownership assertion, not a Copyright Office registration, trademark registration, or legal clearance opinion. Common geometric components, functional icon conventions, and independently created similar designs may remain available to others under applicable law. Third-party software and marks are outside this register.

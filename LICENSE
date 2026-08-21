@@ -1,15 +1,28 @@
 Eidovara Source-Available Evaluation License 1.0
 
 Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
-Soul Consciousness Studios.
+Source-available; use governed by this LICENSE and TERMS.md.
+Third-party material remains third-party.
+
+Soul Consciousness Studios is Tyler Michael Bosworth's intended publisher
+name. This license does not form a company, transfer rights to an entity,
+register a copyright or trademark, or grant a patent.
 
 1. Ownership and reservation of rights
 
-Qualifying original expression in Eidovara's source code, documentation,
-user-interface assets, and release materials may be protected by copyright and
-other applicable law. Ideas, systems, methods, functionality, and facts are
-outside the copyright claim. Except for the narrow permissions stated below, no copyright,
-patent, trademark, trade-secret, or other intellectual-property license is
+Qualifying original expression in Eidovara's first-party source code,
+documentation, user-interface assets, and release materials may be
+protected by copyright and other applicable law. Tyler Michael Bosworth
+reserves all rights in that first-party material except the narrow
+permissions in section 2. Ideas, systems, methods, functionality, facts,
+names, titles, and short phrases are outside the copyright claim.
+
+This file is a copyright notice and license, not a U.S. Copyright Office
+registration, USPTO registration, patent, court judgment, or attorney
+opinion.
+
+Except for the narrow permissions stated below, no copyright, patent,
+trademark, trade-secret, or other intellectual-property license is
 granted, whether expressly, by implication, estoppel, or otherwise.
 
 2. Limited permission
@@ -17,6 +30,10 @@ granted, whether expressly, by implication, estoppel, or otherwise.
 You may view this repository, download an official unmodified release, and run
 that release for personal evaluation and lawful personal use. You may make a
 reasonable number of backup copies solely for that permitted use.
+
+Permitted use is limited to natural persons who are 18 years of age or older
+and who accept the product terms in TERMS.md. Local age confirmation is not
+independent identity or age verification.
 
 3. Restrictions
 
@@ -44,8 +61,25 @@ terms governing material posted to a hosting service remain independently applic
 
 5. Third-party material
 
-Third-party components remain governed by their own licenses. This license does
-not expand or restrict rights granted directly by their respective owners.
+This license does not claim ownership of Electron, Chromium, Node.js,
+Microsoft Windows, Wikipedia/Wikimedia content, user-created content, or
+other third-party software, services, marks, fonts, models, or media.
+Those components remain governed by their own licenses and terms. This
+license does not expand or restrict rights granted directly by their
+respective owners. See THIRD_PARTY_NOTICES.md.
+
+Runtime destinations that Eidovara may contact after user action
+(Wikipedia/Wikimedia, optional Brave Search, GitHub releases, optional
+user-pasted HTTPS model providers, optional Cloudflare Worker
+health/config/status/assist endpoints, and Spotify/YouTube search
+handoffs) remain under those services' terms. This license does not
+enable neural TTS, VRM, OBS control, or live payment processing.
+
+Publishing this repository on a hosting service is also subject to that
+service's terms, including rights the host needs to operate (for example
+viewing and forking through GitHub). This license restricts additional use
+of first-party material; it cannot revoke rights already granted by law,
+third-party licenses, or the hosting platform.
 
 6. No warranty
 

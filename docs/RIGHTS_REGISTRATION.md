@@ -1,6 +1,6 @@
 # Rights registration checklist
 
-This project record identifies Tyler Michael Bosworth as the sole creator and original author of Eidovara's first-party material. It does not replace a registration, clearance search, assignment, or attorney opinion.
+This project record identifies Tyler Michael Bosworth as the sole creator and original author of Eidovara's first-party material. It does not replace a registration, clearance search, assignment, or attorney opinion. No U.S. Copyright Office registration number, USPTO serial, or patent is claimed here.
 
 ## Copyright
 

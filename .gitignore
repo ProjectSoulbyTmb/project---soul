@@ -1,6 +1,8 @@
 node_modules/
 .pnpm-store/
 dist/
+.wrangler/
+**/.wrangler/
 private-patent/
 ip-evidence-private/
 release/

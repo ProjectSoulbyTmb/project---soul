@@ -1,6 +1,6 @@
 # Eidovara / Soul requirements audit
 
-Updated: 2026-08-20
+Updated: 2026-08-21
 
 ## Product purpose — intact and modular
 
@@ -10,27 +10,39 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 
 | Area | Status | Evidence |
 | --- | --- | --- |
-| Conversation and Soul personality | Working | Offline provider, optional local/compatible providers, persistent conversations and context tests. |
+| Conversation and Soul personality | Working | Offline provider uses setup roles, tone/length/language, memories, and workspace checklists; optional local/compatible providers; persistent conversations and context tests. |
 | Memory and restart continuity | Working | Atomic JSON persistence, migrations, corrupt-state recovery, backup/restore, restart tests. |
 | Safety, consent, and lawful-use boundaries | Working within documented scope | Illegal facilitation block/report locally; adult mode gates and revocable consent; no automatic external reporting claim. |
 | Application age gate and adult avatar profile | Working within documented scope | App-wide local 18+ confirmation; Adult Mode requires local age of majority, enablement, and consent; bounded fictional-avatar profile controls. No photorealistic or anatomical model engine is bundled. |
-| Internet research and media discovery | Working | Explicit-request detection, public sources, optional keyed search, citations, image/audio/video result handling. |
-| Media player and DJ helpers | Working | Audio/video dock, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube external search links. |
-| Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf and confirmation-based launching; no process injection. |
-| Companion and accessibility | Working | Hideable 2D/3D-styled avatar, motion controls, installed Windows voices, optional narration and detected dictation. |
+| Internet research and media discovery | Working | Explicit internet/web/online request detection; local mood/mix/apps/gaming/study/stream intents do not fire Wikipedia; public sources, optional Premium keyed search, citations, image/audio/video result handling. |
+| Media player and DJ helpers | Working | Audio/video dock, local `eidovara-media://` playback of user-selected files, confirm-first playback unless the user just picked a file, queue controls, persistent taste signals, favorites, similar-search prompts, and consent-based Spotify/YouTube HTTPS handoff. |
+| Windows app workspace | Working | User-selected `.exe`/`.lnk` shelf, Start Menu discovery, and a Windows confirm dialog before launch; no process injection. Free max 3 apps. |
+| Companion and accessibility | Working | Hideable 2D/3D-styled CSS avatar, motion controls, installed Windows voices, optional narration and detected dictation. Neural TTS/VRM not bundled. |
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |
-| Appearance and gaming mode | Working | Colors, opacity, RGB option, low-overhead mode, GPU/media diagnostics. |
+| Appearance and gaming mode | Working | Colors, opacity, Premium RGB, low-overhead mode (Eidovara visuals only), GPU/media diagnostics. |
+| Conversation engines | Working | Offline Soul engine; optional loopback Ollama `/api/chat`; Premium HTTPS OpenAI-compatible `/chat/completions`; Chromium media/GPU engine. |
+| HTTPS service | Working when a URL is saved | Cloudflare Worker `/health`, `/v1/config`, `/v1/status`; Settings Connect plus Ctrl+A Test service; launch retry after 18+; no `workers.dev` hard-code in the app; fetch failure stays local-first. Website helper may `GET`/`POST /v1/assist` after a visitor-pasted HTTPS base. Payments stay fail-closed. |
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
-| Website | Working | GitHub Pages deployment with responsive product, trust, privacy, security, licensing, and terms pages. |
+| Website | Working on this branch; live github.io waits on merge | Complete `docs/` marketing site (Home, Product, Download, Assist, Help, FAQ, Status, Legal, 404, robots/sitemap, Ask Eidovara). GitHub Pages publishes `docs/` from `main` via `pages.yml` (HTTPS). Live `https://projectsoulbytmb.github.io/project---soul/` stays the older homepage until PR #10 merges. |
+| Public Windows download | Working when a Release exists | `releases/latest` hosts `Eidovara-*-Windows-x64-Setup.exe` for v0.18.0; unsigned; tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. |
+| Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+; website assist is paste-only; not required to run the app; not hard-coded. Redeploy with `npx wrangler deploy` after merge so the live Worker does not drift. Neural TTS/VRM/OBS/live payments stay documented only. |
+
+## Owner clicks git cannot finish
+
+| Problem | Solution path |
+| --- | --- |
+| Dependency review CI fails (“Dependency graph” off) | Settings → Code security → enable Dependency graph. Keep `.github/workflows/dependency-review.yml`. |
+| Live GitHub Pages still shows the old `main` homepage | Merge this PR (`cursor/engine-product-surface-c180`, #10) to `main`. `pages.yml` already deploys `docs/` from `main`. |
+| Deployed Worker lags this branch | From `server/`, `npx wrangler deploy` after login/token. Never commit the token. |
 
 ## Not yet production-complete
 
 | Area | Required next dependency |
 | --- | --- |
 | Automatic paid Premium activation | Payment account, signed webhooks, D1/KV entitlement store, server signing key, activation UI, cancellation/refund tests. |
-| Stable public API | Select the Cloudflare `workers.dev` account subdomain, deploy Worker, monitor `/health`, configure app service URL. |
+| Stable public API | Select or keep a Cloudflare `workers.dev` account subdomain, deploy `server/worker.js` with Wrangler, paste the HTTPS base into Settings → Eidovara service, monitor `/health`. Not auto-deployed from this repository. |
 | Branded permanent domain | Register an available domain in Tyler Michael Bosworth's account and maintain renewals/security controls. |
 | Authenticode reputation | Obtain an organization/individual code-signing certificate or trusted signing service; current release is explicitly unsigned. |
 | Native neural voice/model packs | Pin exact runtimes/assets only after per-model license, provenance, consent, hash, and sandbox review. |

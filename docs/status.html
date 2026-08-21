@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Public status for GitHub Pages and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
+  <meta property="og:title" content="Status · Eidovara">
+  <meta property="og:description" content="Public status for GitHub Pages and GitHub Releases. Optional Worker /health and /v1/status only after you paste an HTTPS base. Fail closed.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/status.html">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/status.html">
+  <title>Status · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body data-page="status">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav" aria-label="Primary">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <a href="help.html" data-nav="help">Help</a>
+        <a href="faq.html" data-nav="faq">FAQ</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <p class="eyebrow">Public surfaces</p>
+    <h1 class="section-title">Pages and Releases first. Worker only if you paste one.</h1>
+    <p class="lead">This GitHub Pages site does not compile a Worker host. Default public surfaces are the website and GitHub Releases. If no HTTPS service base is saved, this page fails closed and sends no request.</p>
+    <div class="status-panel">
+      <p class="status-default">Not configured. GitHub Pages publishes this site. Windows downloads come from GitHub Releases. Paste an HTTPS base only if you operate a Worker — otherwise no request is sent.</p>
+      <form id="statusForm">
+        <label for="statusBase">Optional service base (HTTPS)</label>
+        <input id="statusBase" name="base" type="url" maxlength="200" autocomplete="off" spellcheck="false" placeholder="https://eidovara-api.example.workers.dev">
+        <div class="status-actions">
+          <button type="submit" id="statusSave">Save locally</button>
+          <button type="button" id="statusProbe">Check service</button>
+          <button type="button" id="statusClear">Clear</button>
+        </div>
+        <pre id="statusOut" aria-live="polite"></pre>
+      </form>
+      <p class="muted">Saved in this browser only (<code>eidovara.serviceBase</code>). Check calls <code>/health</code> and <code>/v1/status</code>. The website helper may call <code>/v1/assist</code> with a single question. Desktop conversations are never sent. v0.18.0 payments stay off.</p>
+    </div>
+    <div class="trust-links">
+      <a href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest"><strong>GitHub Releases</strong><span>Unsigned Windows installer when published →</span></a>
+      <a href="https://projectsoulbytmb.github.io/project---soul/"><strong>GitHub Pages</strong><span>This website →</span></a>
+      <a href="assist.html"><strong>Website helper</strong><span>Knowledge pack, optional /v1/assist →</span></a>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>

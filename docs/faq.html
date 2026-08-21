@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Frequently asked questions for Eidovara v0.18.0: Windows download, 18+, unsigned builds, optional Worker, and the website helper.">
+  <meta property="og:title" content="FAQ · Eidovara">
+  <meta property="og:description" content="Frequently asked questions for Eidovara v0.18.0: Windows download, 18+, unsigned builds, optional Worker, and the website helper.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/faq.html">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/faq.html">
+  <title>FAQ · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body data-page="faq">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav" aria-label="Primary">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <a href="help.html" data-nav="help">Help</a>
+        <a href="faq.html" data-nav="faq">FAQ</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <p class="eyebrow">Frequently asked</p>
+    <h1 class="section-title">Straight answers for v0.18.0.</h1>
+    <p class="lead">These answers match the advertised Windows product. They are not legal advice. Use Ask Eidovara for the same knowledge pack.</p>
+    <div class="faq">
+      <details open><summary>What is Eidovara?</summary><p>A local-first Windows 10/11 x64 desktop workspace for apps, gaming tools, media, research, backups, and optional Soul. Visiting this website does not create an account. Soul is optional software, not a consciousness claim.</p></details>
+      <details><summary>How do I install Eidovara?</summary><p>Confirm you are 18 or older on the <a href="download.html">Download</a> page. Get <code>Eidovara-*-Windows-x64-Setup.exe</code> from <a href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest">GitHub Releases</a> when published, or build on Windows with <code>npm run dist:win:installer</code>. Adults 18+.</p></details>
+      <details><summary>Why does Windows warn me?</summary><p>Official advertised installers are Authenticode-unsigned. SmartScreen may warn. Verify SHA-256 and GitHub provenance. Provenance is not Authenticode.</p></details>
+      <details><summary>Is there a Linux, macOS, or iOS app?</summary><p>No official Linux or macOS product. Not an iOS, iPhone, iPad, or Apple product. Linux/macOS scripts are development targets.</p></details>
+      <details><summary>Do I need the cloud?</summary><p>No. Free / Offline Soul works with no Worker URL. After 18+, Settings → Eidovara service can call <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code> only. Conversations are not sent.</p></details>
+      <details><summary>Can I pay for Premium here?</summary><p>No. v0.18.0 does not sell Premium and does not process payments. Ctrl+A local-admin testing is not checkout or PCI processing.</p></details>
+      <details><summary>Is the website helper Soul?</summary><p>No. Ask Eidovara is a website helper over a fixed knowledge pack. It is not Soul and not legal advice. Transcripts are not stored.</p></details>
+      <details><summary>Where are the legal documents?</summary><p>Start at the <a href="legal.html">legal hub</a> for Terms, Privacy, Age 18+, Licensing, and Security. Repository notices are not a clearance opinion. Contributor and entity assignment files are unsigned templates only.</p></details>
+      <details><summary>Why does the live website look older than this repository?</summary><p>GitHub Pages publishes <code>docs/</code> from <code>main</code>. Product, Download, Assist, Help, FAQ, Status, and Legal pages in this pull request go live when it is merged to <code>main</code>. Until then, <a href="https://projectsoulbytmb.github.io/project---soul/">the live site</a> may still show the older homepage. Do not retarget Pages at a feature branch.</p></details>
+    </div>
+  </main>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 # Companion and voice integration policy
 
-Eidovara 0.17 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled.
+Eidovara 0.18.0 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled. Kokoro, Piper, VRM, and MakeHuman runtimes are documented future adapters only.
 
 ## Screened future adapters
 
@@ -21,6 +21,17 @@ Eidovara 0.17 ships a dependency-free 2D/3D-styled companion and uses voices alr
 - External adapters run out of process with least privilege and cannot receive stored API keys unless the user explicitly configures that provider.
 
 This is a technical screening record, not a legal clearance opinion. Re-check the exact pinned release and every model card before distribution.
+
+## Blocked in v0.18.0 (document only — do not enable)
+
+These items may be described as future adapters. They must not be bundled, wired, or turned on in this release:
+
+- Neural TTS runtimes and voice packs (Kokoro, Piper, sherpa-onnx, cloud voice APIs)
+- VRM / MakeHuman character engines or imported anatomical models
+- Direct OBS websocket control (stream URLs may be stored locally as planning notes only)
+- Live payments, card collection, webhook entitlement, or PCI processing
+
+Windows-installed voices, the CSS companion, explicit Wikipedia/Wikimedia research, pasted HTTPS providers, Premium Brave, GitHub updates, optional Worker health/config/status/assist, and Spotify/YouTube HTTPS search links remain the implemented surface. See NETWORK-USAGE.md.
 
 ## Adult character asset decision for v0.18.0
 
