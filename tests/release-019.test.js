@@ -10,7 +10,7 @@ test('v0.22.2 source keeps kernel, official api.eidovara.org, and live 0.22.2 in
   assert.equal(JSON.parse(read('package.json')).version, '0.22.2');
   assert.equal(DESKTOP_KNOWLEDGE_VERSION, '0.22.2');
   assert.equal(INSTALLER_NAME, 'Eidovara-0.22.2-Windows-x64-Setup.exe');
-  assert.equal(INSTALLER_SHA256, 'A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE');
+  assert.equal(INSTALLER_SHA256, 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675');
   assert.equal(DEFAULT_EIDOVARA_SERVICE_BASE, 'https://api.eidovara.org');
   const html = read('src/renderer/index.html');
   assert.match(html, /id="startPath"/);
@@ -26,15 +26,15 @@ test('v0.22.2 source keeps kernel, official api.eidovara.org, and live 0.22.2 in
   assert.match(read('src/electron/main.js'), /function publicServiceUrl/);
   assert.match(read('docs/index.html'), /v0\.22\.2/);
   assert.match(read('docs/download.html'), /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
-  assert.match(read('docs/download.html'), /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
+  assert.match(read('docs/download.html'), new RegExp(INSTALLER_SHA256));
 });
 
-test('historical 0.19.0 SHA is preserved while live Download uses 0.22.2; sanitizer is a scanner', () => {
+test('historical 0.19.0 SHA is preserved while live Download uses final 0.22.2 bytes; sanitizer is a scanner', () => {
   const log = read('CHANGELOG.md');
   const v0190 = log.split('## v0.19.0')[1].split('## v0.18.3')[0];
   assert.match(v0190, /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/);
   assert.doesNotMatch(v0190, /after the artifact exists/);
-  assert.match(read('docs/download.html'), /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
+  assert.match(read('docs/download.html'), new RegExp(INSTALLER_SHA256));
   assert.doesNotMatch(read('docs/download.html'), /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/);
   assert.match(read('src/providers/internet.js'), /RAW_DROP_TAGS/);
   assert.match(read('tests/internet.test.js'), /<SCRIPT>steal\(\)<\/SCRIPT>/);
