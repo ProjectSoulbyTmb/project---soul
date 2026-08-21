@@ -1,12 +1,10 @@
 # Eidovara
 
-## Unreleased
+## v0.18.2
 
-- CLI no longer constructs a profile before `--i-am-18-or-older` (or a stored confirmation) succeeds.
-- Service and provider bases drop query strings so `/health` and chat paths are not appended after `?`.
-- Ask Eidovara and the knowledge pack keep only HTTPS or same-origin `.html` helper links; desktop store/openExternal reject credentialed URLs.
-- Desktop chrome, CLI, installer EULA, and the website helper name v0.18.1 to match `package.json` and GitHub Releases.
-- Home and Download point at `Eidovara-0.18.1-Windows-x64-Setup.exe` (plus SHA-256) instead of implying the GitHub source tree is the installer.
+- New unsigned Windows installer: `package.json` / Worker health / website-helper version is `0.18.2`. App id stays `com.soulconsciousnessstudios.eidovara`. Tags `v0.18.0` and `v0.18.1` already exist and were not moved.
+- Primary public download is `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe` (the NSIS `.exe`, not the source repository). Secondary repo link remains. Authenticode-unsigned; not Microsoft-certified. SHA-256 is published as `SHA256SUMS.txt` on the GitHub Release after the Windows job.
+- Includes the v0.18.1 proof/fix and download-CTA work already on `main`: CLI 18+ gate before profile create, service/provider query-string strip, helper HTTPS-only links, official Setup.exe CTAs.
 
 ## v0.18.1
 

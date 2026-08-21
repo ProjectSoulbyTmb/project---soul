@@ -2,7 +2,7 @@
 
 This self-declared network inventory is included in signed release provenance. The same inventory is advertised at [NETWORK-USAGE.md](../NETWORK-USAGE.md).
 
-## Current egress (v0.18.0)
+## Current egress (v0.18.2)
 
 Network access is user-directed except the official GitHub update-manifest check. No `workers.dev` host is compiled into the Electron app or the public site. Payments stay **fail-closed**: `paymentsEnabled` and `checkoutEnabled` remain false even if a remote `/v1/config` payload claims otherwise.
 
@@ -18,7 +18,7 @@ Network access is user-directed except the official GitHub update-manifest check
 | `github.com/ProjectSoulbyTmb/project---soul` | Startup/manual update check; user-approved update download | App version through user agent, IP address; installer request |
 | Spotify or YouTube web service | User clicks the respective media button | Current track search text, IP address, platform cookies/account state |
 
-No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Paste a service base into Settings → Eidovara service (or the local administrator panel). If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.18.0; the app never enables live checkout from a remote flag.
+No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Paste a service base into Settings → Eidovara service (or the local administrator panel). If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.18.2; the app never enables live checkout from a remote flag.
 
 ## Enhancement-allowed vs blocked
 
@@ -36,7 +36,7 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure
 
-**Blocked in v0.18.0 (screening records only — do not enable):**
+**Blocked in v0.18.2 (screening records only — do not enable):**
 
 - Bundled neural TTS (Kokoro, Piper, sherpa-onnx) or cloud voice credentials
 - VRM / MakeHuman character engines or imported anatomical models

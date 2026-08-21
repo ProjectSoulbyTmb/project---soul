@@ -10,7 +10,7 @@ test('public site tells users to download Windows or build from source, not use 
   assert.match(site, /Get Eidovara/);
   assert.match(site, /local-first Windows desktop app/);
   assert.match(site, /not a hosted chat account/);
-  assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/download\/v0\.18\.1\/Eidovara-0\.18\.1-Windows-x64-Setup\.exe/);
+  assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/latest\/download\/Eidovara-0\.18\.2-Windows-x64-Setup\.exe/);
   assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/latest/);
   assert.match(site, /unsigned Stable Alpha/);
   assert.match(site, /Authenticode-unsigned/);
@@ -50,6 +50,7 @@ test('operator runbook covers Pages merge, Dependency graph, wrangler, custom do
   assert.match(read('LIVE.md'), /PR #10/);
   assert.match(read('LIVE.md'), /Do not retarget Pages at a feature branch/);
   assert.match(read('LIVE.md'), /fail-on-severity: moderate/);
+  assert.match(read('LIVE.md'), /v0\.18\.2/);
   assert.match(read('LIVE.md'), /v0\.18\.1/);
   assert.doesNotMatch(read('LIVE.md'), /Authenticode-signed|live checkout is active|scientifically proven consciousness|®/);
   assert.match(read('server/README.md'), /Compatibility matrix/);
@@ -73,7 +74,7 @@ test('operator runbook covers Pages merge, Dependency graph, wrangler, custom do
 test('primary download CTAs point at the official Windows installer .exe, not only the repo root', () => {
   const version = JSON.parse(read('package.json')).version;
   const installerName = `Eidovara-${version}-Windows-x64-Setup.exe`;
-  const installerUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${version}/${installerName}`;
+  const installerUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${installerName}`;
   const latest = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
   const repoRoot = /^https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/?$/i;
   const isInstallerHref = href => href === installerUrl
@@ -86,7 +87,7 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   assert.ok(primary, 'download page has a primary button');
   assert.equal(primary[1], installerUrl);
   assert.match(downloadPage, new RegExp(installerName.replace(/\./g, '\\.')));
-  assert.match(downloadPage, /A7221E7781CEAD32F50E30FABE429092EC77826A5E8878E80D949D754A9404A9/);
+  assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.match(downloadPage, /id="ageConfirm"/);
   assert.match(downloadPage, /Authenticode-unsigned/);
   assert.doesNotMatch(downloadPage, /certified by Microsoft|Authenticode-signed|EV-signed installer|SmartScreen-preapproved by Microsoft/i);

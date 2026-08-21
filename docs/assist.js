@@ -115,7 +115,7 @@ function mount() {
     hidden: true
   });
   const title = el('h2', { id: 'assistTitle', className: 'assist-title', text: 'Website helper' });
-  const sub = el('p', { className: 'assist-sub', text: 'Ask Eidovara answers from a fixed v0.18.1 knowledge pack. Not Soul, not conscious, not legal advice. Adults 18+.' });
+  const sub = el('p', { className: 'assist-sub', text: 'Ask Eidovara answers from a fixed v0.18.2 knowledge pack. Not Soul, not conscious, not legal advice. Adults 18+.' });
   const close = el('button', { className: 'assist-close', type: 'button', text: 'Close', 'aria-label': 'Close assistant' });
   const modes = el('div', { className: 'assist-modes', role: 'radiogroup', 'aria-label': 'Helper mode' }, [
     modeRadio('help', 'Help', true),
@@ -158,7 +158,7 @@ function mount() {
 
   const stored = readBase();
   if (stored) serviceInput.value = stored;
-  addMessage(log, 'assistant', 'I am a website helper for Eidovara v0.18.1, not Soul. Ask about the Windows desktop app, download, age 18+, payments, or legal pointers. Conversations are not stored.');
+  addMessage(log, 'assistant', 'I am a website helper for Eidovara v0.18.2, not Soul. Ask about the Windows desktop app, download, age 18+, payments, or legal pointers. Conversations are not stored.');
 
   function selectedMode() {
     const picked = modes.querySelector('input[name="assistMode"]:checked');

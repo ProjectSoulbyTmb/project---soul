@@ -106,9 +106,9 @@ test('healthy service snapshot exposes site URL and keeps payments off', async (
   const snapshot = await fetchServiceSnapshot({
     base: 'https://eidovara-api.example.workers.dev/health',
     fetchImpl: async url => {
-      if (url.endsWith('/health')) return jsonResponse({ service: 'Eidovara', status: 'ok', version: '0.18.1' });
+      if (url.endsWith('/health')) return jsonResponse({ service: 'Eidovara', status: 'ok', version: '0.18.2' });
       if (url.endsWith('/v1/config')) return jsonResponse({
-        version: '0.18.1',
+        version: '0.18.2',
         website: 'https://projectsoulbytmb.github.io/project---soul/',
         paymentsEnabled: true,
         store: { stripe: 'https://pay.example/buy' }
@@ -119,7 +119,7 @@ test('healthy service snapshot exposes site URL and keeps payments off', async (
   });
   assert.equal(snapshot.online, true);
   assert.equal(snapshot.service, 'Eidovara');
-  assert.equal(snapshot.version, '0.18.1');
+  assert.equal(snapshot.version, '0.18.2');
   assert.equal(snapshot.website, 'https://projectsoulbytmb.github.io/project---soul/');
   assert.equal(snapshot.paymentsEnabled, false);
   assert.equal(snapshot.checkoutEnabled, false);
@@ -141,7 +141,7 @@ test('Worker health/config/status JSON matches desktop sanitizeRemoteConfig and 
   assert.equal(snapshot.online, true);
   assert.equal(snapshot.configured, true);
   assert.equal(snapshot.service, 'Eidovara');
-  assert.equal(snapshot.version, '0.18.1');
+  assert.equal(snapshot.version, '0.18.2');
   assert.equal(snapshot.paymentsEnabled, false);
   assert.equal(snapshot.checkoutEnabled, false);
   assert.equal(snapshot.localFirst, true);

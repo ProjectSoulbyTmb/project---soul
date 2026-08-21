@@ -2,7 +2,7 @@
 
 Last updated: August 21, 2026
 
-This notice describes Eidovara v0.18.0 Stable Alpha (Windows 10/11 x64). It is a self-declared product notice, **not** an independent audit, ISO certification, or guarantee of compliance for every deployment. Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Local age confirmation is not independent age or identity verification. See [AGE.md](AGE.md) and [NETWORK-USAGE.md](NETWORK-USAGE.md).
+This notice describes Eidovara v0.18.2 Stable Alpha (Windows 10/11 x64). It is a self-declared product notice, **not** an independent audit, ISO certification, or guarantee of compliance for every deployment. Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Local age confirmation is not independent age or identity verification. See [AGE.md](AGE.md) and [NETWORK-USAGE.md](NETWORK-USAGE.md).
 
 ## Local-first: what stays on the machine
 
@@ -34,7 +34,7 @@ Network access is user-directed except for the official update-manifest check:
 | Optional Eidovara service `/health`, `/v1/config`, `/v1/status` | After 18+ confirmation: launch check, Settings **Connect**, or local admin **Test service** after you paste a base URL | No conversations or payment data; health/config/status JSON only |
 | Optional website helper `/v1/assist` | You paste an HTTPS Worker base on the public site | The typed question and mode. Desktop conversation history is refused. Transcripts are not stored. |
 
-A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payments stay fail-closed (`paymentsEnabled` remains false). Payment environment variables for the optional Worker are intended to stay empty in v0.18.0. No Worker host is compiled into the app.
+A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payments stay fail-closed (`paymentsEnabled` remains false). Payment environment variables for the optional Worker are intended to stay empty in v0.18.2. No Worker host is compiled into the app.
 
 ## Your controls
 

@@ -114,7 +114,7 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.equal(download.ok, true);
   assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
   assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
-  assert.match(download.reply, /Eidovara-0\.18\.1-Windows-x64-Setup\.exe/);
+  assert.match(download.reply, /Eidovara-0\.18\.2-Windows-x64-Setup\.exe/);
   assert.ok((download.links || []).some(link => String(link.href || '').endsWith('.exe') || String(link.href || '').includes('/releases/latest')));
   assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
 
@@ -221,8 +221,8 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.equal(safePublicHref('http://example.test/page'), '');
   assert.equal(safePublicHref('../secret'), '');
   assert.equal(
-    safePublicHref('https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe'),
-    'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.18.1/Eidovara-0.18.1-Windows-x64-Setup.exe'
+    safePublicHref('https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe'),
+    'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.18.2-Windows-x64-Setup.exe'
   );
   const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
   assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));

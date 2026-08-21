@@ -161,7 +161,7 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   assert.doesNotMatch(html, /I am conscious|scientifically proven consciousness|®/);
 });
 
-test('network, security, and licensing docs match current fail-closed v0.18.0 surface', () => {
+test('network, security, and licensing docs match current fail-closed v0.18.2 surface', () => {
   const destinations = [
     /en\.wikipedia\.org/,
     /commons\.wikimedia\.org/,
@@ -217,7 +217,7 @@ test('network, security, and licensing docs match current fail-closed v0.18.0 su
   assert.match(third, /fail-closed/);
   assert.match(third, /Neural TTS/);
   const companions = read('docs/COMPANION_MODELS.md');
-  assert.match(companions, /Blocked in v0\.18\.0/);
+  assert.match(companions, /Blocked in v0\.18\.2/);
   assert.match(companions, /Neural TTS/);
   assert.match(companions, /VRM/);
   assert.match(companions, /OBS websocket/);
