@@ -28,19 +28,15 @@
     "appId": "com.soulconsciousnessstudios.eidovara",
     "platform": "Windows 10/11 x64",
     "installer": "Eidovara-0.22.2-Windows-x64-Setup.exe",
-    "sha256": "A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE",
+    "sizeBytes": 106691524,
+    "sha256": "F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675",
     "tag": "v0.22.2",
     "authenticode": "unsigned",
     "age": "18+",
     "payments": "fail-closed",
     "serviceDefault": "https://api.eidovara.org"
   },
-  "allowedStatuses": [
-    "in-repo",
-    "unsigned-template",
-    "not-filed",
-    "owner-action-required"
-  ],
+  "allowedStatuses": ["in-repo", "unsigned-template", "not-filed", "owner-action-required"],
   "instruments": [
     { "id": "license", "path": "LICENSE", "status": "in-repo" },
     { "id": "eula", "path": "installer/EULA.txt", "status": "in-repo" },
@@ -80,14 +76,8 @@
     { "id": "dependency-review-workflow", "path": ".github/workflows/dependency-review.yml", "status": "in-repo" }
   ],
   "ownerActionRequired": [
-    "copyright-office-registration",
-    "uspto-trademark-application",
-    "patent-counsel-before-patent-pending",
-    "authenticode-certificate",
-    "executed-cla-before-inbound-code",
-    "entity-formation-plus-signed-assignment",
-    "github-dependency-graph",
-    "github-private-vulnerability-reporting",
-    "www-dns-cname"
+    "copyright-office-registration", "uspto-trademark-application", "patent-counsel-before-patent-pending",
+    "authenticode-certificate", "executed-cla-before-inbound-code", "entity-formation-plus-signed-assignment",
+    "github-dependency-graph", "github-private-vulnerability-reporting", "www-dns-cname"
   ]
 }
