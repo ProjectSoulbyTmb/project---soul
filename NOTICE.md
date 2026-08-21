@@ -17,7 +17,7 @@ First-party Eidovara expression in this repository is claimed for **2026**. Upda
 
 Eidovara's advertised Windows runtime redistributes **Electron** and the **Chromium** and **Node.js** components Electron bundles. Those works stay under their own licenses. This NOTICE does not re-license them and does not invent packages that are not declared in `package.json`.
 
-Declared development / packaging tools in `package.json` (v0.18.2) that this project actually invokes:
+Declared development / packaging tools in `package.json` (v0.19.2) that this project actually invokes:
 
 | Component | Version in package.json | Role | License family (as published by that project) | Redistributed in the Windows app? |
 | --- | --- | --- | --- | --- |

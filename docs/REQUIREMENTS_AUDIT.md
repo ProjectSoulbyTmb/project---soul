@@ -6,7 +6,7 @@ Updated: 2026-08-21
 
 Eidovara is the modular Windows workspace; Soul remains its optional adaptive assistant personality. Applications, gaming controls, media, entertainment, appearance, backups, diagnostics, and updates remain useful without a connected model. Soul's protected identity, local continuity, reviewable memory, configurable tone/focus/autonomy, consent boundaries, and relationship model remain separate from the product and publishing identity. User-authored memories and setup text are treated as untrusted data, not system authority.
 
-## Working in v0.19.0
+## Working in v0.19.2
 
 | Area | Status | Evidence |
 | --- | --- | --- |
@@ -23,11 +23,11 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Appearance and gaming mode | Working | Colors, opacity, Premium RGB, low-overhead mode (Eidovara visuals only), GPU/media diagnostics. |
 | Conversation engines | Working | Offline Soul engine; optional loopback Ollama `/api/chat`; Premium HTTPS OpenAI-compatible `/chat/completions`; Chromium media/GPU engine. |
 | HTTPS service | Working with official default | Cloudflare Worker `/v1/health` (and `/health`), `/v1/config`, `/v1/status`; Settings Connect plus Ctrl+A Test service; launch retry after 18+; baked default `https://api.eidovara.org` (overridable); no `workers.dev` hard-code in the app; fetch failure stays local-first. Website helper may `GET`/`POST /v1/assist` after a visitor-saved HTTPS base. Desktop `/v1/assist` is a separate opt-in (default off) and never sends conversations. Payments stay fail-closed. |
-| Updates and releases | Working | GitHub `electron-updater` + `latest.yml` SHA-512, `update.json` SHA-256, HTTPS, prompt before download and before install, auto-check default on (Settings toggle), Windows installer/portable build. Setup overwrites an existing Eidovara program install without deleting local user data. Authenticode-unsigned. |
+| Updates and releases | Working | Packaged Windows builds use `electron-updater` 6.8.9 against official GitHub Releases `latest.yml` (SHA-512). Auto-download stays off. Settings can disable automatic checks. Prompt before download and again before install. NSIS `SetOverwrite on`. Legacy `update.json` remains a bridge for older installs. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
 | Website | Live on eidovara.org plus github.io from `main` | Complete `docs/` marketing site (Home, Product, Download, Assist, Help, FAQ, Status, Legal, 404, robots/sitemap, Ask Eidovara). Cloudflare Pages project `eidovara` serves `https://eidovara.org/`. GitHub Pages also publishes `docs/` from `main` via `pages.yml` (HTTPS). Mirror: `https://projectsoulbytmb.github.io/project---soul/`. Do not add `docs/CNAME`. |
-| Public Windows download | Working | Primary CTA is `releases/latest/download/Eidovara-0.19.0-Windows-x64-Setup.exe` (official unsigned NSIS `.exe`, ~101.3 MiB, 18+ gate on Download). Independently hashed SHA-256 `F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310`. `/releases/latest` remains the notes/checksums page. Source repo is secondary. Tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. `v0.18.0`–`v0.19.0` remain published and must not be moved. Next updater tag is `v0.19.1`. |
+| Public Windows download | Working | Primary CTA is `releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe` (official unsigned NSIS `.exe`, ~101.3 MiB, 18+ gate on Download). SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`. `/releases/latest` remains the notes/checksums page. Source repo is secondary. Tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. `v0.18.0`, `v0.18.1`, `v0.18.2`, `v0.18.3`, `v0.19.0`, and `v0.19.1` remain published and must not be moved. |
 | Optional Worker | Working when deployed | `/health`, `/v1/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+ against `https://api.eidovara.org` by default; website assist is paste/save-only; desktop assist is default + explicit opt-in; not required to run the app; no `workers.dev` hard-code. Redeploy with `npx wrangler deploy` after merge so the live Worker does not drift. Neural TTS/VRM/OBS/live payments stay documented only. |
 
 ## Owner clicks git cannot finish
@@ -35,7 +35,7 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Problem | Solution path |
 | --- | --- |
 | Dependency review CI fails (“Dependency graph” off) | Settings → Code security → enable Dependency graph. Keep `.github/workflows/dependency-review.yml`. |
-| Windows `v0.19.1` Release | After this updater merge, push tag `v0.19.1` on `main` (do not move `v0.18.0`–`v0.19.0`). `Release Windows` publishes unsigned Setup.exe plus `latest.yml`. Live advertised download stays the hashed `v0.19.0` exe until that 0.19.1 asset exists. |
+| Windows `v0.19.2` Release | After this updater merge, push tag `v0.19.2` on current `main` (do not move `v0.18.0`–`v0.19.1`). `Release Windows` publishes unsigned Setup.exe plus `latest.yml`. Until that artifact exists, site CTAs stay on the real hashed `v0.19.1` installer. |
 | Deployed Worker lags git | From `server/`, `npx wrangler deploy` after login/token. Never commit the token. |
 
 ## Not yet production-complete
@@ -53,4 +53,4 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 
 ## Release decision
 
-v0.19.0 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, universally compatible application controller, or Authenticode-signed binary.
+v0.19.1 is suitable as a transparent alpha/free consumer release. It should not be represented as a fully deployed paid service, patented product, registered mark, formed company, certified legal-compliance system, perfect security system, scientifically proven consciousness, universally compatible application controller, or Authenticode-signed binary.

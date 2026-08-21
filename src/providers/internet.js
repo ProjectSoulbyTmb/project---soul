@@ -9,24 +9,210 @@ export const PAGE_TIMEOUT_MS = 15_000;
 export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.';
 const HANDOFF_HOSTS = ['youtube.com', 'youtu.be', 'spotify.com'];
 const ARCHIVE_HOSTS = ['archive.org'];
+const RAW_DROP_TAGS = new Set(['script', 'style', 'noscript', 'iframe', 'object', 'embed', 'textarea', 'xmp', 'noembed', 'noframes']);
+const TREE_DROP_TAGS = new Set(['head', 'svg', 'canvas']);
+const BREAK_TAGS = new Set(['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'tr', 'br', 'hr', 'blockquote', 'ul', 'ol', 'table', 'section', 'article', 'pre', 'thead', 'tbody', 'tfoot', 'td', 'th']);
+const NAMED_ENTITIES = new Map([
+  ['nbsp', ' '],
+  ['amp', '&'],
+  ['quot', '"'],
+  ['apos', "'"],
+  ['lt', '<'],
+  ['gt', '>']
+]);
 
-export function sanitizeSnippet(value, max = 600) {
+function isWs(ch) {
+  return ch === ' ' || ch === '\t' || ch === '\n' || ch === '\r' || ch === '\f' || ch === '\v';
+}
+
+function isAlpha(ch) {
+  const code = ch.charCodeAt(0);
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122);
+}
+
+function isNameChar(ch) {
+  const code = ch.charCodeAt(0);
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122) || (code >= 48 && code <= 57) || ch === '-' || ch === ':';
+}
+
+function foldAscii(ch) {
+  const code = ch.charCodeAt(0);
+  return code >= 65 && code <= 90 ? String.fromCharCode(code + 32) : ch;
+}
+
+function matchFolded(s, index, word) {
+  if (index + word.length > s.length) return false;
+  for (let k = 0; k < word.length; k++) {
+    if (foldAscii(s[index + k]) !== word[k]) return false;
+  }
+  return true;
+}
+
+function readTagName(s, index) {
+  let i = index;
+  let name = '';
+  while (i < s.length && isNameChar(s[i])) {
+    name += foldAscii(s[i]);
+    i += 1;
+  }
+  return { name, index: i };
+}
+
+function skipQuoted(s, index) {
+  const quote = s[index];
+  let i = index + 1;
+  while (i < s.length && s[i] !== quote) i += 1;
+  return i < s.length ? i + 1 : i;
+}
+
+function skipUntilGt(s, index) {
+  let i = index;
+  while (i < s.length) {
+    const ch = s[i];
+    if (ch === '"' || ch === "'") i = skipQuoted(s, i);
+    else if (ch === '>') return i + 1;
+    else i += 1;
+  }
+  return s.length;
+}
+
+function inspectMarkup(s, index) {
+  if (s.startsWith('<!--', index)) {
+    const end = s.indexOf('-->', index + 4);
+    return { kind: 'comment', name: '', closing: false, start: index, end: end < 0 ? s.length : end + 3 };
+  }
+  let i = index + 1;
+  if (i < s.length && (s[i] === '!' || s[i] === '?')) {
+    return { kind: 'decl', name: '', closing: false, start: index, end: skipUntilGt(s, i) };
+  }
+  const closing = i < s.length && s[i] === '/';
+  if (closing) i += 1;
+  while (i < s.length && isWs(s[i])) i += 1;
+  if (i >= s.length || !isAlpha(s[i])) {
+    return { kind: 'junk', name: '', closing, start: index, end: skipUntilGt(s, index + 1) };
+  }
+  const { name, index: afterName } = readTagName(s, i);
+  return { kind: 'tag', name, closing, start: index, end: skipUntilGt(s, afterName) };
+}
+
+function findRawEnd(s, from, name) {
+  let i = from;
+  while (i < s.length) {
+    if (s[i] === '<' && s[i + 1] === '/') {
+      let j = i + 2;
+      while (j < s.length && isWs(s[j])) j += 1;
+      if (matchFolded(s, j, name) && (j + name.length >= s.length || !isNameChar(s[j + name.length]))) {
+        return { contentEnd: i, after: skipUntilGt(s, j + name.length) };
+      }
+    }
+    i += 1;
+  }
+  return { contentEnd: s.length, after: s.length };
+}
+
+function dropHtmlToText(html, { dropTrees = false, breaks = false } = {}) {
+  const s = String(html || '');
+  let out = '';
+  let i = 0;
+  while (i < s.length) {
+    if (s[i] !== '<') {
+      out += s[i];
+      i += 1;
+      continue;
+    }
+    const tag = inspectMarkup(s, i);
+    if (tag.kind === 'tag' && !tag.closing && (RAW_DROP_TAGS.has(tag.name) || (dropTrees && TREE_DROP_TAGS.has(tag.name)))) {
+      i = findRawEnd(s, tag.end, tag.name).after;
+      out += breaks ? '\n' : ' ';
+      continue;
+    }
+    if (breaks && tag.kind === 'tag' && BREAK_TAGS.has(tag.name)) out += '\n';
+    else out += ' ';
+    i = tag.end;
+  }
+  return out;
+}
+
+function entityValue(body) {
+  if (!body) return null;
+  if (body[0] === '#') {
+    const hex = body[1] === 'x' || body[1] === 'X';
+    const num = hex ? Number.parseInt(body.slice(2), 16) : Number.parseInt(body.slice(1), 10);
+    if (!Number.isFinite(num) || num < 1 || num > 0x10ffff) return '';
+    return String.fromCodePoint(num);
+  }
+  let folded = '';
+  for (let i = 0; i < body.length; i++) folded += foldAscii(body[i]);
+  return NAMED_ENTITIES.has(folded) ? NAMED_ENTITIES.get(folded) : null;
+}
+
+function decodeHtmlEntities(value) {
+  const text = String(value || '');
+  let out = '';
+  let i = 0;
+  while (i < text.length) {
+    if (text[i] === '&') {
+      const semi = text.indexOf(';', i + 1);
+      if (semi > i && semi - i < 12) {
+        const decoded = entityValue(text.slice(i + 1, semi));
+        if (decoded !== null) {
+          out += decoded;
+          i = semi + 1;
+          continue;
+        }
+      }
+    }
+    out += text[i];
+    i += 1;
+  }
+  return out;
+}
+
+function stripAngleBrackets(value) {
+  let out = '';
+  for (let i = 0; i < value.length; i++) {
+    const ch = value[i];
+    out += ch === '<' || ch === '>' ? ' ' : ch;
+  }
+  return out;
+}
+
+function extractHtmlTitle(html) {
+  const s = String(html || '');
+  let i = 0;
+  while (i < s.length) {
+    if (s[i] !== '<') {
+      i += 1;
+      continue;
+    }
+    const tag = inspectMarkup(s, i);
+    if (tag.kind === 'tag' && !tag.closing && RAW_DROP_TAGS.has(tag.name)) {
+      i = findRawEnd(s, tag.end, tag.name).after;
+      continue;
+    }
+    if (tag.kind === 'tag' && !tag.closing && tag.name === 'title') {
+      const { contentEnd } = findRawEnd(s, tag.end, 'title');
+      return s.slice(tag.end, contentEnd);
+    }
+    i = tag.end;
+  }
+  return '';
+}
+
+function collapsePlainText(value, max) {
   return String(value || '')
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
-    .replace(/<iframe[\s\S]*?<\/iframe>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&amp;/g, '&')
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, max);
+}
+
+export function sanitizeSnippet(value, max = 600) {
+  let text = String(value || '');
+  for (let n = 0; n < 3; n++) {
+    text = dropHtmlToText(decodeHtmlEntities(text));
+  }
+  return collapsePlainText(stripAngleBrackets(text), max);
 }
 
 function plain(value) {
@@ -34,14 +220,7 @@ function plain(value) {
 }
 
 export function readableExtract(html, max = 2000) {
-  const stripped = String(html || '')
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<noscript[\s\S]*?<\/noscript>/gi, ' ')
-    .replace(/<(head|svg|canvas)[\s\S]*?<\/\1>/gi, ' ')
-    .replace(/<br\s*\/?>/gi, '\n')
-    .replace(/<\/(p|div|h[1-6]|li|tr)>/gi, '\n');
-  return sanitizeSnippet(stripped, max);
+  return sanitizeSnippet(dropHtmlToText(html, { dropTrees: true, breaks: true }), max);
 }
 
 function subject(text) {
@@ -327,12 +506,11 @@ export async function fetchPublicPage(href, { fetchImpl = globalThis.fetch, time
     } else {
       throw new Error('Internet source returned an unreadable body.');
     }
-    const titleMatch = raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
     const extract = readableExtract(raw);
     return {
       url,
       hostname: sourceHost(url),
-      title: sanitizeSnippet(titleMatch?.[1] || sourceHost(url), 200),
+      title: sanitizeSnippet(extractHtmlTitle(raw) || sourceHost(url), 200),
       extract,
       snippet: sanitizeSnippet(extract, 600)
     };

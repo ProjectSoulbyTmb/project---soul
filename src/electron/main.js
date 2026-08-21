@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net } from 'electron';
+import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net, Tray, Menu, nativeImage } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -14,6 +14,7 @@ import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPO
 import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnlyUrl } from '../core/service.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 import { attachDesktopUpdater } from './auto-update.js';
+import { defaultDesktopChrome, evaluatePaletteCalc, loginItemPayload, normalizeDesktopChrome } from '../core/desktop-chrome.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
@@ -21,10 +22,10 @@ const allowedLocalMedia = new Map();
 protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
-let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0;
+let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
-let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, autoCheckUpdates: true };
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, autoCheckUpdates: true, desktop: defaultDesktopChrome() };
 let desktopUpdater = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -175,8 +176,49 @@ function publicConfig() {
     updateStatus: desktopUpdater?.getStatus?.() || null,
     hasApiKey: Boolean(config.encryptedApiKey),
     hasSearchApiKey: Boolean(config.encryptedSearchApiKey),
-    encryptionAvailable: safeStorage.isEncryptionAvailable()
+    encryptionAvailable: safeStorage.isEncryptionAvailable(),
+    desktop: normalizeDesktopChrome(config.desktop),
+    loginItem: loginItemPayload(config.desktop?.openAtLogin === true)
   };
+}
+function applyDesktopChrome() {
+  config.desktop = normalizeDesktopChrome(config.desktop);
+  try { mainWindow?.setAlwaysOnTop(config.desktop.alwaysOnTop === true); } catch {}
+  const login = loginItemPayload(config.desktop.openAtLogin === true);
+  if (login.supported) {
+    try { app.setLoginItemSettings({ openAtLogin: login.openAtLogin, name: login.name, openAsHidden: false }); } catch {}
+  }
+  if (config.desktop.trayStay) ensureTray();
+  else destroyTray();
+}
+function trayIcon() {
+  const file = path.join(__dirname, '../../assets/branding/eidovara-512.png');
+  try { return nativeImage.createFromPath(file); } catch { return nativeImage.createEmpty(); }
+}
+function showMainWindow() {
+  if (!mainWindow) return createWindow();
+  if (mainWindow.isMinimized()) mainWindow.restore();
+  mainWindow.show();
+  mainWindow.focus();
+}
+function ensureTray() {
+  if (tray || process.platform !== 'win32') return;
+  try {
+    tray = new Tray(trayIcon());
+    tray.setToolTip('Eidovara');
+    tray.setContextMenu(Menu.buildFromTemplate([
+      { label: 'Show Eidovara', click: () => showMainWindow() },
+      { label: 'Quit', click: () => { quitting = true; app.quit(); } }
+    ]));
+    tray.on('click', () => showMainWindow());
+  } catch (err) {
+    log('Tray unavailable', err);
+    tray = null;
+  }
+}
+function destroyTray() {
+  try { tray?.destroy(); } catch {}
+  tray = null;
 }
 function requireAgeGate() { if (config.ageGateAccepted !== true) throw new Error('Eidovara is restricted to users age 18 or older. Confirm age and accept the terms to continue.'); }
 async function checkEidovaraService() {
@@ -230,11 +272,18 @@ function createWindow() {
     loadConfig();
     registerCompanionImage();
     if (config.ageGateAccepted === true) ensureEngine();
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.19.1', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.19.2', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
+    applyDesktopChrome();
     mainWindow.once('ready-to-show', () => mainWindow.show());
+    mainWindow.on('close', e => {
+      if (!quitting && config.desktop?.trayStay === true && process.platform === 'win32' && tray) {
+        e.preventDefault();
+        mainWindow.hide();
+      }
+    });
     mainWindow.on('closed', () => { allowedLocalMedia.clear(); mainWindow = null; });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
@@ -268,7 +317,11 @@ desktopUpdater = attachDesktopUpdater({
   log
 });
 app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); if (config.ageGateAccepted === true) desktopUpdater.schedule(); }).catch(err => fatal('Eidovara initialization error', err));
-app.on('window-all-closed', () => { allowedLocalMedia.clear(); if (process.platform !== 'darwin') app.quit(); });
+app.on('before-quit', () => { quitting = true; destroyTray(); });
+app.on('window-all-closed', () => {
+  allowedLocalMedia.clear();
+  if (process.platform !== 'darwin' && !(config.desktop?.trayStay === true && process.platform === 'win32' && !quitting)) app.quit();
+});
 app.on('activate', () => { if (BrowserWindow.getAllWindows().length === 0) createWindow(); });
 
 ipcMain.handle('soul:send', async (_e, m, opts) => {
@@ -401,6 +454,10 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.autoCheckUpdates = incoming.autoCheckUpdates !== false;
     desktopUpdater?.schedule?.();
   }
+  if (incoming?.desktop && typeof incoming.desktop === 'object') {
+    config.desktop = normalizeDesktopChrome(incoming.desktop, config.desktop);
+    applyDesktopChrome();
+  }
   saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); return publicConfig();
 });
 ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
@@ -528,8 +585,10 @@ ipcMain.handle('soul:launchApplication', async (_e, id) => {
   if (answer.response !== 0) return { cancelled: true };
   const error = await shell.openPath(entry.path);
   if (error) throw new Error(error);
+  try { ensureEngine().recordPaletteUse({ id: entry.id, title: entry.name, kind: 'app' }); } catch {}
   return { launched: true };
 });
+ipcMain.handle('soul:evalCalc', (_e, query) => { requireAgeGate(); return evaluatePaletteCalc(String(query || '').slice(0, 200)); });
 ipcMain.handle('soul:removeApplication', (_e, id) => { requireAgeGate(); config.apps = (config.apps || []).filter(x => x.id !== String(id)); saveConfig(); return publicConfig(); });
 
 function cryptoId(value) { return crypto.createHash('sha256').update(String(value).toLowerCase()).digest('base64url'); }

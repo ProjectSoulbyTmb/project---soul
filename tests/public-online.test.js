@@ -11,7 +11,7 @@ test('public site tells users to download Windows or build from source, not use 
   assert.match(site, /local-first Windows desktop app/);
   assert.match(site, /not a hosted chat account/);
   assert.match(site, /href="download.html"/);
-  assert.match(site, /Eidovara-0\.19\.0-Windows-x64-Setup\.exe/);
+  assert.match(site, /Eidovara-0\.19\.1-Windows-x64-Setup\.exe/);
   assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/latest/);
   assert.match(site, /unsigned Stable Alpha/);
   assert.match(site, /Authenticode-unsigned/);
@@ -78,7 +78,7 @@ test('primary download CTAs point at the official Windows installer .exe, not on
   const installerName = knowledge.match(/const INSTALLER_NAME = '([^']+)'/)[1];
   const sha = knowledge.match(/const INSTALLER_SHA256 = '([A-F0-9]{64})'/)[1];
   const installerUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${installerName}`;
-  const pinnedUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.0/${installerName}`;
+  const pinnedUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.1/${installerName}`;
   const latest = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
   const repoRoot = /^https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/?$/i;
   const isInstallerHref = href => href === installerUrl
