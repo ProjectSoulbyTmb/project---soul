@@ -1,4 +1,4 @@
-# Eidovara v0.17.4 — Current Release
+# Eidovara v0.17.5 — Current Release
 
 ## Project statement
 

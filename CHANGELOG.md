@@ -1,5 +1,10 @@
 # Eidovara
 
+## v0.17.5
+
+- Fixed the Entertainment navigation title and enforced the user's disabled media-playback preference at every player entry point.
+- Rebuilt the public homepage around Eidovara's modular workspace instead of presenting the assistant as the sole product focus.
+
 ## v0.17.4
 
 - Made low-overhead gaming mode actually disable Eidovara animations, transitions, transparency effects, decorative shadows, and active speech.
