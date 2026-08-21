@@ -1,8 +1,8 @@
-# Eidovara v0.17.6 — Current Release
+# Eidovara v0.17.7 — Current Release
 
 ## Project statement
 
-Eidovara™ is a customizable Windows workspace for applications, gaming, digital media, entertainment, research, accessibility, and personal assistance, solely owned and created by Tyler Michael Bosworth and published under his intended business name, Soul Consciousness Studios™. Soul is an optional adaptive assistant layer inside the wider product—not the only reason to use it. Eidovara combines media playback, application discovery and launching, appearance and performance controls, persistent local preferences, conversation, internet research, backups, diagnostics, and verified updating in one fluid workspace.
+Eidovara™ is a customizable Windows workspace for applications, gaming, digital media, entertainment, research, accessibility, and personal assistance, owned, created, and product-directed by Tyler Michael Bosworth and published under his intended business name, Soul Consciousness Studios™. Soul is an optional adaptive assistant layer inside the wider product—not the only reason to use it. Eidovara combines media playback, application discovery and launching, appearance and performance controls, persistent local preferences, conversation, internet research, backups, diagnostics, and verified updating in one fluid workspace.
 
 The project goal is a broadly useful, user-directed desktop environment whose modules evolve through reviewed releases. Soul is software with a persistent self-model, not a human, legal authority, or proof of phenomenal consciousness. Users remain responsible for lawful use in their jurisdiction.
 
@@ -10,7 +10,7 @@ Eidovara by Soul Consciousness Studios
 
 > **Rights notice:** Copyright © 2026 Tyler Michael Bosworth. All rights reserved. The public repository is source-available for transparency and evaluation; it is not open-source. No patent, trademark, commercial-use, redistribution, modification, or derivative-work rights are granted except as stated in [LICENSE](LICENSE). See the [IP protection plan](docs/IP_PROTECTION.md).
 
-Tyler Michael Bosworth is identified in the project record as the sole creator and original author of Eidovara's first-party material. Third-party components and services remain the property of their respective owners; see [AUTHORS.md](AUTHORS.md), [LICENSE](LICENSE), and [TRADEMARKS.md](TRADEMARKS.md).
+Tyler Michael Bosworth is identified as the project owner, creator, product director, publisher, and claimant for qualifying original first-party material. Third-party components and services remain the property of their respective owners; see [AUTHORS.md](AUTHORS.md), [LICENSE](LICENSE), and [TRADEMARKS.md](TRADEMARKS.md).
 
 ## Free and Premium editions
 

@@ -14,7 +14,7 @@ if (args.includes('--snapshot')) {
   process.exit(0);
 }
 
-console.log('Eidovara v0.17.6 CLI. Type /exit to quit, /reset to reset profile.');
+console.log('Eidovara v0.17.7 CLI. Type /exit to quit, /reset to reset profile.');
 const rl = readline.createInterface({ input, output });
 while (true) {
   const line = await rl.question('you> ');

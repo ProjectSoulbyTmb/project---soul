@@ -1,6 +1,6 @@
 # Ownership and provenance notice
 
-Eidovara is identified by its owner as an original product invented and created by Tyler Michael Bosworth. This is the owner's inventorship assertion; formal patent inventorship must be verified for the subject matter of any filed claims.
+Eidovara is a project owned, created, and directed by Tyler Michael Bosworth. Tyler claims rights in qualifying original first-party expression and other rights lawfully held by him. Ideas, systems, methods, facts, third-party material, and public-domain material are outside that copyright claim. Formal patent inventorship must be determined claim by claim for any filed application.
 
 Copyright © 2026 Tyler Michael Bosworth. All rights reserved.
 

@@ -1,5 +1,12 @@
 # Eidovara
 
+## v0.17.7
+
+- Tightened copyright claim boundaries around qualifying original expression, ideas, systems, methods, facts, and third-party material.
+- Added a documented trademark-clearance log and commercial-launch legal gate.
+- Expanded child/privacy, subscription, platform-integration, and third-party runtime notices.
+- Updated the public terms, privacy, and licensing pages with accurate unregistered-mark and pre-sale disclosures.
+
 ## v0.17.6
 
 - Removed the public hard-coded administrator credential.

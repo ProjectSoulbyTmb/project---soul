@@ -7,3 +7,5 @@ Network access is request-driven except for a lightweight update-manifest check 
 Secrets are encrypted with the operating system credential-protection facility when available and are never exposed to the renderer. Eidovara does not silently send local safety reports or accusations to third parties. Users can inspect, back up, reset, or delete local application data.
 
 This is a self-declaration describing the software behavior, not an independent privacy audit or government certification.
+
+Eidovara is a general-audience desktop application and is not directed to children under 13. It does not provide an owner-operated account system or intentionally collect children's personal information. Adult Soul features require the user's adult-status confirmation and current consent. A future website account, telemetry, cloud memory, payment identity, or user-content service must receive a new privacy and child-safety review before launch.
