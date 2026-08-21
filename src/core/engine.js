@@ -13,6 +13,7 @@ import { isExplicitInternetRequest } from './workspace.js';
 import {
   configureKernelState,
   createRuntimeRegistry,
+  applyPhrasing,
   disabledModuleReply,
   kernelHeartbeat,
   kernelPublicMeta,
@@ -177,6 +178,9 @@ export class SoulEngine {
         reply = await fallback.reply({ input: text, state: this.state, messages: history });
         reply += `\n\n(Model connection unavailable; continuing in offline mode.)`;
       }
+    }
+    if (!policyReply) {
+      reply = applyPhrasing(reply, this.state.kernel?.registry?.phrasing, locale);
     }
 
     const done = new Date().toISOString();

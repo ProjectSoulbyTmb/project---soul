@@ -6,6 +6,8 @@ export const PRESENCE_LOOKS = Object.freeze([
   { id: 'ambient', title: 'Ambient', kind: 'css', description: 'A soft glow that follows the workspace accent. No implied anatomy.' },
   { id: 'pulse', title: 'Pulse', kind: 'canvas', description: 'A canvas heartbeat ring. Pauses when you prefer reduced motion.' },
   { id: 'silhouette', title: 'Silhouette', kind: 'css', description: 'A still outline. No implied life, voice, or consciousness.' },
+  { id: 'ribbon', title: 'Ribbon', kind: 'css', description: 'A layered light band using interface tokens. Geometric chrome, not a body.' },
+  { id: 'hidden', title: 'Hidden', kind: 'none', description: 'Hide the companion stage. Kernel, voice, and chat stay available.' },
   { id: 'local-image', title: 'Your image', kind: 'image', description: 'A picture you choose on this PC, shown through eidovara-media. Not a live model.' }
 ]);
 
@@ -30,7 +32,7 @@ export function presenceLook(id) {
 
 export function presenceFrame(lookId, timeMs = 0, { reducedMotion = false } = {}) {
   const look = presenceLook(lookId);
-  const frozen = Boolean(reducedMotion) || look.id === 'silhouette';
+  const frozen = Boolean(reducedMotion) || look.id === 'silhouette' || look.id === 'hidden';
   const phase = frozen ? 0 : (Number(timeMs) / 1000) % (Math.PI * 2);
   const pulse = frozen ? 0.5 : 0.5 + 0.35 * Math.sin(phase);
   return {

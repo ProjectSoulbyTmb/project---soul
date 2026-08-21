@@ -6,6 +6,7 @@ import { FUTURE_VOICE_BACKEND, defaultVoiceSettings, normalizeVoiceSettings } fr
 import { defaultSoulOnline, normalizeSoulOnline } from './soul-online.js';
 import {
   createRuntimeRegistry,
+  defaultPhrasing,
   defaultRegistry,
   matchCustomAction,
   normalizeRegistry
@@ -268,6 +269,35 @@ export function disabledModuleReply(route, locale = 'en') {
     de: `Das Modul ${title} ist in der Soul-Anpassung aus. Aktivieren Sie es unter Einstellungen. Lokales Soul bleibt auf diesem Gerät.`
   };
   return copy[locale] || copy.en;
+}
+
+/** Local wording only. Default knobs leave replies unchanged. Never claims sentience. */
+export function applyPhrasing(text, knobs, locale = 'en') {
+  const defaults = defaultPhrasing();
+  const wit = Number.isFinite(Number(knobs?.wit)) ? Number(knobs.wit) : defaults.wit;
+  const formality = Number.isFinite(Number(knobs?.formality)) ? Number(knobs.formality) : defaults.formality;
+  const brevity = Number.isFinite(Number(knobs?.brevity)) ? Number(knobs.brevity) : defaults.brevity;
+  let out = String(text || '');
+  const near = (value, fallback) => Math.abs(value - fallback) < 15;
+  if (!near(formality, defaults.formality) && formality >= 70) {
+    const extra = {
+      en: 'Stated plainly, as software on this device — not a person.',
+      es: 'Dicho con claridad: software en este dispositivo, no una persona.',
+      fr: 'Dit clairement : un logiciel sur cet appareil, pas une personne.',
+      de: 'Klar gesagt: Software auf diesem Gerät, keine Person.'
+    }[locale] || '';
+    if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
+  }
+  if (brevity < 75 && !near(wit, defaults.wit) && wit >= 70) {
+    const extra = {
+      en: 'I can keep the wording sharp without pretending to be alive.',
+      es: 'Puedo ser directo sin fingir que estoy vivo.',
+      fr: 'Je peux rester vif sans prétendre être vivant.',
+      de: 'Ich kann prägnant bleiben, ohne lebendig zu wirken.'
+    }[locale] || '';
+    if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
+  }
+  return out;
 }
 
 export { builtinModules, createRuntimeRegistry, FUTURE_VOICE_BACKEND };
