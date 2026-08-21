@@ -86,6 +86,12 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(read('.github/pull_request_template.md'), /does not transfer ownership/);
   assert.match(read('docs/CHAIN_OF_TITLE.md'), /Electron/);
   assert.match(read('docs/CHAIN_OF_TITLE.md'), /Chromium/);
+  assert.match(read('docs/CHAIN_OF_TITLE.md'), /First-party schedule/);
+  assert.match(read('docs/CHAIN_OF_TITLE.md'), /template only/);
+  assert.match(read('docs/CHAIN_OF_TITLE.md'), /not executed/);
+  assert.doesNotMatch(read('docs/CHAIN_OF_TITLE.md'), /this assignment has been signed|Copyright Office registration number/i);
+  assert.match(cla, /Exhibit A/);
+  assert.match(entity, /Exhibit A/);
   assert.match(read('TRADEMARKS.md'), /knockout screen|preliminary exact-word/i);
   assert.match(read('TRADEMARKS.md'), /trademark attorney/);
   assert.match(read('TRADEMARKS.md'), /USPTO/);
@@ -192,6 +198,8 @@ test('network, security, and licensing docs match current fail-closed v0.18.0 su
   assert.match(security, /media-src https: eidovara-media:/);
   assert.match(security, /\/v1\/assist/);
   assert.match(security, /fail-on-severity: moderate/);
+  assert.match(security, /Settings → Code security/);
+  assert.match(security, /Dependency graph/);
   assert.match(security, /Authenticode-unsigned/);
   const legal = read('LEGAL_NOTICES.md');
   assert.match(legal, /age 18 or older/);

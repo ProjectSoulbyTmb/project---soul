@@ -24,7 +24,7 @@ test('public site tells users to download Windows or build from source, not use 
   assert.doesNotMatch(site, /PCI[- ]DSS|Authenticode-signed installer|live checkout is active/i);
 });
 
-test('operator runbook covers Pages, Releases, wrangler, custom domain, and Test service', () => {
+test('operator runbook covers Pages merge, Dependency graph, wrangler, custom domain, and Test service', () => {
   const runbook = read('docs/PAYMENTS_AND_SITE.md');
   assert.match(runbook, /GitHub Pages/);
   assert.match(runbook, /docs\//);
@@ -36,6 +36,19 @@ test('operator runbook covers Pages, Releases, wrangler, custom domain, and Test
   assert.match(runbook, /Test service/);
   assert.match(runbook, /Soul HTTPS service/);
   assert.match(runbook, /local-first Windows desktop app/);
+  assert.match(runbook, /Settings → Code security/);
+  assert.match(runbook, /enable \*\*Dependency graph\*\*/);
+  assert.match(runbook, /fail-on-severity: moderate/);
+  assert.match(runbook, /merge this pull request/);
+  assert.match(runbook, /cursor\/engine-product-surface-c180/);
+  assert.match(runbook, /Do not retarget Pages at a feature branch/);
+  assert.match(runbook, /Honest cannot-ship/);
+  assert.match(runbook, /Live payments/);
+  assert.match(runbook, /Authenticode/);
+  assert.match(runbook, /consciousness/i);
+  assert.doesNotMatch(runbook, /dreambot333\.workers\.dev is compiled|hard-code `dreambot333/);
+  assert.match(read('SECURITY.md'), /Settings → Code security/);
+  assert.match(read('SECURITY.md'), /Dependency graph/);
   assert.match(read('docs/GITHUB_RELEASES.md'), /Authenticode-unsigned/);
   assert.match(read('docs/GITHUB_RELEASES.md'), /workflow_dispatch/);
   assert.doesNotMatch(read('docs/GITHUB_RELEASES.md'), /produces a signed installer|Authenticode-signed Setup/i);
@@ -51,6 +64,7 @@ test('Windows release workflow is tag-published, dispatch-safe, and unsigned', (
   assert.match(workflow, /upload-artifact@v4/);
   assert.match(workflow, /eidovara-windows-unsigned/);
   assert.match(read('.github/workflows/pages.yml'), /path: docs/);
+  assert.match(read('.github/workflows/pages.yml'), /branches: \[main\]/);
   assert.match(read('package.json'), /dist:win:installer/);
 });
 

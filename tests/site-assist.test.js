@@ -34,6 +34,7 @@ test('public site exposes nav, legal, assist, and 404 pages', () => {
     assert.match(page, /product\.html/, file);
     assert.match(page, /download\.html/, file);
     assert.match(page, /assist\.html/, file);
+    assert.match(page, /help\.html/, file);
     assert.match(page, /faq\.html/, file);
     assert.match(page, /status\.html/, file);
     assert.match(page, /terms\.html/, file);
@@ -110,6 +111,16 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.match(owner.reply, /does not own Electron|Third-party stays third-party/);
   assert.match(owner.reply, /not legal advice/);
   assert.match(owner.reply, /unregistered/);
+
+  const cla = answerAssist('Have contributors already signed the assignment?');
+  assert.equal(cla.ok, true);
+  assert.match(cla.reply, /unsigned template|not executed/i);
+  assert.match(cla.reply, /do not transfer copyright/i);
+
+  const pages = answerAssist('Why does the live GitHub Pages site look older than this repository?');
+  assert.equal(pages.ok, true);
+  assert.match(pages.reply, /main/);
+  assert.match(pages.reply, /merged to main|merge/i);
 });
 
 test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async () => {
