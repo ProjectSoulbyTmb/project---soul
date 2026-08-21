@@ -2,8 +2,12 @@
 
 ## Unreleased
 
+<<<<<<< HEAD
 - Companion coverage: dock and conversation share one kernel; nav/intents reach dashboard, conversation, apps (confirm-launch + discover), entertainment (mood/favorites/watch/OST/surprise + local media), memory (review/add/forget), identity/Adult Mode, settings (provider/theme/service/updates/backups/customization), help/legal, diagnostics, research (explicit internet only), focus/study/create/gaming checklists, and accessibility. Every named next step ships a working chip. Suggested “what can you do here?” follows the current view. Optional Soul is not faked when setup is off. `/v1/assist` still requires opt-in.
 - Desktop automatic updater: after 18+, Eidovara can check GitHub Releases (`ProjectSoulbyTmb/project---soul`) for a newer Windows NSIS installer, verify `latest.yml` SHA-512, and apply only after an explicit prompt. Auto-check defaults **off**. Authenticode-unsigned. There is no “download any exe and run” path.
+=======
+- Research snippet sanitization no longer uses HTML-tag regular expressions (CodeQL `js/bad-html-filtering-regexp`). Script/style/noscript/iframe bodies are dropped with a character scanner; leftover `<` and `>` are stripped. Mixed-case `<SCRIPT>` and spaced `</script >` are covered by tests. Display remains `textContent` / `el()`, never `innerHTML` of fetched pages.
+>>>>>>> origin/cursor/codeql-html-sanitize-c180
 
 ## v0.19.0
 

@@ -80,12 +80,41 @@ test('hostname checks use URL.hostname, not substring includes', () => {
 
 test('snippet sanitization strips markup and does not keep script text as HTML', () => {
   const dirty = '<script>alert(1)</script><img src=x onerror=alert(1)>Sixth &amp; planet';
-  assert.equal(sanitizeSnippet(dirty), 'Sixth & planet');
-  assert.doesNotMatch(sanitizeSnippet(dirty), /<script|<img|onerror/);
+  const cleaned = sanitizeSnippet(dirty);
+  assert.equal(cleaned, 'Sixth & planet');
+  assert.equal(cleaned.includes('<'), false);
+  assert.equal(cleaned.includes('>'), false);
+  assert.equal(cleaned.toLowerCase().includes('onerror'), false);
+  assert.equal(cleaned.toLowerCase().includes('alert'), false);
   assert.equal(readableExtract('<title>Keep</title><p>Hello <b>world</b></p><script>steal()</script>'), 'Keep Hello world');
   assert.match(HONEST_RESEARCH_COPY, /Public web lookup after you ask/);
   assert.match(HONEST_RESEARCH_COPY, /Not a full-internet index/);
   assert.doesNotMatch(HONEST_RESEARCH_COPY, /indexed the whole internet|crawler|every website/i);
+});
+
+test('sanitizer handles mixed-case tags, spaced script end tags, and leftover angle brackets', () => {
+  const samples = [
+    ['<SCRIPT>steal()</SCRIPT>visible', 'visible'],
+    ['<script>steal()</script >visible', 'visible'],
+    ['<ScRiPt type="text/javascript">x()</sCrIpT> text', 'text'],
+    ['ok</script >done', 'ok done'],
+    ['keep</script >', 'keep'],
+    ['plain > leftover', 'plain leftover'],
+    ['before<img src=x onerror=alert(1)>after', 'before after'],
+    ['Sixth &lt;b&gt;planet&lt;/b&gt;', 'Sixth planet'],
+    ['&lt;script&gt;alert(1)&lt;/script&gt;Safe', 'Safe']
+  ];
+  for (const [input, expected] of samples) {
+    const out = sanitizeSnippet(input);
+    assert.equal(out, expected, input);
+    assert.equal(out.includes('<'), false, input);
+    assert.equal(out.includes('>'), false, input);
+  }
+  const extract = readableExtract('<P>Hi</P ><SCRIPT>x()</SCRIPT>There</script >');
+  assert.equal(extract, 'Hi There');
+  assert.equal(extract.includes('<'), false);
+  assert.equal(extract.includes('>'), false);
+  assert.equal(extract.includes('x()'), false);
 });
 
 test('bounded page fetch is https-only, refuses credentials and redirects, and extracts text', async () => {
@@ -109,9 +138,13 @@ test('bounded page fetch is https-only, refuses credentials and redirects, and e
   assert.equal(seen[0].init.credentials, 'omit');
   assert.doesNotMatch(JSON.stringify(seen[0].init.headers), /authorization|cookie|workers\.dev/i);
   assert.equal(page.hostname, 'example.com');
-  assert.equal(page.title, 'Example <Story>');
+  assert.equal(page.title, 'Example');
+  assert.equal(page.title.includes('<'), false);
+  assert.equal(page.title.includes('>'), false);
   assert.match(page.extract, /Readable body/);
-  assert.doesNotMatch(page.extract, /<script|<p>/);
+  assert.equal(page.extract.includes('<'), false);
+  assert.equal(page.extract.includes('>'), false);
+  assert.equal(page.extract.toLowerCase().includes('alert'), false);
 });
 
 test('explicit research fetches Wikipedia and a user HTTPS page, never Assist or workers.dev', async () => {
@@ -134,7 +167,8 @@ test('explicit research fetches Wikipedia and a user HTTPS page, never Assist or
     const r = await researchInternet('Search the internet for Saturn https://example.com/notes');
     assert.ok(r.sources.some(s => s.title === 'Saturn' && s.hostname === 'en.wikipedia.org'));
     assert.ok(r.sources.some(s => s.url === 'https://example.com/notes' && /Public page extract/.test(s.extract)));
-    assert.equal(r.sources.find(s => s.title === 'Saturn').description.includes('<b>'), false);
+    assert.equal(r.sources.find(s => s.title === 'Saturn').description.includes('<'), false);
+    assert.equal(r.sources.find(s => s.title === 'Saturn').description.includes('>'), false);
     assert.match(r.disclaimer, /Not a full-internet index/);
     assert.equal(seen.some(item => /v1\/assist/.test(item.url)), false);
     assert.equal(seen.some(item => /workers\.dev/.test(item.url)), false);
@@ -229,6 +263,18 @@ test('offline, timeout, and blocked hosts fail closed while the workspace keeps 
     }),
     /timed out|workspace is still available/i
   );
+});
+
+test('research sanitizer source does not use HTML-tag regular expressions', () => {
+  const source = fs.readFileSync('src/providers/internet.js', 'utf8');
+  const renderer = fs.readFileSync('src/renderer/renderer.js', 'utf8');
+  assert.doesNotMatch(source, /<script\[\\s\\S\]\*\?<\/script>/);
+  assert.doesNotMatch(source, /replace\(\s*\/<\[\^>\]\+>\//);
+  assert.doesNotMatch(source, /replace\(\s*\/<script/i);
+  assert.match(source, /function dropHtmlToText/);
+  assert.match(source, /function stripAngleBrackets/);
+  assert.match(renderer, /textContent/);
+  assert.doesNotMatch(renderer, /innerHTML\s*=/);
 });
 
 test('research path does not compile workers.dev or renderer innerHTML of fetched pages', () => {
