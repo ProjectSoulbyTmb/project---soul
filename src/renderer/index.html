@@ -49,14 +49,16 @@
         </div>
       </header>
       <div class="focus-quiet-bar hidden" id="focusQuietBar" role="status">
-        <strong id="focusQuietLabel">Focus session</strong>
-        <span id="focusQuietRemaining">0:00</span>
-        <span class="focus-quiet-note">Quiet block on this PC. Other apps are not closed or injected into.</span>
-        <button type="button" class="secondary" id="focusQuietStop">Stop</button>
         <strong id="focusQuietLabel" data-i18n="focusQuiet">Focus session</strong>
         <span id="focusQuietRemaining">0:00</span>
         <span class="focus-quiet-note" data-i18n="focusQuietNote">Local timer. Other apps are not closed or injected into.</span>
-        <button type="button" class="secondary" id="focusQuietStop" data-i18n="focusStop">Stop</button>      </div>
+        <button type="button" class="secondary" id="focusQuietStop" data-i18n="focusStop">Stop</button>
+      </div>
+      <div class="update-ready-banner hidden" id="updateReadyBanner" role="status">
+        <span id="updateReadyText">Update ready</span>
+        <button type="button" id="updateReadyInstallBtn">Restart and install</button>
+        <button type="button" class="secondary" id="updateReadyLaterBtn">Later</button>
+      </div>
 
       <section class="view" id="chatView">
         <div class="chat-scroll" id="chatScroll">
@@ -133,6 +135,7 @@
               <button type="button" data-companion-nav="memory" data-i18n="companionMemory">Memory</button>
               <button type="button" data-companion-nav="legal" data-i18n="companionLegal">Legal</button>
               <button type="button" data-companion-nav="status" data-i18n="companionStatus">Status</button>
+              <button type="button" data-companion-nav="updates">Check for updates</button>
               <button type="button" data-companion-ask="What can this workspace do?" data-i18n="companionHelp">Help</button>
             </div>
             <div class="companion-log" id="companionLog" aria-live="polite"></div>
@@ -165,6 +168,9 @@
         <p class="soul-heartbeat" id="soulHeartbeat">Confirm 18+ to start the local kernel.</p>
         <p class="soul-online-copy" id="soulOnlineCopy">Online helper off. Local kernel stays the source of truth.</p>
         <div class="soul-module-list" id="soulModuleChips" aria-label="Feature modules"></div>
+        <div class="soul-module-list" id="soulSystemChips" aria-label="Companion tools">
+          <button type="button" id="companionCheckUpdatesBtn">Check for updates</button>
+        </div>
         <div class="soul-action-list" id="soulQuickActions" aria-label="Custom quick actions"></div>
         <p class="companion-error hidden" id="companionError" role="status"></p>
         <form class="companion-form" id="companionForm">
@@ -212,6 +218,7 @@
           <button type="button" data-settings-jump="settings-voices">Voices</button>
           <button type="button" data-settings-jump="kernelCustomizeForm">Modules</button>
           <button type="button" data-settings-jump="assistantBehaviorForm">Behavior</button>
+          <button type="button" data-settings-jump="settings-updates">Updates</button>
           <button type="button" data-settings-jump="backupSection">Backups</button>
         </div>
         <form class="settings-card settings-group" id="serviceForm">
@@ -273,7 +280,7 @@
             <p class="settings-status" id="kernelCustomizeStatus"></p>
           </form>
         <div class="card diagnostics hidden" id="diagnosticsCard"><p class="settings-status" data-i18n="diagLead">Local snapshot of this installation. Not a security certification or compatibility guarantee.</p><div class="diagnostics-summary" id="diagnosticsSummary"></div><pre id="diagnosticsText"></pre></div>
-        <div class="settings-card settings-group"><h3>Software updates</h3><p class="settings-help">Checks the official GitHub release channel. Installers are accepted only over HTTPS and after SHA-256 verification. This build is Authenticode-unsigned.</p><div class="settings-actions"><button type="button" id="checkUpdateBtn">Check for updates</button><button type="button" class="secondary hidden" id="installUpdateBtn">Download and install</button></div><p class="settings-status" id="updateStatus"></p></div>
+        <div class="settings-card settings-group" id="settings-updates"><h3>Software updates</h3><p class="settings-help">Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned.</p><label class="check"><input type="checkbox" id="autoCheckUpdates" checked /> Check GitHub Releases automatically (default on). Turn off on metered networks.</label><div class="settings-actions"><button type="button" id="checkUpdateBtn">Check for updates</button><button type="button" class="secondary hidden" id="installUpdateBtn">Restart and install</button></div><p class="settings-status" id="updateStatus"></p></div>
         <div class="settings-card settings-group" id="editionCard"><h3 id="editionTitle">Eidovara Free</h3><p id="editionDescription">A complete core assistant with offline/local models, memory, media, backups, updates, and up to three linked apps.</p><p class="settings-help">Premium in this version is local-admin testing only. There is no live checkout.</p><button type="button" class="hidden" id="upgradeBtn">View Eidovara Premium</button></div>
         <div class="settings-card settings-group"><h3>Assistant setup</h3><p class="settings-help">Choose what Soul should help with. You can change this later. Direct OBS control is not in this release.</p><button type="button" id="openSetupBtn">Configure assistant</button></div>
         <div class="settings-card settings-group"><h3>Privacy, security &amp; rights</h3><p class="settings-help">18+, unsigned Windows, no live payments. Product copy, not legal advice.</p><div class="settings-actions"><button type="button" id="legalAboutBtn">About &amp; legal</button><button type="button" class="secondary" id="privacyNoticeBtn">Privacy</button><button type="button" class="secondary" id="termsNoticeBtn">Terms</button><button type="button" class="secondary" id="ageNoticeBtn">Age 18+</button><button type="button" class="secondary" id="securityCenterBtn">Security</button><button type="button" class="secondary" id="licensingBtn">Licensing</button></div></div>
