@@ -18,6 +18,8 @@ test('public site tells users to download Windows or build from source, not use 
   assert.match(site, /Free \/ Offline Soul/);
   assert.match(site, /\/health/);
   assert.match(site, /\/v1\/config/);
+  assert.match(site, /\/v1\/status/);
+  assert.match(site, /attach to the online Eidovara service/);
   assert.doesNotMatch(site, /dreambot333\.workers\.dev/);
   assert.doesNotMatch(site, /PCI[- ]DSS|Authenticode-signed installer|live checkout is active/i);
 });

@@ -9,6 +9,16 @@ export default {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...JSON_HEADERS, allow: 'GET, OPTIONS' } });
     if (request.method !== 'GET') return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, OPTIONS' });
     if (url.pathname === '/health') return response({ service: 'Eidovara', status: 'ok', version: '0.18.0', time: new Date().toISOString() }, 200, { 'cache-control': 'public, max-age=30' });
+    if (url.pathname === '/v1/status') return response({
+      service: 'Eidovara',
+      status: 'ok',
+      version: '0.18.0',
+      time: new Date().toISOString(),
+      localFirst: true,
+      conversations: false,
+      paymentsEnabled: false,
+      endpoints: ['/health', '/v1/config', '/v1/status']
+    }, 200, { 'cache-control': 'public, max-age=30' });
     if (url.pathname === '/v1/config') return response({
       version: '0.18.0',
       website: httpsUrl(env.WEBSITE_URL),

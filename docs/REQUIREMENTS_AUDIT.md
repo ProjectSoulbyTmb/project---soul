@@ -21,20 +21,20 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |
 | Appearance and gaming mode | Working | Colors, opacity, Premium RGB, low-overhead mode (Eidovara visuals only), GPU/media diagnostics. |
 | Conversation engines | Working | Offline Soul engine; optional loopback Ollama `/api/chat`; Premium HTTPS OpenAI-compatible `/chat/completions`; Chromium media/GPU engine. |
-| HTTPS service | Working when a URL is pasted | Cloudflare Worker `/health` and `/v1/config`; Ctrl+A Test service; no `workers.dev` hard-code in the app. |
+| HTTPS service | Working when a URL is saved | Cloudflare Worker `/health`, `/v1/config`, `/v1/status`; Settings Connect plus Ctrl+A Test service; launch retry after 18+; no `workers.dev` hard-code in the app; fetch failure stays local-first. |
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
 | Website | Working | GitHub Pages from `docs/` at `https://projectsoulbytmb.github.io/project---soul/` with Get Eidovara download path (Releases + unsigned Stable Alpha + 18+ + build-from-source fallback). |
 | Public Windows download | Working when a Release exists | `releases/latest` hosts `Eidovara-*-Windows-x64-Setup.exe` for v0.18.0; unsigned; tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. |
-| Optional Worker | Working when deployed and pasted | `/health` and `/v1/config` fail-closed; payments empty; not required to run the app; not hard-coded. |
+| Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status` fail-closed; payments empty; Settings Connect + launch retry after 18+; not required to run the app; not hard-coded. |
 
 ## Not yet production-complete
 
 | Area | Required next dependency |
 | --- | --- |
 | Automatic paid Premium activation | Payment account, signed webhooks, D1/KV entitlement store, server signing key, activation UI, cancellation/refund tests. |
-| Stable public API | Select or keep a Cloudflare `workers.dev` account subdomain, deploy `server/worker.js` with Wrangler, paste the HTTPS base into Ctrl+A, monitor `/health`. Not auto-deployed from this repository. |
+| Stable public API | Select or keep a Cloudflare `workers.dev` account subdomain, deploy `server/worker.js` with Wrangler, paste the HTTPS base into Settings → Eidovara service, monitor `/health`. Not auto-deployed from this repository. |
 | Branded permanent domain | Register an available domain in Tyler Michael Bosworth's account and maintain renewals/security controls. |
 | Authenticode reputation | Obtain an organization/individual code-signing certificate or trusted signing service; current release is explicitly unsigned. |
 | Native neural voice/model packs | Pin exact runtimes/assets only after per-model license, provenance, consent, hash, and sandbox review. |

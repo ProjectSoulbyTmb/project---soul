@@ -8,6 +8,7 @@ import { SoulEngine } from '../core/engine.js';
 import { JsonStore } from '../core/store.js';
 import { OfflineProvider } from '../providers/offline.js';
 import { callCompatibleProvider, callLocalProvider, LOCAL_PROVIDER_DEFAULT_ENDPOINT, normalizeProviderEndpoint } from '../providers/http.js';
+import { fetchServiceSnapshot, normalizeServiceUrl } from '../core/service.js';
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 
@@ -74,8 +75,41 @@ function validateNewAdminPassword(password) {
   if (value.length < 12 || value.length > 200) throw new Error('Use an administrator password between 12 and 200 characters.');
   return value;
 }
-function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en', ageGateAccepted: config.ageGateAccepted === true, apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: /^https:\/\//i.test(String(config.serviceUrl || '')) ? config.serviceUrl : '', updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
+function publicServiceUrl() { try { return normalizeServiceUrl(config.serviceUrl || ''); } catch { return ''; } }
+function publicServiceStatus() {
+  const stored = config.serviceStatus && typeof config.serviceStatus === 'object' ? config.serviceStatus : {};
+  return {
+    configured: Boolean(publicServiceUrl()),
+    online: stored.online === true,
+    paymentsEnabled: false,
+    checkoutEnabled: false,
+    service: String(stored.service || '').slice(0, 100),
+    version: String(stored.version || '').slice(0, 40),
+    website: /^https:\/\//i.test(String(stored.website || '')) ? String(stored.website) : '',
+    error: String(stored.error || '').slice(0, 300),
+    lastCheckedAt: String(stored.lastCheckedAt || ''),
+    localFirst: true
+  };
+}
+function publicConfig() { return { provider: config.provider, endpoint: config.endpoint || '', model: config.model || '', language: ['en','es','fr','de'].includes(config.language) ? config.language : 'en', ageGateAccepted: config.ageGateAccepted === true, apps: Array.isArray(config.apps) ? config.apps : [], theme: config.theme || {}, companion: config.companion || {}, edition: entitlement(), storeUrl: /^https:\/\//i.test(String(config.storeUrl || '')) ? config.storeUrl : '', serviceUrl: publicServiceUrl(), serviceStatus: publicServiceStatus(), updateChannelConfigured: Boolean(RELEASE_MANIFEST_URL), hasApiKey: Boolean(config.encryptedApiKey), hasSearchApiKey: Boolean(config.encryptedSearchApiKey), encryptionAvailable: safeStorage.isEncryptionAvailable() }; }
 function requireAgeGate() { if (config.ageGateAccepted !== true) throw new Error('Eidovara is restricted to users age 18 or older. Confirm age and accept the terms to continue.'); }
+async function checkEidovaraService() {
+  const snapshot = await fetchServiceSnapshot({ base: publicServiceUrl() });
+  config.serviceStatus = {
+    configured: snapshot.configured === true,
+    online: snapshot.online === true,
+    paymentsEnabled: false,
+    checkoutEnabled: false,
+    service: String(snapshot.service || '').slice(0, 100),
+    version: String(snapshot.version || '').slice(0, 40),
+    website: snapshot.website || '',
+    error: String(snapshot.error || '').slice(0, 300),
+    lastCheckedAt: snapshot.lastCheckedAt || new Date().toISOString(),
+    localFirst: true
+  };
+  saveConfig();
+  return { ...snapshot, paymentsEnabled: false, checkoutEnabled: false, serviceUrl: publicServiceUrl(), serviceStatus: publicServiceStatus() };
+}
 function adminAuthorized() { return Date.now() < adminSessionUntil; }
 function requireAdmin() { if (!adminAuthorized()) throw new Error('Administrator authentication is required.'); }
 function makeProvider() {
@@ -169,13 +203,19 @@ ipcMain.handle('soul:adminSave', (_e, incoming) => {
   if (config.edition === 'free') { if (config.provider === 'compatible') config.provider = 'offline'; config.theme = { ...(config.theme || {}), rgbEffects: false }; }
   const storeUrl = String(incoming?.storeUrl || '').trim().slice(0, 1000);
   if (storeUrl && new URL(storeUrl).protocol !== 'https:') throw new Error('The store link must use HTTPS.');
-  const serviceUrl = String(incoming?.serviceUrl || '').trim().replace(/\/+$/, '').slice(0, 1000);
-  if (serviceUrl && new URL(serviceUrl).protocol !== 'https:') throw new Error('The service URL must use HTTPS.');
-  config.storeUrl = storeUrl; config.serviceUrl = serviceUrl; saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
+  config.storeUrl = storeUrl; config.serviceUrl = normalizeServiceUrl(incoming?.serviceUrl); saveConfig(); engine.setProvider(makeProvider()); engine.setInternetOptions({ searchApiKey: config.edition === 'premium' ? getSearchApiKey() : '' }); log(`Administrator changed local edition to ${config.edition}.`);
   return { authorized: true, expiresAt: new Date(adminSessionUntil).toISOString(), edition: entitlement(), storeUrl: publicConfig().storeUrl, serviceUrl: publicConfig().serviceUrl };
 });
 ipcMain.handle('soul:adminLogout', () => { adminSessionUntil = 0; return true; });
-ipcMain.handle('soul:checkService', async () => { requireAgeGate(); const base = publicConfig().serviceUrl; if (!base) return { configured: false }; const controller = new AbortController(); const timer = setTimeout(() => controller.abort(), 5000); try { const res = await fetch(`${base}/health`, { signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }); if (!res.ok) throw new Error(`Service returned HTTP ${res.status}.`); const raw = await res.text(); if (Buffer.byteLength(raw) > 32_768) throw new Error('Service response is too large.'); const body = JSON.parse(raw); return { configured: true, online: body?.status === 'ok', service: String(body?.service || '').slice(0, 100), version: String(body?.version || '').slice(0, 40) }; } finally { clearTimeout(timer); } });
+ipcMain.handle('soul:checkService', async () => { requireAgeGate(); return checkEidovaraService(); });
+ipcMain.handle('soul:connectService', async (_e, incoming) => {
+  requireAgeGate();
+  if (incoming && Object.prototype.hasOwnProperty.call(incoming, 'serviceUrl')) {
+    config.serviceUrl = normalizeServiceUrl(incoming.serviceUrl);
+    saveConfig();
+  }
+  return checkEidovaraService();
+});
 ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   requireAgeGate();
   const provider = ['offline','local','compatible'].includes(incoming?.provider) ? incoming.provider : 'offline';
