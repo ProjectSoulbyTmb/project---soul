@@ -1,1 +1,64 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"><meta name="referrer" content="no-referrer"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><title>Security Center · Eidovara</title><link rel="stylesheet" href="tokens.css"><link rel="stylesheet" href="site.css"></head><body><header class="site-header"><div class="site-header-inner"><a class="brand" href="./"><span class="mark"></span>Eidovara</a><nav><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="terms.html">Terms</a></nav></div></header><main class="legal"><p class="eyebrow">Trust center</p><h1>Security without theater.</h1><div class="legal-card"><h2>Desktop safeguards</h2><ul><li>Context isolation, renderer sandboxing, navigation blocking, and narrowly scoped audio-only permissions.</li><li>Secrets encrypted through the operating system when secure storage is available.</li><li>HTTPS-only public services and checkout links; SHA-256 verification before updater launch.</li><li>No automatic external safety reporting and no payment-card storage.</li></ul></div><div class="legal-card"><h2>Release integrity</h2><p>Official releases include checksums, an SBOM, privacy declaration, code-signing status, and build provenance. The current Windows build is not Authenticode-signed; verify its checksum and GitHub attestation.</p></div><div class="legal-card"><h2>Report a vulnerability</h2><p>Use the repository’s private security-advisory channel when available. Never place credentials, private keys, personal records, or exploit details in a public issue. No software is guaranteed perfectly secure.</p></div></main><footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth.</span><a href="./">Back to Eidovara</a></div></footer></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Eidovara security center: sandboxed desktop renderer, checksums, SBOM, unsigned Windows installer honesty. No perfect-security claim.">
+  <meta property="og:title" content="Security Center · Eidovara">
+  <meta property="og:description" content="Eidovara security center: sandboxed desktop renderer, checksums, SBOM, unsigned Windows installer honesty. No perfect-security claim.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/security.html">
+  <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/security.html">
+  <title>Security Center · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body data-page="legal">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+            <nav id="site-nav" aria-label="Primary">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+      </nav>
+    </div>
+  </header>
+  <main id="main">
+    <p class="eyebrow">Trust center</p>
+    <h1>Security without theater.</h1>
+    <div class="legal-card"><h2>Desktop safeguards</h2><ul><li>Context isolation, renderer sandboxing, navigation blocking, and narrowly scoped audio-only permissions.</li><li>Secrets encrypted through the operating system when secure storage is available.</li><li>HTTPS-only public services and checkout links; SHA-256 verification before updater launch.</li><li>No automatic external safety reporting and no payment-card storage.</li></ul></div>
+    <div class="legal-card"><h2>Release integrity</h2><p>Official releases include checksums, an SBOM, privacy declaration, code-signing status, and build provenance. The current Windows build is not Authenticode-signed; verify its checksum and GitHub attestation.</p></div>
+    <div class="legal-card"><h2>Website helper</h2><p>Ask Eidovara answers from an allowlisted knowledge pack. Optional <code>/v1/assist</code> accepts a single question, refuses desktop conversation history, and does not store transcripts. Tight Content-Security-Policy on these pages; connect is limited to this origin and HTTPS.</p></div>
+    <div class="legal-card"><h2>Network inventory</h2><p>Current egress is Wikipedia/Wikimedia after an explicit research request, optional pasted HTTPS model providers, Premium Brave with a user key, official GitHub update checks, optional Worker <code>/health</code>, <code>/v1/config</code>, <code>/v1/status</code> (desktop) and <code>/v1/assist</code> (website helper after a pasted HTTPS base), and Spotify/YouTube HTTPS search links. See NETWORK-USAGE.md. Payments stay fail-closed. No Worker host is compiled into the app. Local media uses <code>media-src https: eidovara-media:</code>, never <code>media-src 'self'</code>.</p></div>
+    <div class="legal-card"><h2>Not enabled</h2><p>v0.18.0 does not bundle neural TTS, VRM, or OBS websocket control, and does not turn on live checkout. Dependency review continues to fail on moderate severity. The renderer stays sandboxed. These are product limits, not a perfect-security or PCI claim. Adults 18+. Source-available, not open source. Authenticode-unsigned Windows.</p></div>
+    <div class="legal-card"><h2>Report a vulnerability</h2><p>Use the repository’s private security-advisory channel when available. Never place credentials, private keys, personal records, or exploit details in a public issue. No software is guaranteed perfectly secure.</p></div>
+  </main>
+  <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>

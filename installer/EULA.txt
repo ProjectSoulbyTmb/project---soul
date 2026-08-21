@@ -5,6 +5,10 @@ This Setup program installs unsigned Windows 10/11 x64 desktop software.
 It is source-available for lawful evaluation, NOT open source, and is
 restricted to users 18 years of age or older.
 
+Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
+Source-available; use governed by LICENSE + TERMS.
+Third-party material remains third-party.
+
 BY CLICKING I AGREE / INSTALL YOU CONFIRM THAT:
 
 - You are 18 or older. This click is not independent age or identity
@@ -22,6 +26,10 @@ BY CLICKING I AGREE / INSTALL YOU CONFIRM THAT:
   consciousness.
 - Eidovara is not an Apple, Microsoft, iOS, iPhone, or Electron product
   and does not require licensed SF Pro fonts.
+- Qualifying original first-party Eidovara expression is claimed by Tyler
+  Michael Bosworth. Soul Consciousness Studios is an intended publisher
+  name, not a formed entity that owns this IP unless assigned. Electron,
+  Chromium, Node.js, Windows, and Wikimedia content stay third-party.
 
 If you are under 18, click Decline / Cancel and do not install.
 
@@ -33,15 +41,28 @@ rights remain unaffected.
 Eidovara Source-Available Evaluation License 1.0
 
 Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
-Soul Consciousness Studios.
+Source-available; use governed by this LICENSE and TERMS.md.
+Third-party material remains third-party.
+
+Soul Consciousness Studios is Tyler Michael Bosworth's intended publisher
+name. This license does not form a company, transfer rights to an entity,
+register a copyright or trademark, or grant a patent.
 
 1. Ownership and reservation of rights
 
-Qualifying original expression in Eidovara's source code, documentation,
-user-interface assets, and release materials may be protected by copyright and
-other applicable law. Ideas, systems, methods, functionality, and facts are
-outside the copyright claim. Except for the narrow permissions stated below, no copyright,
-patent, trademark, trade-secret, or other intellectual-property license is
+Qualifying original expression in Eidovara's first-party source code,
+documentation, user-interface assets, and release materials may be
+protected by copyright and other applicable law. Tyler Michael Bosworth
+reserves all rights in that first-party material except the narrow
+permissions in section 2. Ideas, systems, methods, functionality, facts,
+names, titles, and short phrases are outside the copyright claim.
+
+This file is a copyright notice and license, not a U.S. Copyright Office
+registration, USPTO registration, patent, court judgment, or attorney
+opinion.
+
+Except for the narrow permissions stated below, no copyright, patent,
+trademark, trade-secret, or other intellectual-property license is
 granted, whether expressly, by implication, estoppel, or otherwise.
 
 2. Limited permission
@@ -80,8 +101,18 @@ terms governing material posted to a hosting service remain independently applic
 
 5. Third-party material
 
-Third-party components remain governed by their own licenses. This license does
-not expand or restrict rights granted directly by their respective owners.
+This license does not claim ownership of Electron, Chromium, Node.js,
+Microsoft Windows, Wikipedia/Wikimedia content, user-created content, or
+other third-party software, services, marks, fonts, models, or media.
+Those components remain governed by their own licenses and terms. This
+license does not expand or restrict rights granted directly by their
+respective owners. See THIRD_PARTY_NOTICES.md.
+
+Publishing this repository on a hosting service is also subject to that
+service's terms, including rights the host needs to operate (for example
+viewing and forking through GitHub). This license restricts additional use
+of first-party material; it cannot revoke rights already granted by law,
+third-party licenses, or the hosting platform.
 
 6. No warranty
 

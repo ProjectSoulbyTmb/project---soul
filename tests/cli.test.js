@@ -35,6 +35,8 @@ test('cli help documents message, snapshot, and 18+ confirmation', () => {
   assert.match(result.stdout, /--snapshot/);
   assert.match(result.stdout, /--i-am-18-or-older/);
   assert.match(result.stdout, /18 or older/);
+  assert.match(result.stdout, /Tyler Michael Bosworth/);
+  assert.match(result.stdout, /Source-available, not open source/);
 });
 
 test('cli product commands refuse to run without 18+ confirmation', () => {

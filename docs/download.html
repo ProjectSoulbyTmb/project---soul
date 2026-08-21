@@ -8,20 +8,20 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Eidovara is for adults 18 or older. Local confirmation is not independent identity or age verification.">
-  <meta property="og:title" content="Age 18+ · Eidovara">
-  <meta property="og:description" content="Eidovara is for adults 18 or older. Local confirmation is not independent identity or age verification.">
+  <meta name="description" content="Download the Authenticode-unsigned Eidovara Stable Alpha for Windows 10/11 x64 (18+), or build from source. SmartScreen may warn.">
+  <meta property="og:title" content="Download · Eidovara">
+  <meta property="og:description" content="Download the Authenticode-unsigned Eidovara Stable Alpha for Windows 10/11 x64 (18+), or build from source. SmartScreen may warn.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/age.html">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/download.html">
   <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
-  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/age.html">
-  <title>Age 18+ · Eidovara</title>
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/download.html">
+  <title>Download · Eidovara</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="site.css">
   <link rel="stylesheet" href="brand.css">
   <link rel="icon" type="image/png" href="eidovara-icon.png">
 </head>
-<body data-page="legal">
+<body data-page="download">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="site-header-inner">
@@ -48,11 +48,26 @@
     </div>
   </header>
   <main id="main">
-    <p class="eyebrow">Age statement</p>
-    <h1>Eidovara is for adults 18+.</h1>
-    <div class="legal-card"><h2>Requirement</h2><p>You must be at least 18 years old to download, install, or use Eidovara. If you are under 18, leave this site and do not install the software.</p></div>
-    <div class="legal-card"><h2>How it is enforced</h2><p>Windows Setup shows an 18+ installer notice. The desktop app blocks use until you confirm age and accept the terms; declining exits. The CLI refuses product commands unless you pass <code>--i-am-18-or-older</code> or a prior confirmation is stored in the data directory. Adult Mode is a separate triple gate and stays off by default.</p></div>
-    <div class="legal-card"><h2>Limits</h2><p>Local confirmation is not independent identity or age verification and is not a COPPA or age-assurance certification. The project does not operate user accounts and does not intentionally collect personal information from children.</p></div>
+    <p class="eyebrow">Windows 10/11 x64 · Stable Alpha · 18+</p>
+    <h1 class="section-title">Get the unsigned Windows installer.</h1>
+    <p class="lead">Official advertised distribution is Authenticode-unsigned. Windows SmartScreen may warn. Verify SHA-256 checksums and GitHub/Sigstore provenance. Provenance is not Authenticode. Adults 18+ only. There is no live checkout on this page.</p>
+    <div class="download-gate">
+      <p>Confirm you are 18 or older and that you accept the <a href="terms.html">Terms</a> before using the download links. Local confirmation is not independent identity verification.</p>
+      <input class="age-gate" id="ageConfirm" type="checkbox">
+      <label class="age-gate-label" for="ageConfirm">I confirm I am 18 or older and I accept the Terms.</label>
+      <div class="download-actions" id="downloadActions">
+        <div class="actions">
+          <a class="primary btn-filled" href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest" aria-disabled="true">Download unsigned Setup.exe</a>
+          <a class="btn-gray" href="https://github.com/ProjectSoulbyTmb/project---soul" aria-disabled="true">View source</a>
+          <a class="btn-gray" href="age.html" aria-disabled="true">Age 18+ statement</a>
+        </div>
+      </div>
+    </div>
+    <div class="get-grid">
+      <article><span class="number">1</span><h3>GitHub Releases</h3><p>When a Release includes <code>Eidovara-*-Windows-x64-Setup.exe</code>, get it from the official Releases page only. A v0.18.0 installer may already be listed. Do not download Setup.exe from third-party mirrors.</p></article>
+      <article><span class="number">2</span><h3>Build from source</h3><p>If no Setup.exe is listed yet, clone the source-available repository on Windows 10/11 x64, run <code>npm install</code>, then <code>npm run dist:win:installer</code>. Linux/macOS scripts are development targets, not official products.</p></article>
+      <article><span class="number">3</span><h3>Then use the desktop app</h3><p>The workspace lives on your PC. After the in-app 18+ gate, Settings → Eidovara service can attach for <code>/health</code>, <code>/v1/config</code>, and <code>/v1/status</code>. Conversations stay local. No Worker URL is compiled in.</p></article>
+    </div>
   </main>
   <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
   <script src="site.js" defer></script>

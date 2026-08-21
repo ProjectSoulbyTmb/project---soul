@@ -31,6 +31,7 @@ test('service URL requires HTTPS except loopback and strips health/config/status
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/health'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/config/'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/status'), 'https://eidovara-api.example.workers.dev');
+  assert.equal(normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/assist'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('eidovara-api.example.workers.dev'), 'https://eidovara-api.example.workers.dev');
   assert.equal(normalizeServiceUrl('http://127.0.0.1:8787/health'), 'http://127.0.0.1:8787');
   assert.equal(normalizeServiceUrl('http://localhost:8787/v1/config'), 'http://localhost:8787');
@@ -126,7 +127,10 @@ test('Worker status endpoint is public GET and fail-closed', async () => {
   assert.equal(body.paymentsEnabled, false);
   assert.equal(body.conversations, false);
   assert.equal(body.localFirst, true);
-  assert.deepEqual(body.endpoints, ['/health', '/v1/config', '/v1/status']);
+  assert.ok(body.endpoints.includes('/health'));
+  assert.ok(body.endpoints.includes('/v1/config'));
+  assert.ok(body.endpoints.includes('/v1/status'));
+  assert.ok(body.endpoints.includes('/v1/assist'));
   assert.equal((await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'POST' }), {})).status, 405);
 });
 

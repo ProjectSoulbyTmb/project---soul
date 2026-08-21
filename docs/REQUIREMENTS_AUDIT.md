@@ -21,13 +21,13 @@ Eidovara is the modular Windows workspace; Soul remains its optional adaptive as
 | Optional streaming help | Working as planning/setup assistance | OBS URL/goals stored locally and omitted from remote model context; direct OBS control is not claimed. |
 | Appearance and gaming mode | Working | Colors, opacity, Premium RGB, low-overhead mode (Eidovara visuals only), GPU/media diagnostics. |
 | Conversation engines | Working | Offline Soul engine; optional loopback Ollama `/api/chat`; Premium HTTPS OpenAI-compatible `/chat/completions`; Chromium media/GPU engine. |
-| HTTPS service | Working when a URL is saved | Cloudflare Worker `/health`, `/v1/config`, `/v1/status`; Settings Connect plus Ctrl+A Test service; launch retry after 18+; no `workers.dev` hard-code in the app; fetch failure stays local-first. |
+| HTTPS service | Working when a URL is saved | Cloudflare Worker `/health`, `/v1/config`, `/v1/status`; Settings Connect plus Ctrl+A Test service; launch retry after 18+; no `workers.dev` hard-code in the app; fetch failure stays local-first. Website helper may `GET`/`POST /v1/assist` after a visitor-pasted HTTPS base. Payments stay fail-closed. |
 | Updates and releases | Working | GitHub manifest, HTTPS, SHA-256 verification, explicit install approval, Windows installer/portable build. |
 | Privacy/security/legal surfaces | Working | In-app links, website trust center, privacy/terms/security/licensing notices, SBOM/checksums/provenance. |
 | Free/Premium product gates | Working for product testing | Provider/search/app/theme gates exist; local admin selector is not payment enforcement. |
-| Website | Working | GitHub Pages from `docs/` at `https://projectsoulbytmb.github.io/project---soul/` with Get Eidovara download path (Releases + unsigned Stable Alpha + 18+ + build-from-source fallback). |
+| Website | Working | GitHub Pages from `docs/` at `https://projectsoulbytmb.github.io/project---soul/` with Home, Product, Download, Assist, FAQ, Status, Legal, 404, robots/sitemap, and Ask Eidovara (client knowledge pack; optional pasted `/v1/assist`). Get Eidovara: Releases + unsigned Stable Alpha + 18+ + build-from-source. |
 | Public Windows download | Working when a Release exists | `releases/latest` hosts `Eidovara-*-Windows-x64-Setup.exe` for v0.18.0; unsigned; tag workflow on `windows-latest`; `workflow_dispatch` uploads unsigned artifacts only. |
-| Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status` fail-closed; payments empty; Settings Connect + launch retry after 18+; not required to run the app; not hard-coded. |
+| Optional Worker | Working when deployed and a URL is saved | `/health`, `/v1/config`, `/v1/status`, and `/v1/assist` fail-closed; payments empty; Settings Connect + launch retry after 18+; website assist is paste-only; not required to run the app; not hard-coded. Neural TTS/VRM/OBS/live payments stay documented only. |
 
 ## Not yet production-complete
 

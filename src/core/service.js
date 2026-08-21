@@ -12,7 +12,8 @@ function looksLikeIpv6Host(hostname) {
 export const SERVICE_HEALTH_PATH = '/health';
 export const SERVICE_CONFIG_PATH = '/v1/config';
 export const SERVICE_STATUS_PATH = '/v1/status';
-const STRIP_SUFFIXES = [SERVICE_HEALTH_PATH, SERVICE_CONFIG_PATH, SERVICE_STATUS_PATH];
+export const SERVICE_ASSIST_PATH = '/v1/assist';
+const STRIP_SUFFIXES = [SERVICE_HEALTH_PATH, SERVICE_CONFIG_PATH, SERVICE_STATUS_PATH, SERVICE_ASSIST_PATH];
 
 export function normalizeServiceUrl(value) {
   let raw = String(value || '').trim();

@@ -13,10 +13,26 @@ Tyler Michael Bosworth claims ownership of qualifying original first-party contr
 
 ## Boundaries of the claim
 
-This project cannot claim ownership of third-party runtimes, libraries, services, standards, public facts, user-created content, licensed media, independently authored contributions, or protected elements belonging to others. A public GitHub repository also carries GitHub's platform license allowing viewing and forking through GitHub functionality. The repository license restricts additional use but cannot revoke rights already granted by law, third-party licenses, or the hosting platform's terms.
+Overbroad ownership claims weaken the first-party record. Eidovara **does not** own the following layers (non-exhaustive):
+
+| Layer | Whose rights | Notes |
+| --- | --- | --- |
+| Qualifying original first-party Eidovara expression | Claimed by Tyler Michael Bosworth | Notice and git history are evidence of a claim, not a court judgment or Copyright Office registration |
+| Soul Consciousness Studios name | Intended publisher identity | Does not own IP until a formed entity receives a signed assignment |
+| Electron | Electron contributors / OpenJS Foundation | MIT; redistributed runtime |
+| Chromium | Chromium authors | Bundled with Electron; see `LICENSES.chromium.html` in Windows builds |
+| Node.js | OpenJS Foundation and contributors | Bundled with Electron |
+| Microsoft Windows | Microsoft | Official advertised platform; OS, APIs, and installed voices stay Microsoft's |
+| Wikipedia / Wikimedia content | Wikimedia contributors | Retrieved on explicit request; those projects' licenses apply |
+| User content and local media | The user | Using the app does not assign the user's files or prompts to the owner |
+| Third-party marks and services | Their owners | Reference is not affiliation or a transfer of rights |
+
+A public GitHub repository also carries GitHub's platform terms allowing viewing and forking through GitHub functionality. The repository license restricts additional use but cannot revoke rights already granted by law, third-party licenses, or the hosting platform's terms.
 
 Copyright protects qualifying original expression, not the underlying idea, method, system, name, title, or algorithm. Patent inventorship depends on the claims of an application. Trademark rights depend on lawful use and distinctiveness and require clearance; this file is a recordkeeping control, not legal registration or a legal opinion.
 
+Inbound copyrightable work is not first-party until a privately executed assignment. [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) is an unsigned template only.
+
 ## Before commercial launch
 
-Have a qualified intellectual-property attorney review the source-available license, contributor assignment form, trademark search and filing strategy, copyright deposit strategy, patent disclosures, contractor agreements, and any transfer to a future company. Preserve signed originals in private storage with access logging and redundant backups.
+Have a qualified intellectual-property attorney review the source-available license, contributor assignment form (`docs/CONTRIBUTOR_ASSIGNMENT.md`, unsigned template), trademark search and filing strategy, copyright deposit strategy, patent disclosures, contractor agreements, and any transfer to a future company (`docs/ENTITY_IP_ASSIGNMENT.md`, unsigned template). Preserve signed originals in private storage with access logging and redundant backups. Do not commit executed agreements to this public repository.

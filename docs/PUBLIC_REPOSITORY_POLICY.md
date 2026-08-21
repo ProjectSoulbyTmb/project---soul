@@ -1,6 +1,8 @@
 # Public repository and development privacy
 
-This repository contains only material intended for public release. Keep unpublished inventions, patent claim drafts, private market research, credentials, certificates with private keys, customer information, payment exports, and internal roadmaps outside this repository.
+This repository contains only material intended for public release. Keep unpublished inventions, patent claim drafts, private market research, credentials, certificates with private keys, customer information, payment exports, executed assignments, and internal roadmaps outside this repository.
+
+GitHub's Terms of Service still apply to this public host, including rights GitHub needs to display and fork repositories through GitHub. LICENSE restricts additional use of first-party Eidovara material; it does not cancel the host's terms or third-party licenses.
 
 Use the ignored `private/`, `private-patent/`, `ip-evidence-private/`, or `research-notes-private/` folders only for local work, and back them up in an encrypted account controlled by Tyler Michael Bosworth. Ignoring a file prevents future commits; it does not erase an earlier commit. If a secret was ever committed, revoke it immediately and use GitHub's documented history-removal process before relying on deletion.
 

@@ -19,6 +19,8 @@ function argValue(name) {
 const HELP = `Eidovara v0.18.0 CLI
 
 Restricted to users 18 or older. Source-available, not open source.
+Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
+Use governed by LICENSE + TERMS. Third-party stays third-party.
 Official advertised product: unsigned Windows 10/11 x64 desktop software.
 Pass --i-am-18-or-older to confirm age and accept TERMS.md. Confirmation is
 stored in the data directory and is not independent age verification.

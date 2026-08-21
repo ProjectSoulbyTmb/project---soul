@@ -8,20 +8,20 @@
   <meta name="color-scheme" content="light dark">
   <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-  <meta name="description" content="Eidovara is for adults 18 or older. Local confirmation is not independent identity or age verification.">
-  <meta property="og:title" content="Age 18+ · Eidovara">
-  <meta property="og:description" content="Eidovara is for adults 18 or older. Local confirmation is not independent identity or age verification.">
+  <meta name="description" content="Help for the Eidovara public site: FAQ, website helper, Windows download, and optional service status.">
+  <meta property="og:title" content="Help · Eidovara">
+  <meta property="og:description" content="Help for the Eidovara public site: FAQ, website helper, Windows download, and optional service status.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/age.html">
+  <meta property="og:url" content="https://projectsoulbytmb.github.io/project---soul/help.html">
   <meta property="og:image" content="https://projectsoulbytmb.github.io/project---soul/eidovara-icon.png">
-  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/age.html">
-  <title>Age 18+ · Eidovara</title>
+  <link rel="canonical" href="https://projectsoulbytmb.github.io/project---soul/help.html">
+  <title>Help · Eidovara</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="site.css">
   <link rel="stylesheet" href="brand.css">
   <link rel="icon" type="image/png" href="eidovara-icon.png">
 </head>
-<body data-page="legal">
+<body data-page="faq">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="site-header-inner">
@@ -48,11 +48,15 @@
     </div>
   </header>
   <main id="main">
-    <p class="eyebrow">Age statement</p>
-    <h1>Eidovara is for adults 18+.</h1>
-    <div class="legal-card"><h2>Requirement</h2><p>You must be at least 18 years old to download, install, or use Eidovara. If you are under 18, leave this site and do not install the software.</p></div>
-    <div class="legal-card"><h2>How it is enforced</h2><p>Windows Setup shows an 18+ installer notice. The desktop app blocks use until you confirm age and accept the terms; declining exits. The CLI refuses product commands unless you pass <code>--i-am-18-or-older</code> or a prior confirmation is stored in the data directory. Adult Mode is a separate triple gate and stays off by default.</p></div>
-    <div class="legal-card"><h2>Limits</h2><p>Local confirmation is not independent identity or age verification and is not a COPPA or age-assurance certification. The project does not operate user accounts and does not intentionally collect personal information from children.</p></div>
+    <p class="eyebrow">Help</p>
+    <h1 class="section-title">Get to every real v0.18.0 surface.</h1>
+    <p class="lead">This website is documentation and download, not a hosted Soul. The Ask Eidovara helper is not Soul and not legal advice. How do I install Eidovara? Confirm you are 18 or older on the Download page, then get the unsigned Setup.exe from GitHub Releases or run <code>npm run dist:win:installer</code> on Windows 10/11 x64.</p>
+    <div class="module-grid">
+      <article><h2>FAQ</h2><p>Unsigned Windows download, 18+, offline use, payments off, and helper limits.</p><a href="faq.html">Open FAQ</a></article>
+      <article><h2>Website helper</h2><p>Use Ask Eidovara on any page. Optional <code>/v1/assist</code> only after you paste an HTTPS base. No transcript store.</p><a href="assist.html">Assist</a></article>
+      <article><h2>Download</h2><p>GitHub Releases Setup.exe or <code>npm run dist:win:installer</code> on Windows 10/11 x64.</p><a href="download.html">Download (18+)</a></article>
+      <article><h2>Service status</h2><p>Pages + Releases by default. Paste a Worker base only if you operate one; otherwise status fails closed.</p><a href="status.html">Status</a></article>
+    </div>
   </main>
   <footer class="site-footer"><div class="site-footer-inner"><span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
   <script src="site.js" defer></script>

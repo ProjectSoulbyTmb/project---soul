@@ -6,7 +6,7 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 [Download the latest Windows installer](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest) · [Website](https://projectsoulbytmb.github.io/project---soul/) · [Release notes](CHANGELOG.md)
 
-**Public online path:** anyone can open the HTTPS site, download the Authenticode-unsigned Windows Stable Alpha (18+) from GitHub Releases when a `Setup.exe` is published, or build from source with `npm run dist:win:installer` on Windows. The desktop app is the product and stays local-first; it can attach to the online Eidovara service for status/config (`/health`, `/v1/config`, `/v1/status`) while remaining usable offline. That attachment is not required. Owner clicks (Pages, tags, wrangler, optional custom domain) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md).
+**Public online path:** anyone can open the HTTPS site (Home, Product, Download, Assist, Help, Status, Legal), download the Authenticode-unsigned Windows Stable Alpha (18+) from GitHub Releases when a `Setup.exe` is published, or build from source with `npm run dist:win:installer` on Windows. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; it can attach to the online Eidovara service for status/config (`/health`, `/v1/config`, `/v1/status`) while remaining usable offline. That attachment is not required. Owner clicks (Pages, tags, wrangler, optional custom domain) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md).
 
 ## What is included
 
@@ -58,6 +58,6 @@ The Windows installer is generated in `dist/`. Linux and macOS packaging scripts
 
 ## Rights and project records
 
-Copyright © 2026 Tyler Michael Bosworth. All rights reserved. This public repository is source-available for lawful evaluation, not open source. Use is governed by [LICENSE](LICENSE). Third-party components and marks remain their owners' property.
+Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party.
 
-See [Ownership](NOTICE.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice.
+See [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice.

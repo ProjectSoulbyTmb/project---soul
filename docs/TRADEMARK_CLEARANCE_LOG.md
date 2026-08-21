@@ -12,4 +12,4 @@ The project uses the claimed, unregistered marks **Eidovara™** and **Soul Cons
 4. Preserve search queries, dated results, status/owner/serial details, screenshots or exports, and the reasoning for each potentially similar mark.
 5. Have a U.S. trademark attorney review the results and identification of goods/services before filing or investing substantially in branding.
 
-Do not use ®, state that a mark is registered, or state that clearance is complete unless those statements become factually true.
+Do not use ®, state that a mark is registered, or state that clearance is complete unless those statements become factually true. The enhancement path is a trademark attorney plus a USPTO filing after a comprehensive search—not a stronger ™ in this repository.
