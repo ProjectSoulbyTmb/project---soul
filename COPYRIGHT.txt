@@ -28,5 +28,6 @@ license. Contributions are not accepted until a privately executed assignment
 
 How to notice files: docs/COPYRIGHT.md
 How to register (owner-only, copyright.gov): docs/COPYRIGHT.md
+Repository self-attestation (not a government filing): docs/IP_CERTIFICATION.md
 Trademark usage: TRADEMARKS.md
 Trademark filing checklist (not filed): docs/TRADEMARK_FILING.md

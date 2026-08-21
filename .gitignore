@@ -5,6 +5,9 @@ dist/
 **/.wrangler/
 private-patent/
 ip-evidence-private/
+copyright-deposit/
+executed-assignments/
+ip-filings-private/
 release/
 project-soul-diagnostics.txt
 *.tmp
@@ -16,6 +19,8 @@ internal/
 research-notes-private/
 *.pfx
 *.p12
+*.pvk
+*.spc
 *.key
 *.pem
 *.jks

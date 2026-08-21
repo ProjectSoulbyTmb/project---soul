@@ -12,6 +12,7 @@
 import { builtinModules } from './modules.js';
 import { DESKTOP_KNOWLEDGE_ENTRIES } from './knowledge.js';
 import { addMemory } from './memory.js';
+import { overlayPaletteItems } from './overlays.js';
 
 export const WIDGET_IDS = Object.freeze(['focus', 'apps', 'media', 'research', 'memory', 'diagnostics', 'scratch']);
 export const DEFAULT_WIDGET_ORDER = Object.freeze(['focus', 'apps', 'media', 'memory', 'scratch', 'diagnostics']);
@@ -34,7 +35,8 @@ export const SETTINGS_LABELS = Object.freeze([
 ]);
 
 export const CHEATSHEET_ENTRIES = Object.freeze([
-  { keys: 'Ctrl+K', also: 'Ctrl+P', id: 'palette', summary: 'Command palette — jump to views, intents, settings, legal, modules, and linked apps.' },
+  { keys: 'Ctrl+K', also: 'Ctrl+P', id: 'palette', summary: 'Command palette — jump to views, intents, settings, legal, modules, overlays, and linked apps.' },
+  { keys: 'Ctrl+Shift+O', id: 'overlays', summary: 'Jump to the Play desk overlay menu (chat, browse, Discord guest). In-app only — does not fire inside other games.' },
   { keys: 'Ctrl+/', also: '?', id: 'cheatsheet', summary: 'Keyboard cheatsheet. ? is ignored while a text field is focused.' },
   { keys: 'Ctrl+A', id: 'admin', summary: 'Private administrator panel. Does not steal select-all from input, textarea, or select fields.' },
   { keys: 'Esc', id: 'escape', summary: 'Close palette, cheatsheet, legal, admin, or cancelable setup overlays.' },
@@ -360,7 +362,8 @@ export function builtinPaletteItems({
     { id: 'cmd-legal-about', kind: 'legal', title: 'About & legal', keywords: ['unsigned', 'source-available'], action: action('open-legal', { legal: 'about', label: 'About & legal' }) },
     { id: 'cmd-legal-terms', kind: 'legal', title: 'Terms of use', keywords: ['legal'], action: action('open-legal', { legal: 'terms', label: 'Terms' }) },
     { id: 'cmd-legal-privacy', kind: 'legal', title: 'Privacy notice', keywords: ['telemetry', 'local-first'], action: action('open-legal', { legal: 'privacy', label: 'Privacy' }) },
-    { id: 'cmd-legal-age', kind: 'legal', title: 'Age 18+', keywords: ['adults only'], action: action('open-legal', { legal: 'age', label: 'Age 18+' }) }
+    { id: 'cmd-legal-age', kind: 'legal', title: 'Age 18+', keywords: ['adults only'], action: action('open-legal', { legal: 'age', label: 'Age 18+' }) },
+    ...overlayPaletteItems()
   ];
   const moduleItems = (Array.isArray(modules) ? modules : []).filter(mod => enabled(mod.id)).map(mod => ({
     id: `mod-${mod.id}`,

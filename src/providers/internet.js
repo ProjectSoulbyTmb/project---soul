@@ -6,8 +6,11 @@ import { officialSearchHandoffs } from '../core/entertainment.js';
 const AGENT = 'Eidovara/0.18 (desktop research client)';
 export const PAGE_BYTE_LIMIT = 512 * 1024;
 export const PAGE_TIMEOUT_MS = 15_000;
-export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia plus optional keyed search and pages you open.';
-const HANDOFF_HOSTS = ['youtube.com', 'youtu.be', 'spotify.com'];
+export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.';
+const HANDOFF_HOSTS = ['youtube.com', 'youtu.be', 'spotify.com',
+  'pornhub.com', 'xvideos.com', 'xhamster.com', 'spankbang.com', 'redgifs.com',
+  'xnxx.com', 'chaturbate.com', 'stripchat.com', 'onlyfans.com', 'fansly.com',
+  'manyvids.com', 'youporn.com', 'redtube.com', 'tube8.com'];
 const ARCHIVE_HOSTS = ['archive.org'];
 const RAW_DROP_TAGS = new Set(['script', 'style', 'noscript', 'iframe', 'object', 'embed', 'textarea', 'xmp', 'noembed', 'noframes']);
 const TREE_DROP_TAGS = new Set(['head', 'svg', 'canvas']);
@@ -425,16 +428,20 @@ async function searchArticles(query, fetchImpl) {
 
 async function searchMedia(query, kind, fetchImpl) {
   const type = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'bitmap';
-  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime', iiurlwidth: '900' });
+  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime|size' });
+  if (kind === 'image') params.set('iiurlwidth', '900');
   const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`, 15000, {}, fetchImpl);
   return orderedPages(data).map(p => {
     const i = p.imageinfo?.[0] || {};
-    const url = asHttps(i.thumburl || i.url, ['upload.wikimedia.org', 'wikimedia.org']);
+    const original = asHttps(i.url, ['upload.wikimedia.org', 'wikimedia.org']);
+    const thumb = asHttps(i.thumburl, ['upload.wikimedia.org', 'wikimedia.org']);
+    const url = kind === 'image' ? (thumb || original) : (original || thumb);
     const sourceUrl = asHttps(i.descriptionurl, ['commons.wikimedia.org', 'wikimedia.org', 'wikipedia.org']);
     return {
       type: kind,
       title: plain(String(p.title || '').replace(/^File:/, '')),
       url,
+      originalUrl: original,
       sourceUrl,
       hostname: sourceHost(sourceUrl || url),
       mime: i.mime
@@ -619,9 +626,12 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
   const pageSources = await attachPageExtracts(sources, pageUrls, pageFetch);
   sources.unshift(...pageSources);
   if (!sources.length && !media.length) {
-    const first = lookupErrors[0];
-    if (first) throw classifyLookupError(new Error(first));
-    throw new Error('No usable internet results were returned. The workspace is still available.');
+    const pastedHandoffs = userUrls.filter(isHandoffOnlyHost);
+    if (!pastedHandoffs.length) {
+      const first = lookupErrors[0];
+      if (first) throw classifyLookupError(new Error(first));
+      throw new Error('No usable internet results were returned. The workspace is still available.');
+    }
   }
   const handoffs = officialSearchHandoffs(query || 'media');
   for (const href of userUrls.filter(isHandoffOnlyHost)) {

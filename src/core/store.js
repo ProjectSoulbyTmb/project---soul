@@ -4,6 +4,18 @@ import fs from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { defaultProfile, migrateProfile } from './schema.js';
+import { migrateAdultSoul } from './adult-soul.js';
+import { migrateAdultEntertainment } from './adult-media.js';
+
+function hydrateAdult(state) {
+  if (!state || typeof state !== 'object') return state;
+  state.adultSoul = migrateAdultSoul(state.adultSoul);
+  state.entertainment = state.entertainment && typeof state.entertainment === 'object'
+    ? state.entertainment
+    : { favorites: [], history: [], taste: {} };
+  state.entertainment.adult = migrateAdultEntertainment(state.entertainment.adult);
+  return state;
+}
 
 export class JsonStore {
   constructor({ dataDir, profileId = 'default', codec } = {}) {
@@ -15,15 +27,15 @@ export class JsonStore {
   }
   load() {
     fs.mkdirSync(this.dataDir, { recursive: true });
-    if (!fs.existsSync(this.filePath)) { const state = defaultProfile(this.profileId); this.save(state); return state; }
+    if (!fs.existsSync(this.filePath)) { const state = hydrateAdult(defaultProfile(this.profileId)); this.save(state); return state; }
     try {
-      const state = migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(this.filePath, 'utf8'))), this.profileId);
+      const state = hydrateAdult(migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(this.filePath, 'utf8'))), this.profileId));
       this.save(state); return state;
     } catch (err) {
       const stamp = new Date().toISOString().replace(/[:.]/g, '-');
       const backup = `${this.filePath}.corrupt-${stamp}.bak`;
       try { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(backup, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } catch {}
-      const state = defaultProfile(this.profileId);
+      const state = hydrateAdult(defaultProfile(this.profileId));
       state.audit.push({ at: new Date().toISOString(), type: 'storage.recovered_from_corrupt_state', details: { backup: path.basename(backup), error: String(err?.message || err) } });
       this.save(state); return state;
     }
@@ -37,13 +49,13 @@ export class JsonStore {
     try { if (fs.existsSync(this.filePath)) { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(previous, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } fs.renameSync(tmp, this.filePath); }
     catch (err) { try { fs.rmSync(this.filePath, { force: true }); fs.renameSync(tmp, this.filePath); } catch (inner) { if (fs.existsSync(previous)) fs.copyFileSync(previous, this.filePath); throw inner; } }
   }
-  reset() { const state = defaultProfile(this.profileId); this.save(state); return state; }
+  reset() { const state = hydrateAdult(defaultProfile(this.profileId)); this.save(state); return state; }
   createBackup(state) {
     fs.mkdirSync(this.backupDir, { recursive: true });
     const stamp = new Date().toISOString().replace(/[:.]/g, '-');
     const name = `${this.profileId}-${stamp}.${this.codec.encrypted ? 'soulbackup' : 'json'}`;
     const target = path.join(this.backupDir, name);
-    const payload = migrateProfile(state || this.load(), this.profileId);
+    const payload = hydrateAdult(migrateProfile(state || this.load(), this.profileId));
     fs.writeFileSync(target, this.codec.encode(JSON.stringify(payload, null, 2)), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
     return { name, createdAt: payload.updatedAt, bytes: fs.statSync(target).size };
   }
@@ -57,7 +69,7 @@ export class JsonStore {
   restoreBackup(name) {
     const safeName = path.basename(String(name || ''));
     if (safeName !== name || !safeName.startsWith(`${this.profileId}-`) || (!safeName.endsWith('.json') && !safeName.endsWith('.soulbackup'))) throw new Error('Invalid backup name.');
-    const restored = migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(path.join(this.backupDir, safeName), 'utf8'))), this.profileId);
+    const restored = hydrateAdult(migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(path.join(this.backupDir, safeName), 'utf8'))), this.profileId));
     restored.audit.push({ at: new Date().toISOString(), type: 'storage.backup_restored', details: { name: safeName } });
     this.save(restored); return restored;
   }

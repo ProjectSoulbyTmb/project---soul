@@ -1,3 +1,5 @@
+// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { answerAssist, assistMeta, MAX_ASSIST_BODY } from './knowledge.js';
 
 const CORS = {

@@ -241,6 +241,7 @@ test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async
 test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.equal(safePublicHref('product.html'), 'product.html');
   assert.equal(safePublicHref('./#plans'), './#plans');
+  assert.equal(safePublicHref('IP_CERTIFICATION.md'), 'IP_CERTIFICATION.md');
   assert.equal(safePublicHref('javascript:alert(1)'), '');
   assert.equal(safePublicHref('https://user:pass@evil.example/'), '');
   assert.equal(safePublicHref('http://example.test/page'), '');

@@ -45,9 +45,9 @@ export const ENTRIES = [
   {
     id: 'download',
     modes: ['download', 'help'],
-    tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'certified'],
+    tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'certified', 'update', 'updates', 'auto-update'],
     title: 'Download Windows Alpha',
-    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} (${INSTALLER_SIZE}) from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned tag asset: ${INSTALLER_PINNED}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. Source-available fallback: npm run dist:win:installer on Windows.`,
+    reply: `The official download is the unsigned Windows 10/11 x64 NSIS installer ${INSTALLER_NAME} (${INSTALLER_SIZE}) from GitHub Releases — the .exe binary, not the GitHub source repository. Confirm you are 18 or older on the Download page, then use the primary button to get that file. SHA-256 ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned tag asset: ${INSTALLER_PINNED}. It is Authenticode-unsigned, not Microsoft-certified, not EV-signed, and not SmartScreen-preapproved. GitHub/Sigstore provenance is not Authenticode. We cannot Authenticode-sign until the owner provides a code-signing certificate. After install, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Builds stay Authenticode-unsigned. Source-available fallback: npm run dist:win:installer on Windows.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: INSTALLER, label: INSTALLER_NAME }]
   },
   {
@@ -111,7 +111,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['media', 'music', 'video', 'entertainment', 'spotify', 'youtube', 'queue', 'playback'],
     title: 'Media and entertainment',
-    reply: 'Play user-selected local files and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube HTTPS searches. Playback can require confirmation. YouTube and Spotify buttons do not rip streams. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v0.19.1.',
+    reply: 'Play user-selected local files in Eidovara and properly sourced public audio or video, keep queues and favorites, and open official Spotify/YouTube/Internet Archive HTTPS search chips. Playback can require confirmation. Those chips do not rip streams or inject into other players. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled in v0.19.1.',
     links: [{ href: 'product.html', label: 'Product' }]
   },
   {
@@ -119,7 +119,7 @@ export const ENTRIES = [
     modes: ['help'],
     tags: ['research', 'wikipedia', 'wikimedia', 'internet', 'web', 'online', 'brave', 'search'],
     title: 'Research',
-    reply: 'Built-in research uses public Wikipedia/Wikimedia only after an explicit internet, web, or online request. It can retrieve cited results, including pictures, audio, and video when asked, or open secure pages in the system browser. Broad keyed Brave Search is a Premium test gate and uses a key you supply. Eidovara is not a general-purpose crawler.',
+    reply: 'Built-in research is a public web lookup after an explicit internet, web, or online request — not a crawl of the whole internet. It uses Wikipedia/Wikimedia, an optional Internet Archive catalog search, optional keyed Brave Search (Premium test gate), and bounded HTTPS pages you open, plus official YouTube/Spotify/Archive search chips. Pictures, audio, and video can be retrieved from allowlisted public sources when asked. Eidovara is not a general-purpose crawler.',
     links: [{ href: 'product.html', label: 'Product' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
@@ -177,6 +177,14 @@ export const ENTRIES = [
     title: 'Unsigned contributor assignment',
     reply: 'The contributor copyright assignment in this repository is an unsigned template only. It is not executed. GitHub pull requests, issues, and “I agree” checkboxes do not transfer copyright. Eidovara does not accept inbound copyrightable work until Tyler Michael Bosworth gives prior written approval and both parties execute a separate written agreement. Do not commit completed copies to the public repository. This is not legal advice.',
     links: [{ href: 'CONTRIBUTOR_ASSIGNMENT.md', label: 'CLA template' }, { href: 'legal.html', label: 'Legal hub' }]
+  },
+  {
+    id: 'ip-certify',
+    modes: ['legal', 'help'],
+    tags: ['attestation', 'self-attestation', 'certification', 'ip-certify', 'uspto', 'copyright-office', 'registered', 'registration', 'deposit', 'infringement', 'dmca'],
+    title: 'Repository IP self-attestation',
+    reply: 'docs/IP_CERTIFICATION.md is a dated repository self-attestation: it inventories licenses, unsigned templates, and owner-only leftovers for Eidovara v0.19.1. It is not a U.S. Copyright Office registration, USPTO filing, patent, Authenticode certificate, or executed assignment. Eidovara is not registered with the Copyright Office or USPTO. Marks stay unregistered ™. The owner can file at copyright.gov and USPTO privately; this helper cannot. CLA and entity assignment files remain unsigned templates. See also docs/INFRINGEMENT.md for DMCA pointers.',
+    links: [{ href: 'IP_CERTIFICATION.md', label: 'IP self-attestation' }, { href: 'licensing.html', label: 'Licensing' }]
   },
   {
     id: 'pages-publish',
@@ -241,6 +249,7 @@ export function safePublicHref(value) {
   if (!raw) return '';
   if (/^[a-z0-9][a-z0-9._-]*\.html(?:#[\w.-]*)?$/i.test(raw)) return raw;
   if (/^\.\/#[\w.-]+$/.test(raw)) return raw;
+  if (/^(?:IP_CERTIFICATION|INFRINGEMENT|COPYRIGHT|COPYRIGHT_DEPOSIT|CONTRIBUTOR_ASSIGNMENT|ENTITY_IP_ASSIGNMENT|CHAIN_OF_TITLE|TRADEMARK_FILING|IP_PROTECTION)\.md$/.test(raw)) return raw;
   try {
     const url = new URL(raw);
     if (url.protocol !== 'https:' || url.username || url.password) return '';

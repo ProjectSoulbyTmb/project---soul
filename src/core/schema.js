@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { defaultKernelState, migrateKernel } from './kernel.js';
 
-export const CURRENT_SCHEMA_VERSION = 18;
+export const CURRENT_SCHEMA_VERSION = 19;
 
 export function defaultProfile(profileId = 'default') {
   const now = new Date().toISOString();
@@ -31,7 +31,8 @@ export function defaultProfile(profileId = 'default') {
     assistant: { autonomy: 'balanced', initiativeEnabled: true, reflectionEnabled: true, identityDescription: 'persistent simulated continuity', ethicalFramework: ['lawfulness', 'human safety', 'consent', 'privacy', 'honesty', 'fairness', 'user autonomy'], preferences: { responseLength: 'balanced', tone: 'natural', focusMode: 'general', accessibility: '', language: 'en' }, capabilities: { webResearch: 'ask', appLaunch: 'confirm', mediaPlayback: 'confirm', memoryLearning: 'enabled' } },
     policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false, boundaries: [], revokedAt: null, consentScope: null, lawfulUseRequired: true, localSafetyReports: [] },
     setup: { completed: false, completedAt: null, categories: [], customNeeds: '', stream: { enabled: false, obsWebSocketUrl: 'ws://127.0.0.1:4455', goals: '' } },
-    entertainment: { favorites: [], history: [], taste: {} },
+    entertainment: { favorites: [], history: [], taste: {}, adult: { watchLater: [], playlists: [], creators: [], continueWatching: [], lastCategory: 'for-you', folders: [] } },
+    adultSoul: { schema: 3, kind: 'adult-soul-studio', active: false },
     memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
     activeConversationId: 'main',
     kernel: defaultKernelState(),
@@ -69,6 +70,12 @@ export function migrateProfile(input, profileId = 'default') {
   if (!Array.isArray(merged.entertainment.favorites)) merged.entertainment.favorites = [];
   if (!Array.isArray(merged.entertainment.history)) merged.entertainment.history = [];
   if (!merged.entertainment.taste || typeof merged.entertainment.taste !== 'object' || Array.isArray(merged.entertainment.taste)) merged.entertainment.taste = {};
+  if (!merged.entertainment.adult || typeof merged.entertainment.adult !== 'object' || Array.isArray(merged.entertainment.adult)) {
+    merged.entertainment.adult = base.entertainment.adult;
+  }
+  if (!merged.adultSoul || typeof merged.adultSoul !== 'object' || Array.isArray(merged.adultSoul)) {
+    merged.adultSoul = base.adultSoul;
+  }
   if (!Array.isArray(merged.relationship.auditTrail)) merged.relationship.auditTrail = [];
   if (!['user-led', 'balanced', 'proactive'].includes(merged.assistant.autonomy)) merged.assistant.autonomy = 'balanced';
   if (!Array.isArray(merged.assistant.ethicalFramework)) merged.assistant.ethicalFramework = [...base.assistant.ethicalFramework];

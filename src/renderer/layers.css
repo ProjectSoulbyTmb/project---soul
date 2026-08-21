@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 /* In-app command palette, cheatsheet, focus bar, and dashboard tiles.
    System tokens only. Not a fake OS shell and not an overlay into other processes. */
 .visually-hidden {

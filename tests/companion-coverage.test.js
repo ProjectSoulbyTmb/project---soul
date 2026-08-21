@@ -145,7 +145,7 @@ test('desktop companion chrome handles every action type and keeps one composer'
   assert.doesNotMatch(html, /workers\.dev/);
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
   assert.match(preload, /send: \(m, opts\)/);
-  assert.match(read('src/electron/main.js'), /respond\(m, opts/);
+  assert.match(read('src/electron/main.js'), /respond\(m, incoming\)/);
 });
 
 test('local-media and service copy stay inside constraints', () => {

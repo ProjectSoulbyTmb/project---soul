@@ -1,3 +1,5 @@
+/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 @import url("tokens.css");
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -189,6 +191,29 @@ button { cursor: pointer; }
   display: flex;
   align-items: center;
   gap: 8px;
+}
+.update-ready-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: color-mix(in srgb, var(--accent) 16%, var(--panel));
+  border-bottom: var(--hairline) solid var(--separator);
+  font-size: 13px;
+}
+.update-ready-banner.hidden { display: none; }
+.update-ready-banner button {
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: 6px 12px;
+  background: var(--accent);
+  color: #fff;
+  font: inherit;
+}
+.update-ready-banner .secondary {
+  background: var(--fill);
+  color: var(--text);
 }
 .status-dot {
   width: 8px;
@@ -538,6 +563,7 @@ textarea:focus {
   font-size: 20px;
   min-height: 44px;
   min-width: 44px;
+  border-radius: var(--radius-full);
 }
 .empty { color: var(--muted); padding: 16px 0; }
 .error-note { color: var(--danger); font-size: 13px; margin-top: 8px; }
@@ -822,6 +848,57 @@ textarea:focus {
 body.companion-pinned .soul-dock {
   outline: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
 }
+
+/* Professional chrome: tighter materials, Adult Mode admin-only until a later release. */
+.sidebar {
+  padding: 14px 12px 18px;
+}
+.brand-row strong { font-weight: 650; }
+.sidebar-footer .nav-btn.active {
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+.card,
+.settings-card {
+  outline: var(--hairline) solid var(--separator);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--text) 5%, transparent);
+}
+.panel-head h2 { font-weight: 650; }
+.topbar {
+  min-height: 52px;
+}
+.admin-adult-panel {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius-lg);
+  background: var(--panel);
+  outline: var(--hairline) solid var(--separator);
+}
+.admin-adult-panel h2 {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.admin-adult-panel .policy-actions,
+.admin-adult-panel .empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+body:not(.admin-session) .adult-soul-nav,
+body:not(.admin-session) .adult-enable-action,
+body:not(.admin-session) .adult-admin-open {
+  display: none !important;
+}
+body:not(.admin-session) #adultMediaDesk {
+  display: none !important;
+}
+#adultAdminHint {
+  margin: 8px 0 0;
+}
+
 @media (max-width: 1100px) {
   body.companion-pinned .workspace {
     grid-template-columns: minmax(0, 1fr) minmax(220px, 268px);
