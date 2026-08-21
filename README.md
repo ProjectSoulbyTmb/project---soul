@@ -4,17 +4,29 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 > **Release status:** Stable Alpha for Windows 10/11 x64, restricted to users age 18 or older. This label means the documented alpha surface passed the repository's automated and packaged-runtime checks; it is not a claim of universal compatibility or production certification.
 
-[Download the official Windows installer (Eidovara-0.19.1-Windows-x64-Setup.exe)](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe) · [Website](https://eidovara.org/) · [Release notes](CHANGELOG.md)
+[Download the official Windows installer (Eidovara-0.22.2-Windows-x64-Setup.exe)](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe) · [Website](https://eidovara.org/) · [Release notes](CHANGELOG.md)
 
-**Public online path:** anyone can open the HTTPS site at [eidovara.org](https://eidovara.org/) (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the official Authenticode-unsigned Windows installer `Eidovara-0.19.1-Windows-x64-Setup.exe` (18+) from GitHub Releases, or build from source with `npm run dist:win:installer` on Windows. That `.exe` is the advertised download — not the GitHub source tree. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; after 18+ it defaults to `https://api.eidovara.org` for status/config (`/health`, `/v1/config`, `/v1/status`) and remains usable offline if that host is down. Paste another HTTPS base in Settings to override. Conversations are not sent. Cloudflare Pages project `eidovara` serves the same `docs/` at `https://eidovara.org/`. GitHub Pages also publishes `docs/` from `main` (PR #10 merged) at `https://projectsoulbytmb.github.io/project---soul/`. Owner clicks that git cannot finish (Dependency graph, `npx wrangler deploy` after Worker edits, `www` DNS) are in [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md) and [LIVE.md](LIVE.md).
+**Public online path:** anyone can open the HTTPS site at [eidovara.org](https://eidovara.org/) (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the official Authenticode-unsigned Windows installer `Eidovara-0.22.2-Windows-x64-Setup.exe` (18+) from GitHub Releases, or build from source with `npm run dist:win:installer` on Windows. That `.exe` is the advertised download — not the GitHub source tree. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; after 18+ it defaults to `https://api.eidovara.org` for status/config (`/health`, `/v1/config`, `/v1/status`) and remains usable offline if that host is down. Paste another HTTPS base in Settings to override. Conversations are not sent by the status heartbeat. Cloudflare Pages project `eidovara` serves the same `docs/` at `https://eidovara.org/`, and GitHub Pages publishes the `docs/` mirror from `main`.
+
+## Current v0.22.2 release facts
+
+- Official platform: Windows 10/11 x64.
+- Installer: `Eidovara-0.22.2-Windows-x64-Setup.exe`.
+- Installer size: 106,691,429 bytes (about 101.75 MiB).
+- SHA-256: `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`.
+- Distribution status: Authenticode-unsigned. Windows SmartScreen may warn.
+- Build provenance: GitHub/Sigstore provenance is available and is not a substitute for Authenticode signing.
+- Source version, website product version, Worker/service version, and advertised Windows release are all `0.22.2`.
+- No live checkout or payment processing is enabled in v0.22.2.
 
 ## What is included
 
 - Local application discovery, trusted shortcuts, and user-confirmed Windows launching without process injection.
-- Local and sourced online media playback, queues, favorites, DJ-style discovery, and external Spotify/YouTube handoff.
-- Explicit public web lookup after you ask (not a full-internet index): cited Wikipedia/Wikimedia, optional Internet Archive catalog hits, optional Premium Brave Search with a user-supplied key, and bounded HTTPS pages you open. Results display in Research, conversation cards, and companion chips.
-- Local-first conversations, memories, preferences, encrypted settings/backups when Windows protection is available, diagnostics, and GitHub Releases auto-update checks (checksum-verified; Authenticode-unsigned).
-- Custom themes, Premium RGB effects, low-overhead gaming mode (Eidovara visuals only), setup roles, optional stream-helper checklists, Windows voice output, dictation support, and a hideable 2D/3D-styled companion.
+- Local and sourced online media playback, queues, favorites, DJ-style discovery, and official HTTPS media handoff/search.
+- Explicit public web lookup after you ask (not a full-internet index): cited Wikipedia/Wikimedia, optional Internet Archive catalog hits, optional keyed search where configured, and bounded HTTPS pages you open. Results display through the Research and conversation surfaces.
+- Local-first conversations, memories, preferences, encrypted settings/backups when Windows protection is available, diagnostics, and GitHub Releases update checks with checksum verification.
+- Persistent continuity, relationship-aware adaptation, configurable personality, presence/voice controls, recovery, backups, and provider abstraction in the Soul layer.
+- Custom themes, Premium RGB effects, low-overhead gaming mode (Eidovara visuals only), setup roles, optional stream-helper checklists, Windows voice output, dictation support, and a hideable companion.
 - English, Spanish, French, and German language preference foundation with English fallback.
 - Free and locally testable Premium feature gates. No live subscription or payment processing is represented by this release.
 
@@ -22,25 +34,25 @@ Soul is an optional assistant layer with configurable tone, memory, initiative, 
 
 ## Adult Mode
 
-Adult Mode is off by default and appears only after legal-adult confirmation, explicit enablement, and current revocable consent. The local confirmation is not independent age verification. The alpha includes bounded body-shape controls and optional non-photorealistic presentation for Soul's fictional, clearly adult avatar. It excludes minors or age-ambiguous characters, real-person/deepfake nudity, coercion, exploitation, trafficking, and unlawful content.
+Adult Mode is off by default and appears only after legal-adult confirmation, explicit enablement, and current revocable consent. The local confirmation is not independent age verification. The alpha includes bounded clearly-adult presentation controls for Soul. It excludes minors or age-ambiguous characters, real-person/deepfake nudity, coercion, exploitation, trafficking, and unlawful content.
 
 ## Legal use
 
-Eidovara is **source-available, not open source**, and restricted to users **18 or older**. Official advertised distribution is an **Authenticode-unsigned Windows 10/11 x64** desktop build. Linux/macOS scripts are development targets, not official products. This source cut is **v0.22.2**. The live advertised installer remains **v0.19.1** `Eidovara-0.19.1-Windows-x64-Setup.exe` until a newer tagged Setup.exe exists. Premium in this source is local-admin testing only; there is no live payment or automatic paid unlock.
+Eidovara is **source-available, not open source**, and restricted to users **18 or older**. Official advertised distribution is an **Authenticode-unsigned Windows 10/11 x64** desktop build. Linux/macOS scripts are development targets, not official products. The current source and live advertised Windows installer are both **v0.22.2**. Premium in this source is local-admin testing only; there is no live payment or automatic paid unlock.
 
-Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is public Wikipedia/Wikimedia after an explicit internet/web/online request. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, or Electron and is not an iOS/iPhone product. Soul is a first-party kernel, not a third-party film or assistant brand.
+Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is user-directed public retrieval. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, Electron, or third-party media/service providers referenced for interoperability or user-directed handoff.
 
 Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices](LEGAL_NOTICES.md), [Security](SECURITY.md), [Network Usage](NETWORK-USAGE.md), and [Third-Party Notices](THIRD_PARTY_NOTICES.md).
 
 ## Privacy and security
 
-The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, `latest.yml` SHA-512 for the in-app updater, an SPDX SBOM, and GitHub build provenance. After 18+, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Settings can disable automatic checks. Builds stay Authenticode-unsigned.
+The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, `latest.yml` SHA-512 for the in-app updater, an SPDX SBOM, and GitHub build provenance. After 18+, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Settings can disable automatic checks. Builds stay Authenticode-unsigned until an identity-validated certificate is obtained.
 
-Windows installers remain Authenticode-unsigned until an identity-validated certificate is obtained. This is the official unsigned installer, not Microsoft certification, EV signing, or SmartScreen pre-approval. Download `Eidovara-0.19.1-Windows-x64-Setup.exe` (~101.3 MiB) from GitHub Releases (SHA-256 `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`) and verify checksums plus provenance. No software can guarantee perfect security.
+Download `Eidovara-0.22.2-Windows-x64-Setup.exe` (106,691,429 bytes; about 101.75 MiB) from GitHub Releases and verify SHA-256 `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE` plus provenance. No software can guarantee perfect security.
 
 ## Editions
 
-Eidovara Free includes core workspace, offline/local assistance, public Wikipedia/Wikimedia research, media, backups, updates, personalization, and up to three linked apps. Premium gates compatible remote-model endpoints (`/chat/completions`), broad keyed Brave search, unlimited linked apps, and RGB appearance. The private Ctrl+A panel uses a per-installation administrator password and provides local testing controls only; it does not prove payment or entitlement.
+Eidovara Free includes core workspace, offline/local assistance, public research, media, backups, updates, personalization, and up to three linked apps. Premium gates compatible remote-model endpoints, broader keyed search, unlimited linked apps, and RGB appearance. The private Ctrl+A panel uses a per-installation administrator password and provides local testing controls only; it does not prove payment or entitlement.
 
 ## Build and test
 
@@ -52,12 +64,10 @@ npm run smoke
 npm run dist:win:installer
 ```
 
-`npm install` works. The repository also ships `pnpm-lock.yaml` (`packageManager` `pnpm@10.33.3`). Node 20 runs CLI, tests, and checks. Electron 43 (desktop `npm start` / Windows packaging) needs Node >= 22.12.0. A postinstall helper skips the Electron binary download on older Node instead of failing the whole install.
-
-The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
+`npm install` works. The repository also ships `pnpm-lock.yaml` (`packageManager` `pnpm@10.33.3`). Node 20 runs CLI, tests, and checks. Electron 43 desktop/Windows packaging needs a supported current Node runtime. The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
 
 ## Rights and project records
 
 Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party. Soul Consciousness Studios is the intended publisher name only.
 
-See [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Copyright notices](docs/COPYRIGHT.md), [IP self-attestation](docs/IP_CERTIFICATION.md) (not a government registration), [Trademark filing checklist](docs/TRADEMARK_FILING.md) (not filed), [Brand guide](docs/BRAND_GUIDE.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). First-party JavaScript, HTML, CSS, site scripts, and packaging helpers carry SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Forks remain under LICENSE and may not be relicensed as open source. GitHub pull requests do not transfer ownership. These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice. The owner must still register copyright at copyright.gov, file trademarks if desired, form an entity if desired, and sign assignments privately.
+See [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Copyright notices](docs/COPYRIGHT.md), [IP self-attestation](docs/IP_CERTIFICATION.md) (not a government registration), [Trademark filing checklist](docs/TRADEMARK_FILING.md) (not filed), [Brand guide](docs/BRAND_GUIDE.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). First-party JavaScript, HTML, CSS, site scripts, and packaging helpers carry SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Forks remain under LICENSE and may not be relicensed as open source. GitHub pull requests do not transfer ownership. These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice.
