@@ -125,7 +125,7 @@ test('public site wires display marks, wallpapers, and OG image without CSP or t
   const download = read('docs/download.html');
   assert.match(download, /eidovara-mark\.png/);
   assert.match(download, /id="ageConfirm"/);
-  assert.match(download, /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/);
+  assert.match(download, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
 
   const htmlFiles = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
   assert.ok(htmlFiles.length >= 14, htmlFiles.length);

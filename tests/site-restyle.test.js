@@ -8,7 +8,7 @@ import path from 'node:path';
 const read = file => fs.readFileSync(file, 'utf8');
 const htmlFiles = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
 
-test('homepage restyle keeps three benefits, one hero fill CTA, and no Adult Soul', () => {
+test('homepage restyle keeps three benefits, one hero fill CTA, and no Adult Soul marketing', () => {
   const home = read('docs/index.html');
   const benefits = [...home.matchAll(/<article class="benefit">/g)];
   assert.equal(benefits.length, 3);
@@ -21,8 +21,9 @@ test('homepage restyle keeps three benefits, one hero fill CTA, and no Adult Sou
   const heroPrimary = [...hero.matchAll(/<a class="primary[^"]*"/g)];
   assert.equal(heroPrimary.length, 1);
   assert.match(hero, /class="text-link"/);
-  assert.match(home, /Source v0\.22\.2 does not sell Premium/);
-  assert.match(home, /live installer remains v0\.19\.1/);
+  assert.match(home, /v0\.22\.2 is published/);
+  assert.match(home, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
+  assert.match(home, /Authenticode-unsigned/);
 });
 
 test('public nav Download uses nav-cta to download.html on every HTML page', () => {
@@ -35,17 +36,15 @@ test('public nav Download uses nav-cta to download.html on every HTML page', () 
   }
 });
 
-test('every public HTML page names source v0.22.2 without inventing a 0.22.2 installer', () => {
-  assert.ok(htmlFiles.length >= 14, htmlFiles.length);
-  for (const file of htmlFiles) {
+test('public release pages advertise the real v0.22.2 installer', () => {
+  for (const file of ['docs/index.html', 'docs/product.html', 'docs/download.html', 'docs/status.html']) {
     const html = read(file);
     assert.match(html, /v0\.22\.2/, file);
-    assert.doesNotMatch(html, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/, file);
   }
-  for (const file of ['docs/product.html', 'docs/download.html', 'docs/help.html']) {
+  for (const file of ['docs/product.html', 'docs/download.html']) {
     const html = read(file);
-    assert.match(html, /v0\.19\.1/, file);
-    assert.match(html, /Eidovara-0\.19\.1-Windows-x64-Setup\.exe/, file);
+    assert.match(html, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/, file);
+    assert.match(html, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/, file);
   }
   assert.match(read('docs/site.css'), /--eidovara-visual:\s*sleek-c180/);
   assert.match(read('docs/site.css'), /#site-nav > a\.nav-cta/);

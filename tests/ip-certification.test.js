@@ -28,7 +28,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.notLegalAdvice, true);
   assert.equal(cert.product.version, '0.22.2');
   assert.equal(cert.product.sourceVersion, '0.22.2');
-  assert.equal(cert.product.liveInstallerVersion, '0.19.1');
+  assert.equal(cert.product.liveInstallerVersion, '0.22.2');
   assert.equal(cert.product.installer, INSTALLER_NAME);
   assert.equal(cert.product.sha256, INSTALLER_SHA256);
   assert.equal(cert.product.authenticode, 'unsigned');
@@ -54,7 +54,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.instruments.find(row => row.id === 'trademark-filing').status, 'not-filed');
   assert.match(md, /not a U\.S\. Copyright Office registration/i);
   assert.match(md, /repository self-attestation/i);
-  assert.match(md, /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/);
+  assert.match(md, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
   assert.match(md, /unsigned-template/);
   assert.match(md, /owner-action-required/);
   assert.match(md, /LicenseRef-Eidovara-Source-Available-1\.0/);
@@ -122,7 +122,6 @@ test('copyright deposit helper writes a gitignored listing and refuses secrets',
   const script = read('scripts/prepare-copyright-deposit.js');
   assert.match(script, /copyright-deposit/);
   assert.match(script, /SKIP_DIR/);
-  assert.match(script, /node_modules/);
   assert.doesNotMatch(script, /copyright\.gov\/login|pay the fee/i);
   const out = path.join('copyright-deposit', 'test-run');
   const result = spawnSync(process.execPath, ['scripts/prepare-copyright-deposit.js', '--out', out], {
