@@ -89,6 +89,7 @@ function runKernelAction(action){
   else if(action.type==='capture-scratch'){ window.eidovaraLayers?.captureScratch?.(); }
   else if(action.type==='open-palette'){ openPalette(); }
   else if(action.type==='open-cheatsheet'){ openShortcutSheet(); }
+  else if(action.type==='open-overlay'){ openEidovaraOverlay(action.kind, action.url); }
   else if(action.type==='open-external'&&action.url) openResearchLink(action.url);
 }
 window.eidovaraRunAction=runKernelAction;
@@ -573,10 +574,30 @@ function startPathDismissed(){ try { return localStorage.getItem(START_PATH_KEY)
 function setStartPathDismissed(on){ try { if(on) localStorage.setItem(START_PATH_KEY,'1'); else localStorage.removeItem(START_PATH_KEY); } catch {} $('#startPath')?.classList.toggle('hidden', on); }
 function jumpSettings(id){ setView('settings'); const node=$(id); if(node) node.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'}); }
 function focusCompanion(){ setView('dashboard'); $('#soulDock')?.scrollIntoView({block:'nearest'}); $('#companionInput')?.focus(); }
+async function openEidovaraOverlay(kind, url){
+  const status=$('#overlayStatus')||$('#appsStatus')||$('#companionError');
+  try{
+    await window.soul.openOverlay({kind, url});
+    if(status){ status.textContent='Overlay opened as an Eidovara window. Not affiliated. Does not inject into other games.'; status.classList.remove('hidden'); }
+  }catch(err){
+    if(status){ status.textContent=String(err?.message||err); status.classList.remove('hidden'); }
+  }
+}
+let overlayButtonsBound=false;
+function bindOverlayButtons(){
+  if(overlayButtonsBound) return;
+  overlayButtonsBound=true;
+  $$('[data-overlay]').forEach(b=>b.addEventListener('click',()=>openEidovaraOverlay(b.dataset.overlay, b.dataset.overlayUrl||'')));
+  $('#overlayGoBtn')?.addEventListener('click',()=>openEidovaraOverlay('browse', $('#overlayUrlInput')?.value||''));
+  $('#overlayUrlInput')?.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); openEidovaraOverlay('browse', e.currentTarget.value||''); } });
+}
 const PALETTE_COMMANDS = [
   { id:'dashboard', title:'Dashboard', hint:'Home after 18+', run:()=>setView('dashboard') },
   { id:'talk', title:'Talk with Soul', hint:'Right dock — local assistant, not Assist', run:()=>focusCompanion() },
   { id:'apps', title:'Apps & Gaming', hint:'Launch still asks you to confirm', run:()=>setView('apps') },
+  { id:'overlay-chat', title:'Soul chat overlay', hint:'Floating local kernel — not Assist', run:()=>openEidovaraOverlay('chat') },
+  { id:'overlay-browse', title:'Browse overlay', hint:'HTTPS guest window; workspace stays locked', run:()=>openEidovaraOverlay('browse') },
+  { id:'overlay-discord', title:'Discord guest overlay', hint:'discord.com in a sandbox — not affiliated', run:()=>openEidovaraOverlay('discord') },
   { id:'entertainment', title:'Entertainment', hint:'Local media and official searches', run:()=>setView('entertainment') },
   { id:'memory', title:'Memory', hint:'Facts Soul can keep', run:()=>setView('memory') },
   { id:'identity', title:'Identity & consent', hint:'Adult Mode stays a triple gate', run:()=>setView('identity') },
@@ -671,6 +692,13 @@ document.addEventListener('keydown',e=>{
     } else openShortcutSheet();
     return;
   }
+  if(e.ctrlKey&&e.shiftKey&&!e.altKey&&e.key.toLowerCase()==='o'){
+    if(document.body.classList.contains('age-gated')) return;
+    e.preventDefault();
+    setView('apps');
+    $('#overlayPanel')?.scrollIntoView({block:'nearest'});
+    return;
+  }
   if(overlayOpen('#commandPalette')){
     const items=filteredPalette($('#paletteInput')?.value);
     if(e.key==='ArrowDown'){ e.preventDefault(); paletteIndex=Math.min(items.length-1, paletteIndex+1); renderPaletteList(); return; }
@@ -761,7 +789,7 @@ function setAgeGated(on){
   $('#ageGateOverlay').classList.toggle('hidden',!on);
   if(on) $('#ageGateTermsCheck')?.focus();
 }
-$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
+$('#ageGateAcceptBtn').addEventListener('click',async()=>{if(!$('#ageGateTermsCheck').checked)return;settings=await window.soul.acceptAgeGate(true);state=await window.soul.snapshot();setAgeGated(false);await refreshBackups().catch(()=>{});window.eidovaraSettings=settings;renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();void refreshServiceStatus(true);setView('dashboard');if(!state.setup?.completed)openSetup(false);else {$('#companionInput')?.focus();if(settings.updateChannelConfigured)checkUpdates(true);}});
 $('#ageGateDeclineBtn').addEventListener('click',()=>window.soul.declineAgeGate());
 
-(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();
+(async function init(){ try{[state,settings]=await Promise.all([window.soul.snapshot(),window.soul.getSettings()]);window.eidovaraSettings=settings;$('#providerSelect').value=settings.provider;$('#endpointInput').value=settings.endpoint||'';$('#modelInput').value=settings.model||'';$('#apiKeyInput').placeholder=settings.hasApiKey?'Stored securely — leave blank to keep':'API key';$('#searchApiKeyInput').placeholder=settings.hasSearchApiKey?'Stored securely — leave blank to keep':'Brave Search API key';const theme=settings.theme||{};$('#themeBackground').value=theme.background||'#000000';$('#themePanel').value=theme.panel||'#1c1c1e';$('#themeAccent').value=theme.accent||'#0a84ff';$('#themeTransparency').value=theme.transparency||96;$('#themeTransparencyValue').textContent=`${theme.transparency||96}%`;$('#themeRgb').checked=Boolean(theme.rgbEffects);$('#gamingModeInput').checked=Boolean(theme.gamingMode);if($('#serviceUrlInput'))$('#serviceUrlInput').value=settings.serviceUrl||'https://api.eidovara.org';if($('#assistOptIn'))$('#assistOptIn').checked=settings.assistOptIn===true;setStartPathDismissed(startPathDismissed());renderAll();setView(settings.ageGateAccepted?'dashboard':'chat');window.addEventListener('eidovara:locale',()=>{const mediaBtn=$('#openLocalMediaBtn');if(mediaBtn)mediaBtn.textContent=t('openLocalMedia','Open local media');renderAll();});if(!settings.ageGateAccepted){setAgeGated(true);}else{void refreshServiceStatus(true);await refreshBackups().catch(()=>{});renderDashboard();window.eidovaraCompanion?.startPolling?.();bindOverlayButtons();if($('#companionInput')) $('#companionInput').focus(); else $('#messageInput').focus();if(!state.setup?.completed)openSetup(false);if(settings.updateChannelConfigured)checkUpdates(true);}}catch(err){document.body.textContent=`Eidovara could not initialize: ${err?.message||err}`;} })();

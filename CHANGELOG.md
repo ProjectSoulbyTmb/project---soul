@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Gaming/productivity overlays: floating Eidovara windows for Soul chat, HTTPS browsing, and Discord’s own site in a sandboxed guest session (not an official Discord overlay, not game-process injection). Companion and Ctrl+Shift+O / Ctrl+K can open them. Assist stays opt-in and does not receive Discord tokens or guest DOM. Workspace CSP is unchanged (`media-src https: eidovara-media:`, never `'self'`).
+
 ## v0.19.1
 
 - Next-layer similar-app desktop chrome on the advertised v0.19.0 kernel (not a cloned launcher or streaming brand): Windows tray stay-running, always-on-top, pin companion dock, Recents (confirm-launched apps, local media titles, opened memories), in-app notice drawer (focus / sleep / backup — not OS toast spam or telemetry), local-media sleep timer for `eidovara-media`, palette calculator and length/mass/temperature conversions (no live FX), and Windows-only open-at-login via Electron `setLoginItemSettings`. No Recall screenshots, DRM rip, VLC/Spotify/iTunes process control, global hotkeys into other apps, lyrics dumps, romantic companion, or live checkout.

@@ -140,7 +140,7 @@ export const KERNEL_ACTION_TYPES = Object.freeze([
   'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
   'open-diagnostics', 'pick-local-media', 'discover-apps',
   'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
-  'open-external'
+  'open-overlay', 'open-external'
 ]);
 
 function action(type, extra = {}) {
@@ -254,9 +254,25 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
         action('open-view', { view: 'chat', label: 'Conversation' }),
         soulStep(overlay)
       ];
+    case 'overlay-chat':
+      return [action('open-overlay', { kind: 'chat', label: 'Soul chat overlay', auto: true })];
+    case 'overlay-browse':
+      return [action('open-overlay', { kind: 'browse', label: 'Browse overlay', auto: true })];
+    case 'overlay-discord':
+      return [action('open-overlay', { kind: 'discord', label: 'Discord guest overlay', auto: true })];
+    case 'overlays':
+      return [
+        action('open-view', { view: 'apps', label: 'Apps & Gaming', auto: true }),
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
+        action('open-overlay', { kind: 'browse', label: 'Browse overlay' }),
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })
+      ];
     case 'gaming':
       return [
         action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
+        action('open-overlay', { kind: 'browse', label: 'Browse overlay' }),
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
         action('discover-apps', { label: 'Discover installed apps' }),
         action('open-setup', { label: overlay.enabled ? 'Adjust roles' : 'Optional Soul setup' })
       ];
@@ -282,6 +298,8 @@ export function suggestionsForView(view, overlay = {}) {
     case 'apps':
       return [
         action('discover-apps', { label: 'Discover installed apps' }),
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
         action('open-view', { view: 'entertainment', label: 'Entertainment' }),
         action('open-view', { view: 'settings', label: 'Settings' })
       ];
@@ -440,6 +458,7 @@ export function kernelPublicMeta(route) {
       legal: item.legal || undefined,
       panel: item.panel || undefined,
       minutes: item.minutes || undefined,
+      kind: item.kind ? String(item.kind).slice(0, 20) : undefined,
       url: item.url ? String(item.url).slice(0, 500) : undefined,
       hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
       snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
@@ -448,7 +467,7 @@ export function kernelPublicMeta(route) {
     })).filter(item => item.type && (
       KERNEL_ACTION_TYPES.includes(item.type)
       || (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))
-    )) : [],
+    ) && (item.type !== 'open-overlay' || ['chat', 'browse', 'discord'].includes(item.kind))) : [],
     soul: {
       enabled: Boolean(value.overlay?.enabled),
       name: value.overlay?.enabled ? String(value.overlay?.name || 'Soul') : null,

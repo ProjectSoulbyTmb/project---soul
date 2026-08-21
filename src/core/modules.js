@@ -49,8 +49,8 @@ const catalog = [
     id: 'workspace-apps',
     title: 'Apps & Gaming',
     summary: 'Windows shelf of titles you already trust. Confirm-launch only — no injection.',
-    intents: ['apps'],
-    commands: ['open apps', 'launch an app', 'discover installed apps'],
+    intents: ['apps', 'overlays', 'overlay-chat', 'overlay-browse', 'overlay-discord'],
+    commands: ['open apps', 'launch an app', 'discover installed apps', 'open discord overlay', 'open browse overlay', 'open chat overlay'],
     workspace: 'apps',
     ui: { view: 'apps' }
   },
@@ -174,9 +174,9 @@ const catalog = [
   {
     id: 'gaming-prep',
     title: 'Gaming prep',
-    summary: 'Checklists for play or stream. No OBS websocket control in this release.',
-    intents: ['gaming'],
-    commands: ['prepare my gaming', 'stream helper'],
+    summary: 'Checklists plus Eidovara glass overlays (chat, browse, Discord’s website). No game injection and no OBS websocket control.',
+    intents: ['gaming', 'overlays', 'overlay-chat', 'overlay-browse', 'overlay-discord'],
+    commands: ['prepare my gaming', 'stream helper', 'open discord overlay', 'open browse overlay'],
     workspace: 'apps',
     ui: { view: 'apps' }
   },

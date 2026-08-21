@@ -1,0 +1,95 @@
+/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
+html, body {
+  margin: 0;
+  background: transparent;
+  color: var(--text, #f5f5f7);
+  font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
+}
+.overlay-chrome, .chat-float {
+  min-height: 100%;
+}
+.overlay-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  -webkit-app-region: drag;
+  background: color-mix(in srgb, var(--panel, #1c1c1e) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #0a84ff) 35%, transparent);
+  border-radius: 14px;
+  backdrop-filter: blur(16px);
+}
+.overlay-bar input,
+.overlay-bar button,
+.chat-float-form button,
+.chat-float-form textarea {
+  -webkit-app-region: no-drag;
+}
+.overlay-bar strong { white-space: nowrap; font-size: 12px; }
+.overlay-bar input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 8px;
+  background: color-mix(in srgb, #000 35%, transparent);
+  color: inherit;
+}
+.overlay-bar button,
+.chat-float-form button {
+  border: 0;
+  border-radius: 8px;
+  padding: 6px 10px;
+  background: var(--accent, #0a84ff);
+  color: #fff;
+  cursor: pointer;
+}
+.overlay-bar button.is-on { outline: 2px solid #fff; }
+#closeBtn { background: transparent; color: inherit; font-size: 18px; }
+.overlay-chrome {
+  overflow: hidden;
+}
+.overlay-note, .overlay-kicker {
+  margin: 4px 10px 0;
+  font-size: 11px;
+  opacity: 0.75;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-float {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 8px;
+  box-sizing: border-box;
+}
+.chat-float-log {
+  flex: 1;
+  overflow: auto;
+  margin: 8px 0;
+  padding: 8px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--panel, #1c1c1e) 82%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, #0a84ff) 25%, transparent);
+  backdrop-filter: blur(18px);
+}
+.chat-float-log p { margin: 0 0 8px; }
+.chat-float-log .is-user { opacity: 0.85; }
+.chat-float-form {
+  display: flex;
+  gap: 8px;
+}
+.chat-float-form textarea {
+  flex: 1;
+  resize: none;
+  border-radius: 10px;
+  border: 0;
+  padding: 8px;
+  background: color-mix(in srgb, #000 40%, transparent);
+  color: inherit;
+}
+@media (prefers-reduced-motion: reduce) {
+  .overlay-bar, .chat-float-log { backdrop-filter: none; }
+}

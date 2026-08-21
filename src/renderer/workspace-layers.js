@@ -393,6 +393,7 @@
     const rows = [
       { keys: 'Ctrl+K', detail: t('shortcutPalette', 'Command palette — jump to views, intents, settings, legal, modules, and linked apps. Ctrl+P does the same.') },
       { keys: 'Ctrl+/', detail: t('shortcutCheatsheet', 'This cheatsheet. ? also opens it when you are not in a text field.') },
+      { keys: 'Ctrl+Shift+O', detail: t('shortcutOverlays', 'Jump to workspace overlays (chat, browse, Discord guest). In-app only.') },
       { keys: 'Ctrl+A', detail: t('shortcutAdmin', 'Private administrator panel. Does not steal select-all from input, textarea, or select fields.') },
       { keys: 'Esc', detail: t('shortcutEsc', 'Close palette, cheatsheet, legal, admin, or cancelable setup overlays.') },
       { keys: 'Enter', detail: t('shortcutSend', 'Send the conversation. Shift+Enter inserts a new line.') }

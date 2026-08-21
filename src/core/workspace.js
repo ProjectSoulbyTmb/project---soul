@@ -6,7 +6,7 @@ const LOCAL_WORKSPACE_INTENTS = new Set([
   'talk', 'reassure', 'growth', 'thanks', 'apps', 'settings', 'help', 'accessibility',
   'presence', 'identity-panel', 'palette', 'search', 'scratch', 'cheatsheet', 'widgets',
   'dashboard', 'conversation', 'backups', 'updates', 'service', 'setup', 'here', 'theme',
-  'local-media', 'legal'
+  'local-media', 'legal', 'overlay-chat', 'overlay-browse', 'overlay-discord', 'overlays'
 ]);
 
 export { LOCAL_WORKSPACE_INTENTS };
@@ -48,6 +48,10 @@ export function classifyWorkspaceIntent(input) {
   if (/\b(search|find|filter)\b[\s\S]{0,48}\b(memory|memories|apps?|settings|workspace|knowledge)\b/.test(t) || /\bsearch this workspace\b/.test(t)) return 'search';
   if (/^(note:|scratch:)/.test(t) || /\b(scratchpad|quick capture|quick note|capture scratch)\b/.test(t)) return 'scratch';
   if (/\b(pin|unpin|reorder)\b[\s\S]{0,24}\b(widget|tile|dashboard)\b/.test(t)) return 'widgets';
+  if (/\b(discord overlay|open (?:the )?discord overlay|pop\s*out discord)\b/.test(t)) return 'overlay-discord';
+  if (/\b(browse overlay|browsing overlay|web overlay|open (?:the )?browse overlay)\b/.test(t)) return 'overlay-browse';
+  if (/\b(chat overlay|soul overlay|companion overlay|pop\s*out (?:chat|soul|companion))\b/.test(t)) return 'overlay-chat';
+  if (/\b(?:open|show)\b[\s\S]{0,24}\boverlays?\b/.test(t) || /\bgaming workspace overlays?\b/.test(t)) return 'overlays';
   if (nav(t, '(?:apps?(?:\\s*&\\s*gaming)?|gaming\\s+hub)')) return 'apps';
   if (nav(t, 'entertainment')) return 'entertainment';
   if (nav(t, 'memory')) return 'memory';

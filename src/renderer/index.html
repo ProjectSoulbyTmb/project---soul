@@ -131,6 +131,8 @@
             </header>
             <div class="companion-actions" id="companionQuickActions" role="toolbar" aria-label="Companion quick actions">
               <button type="button" data-companion-nav="apps" data-i18n="companionApps">Apps</button>
+              <button type="button" data-companion-ask="Open the Discord overlay" data-i18n="overlayDiscord">Discord guest</button>
+              <button type="button" data-companion-ask="Open the chat overlay" data-i18n="overlayChat">Soul chat overlay</button>
               <button type="button" data-companion-nav="entertainment" data-i18n="companionMedia">Media</button>
               <button type="button" data-companion-nav="memory" data-i18n="companionMemory">Memory</button>
               <button type="button" data-companion-nav="legal" data-i18n="companionLegal">Legal</button>
@@ -185,6 +187,21 @@
         <div class="card hidden" id="discoveredAppsCard"><h3>Start Menu applications</h3><p>Choose only applications you trust and are permitted to use. Discovery reads shortcut names locally and does not open them.</p><div class="apps-grid" id="discoveredAppsGrid"></div></div>
         <div class="apps-grid" id="appsGrid"></div>
         <p class="settings-status" id="appsStatus"></p>
+        <div class="card" id="overlayPanel">
+          <h3 data-i18n="overlayTitle">Workspace overlays</h3>
+          <p data-i18n="overlayLead">Floating Eidovara windows for Soul chat, HTTPS browsing, and Discord’s own website. They are not official Discord overlays, do not inject into other games, and never send Discord tokens to Assist.</p>
+          <div class="quick-grid">
+            <button type="button" data-overlay="chat" data-i18n="overlayChat">Soul chat overlay</button>
+            <button type="button" data-overlay="browse" data-i18n="overlayBrowse">Browse overlay</button>
+            <button type="button" data-overlay="discord" data-i18n="overlayDiscord">Discord guest</button>
+          </div>
+          <label class="settings-help" data-i18n="overlayUrlLabel">HTTPS address for the browse overlay
+            <input id="overlayUrlInput" maxlength="500" placeholder="https://example.com" autocomplete="off" />
+          </label>
+          <div class="settings-actions"><button type="button" class="secondary" id="overlayGoBtn" data-i18n="overlayGo">Open in browse overlay</button></div>
+          <p class="settings-status" id="overlayStatus"></p>
+          <p class="settings-help" data-i18n="overlayKeys">Ctrl+Shift+O jumps here. Ctrl+K also lists overlays.</p>
+        </div>
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
