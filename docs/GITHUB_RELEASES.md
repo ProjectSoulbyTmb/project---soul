@@ -2,30 +2,43 @@
 
 Repository: `https://github.com/ProjectSoulbyTmb/project---soul`
 
-Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x64 NSIS installer for users **18+**. GitHub Actions on `windows-latest` can build that installer and publish checksums, an SPDX SBOM, `CODE-SIGNING-STATUS.txt` (unsigned), and GitHub/Sigstore **build provenance**. That provenance is **not** Authenticode. CI cannot mint a signed Setup.exe until a code-signing identity exists outside this repository.
+Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x64 NSIS installer for users **18+**. GitHub Actions on `windows-latest` builds the installer and publishes checksums, updater metadata, an SPDX SBOM, `CODE-SIGNING-STATUS.txt`, and GitHub/Sigstore build provenance. That provenance is **not** Authenticode. CI cannot create an Authenticode-signed Setup.exe until a code-signing identity exists outside this repository.
 
-## Tag release (publishes to GitHub Releases)
+## Current published release
 
-1. Sign in to the ProjectSoulbyTmb GitHub account. Repository Actions must be enabled (`contents: write`, `id-token: write`, `attestations: write` for `.github/workflows/release-windows.yml`).
-2. Set `package.json` `version` to the new release, commit to `main`, then create and push a matching tag:
+- Version/tag: `v0.22.2`
+- Installer: `Eidovara-0.22.2-Windows-x64-Setup.exe`
+- Size: 106,691,429 bytes (about 101.75 MiB)
+- SHA-256: `A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE`
+- Latest asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.22.2-Windows-x64-Setup.exe`
+- Pinned asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.22.2/Eidovara-0.22.2-Windows-x64-Setup.exe`
+- Signing: Authenticode-unsigned; Windows SmartScreen may warn.
+- Provenance: GitHub/Sigstore build provenance is available and is not Authenticode signing.
+
+## Tag release procedure
+
+1. Set `package.json` `version` to the intended new release and merge the tested source to `main`.
+2. Create a new matching `v*` tag. Never move or reuse a published release tag after changing files.
+3. The `Release Windows` workflow runs tests/checks/smoke tests, builds the NSIS installer on `windows-latest`, creates updater metadata and release evidence, computes checksums, and publishes the matching release artifacts.
+4. After publication, update the public website, helper knowledge pack, Worker/service release payload, README, release runbook, and live-state record to the measured installer filename, size, and checksum.
+5. Keep `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest` as the release-notes/checksum destination and make the actual Setup.exe the primary Windows download.
+
+Example for the next release (replace the version before using):
 
 ```powershell
 git checkout main
 git pull origin main
-git tag v0.19.1
-git push origin v0.19.1
+git tag vNEXT
+git push origin vNEXT
 ```
 
-3. The `Release Windows` workflow tests, packages `pnpm run dist:win:installer` (`--publish never` so electron-builder does not create the GitHub Release itself), writes `latest.yml` for `electron-updater`, `update.json`, and evidence, then publishes `Eidovara-${version}-Windows-x64-Setup.exe` plus updater metadata to the GitHub Release. Users download that `.exe`; they do not extract a ZIP. Future tagged releases need a workflow `GITHUB_TOKEN` (already granted via `contents: write`) so `latest.yml` is attached. Do not commit a `GH_TOKEN`.
-4. Point the public site primary download at the Release `.exe` asset, for example `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe`. Keep `/releases/latest` as a checksums/notes link. Do not make the GitHub source tree the main download button. Current SHA-256: `72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8`. Size about 101.3 MiB.
+Do not reuse `v0.22.2` or any earlier published tag for changed release bytes.
 
-Do not reuse a release tag after changing its files. Increment the version and create a new tag so installed applications can compare versions safely.
+## Manual dispatch
 
-## Manual dispatch (unsigned artifacts only)
+`workflow_dispatch` on `.github/workflows/release-windows.yml` can build unsigned Windows artifacts for verification. A branch build must not be presented as a published release unless the matching tag/release is actually created and its files are measured.
 
-`workflow_dispatch` on `.github/workflows/release-windows.yml` runs the same Windows NSIS build on `windows-latest`. On a **branch** it uploads unsigned artifacts; it does **not** create a GitHub Release (that would use the branch name as a tag). To publish, push a `v*` tag instead.
-
-Windows NSIS must be built on Windows (this workflow’s `windows-latest` runner, or a local Windows 10/11 x64 machine with Node 22+). Linux/macOS packaging scripts in `package.json` are development targets, not official products.
+Windows NSIS must be built on Windows (`windows-latest` or a supported local Windows 10/11 x64 machine). Linux/macOS packaging scripts in `package.json` are development targets, not official products.
 
 ## Local Windows build if Actions cannot run
 
@@ -39,6 +52,19 @@ npm run release:manifest
 npm run release:evidence
 ```
 
-Attach `dist/Eidovara-*-Windows-x64-Setup.exe`, `dist/latest.yml`, `dist/update.json`, `dist/SHA256SUMS.txt`, `dist/SBOM.spdx.json`, and `dist/CODE-SIGNING-STATUS.txt` to a GitHub Release for the matching `v*` tag. Never upload a private signing key. Installed copies check GitHub Releases, verify checksums, and prompt before applying an update. Builds stay Authenticode-unsigned.
+Attach the matching `dist/Eidovara-*-Windows-x64-Setup.exe`, `dist/latest.yml`, `dist/update.json`, `dist/SHA256SUMS.txt`, `dist/SBOM.spdx.json`, and `dist/CODE-SIGNING-STATUS.txt` to the matching GitHub Release. Never upload a private signing key. Installed copies can check GitHub Releases, verify update metadata/checksums, and prompt before applying an update.
 
-Overwrite-on-reinstall for existing Eidovara installs is a separate installer change (pull request #9).
+## Publication consistency rule
+
+A release is not considered fully promoted until these surfaces agree on the same measured release facts:
+
+- `package.json`
+- GitHub Release/tag and assets
+- `README.md`
+- `LIVE.md`
+- `docs/index.html`, `docs/product.html`, `docs/download.html`, `docs/help.html`, `docs/faq.html`, `docs/status.html`
+- `docs/knowledge.js` and the website helper
+- `server/worker.js` `/health`, `/v1/config`, and `/v1/status` payloads
+- release/update metadata and checksums
+
+Historical changelog entries can retain older-version history, but current-release statements must identify the actual live release.
