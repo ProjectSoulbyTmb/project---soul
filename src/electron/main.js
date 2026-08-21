@@ -18,7 +18,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
 let mainWindow, engine, logPath, configPath;
-let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#080c16', panel: '#101828', accent: '#8f7cff', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1, adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 } };
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', rate: 1, pitch: 1, adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 } };
 let pendingUpdate = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -87,7 +87,7 @@ function createWindow() {
     loadConfig();
     const dataDir = path.join(app.getPath('userData'), 'profiles');
     engine = new SoulEngine({ store: new JsonStore({ dataDir, profileId: 'default', codec: protectedStorageCodec() }), provider: makeProvider(), internetOptions: { searchApiKey: entitlement() === 'premium' ? getSearchApiKey() : '' } });
-    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.18.0', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#0b1020', show: false,
+    mainWindow = new BrowserWindow({ width: 1280, height: 840, minWidth: 780, minHeight: 600, title: 'Eidovara v0.18.0', icon: path.join(__dirname, '../../assets/branding/eidovara-512.png'), backgroundColor: '#000000', show: false,
       webPreferences: { preload: path.join(__dirname, 'preload.cjs'), contextIsolation: true, nodeIntegration: false, sandbox: true, webSecurity: true, allowRunningInsecureContent: false, spellcheck: false } });
     mainWindow.webContents.session.setPermissionRequestHandler((_wc, permission, callback, details) => callback(permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio'));
     mainWindow.webContents.session.setPermissionCheckHandler((_wc, permission, _origin, details) => permission === 'media' && Array.isArray(details?.mediaTypes) && details.mediaTypes.length === 1 && details.mediaTypes[0] === 'audio');
@@ -176,7 +176,7 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   config.language = ['en','es','fr','de'].includes(incoming?.language) ? incoming.language : (config.language || 'en');
   config.endpoint = String(incoming?.endpoint || '').slice(0, 500);
   config.model = String(incoming?.model || '').slice(0, 200);
-  if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#080c16'), panel: color(incoming.theme.panel, '#101828'), accent: color(incoming.theme.accent, '#8f7cff'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
+  if (incoming?.theme && typeof incoming.theme === 'object') { const color = (value, fallback) => /^#[0-9a-f]{6}$/i.test(String(value)) ? String(value) : fallback; config.theme = { background: color(incoming.theme.background, '#000000'), panel: color(incoming.theme.panel, '#1C1C1E'), accent: color(incoming.theme.accent, '#0A84FF'), transparency: Math.max(65, Math.min(100, Number(incoming.theme.transparency) || 96)), rgbEffects: entitlement() === 'premium' && Boolean(incoming.theme.rgbEffects), gamingMode: Boolean(incoming.theme.gamingMode) }; }
   if (incoming?.companion && typeof incoming.companion === 'object') {
     const policy = engine.snapshot().policy || {};
     const adultGatesActive = policy.adultStatusConfirmed === true && policy.adultSoulEnabled === true && policy.currentConsent === true && policy.mode === 'adult';
