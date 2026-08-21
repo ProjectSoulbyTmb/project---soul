@@ -133,6 +133,9 @@
             </header>
             <div class="companion-actions" id="companionQuickActions" role="toolbar" aria-label="Companion quick actions">
               <button type="button" data-companion-nav="apps" data-i18n="companionApps">Apps</button>
+              <button type="button" data-companion-ask="Open the Discord overlay" data-i18n="overlayDiscord">Discord guest</button>
+              <button type="button" data-companion-ask="Open the browse overlay" data-i18n="overlayBrowse">Browse overlay</button>
+              <button type="button" data-companion-ask="Open the chat overlay" data-i18n="overlayChat">Soul chat overlay</button>
               <button type="button" data-companion-nav="entertainment" data-i18n="companionMedia">Media</button>
               <button type="button" data-companion-nav="memory" data-i18n="companionMemory">Memory</button>
               <button type="button" data-companion-nav="legal" data-i18n="companionLegal">Legal</button>
@@ -187,6 +190,29 @@
         <div class="card hidden" id="discoveredAppsCard"><h3>Start Menu applications</h3><p>Choose only applications you trust and are permitted to use. Discovery reads shortcut names locally and does not open them.</p><div class="apps-grid" id="discoveredAppsGrid"></div></div>
         <div class="apps-grid" id="appsGrid"></div>
         <p class="settings-status" id="appsStatus"></p>
+        <div class="card" id="playDesk">
+          <h3 data-i18n="playDeskTitle">Play desk</h3>
+          <p class="settings-help" data-i18n="playDeskLead">Confirm-launched library recents, Eidovara overlays, and this process’s CPU/memory. Not a Steam overlay and not other-game telemetry.</p>
+          <div class="quick-grid" id="playRecents"></div>
+          <p class="settings-help" id="eidovaraMetrics"></p>
+          <div class="settings-actions"><button type="button" class="secondary" id="refreshMetricsBtn" data-i18n="overlayMetricsRefresh">Refresh Eidovara process metrics</button></div>
+        </div>
+        <div class="card" id="overlayPanel">
+          <h3 data-i18n="overlayTitle">Workspace overlays</h3>
+          <p data-i18n="overlayLead">Floating Eidovara windows for Soul chat, HTTPS browsing, and Discord’s own website. They are not official Discord overlays, do not inject into other games, and never send Discord tokens to Assist.</p>
+          <div class="quick-grid">
+            <button type="button" data-overlay="chat" data-i18n="overlayChat">Soul chat overlay</button>
+            <button type="button" data-overlay="browse" data-i18n="overlayBrowse">Browse overlay</button>
+            <button type="button" data-overlay="discord" data-i18n="overlayDiscord">Discord guest</button>
+          </div>
+          <label class="settings-help" data-i18n="overlayUrlLabel">HTTPS address for the browse overlay
+            <input id="overlayUrlInput" maxlength="500" placeholder="https://example.com" autocomplete="off" />
+          </label>
+          <div class="settings-actions"><button type="button" class="secondary" id="overlayGoBtn" data-i18n="overlayGo">Open in browse overlay</button></div>
+          <p class="settings-status" id="overlayStatus"></p>
+          <div id="overlayRecents" class="quick-grid"></div>
+          <p class="settings-help" data-i18n="overlayKeys">Ctrl+Shift+O jumps here. Ctrl+K also lists overlays. Esc closes an overlay unless you are typing in the guest page.</p>
+        </div>
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
@@ -285,6 +311,7 @@
           <label class="check"><input type="checkbox" id="openAtLoginInput" /> <span data-i18n="openAtLogin">Open at Windows sign-in</span></label>
           <label class="check"><input type="checkbox" id="pinCompanionInput" /> <span data-i18n="pinCompanion">Pin companion dock</span></label>
           <p class="settings-help" id="openAtLoginHelp">Open at login uses Electron's Windows login-item setting. It is not available on this host if you are not on Windows.</p>
+          <p class="settings-help" data-i18n="overlayHelp">Overlays are Eidovara windows. Discord is their website in a sandboxed guest session — not an official Discord overlay, not affiliated, and not injection into other games. Guest browsing is HTTPS you open. Assist never receives Discord tokens or guest DOM.</p>
           <div class="settings-actions"><button type="submit">Save desktop chrome</button></div>
           <p class="settings-status" id="desktopChromeStatus"></p>
         </form>
@@ -416,7 +443,8 @@
         <div><dt>Enter</dt><dd>Send a message to Soul</dd></div>
         <div><dt>Shift+Enter</dt><dd>New line in the composer</dd></div>
         <div><dt>Hold 🎙</dt><dd>Dictate on this PC. No neural TTS is bundled.</dd></div>
-        <div><dt>Esc</dt><dd>Close a dialog</dd></div>
+        <div><dt>Ctrl+Shift+O</dt><dd data-i18n="shortcutOverlays">Jump to workspace overlays (chat, browse, Discord guest). In-app only.</dd></div>
+        <div><dt>Esc</dt><dd>Close a dialog. Overlay chrome also closes on Esc unless the guest page is focused.</dd></div>
       </dl>
       <p class="truth-note">Click the Soul face or type in the right dock to ask locally. Launching an app still asks you to confirm. Assist stays off until you enable it.</p>
       <div class="setup-actions"><button type="button" class="secondary" id="shortcutCloseBtn">Close</button></div>

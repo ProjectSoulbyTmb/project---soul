@@ -2,7 +2,11 @@
 
 ## Unreleased
 
+<<<<<<< HEAD
 - Repository IP self-attestation: dated inventory of every legal instrument (present / unsigned-template / not-filed / owner-action-required), first-party SPDX on HTML/CSS/scripts/server, copyright-deposit helper (`npm run ip:deposit`, gitignored output), infringement/DMCA pointers, and tests that forbid fake USPTO/Copyright Office/patent/PCI claims. Not a government registration. Focus-session tests use wall-clock-relative timestamps so they do not expire on the record date.
+=======
+- Gaming/productivity workspace overlays: floating Eidovara windows for Soul chat, HTTPS browsing, and Discord’s own site in a sandboxed guest session (`persist:eidovara-guest` / `persist:eidovara-guest-discord`). Not an official Discord overlay, not game-process injection, no OS-wide hotkeys. Play desk lists confirm-launched apps plus this process’s CPU/memory. Companion chips include `open-chat-overlay`, `open-browse-overlay`, `open-discord-overlay`, and `set-always-on-top`. Ctrl+Shift+O / Ctrl+K open them. Adult Mode closes guest overlays. Assist stays opt-in and does not receive Discord tokens or guest DOM. Workspace CSP is unchanged (`media-src https: eidovara-media:`, never `'self'`).
+>>>>>>> origin/cursor/game-workspace-c180
 
 ## v0.19.1
 

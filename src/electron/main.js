@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { app, BrowserWindow, ipcMain, dialog, safeStorage, shell, protocol, net, Tray, Menu, nativeImage } from 'electron';
+import { app, BrowserWindow, WebContentsView, ipcMain, dialog, safeStorage, shell, protocol, net, Tray, Menu, nativeImage } from 'electron';
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -15,6 +15,10 @@ import { fetchServiceSnapshot, normalizeServiceUrl, resolveServiceBase, httpsOnl
 import { checkForUpdate, downloadUpdate } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL } from '../config/release-channel.js';
 import { defaultDesktopChrome, evaluatePaletteCalc, loginItemPayload, normalizeDesktopChrome } from '../core/desktop-chrome.js';
+import { adultAllowed } from '../core/policy.js';
+import { defaultOverlayLayout, normalizeOverlayLayout } from '../core/overlays.js';
+import { attachOverlayWindows } from './overlay-windows.js';
+import { createGuestOverlayManager } from './guest-overlays.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const LOCAL_MEDIA_SCHEME = 'eidovara-media';
@@ -22,10 +26,10 @@ const allowedLocalMedia = new Map();
 protocol.registerSchemesAsPrivileged([
   { scheme: LOCAL_MEDIA_SCHEME, privileges: { standard: true, secure: true, supportFetchAPI: true, stream: true, corsEnabled: true } }
 ]);
-let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false;
+let mainWindow, engine, logPath, configPath, heartbeatTimer = 0, heartbeatTicks = 0, tray = null, quitting = false, overlayManager = null;
 const COMPANION_MEDIA_ID = crypto.createHash('sha256').update('eidovara-companion-look-v1').digest('hex').slice(0, 32);
 const COMPANION_IMAGE_EXTS = new Set(['.png', '.jpg', '.jpeg', '.webp', '.gif']);
-let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, desktop: defaultDesktopChrome() };
+let config = { provider: 'offline', endpoint: '', model: '', language: 'en', encryptedApiKey: '', encryptedSearchApiKey: '', apps: [], theme: { background: '#000000', panel: '#1C1C1E', accent: '#0A84FF', transparency: 96, rgbEffects: false, gamingMode: false }, companion: { avatarMode: '3d', motion: 'gentle', voiceEnabled: false, voiceName: '', voiceURI: '', rate: 1, pitch: 1, mute: true, lookId: 'orb', adultPresentation: false, bodyHeight: 50, bodyBuild: 50, bodyCurves: 50 }, assistOptIn: false, desktop: defaultDesktopChrome(), overlays: defaultOverlayLayout(), overlayRecents: [] };
 let pendingUpdate = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0, failedAdminAttempts = 0, adminLockedUntil = 0;
@@ -176,7 +180,8 @@ function publicConfig() {
     hasSearchApiKey: Boolean(config.encryptedSearchApiKey),
     encryptionAvailable: safeStorage.isEncryptionAvailable(),
     desktop: normalizeDesktopChrome(config.desktop),
-    loginItem: loginItemPayload(config.desktop?.openAtLogin === true)
+    loginItem: loginItemPayload(config.desktop?.openAtLogin === true),
+    overlayRecents: Array.isArray(config.overlayRecents) ? config.overlayRecents.slice(0, 12) : []
   };
 }
 function applyDesktopChrome() {
@@ -282,7 +287,11 @@ function createWindow() {
         mainWindow.hide();
       }
     });
-    mainWindow.on('closed', () => { allowedLocalMedia.clear(); mainWindow = null; });
+    mainWindow.on('closed', () => {
+      allowedLocalMedia.clear();
+      mainWindow = null;
+      if (!(config.desktop?.trayStay === true && process.platform === 'win32')) overlayManager?.closeAll?.();
+    });
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
     mainWindow.webContents.on('will-attach-webview', e => e.preventDefault());
@@ -304,8 +313,31 @@ function registerLocalMediaProtocol() {
 }
 process.on('uncaughtException', err => fatal('Eidovara startup error', err));
 process.on('unhandledRejection', err => fatal('Eidovara promise error', err));
-app.whenReady().then(() => { registerLocalMediaProtocol(); createWindow(); }).catch(err => fatal('Eidovara initialization error', err));
-app.on('before-quit', () => { quitting = true; destroyTray(); });
+app.whenReady().then(() => {
+  registerLocalMediaProtocol();
+  overlayManager = attachOverlayWindows({
+    BrowserWindow,
+    WebContentsView,
+    ipcMain,
+    dialog,
+    shell,
+    requireAgeGate,
+    registerIpc: true,
+    getMainWindow: () => mainWindow,
+    getAgeGateAccepted: () => config.ageGateAccepted === true,
+    getAdultLock: () => {
+      try { return engine ? adultAllowed(engine.snapshot()) === true : false; } catch { return false; }
+    },
+    getOverlayLayout: () => normalizeOverlayLayout(config.overlays),
+    setOverlayLayout: next => { config.overlays = normalizeOverlayLayout(next); saveConfig(); },
+    loadRecents: () => Array.isArray(config.overlayRecents) ? config.overlayRecents : [],
+    persistRecents: list => { config.overlayRecents = list; saveConfig(); },
+    processRef: process,
+    createGuestOverlayManager
+  });
+  createWindow();
+}).catch(err => fatal('Eidovara initialization error', err));
+app.on('before-quit', () => { quitting = true; overlayManager?.closeAll?.(); destroyTray(); });
 app.on('window-all-closed', () => {
   allowedLocalMedia.clear();
   if (process.platform !== 'darwin' && !(config.desktop?.trayStay === true && process.platform === 'win32' && !quitting)) app.quit();
@@ -317,6 +349,8 @@ ipcMain.handle('soul:send', async (_e, m, opts) => {
   applyInternetOptions();
   const result = await ensureEngine().respond(m, opts && typeof opts === 'object' ? opts : {});
   if (!result.adultAllowed && config.companion?.adultPresentation) { config.companion.adultPresentation = false; saveConfig(); }
+  if (result.adultAllowed) overlayManager?.closeGuests?.();
+  overlayManager?.hideIfGated?.();
   return result;
 });
 ipcMain.handle('soul:snapshot', () => (config.ageGateAccepted === true ? ensureEngine().snapshot() : defaultProfile('default')));
@@ -334,7 +368,7 @@ ipcMain.handle('soul:selectConversation', (_e, id) => { requireAgeGate(); return
 ipcMain.handle('soul:deleteConversation', (_e, id) => { requireAgeGate(); return ensureEngine().deleteConversation(String(id)); });
 ipcMain.handle('soul:getSettings', () => publicConfig());
 ipcMain.handle('soul:acceptAgeGate', (_e, confirmed) => { if (confirmed !== true) throw new Error('Confirm that you are 18 or older and accept the terms to continue.'); config.ageGateAccepted = true; saveConfig(); ensureEngine(); return publicConfig(); });
-ipcMain.handle('soul:declineAgeGate', () => { setImmediate(() => app.quit()); return true; });
+ipcMain.handle('soul:declineAgeGate', () => { overlayManager?.closeAll(); setImmediate(() => app.quit()); return true; });
 ipcMain.handle('soul:adminLogin', (_e, password) => {
   requireAgeGate();
   if (!adminConfigured()) throw new Error('Create an administrator password for this installation first.');
@@ -442,7 +476,7 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.desktop = normalizeDesktopChrome(incoming.desktop, config.desktop);
     applyDesktopChrome();
   }
-  saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); return publicConfig();
+  saveConfig(); ensureEngine().setProvider(makeProvider()); applyInternetOptions(); overlayManager?.hideIfGated?.(); return publicConfig();
 });
 ipcMain.handle('soul:diagnostics', async () => { requireAgeGate(); return ({ version: app.getVersion(), electron: process.versions.electron, chromium: process.versions.chrome, node: process.versions.node, platform: process.platform, arch: process.arch, hardwareAcceleration: !app.commandLine.hasSwitch('disable-gpu'), gpuFeatureStatus: app.getGPUFeatureStatus(), gpu: await app.getGPUInfo('complete').catch(() => ({ unavailable: true })), mediaFeatures: { htmlAudio: true, htmlVideo: true, webAudio: true, hardwareAcceleratedChromium: true }, userData: app.getPath('userData'), logPath, settings: publicConfig(), localSafetyReportCount: ensureEngine().snapshot().policy.localSafetyReports?.length || 0 }); });
 ipcMain.handle('soul:openDataFolder', () => { requireAgeGate(); return shell.openPath(app.getPath('userData')); });

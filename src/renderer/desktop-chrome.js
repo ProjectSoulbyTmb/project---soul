@@ -324,6 +324,7 @@
     recordMedia,
     recordView,
     recordRecent,
+    setAlwaysOnTop: async on => persistDesktop({ alwaysOnTop: on === true }),
     paintCalc
   };
 

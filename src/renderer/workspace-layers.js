@@ -307,6 +307,12 @@
     if (type === 'confirm-launch-app' && action.appId && window.soul?.launchApplication) {
       try { await window.soul.launchApplication(action.appId); } catch (err) { alert(String(err?.message || err)); }
     }
+    if (typeof window.eidovaraRunAction === 'function' && [
+      'open-overlay', 'open-chat-overlay', 'open-browse-overlay', 'open-discord-overlay',
+      'set-always-on-top', 'open-now-playing'
+    ].includes(type)) {
+      window.eidovaraRunAction(action);
+    }
   }
 
   async function startFocus(minutes, label) {
@@ -393,6 +399,7 @@
     const rows = [
       { keys: 'Ctrl+K', detail: t('shortcutPalette', 'Command palette — jump to views, intents, settings, legal, modules, and linked apps. Ctrl+P does the same.') },
       { keys: 'Ctrl+/', detail: t('shortcutCheatsheet', 'This cheatsheet. ? also opens it when you are not in a text field.') },
+      { keys: 'Ctrl+Shift+O', detail: t('shortcutOverlays', 'Jump to workspace overlays (chat, browse, Discord guest). In-app only.') },
       { keys: 'Ctrl+A', detail: t('shortcutAdmin', 'Private administrator panel. Does not steal select-all from input, textarea, or select fields.') },
       { keys: 'Esc', detail: t('shortcutEsc', 'Close palette, cheatsheet, legal, admin, or cancelable setup overlays.') },
       { keys: 'Enter', detail: t('shortcutSend', 'Send the conversation. Shift+Enter inserts a new line.') }
