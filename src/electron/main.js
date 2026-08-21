@@ -103,6 +103,7 @@ function createWindow() {
 }
 
 function applyLinuxRuntimeFlags() {
+  // Windows packaged runtime is unchanged. These flags only help Linux development hosts.
   if (process.platform !== 'linux') return;
   const runningAsRoot = typeof process.getuid === 'function' && process.getuid() === 0;
   let unprivilegedUserNamespaces = true;

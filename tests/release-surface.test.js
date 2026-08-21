@@ -24,8 +24,12 @@ test('adult avatar controls require every adult gate and revocation clears prese
 });
 
 test('public claims retain alpha and unsigned boundaries', () => {
-  assert.match(read('README.md'), /Stable Alpha/);
-  assert.match(read('README.md'), /Authenticode-unsigned/);
+  const readme = read('README.md');
+  assert.match(readme, /Stable Alpha/);
+  assert.match(readme, /Authenticode-unsigned/);
+  assert.match(readme, /Windows 10\/11 x64/);
+  assert.match(readme, /Linux and macOS packaging scripts are development targets/);
+  assert.doesNotMatch(readme, /official Linux|official macOS|signed official releases for Linux/i);
   assert.match(read('LEGAL_NOTICES.md'), /age 18 or older/);
 });
 
@@ -36,12 +40,13 @@ test('local media uses a gated custom protocol instead of raw file URLs', () => 
   assert.match(main, /allowedLocalMedia/);
   assert.match(main, /protocol\.registerSchemesAsPrivileged/);
   assert.match(main, /url: `\$\{LOCAL_MEDIA_SCHEME\}:\/\/\$\{id\}\/`/);
-  assert.match(html, /media-src 'self' https: eidovara-media:/);
+  assert.match(html, /media-src https: eidovara-media:/);
+  assert.doesNotMatch(html, /media-src [^"]*'self'/);
 });
 
-test('documented launchers invoke the cli script and current version', () => {
+test('documented Windows launchers invoke the cli script and current version', () => {
   assert.match(read('run-cli.bat'), /npm run cli/);
   assert.match(read('run-gui.bat'), /Eidovara v0\.18\.0/);
-  assert.match(read('run-cli.sh'), /node src\/cli\.js/);
   assert.match(read('package.json'), /"cli": "node src\/cli\.js"/);
+  assert.match(read('src/electron/main.js'), /process\.platform !== 'linux'\) return/);
 });
