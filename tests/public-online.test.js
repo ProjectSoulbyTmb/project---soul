@@ -10,6 +10,7 @@ test('public site tells users to download Windows or build from source, not use 
   assert.match(site, /Get Eidovara/);
   assert.match(site, /local-first Windows desktop app/);
   assert.match(site, /not a hosted chat account/);
+  assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/download\/v0\.18\.1\/Eidovara-0\.18\.1-Windows-x64-Setup\.exe/);
   assert.match(site, /https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/latest/);
   assert.match(site, /unsigned Stable Alpha/);
   assert.match(site, /Authenticode-unsigned/);
@@ -67,6 +68,50 @@ test('operator runbook covers Pages merge, Dependency graph, wrangler, custom do
   assert.match(read('docs/GITHUB_RELEASES.md'), /Authenticode-unsigned/);
   assert.match(read('docs/GITHUB_RELEASES.md'), /workflow_dispatch/);
   assert.doesNotMatch(read('docs/GITHUB_RELEASES.md'), /produces a signed installer|Authenticode-signed Setup/i);
+});
+
+test('primary download CTAs point at the official Windows installer .exe, not only the repo root', () => {
+  const version = JSON.parse(read('package.json')).version;
+  const installerName = `Eidovara-${version}-Windows-x64-Setup.exe`;
+  const installerUrl = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${version}/${installerName}`;
+  const latest = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest';
+  const repoRoot = /^https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/?$/i;
+  const isInstallerHref = href => href === installerUrl
+    || (href.endsWith('.exe') && href.includes('/releases/download/'))
+    || href === latest
+    || href.startsWith(`${latest}/download/`);
+
+  const downloadPage = read('docs/download.html');
+  const primary = downloadPage.match(/<a class="primary[^"]*"[^>]*href="([^"]+)"/);
+  assert.ok(primary, 'download page has a primary button');
+  assert.equal(primary[1], installerUrl);
+  assert.match(downloadPage, new RegExp(installerName.replace(/\./g, '\\.')));
+  assert.match(downloadPage, /A7221E7781CEAD32F50E30FABE429092EC77826A5E8878E80D949D754A9404A9/);
+  assert.match(downloadPage, /id="ageConfirm"/);
+  assert.match(downloadPage, /Authenticode-unsigned/);
+  assert.doesNotMatch(downloadPage, /certified by Microsoft|Authenticode-signed|EV-signed installer|SmartScreen-preapproved by Microsoft/i);
+
+  const home = read('docs/index.html');
+  const homeDownloadPrimary = [...home.matchAll(/<a class="primary[^"]*"[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/g)]
+    .filter(([, , text]) => /download|installer|windows alpha|setup\.exe/i.test(text));
+  assert.ok(homeDownloadPrimary.length >= 1);
+  assert.ok(homeDownloadPrimary.some(([, href]) => isInstallerHref(href) || href === 'download.html'));
+  for (const [, href, text] of homeDownloadPrimary) {
+    assert.equal(repoRoot.test(href), false, `home primary "${text.trim()}" must not be the repo root`);
+  }
+
+  const readme = read('README.md');
+  assert.match(readme, new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  const readmeLeadLink = readme.match(/\[Download[^\]]*\]\(([^)]+)\)/);
+  assert.ok(readmeLeadLink);
+  assert.equal(isInstallerHref(readmeLeadLink[1]), true);
+
+  const knowledge = read('docs/knowledge.js');
+  assert.match(knowledge, new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(read('docs/faq.html'), new RegExp(installerName.replace(/\./g, '\\.')));
+  assert.match(read('docs/help.html'), new RegExp(installerName.replace(/\./g, '\\.')));
+  assert.match(read('LIVE.md'), new RegExp(installerUrl.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(read('src/renderer/index.html'), new RegExp(installerName.replace(/\./g, '\\.')));
 });
 
 test('Windows release workflow is tag-published, dispatch-safe, and unsigned', () => {

@@ -10,6 +10,7 @@
 
 ## v0.18.1
 
+- Public download CTAs (Download page after 18+, Home, README, FAQ/Help, Ask Eidovara) point at the official unsigned Windows installer `Eidovara-0.18.1-Windows-x64-Setup.exe`, not the GitHub source tree. Authenticode-unsigned; not Microsoft-certified.
 - Windows installer rebuild after PR #10 (`cursor/engine-product-surface-c180`) merged to `main`. Tag `v0.18.0` already pointed at older `main` and was not moved. `package.json` / Worker / website-helper version is `0.18.1`. App id stays `com.soulconsciousnessstudios.eidovara`.
 - GitHub Pages `docs/` from `main` is the live site. Operator snapshot: `LIVE.md`. Payments stay fail-closed. No Authenticode claim. No `workers.dev` host in app or public JS.
 

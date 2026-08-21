@@ -114,6 +114,14 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.equal(download.ok, true);
   assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
   assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
+  assert.match(download.reply, /Eidovara-0\.18\.1-Windows-x64-Setup\.exe/);
+  assert.ok((download.links || []).some(link => String(link.href || '').endsWith('.exe') || String(link.href || '').includes('/releases/latest')));
+  assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
+
+  const certified = answerAssist('Do you have a certified Windows installer from Microsoft?', { mode: 'download' });
+  assert.equal(certified.ok, true);
+  assert.match(certified.reply, /unsigned|Authenticode/i);
+  assert.match(certified.reply, /not Microsoft-certified|cannot Authenticode-sign|Authenticode-unsigned/i);
 
   const hosted = answerAssist('Is this a hosted Soul chat account I log into in the browser?');
   assert.equal(hosted.ok, true);
