@@ -7,7 +7,8 @@ export function mediaPlaybackDecision(capability, { alreadyConfirmed = false } =
   return { allowed: true, needsConfirm: true, mode };
 }
 
-export function premiumFeatureAllowed(edition, feature) {
-  if (edition === 'premium') return true;
-  return !['rgb', 'compatible', 'searchKey', 'unlimitedApps'].includes(feature);
+// v0.22.2 ships as one full free Alpha. Keep the compatibility helper so older
+// callers do not break, but no implemented feature is restricted by edition.
+export function premiumFeatureAllowed(_edition, _feature) {
+  return true;
 }
