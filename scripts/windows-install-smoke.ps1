@@ -2,10 +2,10 @@
 # SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 $ErrorActionPreference = 'Stop'
 
-$installer = Get-ChildItem -Path 'dist' -Filter 'Eidovara-0.22.3-Windows-x64-Setup.exe' | Select-Object -First 1
-if (-not $installer) { throw 'The v0.22.3 Windows installer was not found in dist/.' }
+$installer = Get-ChildItem -Path 'dist' -Filter 'Eidovara-*-Windows-x64-Setup.exe' | Select-Object -First 1
+if (-not $installer) { throw 'The Windows installer was not found in dist/.' }
 
-$root = Join-Path $env:RUNNER_TEMP ('eidovara-v0223-smoke-' + [guid]::NewGuid().ToString('N'))
+$root = Join-Path $env:RUNNER_TEMP ('eidovara-smoke-' + [guid]::NewGuid().ToString('N'))
 $installDir = Join-Path $root 'app'
 New-Item -ItemType Directory -Force -Path $root | Out-Null
 
@@ -36,7 +36,7 @@ try {
   if (-not $uninstaller) { throw 'NSIS uninstaller was not created.' }
   $uninstall = Start-Process -FilePath $uninstaller.FullName -ArgumentList '/S' -Wait -PassThru
   if ($uninstall.ExitCode -ne 0) { throw "Silent uninstaller exited with code $($uninstall.ExitCode)." }
-  Write-Host 'v0.22.3 install, renderer, launch, and uninstall smoke test OK.'
+  Write-Output "Install, renderer, launch, and uninstall smoke test OK for $($installer.Name)."
 }
 finally {
   Get-Process -Name Eidovara -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
