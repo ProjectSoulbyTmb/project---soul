@@ -1,4 +1,4 @@
-/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
+﻿/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 /* Eidovara interface tokens ??? system-inspired visual language, not an Apple product.
    System font stack only; do not ship or require licensed SF Pro or SF Mono files. */
@@ -112,6 +112,7 @@
   --gradient-hero: radial-gradient(1200px 600px at 10% -20%, color-mix(in srgb, var(--tint) 18%, transparent), transparent 65%), radial-gradient(800px 500px at 90% 10%, color-mix(in srgb, var(--accent2) 14%, transparent), transparent 60%);
   --focus-ring: 0 0 0 3px color-mix(in srgb, var(--tint) 40%, transparent);
 }
+
 
 
 
