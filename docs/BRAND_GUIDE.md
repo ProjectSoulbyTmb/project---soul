@@ -4,7 +4,9 @@ This is a **usage note** for Soul Consciousness Studios and anyone given written
 
 Eidovara is a trademark of Soul Consciousness Studios (unregistered). Soul (feature name) and Soul Consciousness Studios (intended publisher name) are likewise unregistered marks of Soul Consciousness Studios. See [TRADEMARKS.md](../TRADEMARKS.md).
 
-## Name
+## 
+
+Do not use licensed SF Pro, SF Mono, or other proprietary font files.Name
 
 - Product: **Eidovara**
 - Feature: **Soul** (local software self-model; not a person; not Marvel's J.A.R.V.I.S.)
