@@ -67,7 +67,7 @@ const rows = unique.map((full) => {
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const header = [
-  'Eidovara first-party deposit listing (local only — do not commit this directory).',
+  'Eidovara first-party deposit listing (local only â€” do not commit this directory).',
   `Claimant: Soul Consciousness Studios`,
   `Generated: ${new Date().toISOString()}`,
   `Files: ${rows.length}`,
