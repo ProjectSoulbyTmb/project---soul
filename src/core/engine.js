@@ -75,13 +75,7 @@ import {
   toggleFavorite,
   unpinWidget,
 } from './layers.js';
-import {
-  setTelemetryEnabled,
-  providerTelemetry,
-  storeTelemetry,
-  ipcTelemetry as _ipcTelemetry,
-  getTelemetrySnapshot as _getTelemetrySnapshot,
-} from './telemetry.js';
+import { setTelemetryEnabled, providerTelemetry, storeTelemetry } from './telemetry.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
