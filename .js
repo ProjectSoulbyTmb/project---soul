@@ -1,11 +1,34 @@
-# Contribution policy
+COPYRIGHT CLAIM (ONE PAGE)
+Product: Eidovara (Windows desktop software; Soul is a software self-model feature)
+Claimant: Soul Consciousness Studios
+Intended publisher name: Soul Consciousness Studios
+  (not a formed company; does not own this copyright unless a signed assignment exists)
 
-Eidovara is not accepting source-code, documentation, artwork, model, voice, or asset contributions unless Soul Consciousness Studios first approves the work in writing and both parties sign an appropriate copyright assignment or other written agreement.
+Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.
+Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
 
-**Drive-by pull requests do not create ownership.** Opening, reviewing, or merging a GitHub pull request does not make the submitter a joint author, co-owner, or trademark owner of Eidovara, Soul Consciousness Studios, or first-party marks. It also does **not** transfer copyright to Soul Consciousness Studios. No issue, patch, fork, or PR is an assignment. **Sign privately; posting a PR is not assignment.**
+This page is a copyright notice and ownership claim for qualifying original
+first-party Eidovara expression (source, documentation, first-party UI assets,
+and release materials authored by Soul Consciousness Studios).
 
-An unsigned template the owner may execute privately (after counsel review) is [docs/CONTRIBUTOR_ASSIGNMENT.md](docs/CONTRIBUTOR_ASSIGNMENT.md). **That file is not signed.** This repository does not claim that unknown contributors have assigned rights. Do not treat a GitHub pull request, issue, or “I agree” checkbox as an executed assignment. Preserve SPDX file headers (`LicenseRef-Eidovara-Source-Available-1.0`) on first-party source; do not relicense that code as MIT, Apache, GPL, or other open source. See [docs/COPYRIGHT.md](docs/COPYRIGHT.md) and the dated [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) self-attestation (not a government registration). Do not use ® or invent USPTO or copyright-office numbers. See [LICENSE](LICENSE) and [TRADEMARKS.md](TRADEMARKS.md).
+This page is not a U.S. Copyright Office registration or certificate.
+This page is NOT:
+  - a U.S. Copyright Office registration or certificate
+  - a USPTO trademark registration (marks are unregistered; see TRADEMARKS.md)
+  - a patent, patent application, or patent license
+  - formation of a company
+  - legal advice, a court judgment, or an attorney opinion
+  - a license of Electron, Chromium, Node.js, Windows, Wikimedia content,
+    user content, or any other third-party material
 
-Issues may describe bugs or user-visible feature requests, but contributors should not submit confidential information, patent-sensitive technical disclosures, proprietary code, or third-party material they do not have authority to provide. Opening an issue does not transfer ownership of the submission.
+License: Eidovara Source-Available Evaluation License 1.0 (see LICENSE).
+Not MIT, Apache, GPL, or OSI open source. No trademark license. No patent
+license. Contributions are not accepted until a privately executed assignment
+(see docs/CONTRIBUTOR_ASSIGNMENT.md). Posting a pull request is not assignment.
 
-Pull requests submitted without prior written approval will not be incorporated and may be closed without substantive review. GitHub's platform terms may still apply to material a contributor posts; posting never substitutes for a signed transfer of ownership. This policy helps keep authorship, ownership, licensing, development provenance, and any later patent inventorship analysis unambiguous.
+How to notice files: docs/COPYRIGHT.md
+How to register (owner-only, copyright.gov): docs/COPYRIGHT.md
+Repository self-attestation (not a government filing): docs/IP_CERTIFICATION.md
+Trademark usage: TRADEMARKS.md
+Trademark filing checklist (not filed): docs/TRADEMARK_FILING.md
+
