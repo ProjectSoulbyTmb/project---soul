@@ -1,4 +1,4 @@
-﻿import test from 'node:test';
+import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -119,9 +119,9 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.equal(download.ok, true);
   assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
   assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
-  assert.match(download.reply, /Eidovara-0\.19\.1-Windows-x64-Setup\.exe/);
-  assert.match(download.reply, /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/);
-  assert.match(download.reply, /101\.3 MiB/);
+  assert.match(download.reply, /Eidovara-v1\.0\.0-Windows-x64-Setup\.exe/);
+  assert.match(download.reply, /F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675/);
+  assert.match(download.reply, /101\.75 MiB/);
   assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
   assert.ok((download.links || []).some(link => String(link.href || '').endsWith('.exe') || String(link.href || '').includes('/releases/latest')));
   assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
