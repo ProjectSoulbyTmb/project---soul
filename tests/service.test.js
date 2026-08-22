@@ -188,7 +188,7 @@ test('Worker health/config/status JSON matches desktop sanitizeRemoteConfig and 
   assert.equal(snapshot.online, true);
   assert.equal(snapshot.configured, true);
   assert.equal(snapshot.service, 'Eidovara');
-  assert.equal(snapshot.version, '0.22.2');
+  assert.equal(snapshot.version, ASSIST_VERSION);
   assert.equal(snapshot.paymentsEnabled, false);
   assert.equal(snapshot.checkoutEnabled, false);
   assert.equal(snapshot.localFirst, true);
