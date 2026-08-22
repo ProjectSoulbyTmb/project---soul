@@ -94,6 +94,7 @@ export const LICENSE_GUARDS = {
    */
   runAllGuards: () => {
     LICENSE_GUARDS.enforceSourceAvailable();
+    LICENSE_GUARDS.preventOpenSourceRelicense();
     LICENSE_GUARDS.validateLicenseCompliance();
     LICENSE_GUARDS.validateAttribution();
   }
