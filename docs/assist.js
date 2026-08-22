@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { answerAssist, STORAGE_KEY, DEFAULT_SERVICE_BASE, safePublicHref } from './knowledge.js';
 
@@ -229,6 +229,7 @@ function modeRadio(value, label, checked = false) {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
 else mount();
+
 
 
 
