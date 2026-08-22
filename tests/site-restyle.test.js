@@ -4,8 +4,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { INSTALLER_NAME, INSTALLER_SHA256, SOURCE_VERSION } from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
+const escapeRe = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const htmlFiles = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
 
 test('homepage restyle keeps three benefits, one hero fill CTA, and no Adult Soul marketing', () => {
@@ -36,15 +38,15 @@ test('public nav Download uses nav-cta to download.html on every HTML page', () 
   }
 });
 
-test('public release pages advertise the real v0.22.2 installer', () => {
+test('public release pages advertise the real current installer', () => {
   for (const file of ['docs/index.html', 'docs/product.html', 'docs/download.html', 'docs/status.html']) {
     const html = read(file);
-    assert.match(html, /v0\.22\.2/, file);
+    assert.match(html, new RegExp('v' + escapeRe(SOURCE_VERSION)), file);
   }
   for (const file of ['docs/product.html', 'docs/download.html']) {
     const html = read(file);
-    assert.match(html, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/, file);
-    assert.match(html, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/, file);
+    assert.match(html, new RegExp(escapeRe(INSTALLER_NAME)), file);
+    assert.match(html, new RegExp(INSTALLER_SHA256), file);
   }
   assert.match(read('docs/site.css'), /--eidovara-visual:\s*sleek-c180/);
   assert.match(read('docs/site.css'), /#site-nav > a\.nav-cta/);
