@@ -218,7 +218,7 @@
     b.type = 'button';
     b.append(
       Object.assign(document.createElement('strong'), { textContent: result.title }),
-      Object.assign(document.createElement('small'), { textContent: result.kind === 'convert' ? 'Local conversion Â· no live FX' : 'Local calculator' })
+      Object.assign(document.createElement('small'), { textContent: result.kind === 'convert' ? 'Local conversion · no live FX' : 'Local calculator' })
     );
     b.addEventListener('click', async () => {
       try { await navigator.clipboard?.writeText?.(String(result.result)); } catch {}
@@ -271,7 +271,7 @@
   $('#desktopChromeForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const status = $('#desktopChromeStatus');
-    if (status) status.textContent = 'Savingâ€¦';
+    if (status) status.textContent = 'Saving…';
     try {
       await persistDesktop({
         trayStay: $('#trayStayInput')?.checked === true,
