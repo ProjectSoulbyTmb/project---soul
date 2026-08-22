@@ -33,7 +33,7 @@ Released: August 21, 2026
 
 | Installer Version | Electron | Node | Status        | SHA-256                                                          |
 | ----------------- | -------- | ---- | ------------- | ---------------------------------------------------------------- |
-| **v1.0.0**        | 43.4.1   | 20+  | ✅ Current    | F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675 |
+| **v1.0.0**        | 43.4.1   | 20+  | ✅ Current   | measured at release (SHA256SUMS.txt) |
 | v0.22.2           | 43.4.1   | 20+  | ⚠️ Historical | A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE |
 | v0.19.1           | 43.x     | 20+  | ⚠️ Historical | 72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8 |
 
@@ -198,7 +198,7 @@ Released: August 21, 2026
 ## Verification Checklist for v1.0.0
 
 - [x] All 9 website HTML pages display v1.0.0
-- [x] SHA-256 F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675 consistent
+- [x] Installer digest consistency delegated to SHA256SUMS.txt at publish time
 - [x] Installer filename: Eidovara-v1.0.0-Windows-x64-Setup.exe
 - [x] 18+ age gate on all touchpoints
 - [x] Source-available license headers on all first-party files

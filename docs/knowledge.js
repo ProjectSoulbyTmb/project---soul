@@ -119,7 +119,7 @@ export const ENTRIES = [
       'microsoft',
     ],
     title: 'Unsigned Windows build',
-    reply: `The current ${INSTALLER_NAME} is Authenticode-unsigned. Windows SmartScreen may warn. Verify SHA-256 ${INSTALLER_SHA256} and the GitHub release provenance. The project does not claim Microsoft certification or SmartScreen preapproval.`,
+    reply: `The current ${INSTALLER_NAME} is Authenticode-unsigned. Windows SmartScreen may warn. Verify against the release's SHA256SUMS.txt and GitHub build provenance; a live digest is also served by /v1/config (liveInstallerSha256) once measured. The project does not claim Microsoft certification or SmartScreen preapproval.`,
     links: [
       { href: 'download.html', label: 'Download page (18+)' },
       { href: 'security.html', label: 'Security' },
@@ -659,7 +659,7 @@ export function assistMeta() {
     version: ASSIST_VERSION,
     liveInstallerVersion: ASSIST_VERSION,
     liveInstaller: INSTALLER_NAME,
-    liveInstallerSha256: INSTALLER_SHA256,
+    liveInstallerSha256: null,
     knowledgeOnly: true,
     transcripts: false,
     paymentsEnabled: false,

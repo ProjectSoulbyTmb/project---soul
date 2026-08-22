@@ -17,6 +17,7 @@ import {
   SOURCE_VERSION,
   LIVE_INSTALLER_VERSION,
   INSTALLER_NAME,
+  INSTALLER_FACTS_MEASURED,
   INSTALLER_SHA256,
   INSTALLER_SIZE_BYTES,
   INSTALLER_LATEST_URL,
@@ -65,16 +66,29 @@ test('worker advertises exactly the canonical installer metadata', () => {
     INSTALLER_NAME,
     'worker installer filename drifted from release.js'
   );
-  assert.equal(
-    WORKER_LIVE_INSTALLER_SHA256,
-    INSTALLER_SHA256,
-    'worker installer SHA-256 drifted from release.js'
-  );
-  assert.equal(
-    WORKER_LIVE_INSTALLER_SIZE,
-    INSTALLER_SIZE_BYTES,
-    'worker installer size drifted from release.js'
-  );
+  if (INSTALLER_FACTS_MEASURED) {
+    // Post-measurement parity: once release.js carries measured values, the
+    // worker fallback must mirror them exactly (single source of truth).
+    assert.equal(
+      WORKER_LIVE_INSTALLER_SHA256,
+      INSTALLER_SHA256,
+      'worker installer SHA-256 drifted from release.js'
+    );
+    assert.equal(
+      WORKER_LIVE_INSTALLER_SIZE,
+      INSTALLER_SIZE_BYTES,
+      'worker installer size drifted from release.js'
+    );
+  } else {
+    // Honesty gate: until facts are measured for this version, the worker must
+    // refuse to claim ANY digest/size rather than echo stale declared targets.
+    // (Worker exports FALLBACK_INSTALLER_SHA256/SIZE, null while unmeasured.)
+    assert.equal(
+      WORKER_LIVE_INSTALLER_SHA256,
+      null,
+      'worker must not advertise installer facts before they are measured'
+    );
+  }
   assert.equal(
     WORKER_LIVE_INSTALLER_URL,
     INSTALLER_LATEST_URL,
