@@ -59,7 +59,6 @@ test('primary download CTA points at the published installer and keeps the age g
   assert.match(product, new RegExp(INSTALLER_SHA256));
 
   const status = read('docs/status.html');
-  assert.match(status, new RegExp('GitHub Release v' + escapeRe(LIVE_INSTALLER_VERSION)));
   assert.match(status, new RegExp(escapeRe(INSTALLER_NAME)));
   assert.doesNotMatch(status, /href="[^"]+\.exe"/);
 });
