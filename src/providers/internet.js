@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { isExplicitInternetRequest } from '../core/workspace.js';
 import { officialSearchHandoffs } from '../core/entertainment.js';
