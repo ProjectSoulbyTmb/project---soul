@@ -13,7 +13,7 @@ Execute top to bottom. Every unchecked box blocks the release.
 - [ ] Version bumped in `package.json` (semver: breaking -> major)
 - [ ] `CHANGELOG.md` entry complete (user-facing language)
 - [ ] Schema version bumped if profiles changed; `migrateProfile` tested against a real v1 profile export
-- [ ] `npm run build-thoth` / knowledge pack regenerated if content changed (private line)
+- [ ] Knowledge pack regenerated if content changed (private tooling)
 
 ## 2. Quality gates
 
