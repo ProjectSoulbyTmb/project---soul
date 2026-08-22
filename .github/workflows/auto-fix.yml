@@ -77,6 +77,11 @@ jobs:
           git clean -fd
           echo "Validation failed:${{ steps.validate.outputs.validation_failed }} — all fixes reverted."
 
+      - name: Generate failure triage
+        if: failure()
+        shell: bash
+        run: pnpm test 2>&1 | node scripts/triage-failures.mjs /dev/stdin || true
+
       - name: File issue about unfixable failures
         if: failure() && steps.validate.outputs.validation_failed != ''
         shell: bash
