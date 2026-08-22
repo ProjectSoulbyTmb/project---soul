@@ -1,21 +1,31 @@
-# Dependency review on pull requests. GitHub cannot run this job until the
-# owner enables Dependency graph (Settings → Code security). Keep
-# fail-on-severity: moderate. This file does not claim the graph is on.
-name: Dependency review
-
+# Publishes docs/ as the one production GitHub Pages site from main only.
+# GitHub Pages serves github.io over HTTPS. Do not retarget this workflow at a feature branch
+# and do not add a second production site. PR #10 is merged; live URL:
+# https://projectsoulbytmb.github.io/project---soul/
+name: Deploy project website
 on:
-  pull_request:
-
+  push:
+    branches: [main]
+    paths: ['docs/**', '.github/workflows/pages.yml']
+  workflow_dispatch:
 permissions:
   contents: read
-
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
 jobs:
-  dependency-review:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:
-          persist-credentials: false
-      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
-        with:
-          fail-on-severity: moderate
+          path: docs
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4
