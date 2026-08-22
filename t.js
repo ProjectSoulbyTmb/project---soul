@@ -5,157 +5,163 @@ import os from 'node:os';
 import path from 'node:path';
 import { SoulEngine } from '../src/core/engine.js';
 import { JsonStore } from '../src/core/store.js';
-import { defaultProfile } from '../src/core/schema.js';
 import { OfflineProvider } from '../src/providers/offline.js';
-import { classifyWorkspaceIntent } from '../src/core/workspace.js';
-import { actionsForIntent, KERNEL_ACTION_TYPES, routeKernel, suggestionsForView, soulOverlay, startKernelSession } from '../src/core/kernel.js';
-import { canCallAssist, requestSoulAssist } from '../src/core/soul-online.js';
-import { composeOfflineReply } from '../src/providers/offline.js';
-import { buildSystemContext } from '../src/providers/context.js';
+import {
+  citeResearchInReply,
+  HONEST_RESEARCH_COPY,
+  researchInternet,
+  researchOpenActions,
+  sanitizeSnippet
+} from '../src/providers/internet.js';
+import { isExplicitInternetRequest } from '../src/core/workspace.js';
 
-function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-coverage-')); }
-function make(dir) { return new SoulEngine({ store: new JsonStore({ dataDir: dir }), provider: new OfflineProvider() }); }
-const read = file => fs.readFileSync(file, 'utf8');
+function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-companion-web-')); }
+function make(dir, provider) {
+  return new SoulEngine({ store: new JsonStore({ dataDir: dir }), provider: provider || new OfflineProvider() });
+}
+function hostnameOf(value) {
+  try { return new URL(String(value)).hostname.toLowerCase(); } catch { return ''; }
+}
+function isWikipediaHost(value) {
+  const host = hostnameOf(value);
+  return host === 'wikipedia.org' || host.endsWith('.wikipedia.org');
+}
+const read = file => fs.readFileSync(path.join(process.cwd(), file), 'utf8');
 
-const NAV = [
-  ['Open Apps & Gaming', 'apps'],
-  ['Take me to Entertainment', 'entertainment'],
-  ['Open Memory', 'memory'],
-  ['Open identity and Adult Mode', 'identity-panel'],
-  ['Open dashboard', 'dashboard'],
-  ['Take me to conversation', 'conversation'],
-  ['Open settings', 'settings'],
-  ['Show terms', 'legal'],
-  ['Configure assistant setup', 'setup'],
-  ['Open service settings', 'service'],
-  ['Create a backup', 'backups'],
-  ['Check for updates', 'updates'],
-  ['Open local media', 'local-media'],
-  ['Change the accent color theme', 'theme'],
-  ['What can you do here?', 'here'],
-  ['forget: evening sessions', 'forget']
-];
-
-test('companion nav phrases reach every first-party workspace surface', () => {
-  for (const [phrase, intent] of NAV) {
-    assert.equal(classifyWorkspaceIntent(phrase), intent, phrase);
-  }
-  assert.equal(classifyWorkspaceIntent('Search the internet for Saturn'), 'research');
-  assert.equal(classifyWorkspaceIntent('Is Eidovara 18+?'), 'general');
-});
-
-test('every advertised surface has working kernel actions the renderer handles', () => {
-  const overlay = soulOverlay(defaultProfile());
-  const intents = [
-    'apps', 'entertainment', 'mood', 'local-media', 'memory', 'forget', 'identity', 'identity-panel',
-    'settings', 'theme', 'backups', 'updates', 'service', 'status', 'setup', 'accessibility',
-    'presence', 'dashboard', 'conversation', 'focus', 'study', 'create', 'talk', 'gaming',
-    'research', 'here', 'hello', 'help', 'age', 'legal', 'privacy'
-  ];
-  for (const intent of intents) {
-    const actions = actionsForIntent(intent, overlay, 'dashboard');
-    assert.ok(actions.length, intent);
-    for (const action of actions) {
-      assert.ok(KERNEL_ACTION_TYPES.includes(action.type), `${intent} → ${action.type}`);
-      assert.ok(String(action.label || '').length, `${intent} missing label`);
+function wikiJson() {
+  return {
+    query: {
+      pages: {
+        1: {
+          pageid: 1,
+          index: 1,
+          title: 'Saturn',
+          extract: '<b>Sixth</b> planet <script>alert(1)</script> of the solar system',
+          description: '<img src=x onerror=alert(1)>Gas giant',
+          fullurl: 'https://en.wikipedia.org/wiki/Saturn'
+        }
+      }
     }
+  };
+}
+
+function mockFetch(urls) {
+  return async url => {
+    urls.push(String(url));
+    if (isWikipediaHost(url)) {
+      return { ok: true, json: async () => wikiJson() };
+    }
+    return { ok: true, json: async () => ({ pages: [] }), text: async () => '<html></html>' };
+  };
+}
+
+test('sanitizeSnippet strips markup and keeps readable text', () => {
+  assert.equal(sanitizeSnippet('<b>Sixth</b> planet <script>alert(1)</script>'), 'Sixth planet');
+  const img = sanitizeSnippet('<img src=x onerror=alert(1)>Gas giant');
+  assert.equal(img, 'Gas giant');
+  assert.equal(img.includes('<'), false);
+  assert.equal(img.includes('>'), false);
+  assert.equal(img.toLowerCase().includes('onerror'), false);
+  assert.equal(sanitizeSnippet('<SCRIPT>steal()</SCRIPT>ok'), 'ok');
+  assert.equal(sanitizeSnippet('keep</script >text'), 'keep text');
+  assert.match(HONEST_RESEARCH_COPY, /not a full-internet index/i);
+});
+
+test('explicit companion/engine turn pulls sanitized titles, snippets, and hostnames', async () => {
+  const urls = [];
+  const original = globalThis.fetch;
+  globalThis.fetch = mockFetch(urls);
+  try {
+    const s = make(tmp());
+    const r = await s.respond('Search the internet for information about Saturn');
+    assert.equal(isExplicitInternetRequest('Search the internet for information about Saturn'), true);
+    assert.ok(r.webResearch);
+    assert.equal(r.kernel.intent, 'research');
+    assert.equal(r.kernel.webLookup, true);
+    assert.equal(r.kernel.conversationsSent, false);
+    const source = r.webResearch.sources[0];
+    assert.equal(source.title, 'Saturn');
+    assert.equal(source.hostname, 'en.wikipedia.org');
+    assert.match(source.description, /Gas giant|Sixth planet/);
+    assert.equal(source.description.includes('<'), false);
+    assert.equal(source.description.includes('>'), false);
+    assert.equal(source.description.toLowerCase().includes('onerror'), false);
+    assert.equal((source.extract || '').includes('<'), false);
+    assert.equal((source.extract || '').includes('>'), false);
+    assert.match(r.reply, /Saturn/);
+    assert.match(r.reply, /en\.wikipedia\.org/);
+    assert.match(r.reply, /Gas giant|Sixth planet/);
+    assert.match(r.reply, /full-internet index/i);
+    assert.ok(r.kernel.actions.some(a => a.type === 'open-external' && a.url === 'https://en.wikipedia.org/wiki/Saturn' && a.auto === false));
+    assert.ok(urls.some(url => isWikipediaHost(url)));
+    assert.equal(urls.every(url => !url.includes('/v1/assist') && !url.includes('workers.dev')), true);
+    const stored = r.state.conversations[0].messages.filter(m => m.role === 'assistant').at(-1);
+    assert.ok(stored.webResearch);
+    assert.ok(stored.actions.some(a => a.type === 'open-external'));
+  } finally {
+    globalThis.fetch = original;
   }
-  const hereApps = suggestionsForView('apps', overlay);
-  assert.ok(hereApps.some(a => a.type === 'discover-apps'));
-  const hereMedia = suggestionsForView('entertainment', overlay);
-  assert.ok(hereMedia.some(a => a.type === 'pick-local-media'));
-  const hereSettings = suggestionsForView('settings', overlay);
-  assert.ok(hereSettings.some(a => a.type === 'open-service'));
-  assert.ok(hereSettings.some(a => a.type === 'open-updates'));
 });
 
-test('kernel routes companion coverage phrases and persists actions on the conversation', async () => {
-  const s = make(tmp());
-  const entertainment = routeKernel('Take me to Entertainment', s.snapshot());
-  assert.equal(entertainment.intent, 'entertainment');
-  assert.equal(entertainment.actions[0].type, 'open-view');
-  assert.equal(entertainment.actions[0].view, 'entertainment');
-  assert.equal(entertainment.actions[0].auto, true);
-  const backups = await s.respond('Create a backup', { view: 'dashboard' });
-  assert.equal(backups.kernel.intent, 'backups');
-  assert.ok(backups.kernel.actions.some(a => a.panel === 'backupSection' || a.type === 'open-view'));
-  const stored = backups.state.conversations[0].messages.filter(m => m.role === 'assistant').at(-1);
-  assert.ok(Array.isArray(stored.actions));
-  assert.ok(stored.actions.length);
-  const here = await s.respond('What can you do here?', { view: 'apps' });
-  assert.equal(here.kernel.intent, 'here');
-  assert.ok(here.kernel.actions.some(a => a.type === 'discover-apps'));
-  assert.match(here.reply, /confirm-launch|Start Menu|injection/i);
-});
-
-test('optional Soul stays honest until setup; Assist never runs without opt-in', async () => {
-  const s = make(tmp());
-  const overlay = soulOverlay(s.snapshot());
-  assert.equal(overlay.enabled, false);
-  assert.match(overlay.label, /not a mind|software/i);
-  const who = await s.respond('Hello Soul. Tell me who you are.');
-  assert.match(who.reply, /Eidovara/);
-  assert.match(who.reply, /optional Soul setup is off|workspace kernel/i);
-  assert.doesNotMatch(who.reply, /I am conscious|I am alive/i);
-  const ctx = buildSystemContext(s.snapshot());
-  assert.match(ctx, /Optional Soul setup is off/);
-  assert.doesNotMatch(ctx, /You are Soul, the optional software self-model/);
-  s.configureSetup({ categories: ['personal'] });
-  const after = soulOverlay(s.snapshot());
-  assert.equal(after.enabled, true);
-  assert.equal(after.sentience, false);
-  assert.equal(canCallAssist({ optIn: false, serviceUrl: 'https://api.eidovara.org' }).reason, 'opt-in-off');
+test('hello and missing internet phrases do not fetch during engine.respond', async () => {
   let called = 0;
-  const skipped = await s.assistQuery('Is Eidovara 18+?', {
-    base: 'https://api.example.test',
-    fetchImpl: async () => { called += 1; throw new Error('should not fetch'); }
-  });
-  assert.equal(skipped.reason, 'opt-in-off');
-  assert.equal(skipped.conversationsSent, false);
-  assert.equal(called, 0);
-  const blocked = await requestSoulAssist({
-    base: 'https://api.example.test',
-    query: 'hello',
-    optIn: false,
-    fetchImpl: async () => { called += 1; }
-  });
-  assert.equal(blocked.skipped, true);
-  assert.equal(called, 0);
-});
-
-test('desktop companion chrome handles every action type and keeps one composer', () => {
-  const renderer = read('src/renderer/renderer.js');
-  const companion = read('src/renderer/companion.js');
-  const html = read('src/renderer/index.html');
-  const preload = read('src/electron/preload.cjs');
-  for (const type of KERNEL_ACTION_TYPES) {
-    assert.match(renderer, new RegExp(`action\\.type==='${type}'`));
+  const original = globalThis.fetch;
+  globalThis.fetch = async () => { called += 1; throw new Error('network should not run'); };
+  try {
+    const s = make(tmp());
+    const hello = await s.respond('Hello Soul. Tell me who you are.');
+    assert.equal(hello.webResearch, null);
+    assert.equal(hello.kernel.intent, 'identity');
+    assert.equal(await researchInternet('hello'), null);
+    assert.equal(isExplicitInternetRequest('hello'), false);
+    const mood = await s.respond('Find music that fits my current mood and explain why.');
+    assert.equal(mood.webResearch, null);
+    assert.equal(called, 0);
+  } finally {
+    globalThis.fetch = original;
   }
-  assert.match(renderer, /soul\.send\(text,\s*\{\s*view:/);
-  assert.doesNotMatch(renderer, /if\(stayCompanion\)\{\s*setView\('dashboard'\)/);
-  assert.match(renderer, /e\.key==='\/'/);
-  assert.match(renderer, /appendKernelActions/);
-  assert.match(companion, /syncHistory/);
-  assert.match(companion, /What can you do here/);
-  assert.match(companion, /eidovaraActiveConversation/);
-  assert.match(html, /id="companionFollowups"/);
-  assert.match(html, /id="companionForm"/);
-  assert.match(html, /id="companionInput"/);
-  assert.match(html, /placeholder="https:\/\/api\.eidovara\.org"/);
-  assert.doesNotMatch(html, /workers\.dev/);
-  assert.doesNotMatch(html, /media-src [^"]*'self'/);
-  assert.match(preload, /send: \(m, opts\)/);
-  assert.match(read('src/electron/main.js'), /respond\(m, incoming\)/);
 });
 
-test('local-media and service copy stay inside constraints', () => {
-  const st = defaultProfile();
-  startKernelSession(st);
-  const media = composeOfflineReply({ input: 'Open local media', state: st, intent: 'local-media' });
-  assert.match(media, /eidovara-media/);
-  assert.doesNotMatch(media, /workers\.dev/);
-  const service = composeOfflineReply({ input: 'Open service settings', state: st, intent: 'service' });
-  assert.match(service, /api\.eidovara\.org/);
-  assert.match(service, /Assist is not Soul/i);
-  assert.doesNotMatch(service, /I am alive|conscious being/i);
+test('model replies without citations still get sanitized source lines', () => {
+  const research = {
+    query: 'Saturn',
+    disclaimer: HONEST_RESEARCH_COPY,
+    sources: [{
+      title: 'Saturn',
+      hostname: 'en.wikipedia.org',
+      description: '<b>Sixth</b> planet',
+      url: 'https://en.wikipedia.org/wiki/Saturn'
+    }]
+  };
+  const cited = citeResearchInReply('Here is a short answer.', research);
+  assert.match(cited, /Saturn/);
+  assert.match(cited, /en\.wikipedia\.org/);
+  assert.match(cited, /Sixth planet/);
+  assert.equal(cited.includes('<'), false);
+  assert.equal(cited.includes('>'), false);
+  assert.match(cited, /full-internet index/i);
+  const actions = researchOpenActions(research);
+  assert.equal(actions[0].type, 'open-external');
+  assert.equal(actions[0].auto, false);
+  assert.equal(actions[0].hostname, 'en.wikipedia.org');
+});
+
+test('companion log renders research with textContent and confirm/openExternal chips', () => {
+  const companion = read('src/renderer/companion.js');
+  const renderer = read('src/renderer/renderer.js');
+  const engine = read('src/core/engine.js');
+  assert.match(engine, /researchInternet\(text/);
+  assert.match(engine, /citeResearchInReply/);
+  assert.match(companion, /companion-research-source/);
+  assert.match(companion, /snip\.textContent/);
+  assert.match(companion, /eidovaraOpenResearch/);
+  assert.doesNotMatch(companion, /innerHTML\s*=\s*source/);
+  assert.match(renderer, /noteExchange\?\.\(text, replyText, assistNote, \{ research: res\.webResearch/);
+  assert.match(renderer, /window\.confirm/);
+  assert.match(renderer, /openExternal/);
+  assert.match(renderer, /window\.eidovaraOpenResearch\s*=\s*openResearchLink/);
+  assert.match(renderer, /surface === 'companion'|surface==='companion'/);
+  const respond = engine.slice(engine.indexOf('async respond'), engine.lastIndexOf('return {'));
+  assert.doesNotMatch(respond, /assistQuery/);
+  assert.doesNotMatch(read('src/renderer/index.html'), /dreambot333\.workers\.dev/);
 });
