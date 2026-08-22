@@ -279,7 +279,7 @@ function pushServiceStatus() {
   if (tray) {
     try {
       tray.setToolTip(status.presence === SERVICE_PRESENCE_ONLINE || status.presence === SERVICE_PRESENCE_RECONNECTING
-        ? `Eidovara Â· ${status.presence}`
+        ? `Eidovara · ${status.presence}`
         : 'Eidovara');
     } catch {}
   }
