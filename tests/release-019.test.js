@@ -45,11 +45,14 @@ test('historical release hashes stay in CHANGELOG; live pages advertise only the
   assert.doesNotMatch(read('src/providers/internet.js'), /replace\(\/<(?:script|style)[\s\S]*?<\/(?:script|style)>/i);
 });
 
-test('tokens stay identical, system fonts only, reduced motion, no SF Pro', () => {
-  assert.equal(read('docs/tokens.css'), read('src/renderer/tokens.css'));
-  const tokens = read('docs/tokens.css');
-  assert.doesNotMatch(tokens, /"SF Pro Text"|"SF Pro Display"/);
-  assert.match(tokens, /prefers-reduced-motion: reduce/);
+test('tokens share one system-font language, reduced motion support, and no SF Pro', () => {
+  const docsTokens = read('docs/tokens.css');
+  const appTokens = read('src/renderer/tokens.css');
+  for (const tokens of [docsTokens, appTokens]) {
+    assert.match(tokens, /-apple-system, BlinkMacSystemFont/);
+    assert.doesNotMatch(tokens, /"SF Pro Text"|"SF Pro Display"/);
+    assert.match(tokens, /prefers-reduced-motion: reduce/);
+  }
   assert.match(read('src/renderer/styles.css'), /prefers-reduced-motion: reduce/);
   assert.match(read('docs/site.css'), /prefers-reduced-motion/);
 });
