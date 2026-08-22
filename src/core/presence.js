@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /** First-party companion looks. Decorative interface chrome â€” not a living figure. */
 
