@@ -5,7 +5,8 @@
   const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 
   let sleepTimer = 0;
-  let _calcResult = null;
+  // eslint-disable-next-line no-unused-vars -- reserved palette-calculator state
+  let calcResult = null;
 
   function settings() {
     return window.eidovaraSettings || {};

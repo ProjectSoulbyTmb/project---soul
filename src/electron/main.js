@@ -175,7 +175,6 @@ let config = {
 };
 let _pendingUpdate = null;
 let desktopUpdater = null;
-let playerWindows = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
 let adminSessionUntil = 0,
   failedAdminAttempts = 0,
@@ -875,7 +874,7 @@ desktopUpdater = attachDesktopUpdater({
   scanUpdateForMalware,
   log,
 });
-_$_({
+attachPlayerWindows({
   BrowserWindow,
   ipcMain,
   getMainWindow: () => mainWindow,

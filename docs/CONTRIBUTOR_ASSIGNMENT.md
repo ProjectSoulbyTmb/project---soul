@@ -76,11 +76,11 @@ Contributor will execute documents reasonably requested to evidence or record th
 
 This public file has **no signatures**. Complete only on a private original.
 
-|           | Owner                                | Contributor                          |
-| --------- | ------------------------------------ | ------------------------------------ |
-| Name      | Soul Consciousness Studios           | [Legal name]                         |
-| Signature | ******\*\*******\_\_******\*\******* | ******\*\*******\_\_******\*\******* |
-| Date      | [date]                               | [date]                               |
+|           | Owner                                        | Contributor                                  |
+| --------- | -------------------------------------------- | -------------------------------------------- |
+| Name      | Soul Consciousness Studios                   | [Legal name]                                 |
+| Signature | **\*\***\*\***\*\***\_\_**\*\***\*\***\*\*** | **\*\***\*\***\*\***\_\_**\*\***\*\***\*\*** |
+| Date      | [date]                                       | [date]                                       |
 
 Store executed originals in private storage controlled by the Owner. Do not commit them here.
 

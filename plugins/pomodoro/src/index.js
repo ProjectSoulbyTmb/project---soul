@@ -102,7 +102,7 @@ const api = {
     persist();
     return state.todayStats;
   },
-  async onSessionCompleted(data) {},
+  async onSessionCompleted(_data) {},
 };
 
 export default api;
