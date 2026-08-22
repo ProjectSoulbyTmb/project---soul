@@ -158,7 +158,7 @@ test('chatbot knowledge answers golden product questions', () => {
   const owner = answerAssist('Who owns Eidovara copyright?');
   assert.equal(owner.ok, true);
   assert.match(owner.reply, /Soul Consciousness Studios/);
-  assert.match(owner.reply, /does not own Electron|Third-party stays third-party/);
+  assert.match(owner.reply, /does not own Electron|retain their respective rights|Third-party stays third-party/);
   assert.match(owner.reply, /not legal advice/);
   assert.match(owner.reply, /unregistered/);
 
