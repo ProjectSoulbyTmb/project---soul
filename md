@@ -1,84 +1,22 @@
-# Copyright notices and U.S. registration (owner checklist)
+# Gaming and media capability standard
 
-This file tells the owner how to **notice** first-party files and, separately, how to **register** a work at the U.S. Copyright Office. It is **not legal advice**, not a filing, and not a claim that Eidovara is registered.
+Eidovara is a companion workspace, launcher, diagnostics surface, and media player. It does not render third-party games or replace Windows, a GPU driver, display firmware, anti-cheat, a game engine, or a platform client.
 
-Copyright © 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](../LICENSE) + [TERMS.md](../TERMS.md). Third-party stays third-party.
+## Implemented release gates
 
-**This repository is not a U.S. Copyright Office registration.** There is no registration number, certificate, or deposit receipt in git. A `©` line, LICENSE, git history, and SHA-256 hashes are evidence of a claim, not a registration.
+- Hardware-accelerated Chromium remains enabled unless the operating system disables it.
+- Low-overhead mode removes Eidovara animation, transitions, decorative shadows, transparency effects, and spoken-output activity without modifying another process.
+- Diagnostics report Chromium GPU status and runtime support for H.264, HEVC, VP9, AV1, AAC, MP3, Opus, FLAC, Web Audio, fullscreen, picture-in-picture, HDR media queries, wide color gamut, Gamepad API availability, connected browser-visible gamepads, a WebGPU presence probe, Screen Wake Lock / Electron stay-awake, and OS speechSynthesis. The Adult Soul Feel pad may optionally map a Chromium-visible gamepad (including dual-rumble on that same controller). That is not native XInput game telemetry, not Lovense, and not a claim that Eidovara drives in-game haptics.
+- Audio/video playback uses the codecs available to the packaged Chromium runtime and operating system. Unsupported formats fail visibly; Eidovara does not bundle unlicensed codec packs or protected-media circumvention.
+- Local media access uses a visible file picker for one user-selected file at a time. The assistant receives no general filesystem permission, and local paths are not added to entertainment taste records.
+- Games are opened through user-selected Windows shortcuts or executables. No DLL injection, memory reading, anti-cheat interaction, driver installation, display override, frame capture, or input interception is performed.
 
-## Claimant
+## Owned by the game or platform
 
-- **Copyright claimant:** Soul Consciousness Studios
-- **Intended publisher name:** Soul Consciousness Studios (does not own copyright unless a formed entity receives a signed assignment)
-- **Works claimed:** qualifying original first-party Eidovara expression (source, tests, first-party docs, first-party UI assets, release materials he authored)
-- **Not claimed:** ideas, methods, systems, facts, names, titles, short phrases; Electron, Chromium, Node.js, Windows; Wikipedia/Wikimedia content; user content; third-party marks and media
+Frame generation, ray tracing, variable refresh rate, Auto HDR, DirectStorage, upscaling, controller haptics, spatial audio, exclusive fullscreen, graphics presets, cloud saves, achievements, multiplayer, anti-cheat, and platform overlays remain controlled by the game, Windows, hardware, drivers, and authorized platform software. Eidovara must not claim these capabilities merely because the computer supports them.
 
-See [OWNERSHIP.md](../OWNERSHIP.md), [NOTICE.md](../NOTICE.md), [COPYRIGHT.txt](../COPYRIGHT.txt), [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md), and the dated repository self-attestation [IP_CERTIFICATION.md](IP_CERTIFICATION.md) (not a government registration).
+Native controller navigation or deeper game telemetry would require a separately reviewed Windows adapter, current official SDK terms, explicit permission, signed native binaries, failure isolation, and tests on representative hardware. It must not be bundled until those requirements are met.
 
-## Standard file header (single block)
+## Compatibility testing
 
-Use **one** header. Do not stack multiple copyright blocks or paste third-party licenses into first-party files. JavaScript / CSS / CJS (first two lines):
-
-```
-// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
-// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-```
-
-That SPDX identifier names the Eidovara Source-Available Evaluation License in LICENSE. It is **not** MIT, Apache, GPL, or an OSI-approved license.
-
-HTML (comment after `<!doctype html>` on first-party pages):
-
-```
-<!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
-<!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
-```
-
-Markdown / text legal instruments already carry a copyright line in the body; do not add a second header to LICENSE, NOTICE, TERMS, or this file.
-
-Rules:
-
-1. Apply only to **first-party** files. Do not stamp Electron, Chromium, Node.js, or other third-party trees.
-2. Do not add a second header to files that already carry the SPDX pair or an equivalent Soul Consciousness Studios copyright line.
-3. Absence of a header does **not** mean a first-party file is unlicensed or third-party; LICENSE still governs.
-4. First-party `src/`, `docs/` HTML/CSS/JS, `scripts/`, and `server/` already carry this SPDX pair as of the IP self-attestation. **Do not restamp** those files with a second header.
-5. Do not add ®, a copyright-office registration number, or a patent number. Do not change the SPDX identifier to MIT or GPL.
-
-## How to put a copyright notice on a work
-
-A notice is optional for works first published on or after 1 March 1989 under U.S. law, but it is useful. A conventional notice has three parts:
-
-1. The symbol ©, the word "Copyright", or "Copr."
-2. The year of first publication of this version
-3. The name of the copyright owner (here: Soul Consciousness Studios)
-
-Place it on LICENSE, NOTICE, About screens, installer EULA, website footers, and (when adding new files) the standard header above.
-
-Do **not** write "registered with the Copyright Office" unless a registration has issued.
-
-## U.S. Copyright Office registration (owner-only)
-
-Registration, if desired, is done by the **owner or the owner's agent** at [https://www.copyright.gov](https://www.copyright.gov) (electronic registration through the Copyright Office's eCO / current portal). **This commit does not register anything.** A Cloud Agent cannot log into copyright.gov as Soul Consciousness Studios, pay the fee, or upload a deposit.
-
-### Checklist (complete privately with counsel)
-
-1. Confirm you are the author or have a signed written assignment covering the deposit. Unsigned templates in this repo do not count.
-2. Decide **what** to register (for example a specific source-code version; first-party visual assets). Source code is typically registered as a literary work. Icons and original artwork may be visual-arts works. Do not register Electron or other third-party code as yours.
-3. Prepare a **deposit** that matches Copyright Office rules for the chosen category (often identifying portions of source, not secrets, credentials, or unpublished invention write-ups you intend to keep private).
-4. Create an account on copyright.gov. Complete the application **in your own name** (or the formed entity's name only after a signed assignment).
-5. Pay the **then-current** fee listed by the Copyright Office. Fees change; do not rely on a number written in this file.
-6. Keep the application, payment receipt, and any later certificate in **private** storage. Do not commit certificates, applicant addresses, or deposit packages to this public repository.
-7. After a certificate issues, you may state that *that specific work* is registered and cite the registration number. Until then, say "copyright claimed," not "registered."
-
-Registration can support statutory damages and attorney-fee eligibility for qualifying U.S. claims when the statutory timing rules are met. It is not automatic from putting a LICENSE in git. Foreign protection and Berne Convention points need counsel.
-
-### What copyright does not cover
-
-Copyright does not protect ideas, procedures, processes, systems, methods of operation, concepts, principles, discoveries, names, titles, or short phrases. Trademark and patent, if any, are separate. See [TRADEMARKS.md](../TRADEMARKS.md) and [IP_PROTECTION.md](IP_PROTECTION.md).
-
-## Honesty rules for this repository
-
-- Do not create a fake "Certificate of Registration."
-- Do not invent a registration number or "Txu" / "VAu" identifier.
-- Do not apply GPL, MIT, Apache, or CC-BY to first-party Eidovara code; LICENSE is the Eidovara Source-Available Evaluation License.
-- Do not include other people's lyrics, novels, or copied product licenses as if they were first-party.
-
+Release testing covers application startup, persistence, settings, low-overhead styling, media capability detection, safe launching, network failure, and updater integrity. Performance claims require repeatable measurements on disclosed hardware; no universal FPS, latency, codec, HDR, or game-compatibility guarantee is made.
