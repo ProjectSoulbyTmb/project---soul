@@ -1,35 +1,62 @@
-# Eidovara legal notices
+# Eidovara live snapshot — v1.0.0
 
-Last updated: August 21, 2026
+This is an operator note, not a consumer marketing page. It does not claim Authenticode signing, live checkout, official Linux/macOS products, patents, registered marks, or consciousness.
 
-Eidovara is restricted to users age 18 or older. It is alpha software, not a government-approved, professionally certified, or universally lawful service. These notices are product disclaimers, **not legal advice**. Mandatory legal rights remain unaffected.
+## What is live
 
-Read [TERMS.md](TERMS.md), [PRIVACY.md](PRIVACY.md), [AGE.md](AGE.md), [LICENSE](LICENSE), [OWNERSHIP.md](OWNERSHIP.md), [TRADEMARKS.md](TRADEMARKS.md), [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md), and the dated [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) self-attestation (not a government registration).
+| Surface           | Status                                                                                                                                                                                                                                                                                                                           |
+| ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main`            | Canonical source version is `1.0.0`. The published Windows release is also `1.0.0`.                                                                                                                                                                                                                                              |
+| GitHub Pages      | `docs/` from **main only** via `.github/workflows/pages.yml`. Mirror: `https://projectsoulbytmb.github.io/project---soul/`.                                                                                                                                                                                                      |
+| Cloudflare Pages  | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). `.github/workflows/cloudflare-pages.yml` deploys `docs/` after website changes reach `main` when production credentials are available.                                                                                              |
+| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Health/config/status source version and live installer version are `1.0.0`.                                                                                                     |
+| Windows installer | Tag `v1.0.0` publishes unsigned `Eidovara-v1.0.0-Windows-x64-Setup.exe`; its measured size and SHA-256 land in the release’s SHA256SUMS.txt and latest.yml when CI builds it. SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. |
+| Edition           | v1.0.0 is a full free Alpha. Currently implemented features are not blocked by paid entitlement; live checkout/subscription processing remains off.                                                                                                                                                                              |
 
-## Use and ownership
+Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service accepts another HTTPS base as an override. Conversations are not sent automatically.
 
-Copyright © 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
+## Official site (HTTPS eidovara.org)
 
-Use is governed by LICENSE and TERMS.md. Soul Consciousness Studios claims qualifying original first-party expression. Eidovara is a trademark of Soul Consciousness Studios (unregistered); Soul (feature name) and Soul Consciousness Studios (intended publisher name) are likewise unregistered marks. Ideas, methods, facts, public-domain material, and third-party material—including Electron, Chromium, Node.js, Microsoft Windows, and Wikipedia/Wikimedia content—are excluded. Third-party software, services, media, and marks remain subject to their owners' terms. Compatibility references do not imply endorsement or partnership. Soul Consciousness Studios is an intended publishing name, not a claim of entity or trademark registration. Users retain rights in their own content. GitHub's terms continue to apply to this public repository. Inbound code is not accepted until a privately executed written agreement; [docs/CONTRIBUTOR_ASSIGNMENT.md](docs/CONTRIBUTOR_ASSIGNMENT.md) is an unsigned template only. First-party source carries SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Forks remain under LICENSE and may not be relicensed as MIT, Apache, GPL, or other open source.
+Cloudflare Pages project `eidovara` serves the same `docs/` information architecture as GitHub Pages. The current product surface should identify **v1.0.0** as the published Windows release while keeping the consumer site restrained around Adult-mode functionality.
 
-Users are responsible for applicable law, account authority, media rights, application licenses, and platform rules. Eidovara does not bypass subscriptions, access controls, anti-cheat systems, or authorization. Built-in research is a public web lookup after an explicit request (Wikipedia/Wikimedia, optional Internet Archive catalog search, optional keyed search, HTTPS pages you open, and official search chips). Application launching is user-confirmed local Windows apps. Output is general assistance, not legal, medical, financial, emergency, therapy, or other professional advice. Soul does not claim human consciousness or sentience.
+Expected public pages include Home, Download, Assist, Product, Legal, Status, Help, FAQ, and their GitHub Pages mirror equivalents.
 
-## Adult Mode
+`/download/windows` must route through `/download.html` so the 18+ confirmation remains in front of the installer rather than redirecting directly to a raw `.exe`.
 
-Adult Mode is off by default and unavailable to minors. Access requires the user to have reached the age of majority where located, explicitly enable Adult Soul, and provide current revocable consent. Until a later release, Adult Mode is only reachable from the private administrator panel (Ctrl+A, away from text fields). Local confirmation is not independent age or identity verification. Optional avatar presentation is limited to Soul's fictional, clearly adult, non-photorealistic avatar. Minor or age-ambiguous sexual content, real-person/deepfake nudity, nonconsensual or exploitative content, trafficking, coercion, and unlawful content are prohibited. A setting never makes content legal in a jurisdiction.
+## Official release facts that must remain consistent across Home, Product, Download, Status, FAQ/help, helper knowledge, Worker/service payloads, release metadata, and tests:
 
-## Privacy, security, and commerce
+- version `1.0.0`
+- installer `Eidovara-v1.0.0-Windows-x64-Setup.exe`
+- measured installer size / SHA-256: recorded per tagged build in that release's SHA256SUMS.txt + latest.yml (no v1.0.0 artifact exists yet; the F29A52F0… digest belongs to v0.22.2's Setup.exe)
+- Authenticode-unsigned
+- GitHub/Sigstore provenance available
+- Windows 10/11 x64
+- 18+ gate remains
+- v1.0.0 is a full free Alpha
+- payments remain fail-closed / no live checkout
 
-The current release has no owner-operated accounts, telemetry, advertising identifier, analytics, cloud memory, or automatic external reporting. Request-driven providers receive the data needed to fulfill a request under their own terms. See PRIVACY.md and NETWORK-USAGE.md.
+## Worker contract
 
-Current egress is Wikipedia/Wikimedia after an explicit research request, optional pasted HTTPS (or loopback) model providers, Premium Brave Search with a user-supplied key, official GitHub update checks, optional Worker `GET /v1/health` (and `/health`), `/v1/config`, and `/v1/status` against `https://api.eidovara.org` by default (overridable), optional website `GET`/`POST /v1/assist` after a saved HTTPS base, optional desktop `POST /v1/assist` only after helper opt-in (default off; no conversation history), and Spotify/YouTube HTTPS search links. No `workers.dev` host is compiled into the app or public site.
+`server/worker.js` must stay compatible with `src/core/service.js` and `docs/assist.js`:
 
-No security control guarantees perfect protection. Official Windows installers are Authenticode-unsigned until an identity-validated certificate is obtained; verify the official GitHub origin, SHA-256 checksum, and build provenance. Linux and macOS scripts are not official signed products. The desktop renderer stays sandboxed; app CSP uses `media-src https: eidovara-media:` and never `media-src 'self'`.
+- Desktop service/status: GET `/health`, `/v1/config`, `/v1/status`.
+- Website helper: optional POST `/v1/assist` only through explicit use; it must not accept desktop conversation history as an automatic transcript surface.
+- `/v1/config` keeps `paymentsEnabled: false`, `checkoutEnabled: false`, `authenticodeSigned: false`, `minimumAge: 18`, and no live store URLs.
+- Current payloads must identify release/source `1.0.0` and the final v1.0.0 installer facts above.
+- Other methods/paths remain fail-closed with 405 / 404 behavior.
 
-The current static site and Worker do not process payments or sell subscriptions. Payments stay **fail-closed** (`paymentsEnabled` / `checkoutEnabled` remain false even if a future config lied). Premium in v1.0.0 is a local-admin testing override, not a paid unlock. Neural TTS, VRM, OBS websocket control, and live checkout are screening records only and are not enabled. No patent, registered-mark, or PCI-DSS certification is claimed. Any future paid offer must disclose seller identity, price, renewal, cancellation, refunds, support, entitlements, taxes where applicable, and updated privacy terms before purchase. Warranty and liability terms are in LICENSE and apply only to the maximum extent permitted by law.
+Never commit Cloudflare credentials. The Cloudflare Pages workflow expects secure credentials named `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` when automatic production deployment is used.
 
-## Trademarks and interface
+## Remaining owner/environment actions
 
-Eidovara is not an Apple, Microsoft, Electron, Marvel, or Disney product. It is not Jarvis and not an Iron Man character. The visual language may resemble common system UI patterns; it does not require licensed SF Pro or SF Mono fonts and must not be described as an iOS or iPhone app. Named third-party platforms (Windows, GitHub, Electron, Cloudflare, Wikipedia, Spotify, YouTube, and others) remain their owners' marks. Eidovara is not affiliated with those owners. See [TRADEMARKS.md](TRADEMARKS.md) and [docs/BRAND_GUIDE.md](docs/BRAND_GUIDE.md).
+External credentials or legal filings cannot be manufactured in git. Keep these truthful:
 
-Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Quick-open chrome is not those third-party launchers. Nominative mentions of Windows 10/11, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts with this disclaimer, not bundled apps or logos.
+1. Cloudflare deployment credentials must be available to the production workflow, or deployment must be performed from an authenticated owner environment.
+2. Redeploy `server/` when its source contract changes so `api.eidovara.org` does not drift from desktop/site expectations.
+3. Configure optional `www.eidovara.org` in Cloudflare only if desired.
+4. Official installers remain Authenticode-unsigned until a real code-signing identity exists.
+5. Live payments/company filings remain separate future actions and must not be implied by product copy.
+
+## Historical-version rule
+
+Older releases may remain in `CHANGELOG.md`, old GitHub tags/releases, or immutable git history as historical evidence. No current-facing website, README, live-state, helper, Worker/service, installer, updater, or release-policy statement should identify v0.22.2 as the current product. The current release is v1.0.0.
