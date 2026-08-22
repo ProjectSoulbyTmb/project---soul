@@ -233,7 +233,7 @@ export const ipcTelemetry = {
   /**
    * @param {string} channel - IPC channel name
    * @param {() => Promise<any>} handler
-   * @returns {Promise<any>}
+   * @returns {any} synchronous result of fn
    */
   async handle(channel, handler) {
     return timeAsync(`ipc.${channel}`, handler, { 'ipc.channel': channel });
@@ -283,10 +283,23 @@ export const storeTelemetry = {
   /**
    * @param {string} op - Operation (load, save, backup, restore)
    * @param {() => Promise<any>} fn
-   * @returns {Promise<any>}
+   * @returns {any} result of fn (synchronous)
    */
-  async op(op, fn) {
-    return timeAsync(`store.${op}`, fn, { 'store.op': op });
+  op(op, fn) {
+    // Store load/save are synchronous; an async wrapper here made the engine
+    // constructor assign a Promise to this.state, breaking every consumer.
+    const started = performance.now();
+    let success = true;
+    let result;
+    try {
+      result = fn();
+    } catch (err) {
+      success = false;
+      throw err;
+    } finally {
+      this.record(op, performance.now() - started, success);
+    }
+    return result;
   },
   
   record(op, durationMs, success = true, size) {
