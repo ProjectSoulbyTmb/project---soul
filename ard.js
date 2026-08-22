@@ -1,50 +1,93 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** First-party companion looks. Decorative interface chrome — not a living figure. */
+import { builtinModules, validateModule } from './modules.js';
 
-export const PRESENCE_LOOKS = Object.freeze([
-  { id: 'orb', title: 'Orb', kind: 'css', description: 'A compact light figure using the accent color. Decorative, not alive.' },
-  { id: 'hologram', title: 'Hologram', kind: 'css', description: 'Scan-line silhouette chrome. Interface only — not a body and not a person.' },
-  { id: 'ambient', title: 'Ambient', kind: 'css', description: 'A soft glow that follows the workspace accent. No implied anatomy.' },
-  { id: 'pulse', title: 'Pulse', kind: 'canvas', description: 'A canvas heartbeat ring. Pauses when you prefer reduced motion.' },
-  { id: 'silhouette', title: 'Silhouette', kind: 'css', description: 'A still outline. No implied life, voice, or consciousness.' },
-  { id: 'ribbon', title: 'Ribbon', kind: 'css', description: 'A layered light band using interface tokens. Geometric chrome, not a body.' },
-  { id: 'hidden', title: 'Hidden', kind: 'none', description: 'Hide the companion stage. Kernel, voice, and chat stay available.' },
-  { id: 'local-image', title: 'Your image', kind: 'image', description: 'A picture you choose on this PC, shown through eidovara-media. Not a live model.' }
-]);
-
-const LOOK_IDS = new Set(PRESENCE_LOOKS.map(look => look.id));
-
-export function defaultPresence() {
-  return { lookId: 'orb', hasLocalImage: false };
+export function defaultPhrasing() {
+  return { wit: 40, formality: 40, brevity: 50 };
 }
 
-export function normalizePresence(input = {}, prev = defaultPresence()) {
-  const prior = { ...defaultPresence(), ...(prev && typeof prev === 'object' ? prev : {}) };
-  const lookId = LOOK_IDS.has(input.lookId) ? input.lookId : (LOOK_IDS.has(prior.lookId) ? prior.lookId : 'orb');
+export function defaultRegistry() {
   return {
-    lookId,
-    hasLocalImage: input.hasLocalImage === undefined ? Boolean(prior.hasLocalImage) : Boolean(input.hasLocalImage)
+    moduleEnabled: Object.fromEntries(builtinModules.map(mod => [mod.id, mod.enabled !== false])),
+    customActions: [],
+    phrasing: defaultPhrasing()
   };
 }
 
-export function presenceLook(id) {
-  return PRESENCE_LOOKS.find(look => look.id === id) || PRESENCE_LOOKS[0];
+function clampKnob(value, fallback) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  return Math.max(0, Math.min(100, Math.round(n)));
 }
 
-export function presenceFrame(lookId, timeMs = 0, { reducedMotion = false } = {}) {
-  const look = presenceLook(lookId);
-  const frozen = Boolean(reducedMotion) || look.id === 'silhouette' || look.id === 'hidden';
-  const phase = frozen ? 0 : (Number(timeMs) / 1000) % (Math.PI * 2);
-  const pulse = frozen ? 0.5 : 0.5 + 0.35 * Math.sin(phase);
+export function normalizeCustomAction(input = {}, fallbackId) {
+  const label = String(input.label || '').trim().slice(0, 80);
+  const command = String(input.command || input.intent || '').trim().slice(0, 200);
+  if (!label || !command) return null;
+  const id = String(input.id || fallbackId || `act_${Date.now().toString(36)}`).replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64);
   return {
-    lookId: look.id,
-    kind: look.kind,
-    frozen,
-    radius: 28 + pulse * 10,
-    glow: 0.25 + pulse * 0.45,
-    scanOffset: frozen ? 0 : (Number(timeMs) / 40) % 120,
-    label: look.title
+    id: id || `act_${Date.now().toString(36)}`,
+    label,
+    command,
+    intent: String(input.intent || 'general').trim().slice(0, 40) || 'general',
+    view: String(input.view || 'chat').trim().slice(0, 40) || 'chat'
   };
+}
+
+export function normalizeRegistry(input = {}, prev = defaultRegistry()) {
+  const base = defaultRegistry();
+  const prior = prev && typeof prev === 'object' ? prev : base;
+  const incoming = input && typeof input === 'object' ? input : {};
+  const priorEnabled = prior.moduleEnabled && typeof prior.moduleEnabled === 'object' ? prior.moduleEnabled : {};
+  const nextEnabled = incoming.moduleEnabled && typeof incoming.moduleEnabled === 'object' ? incoming.moduleEnabled : {};
+  const moduleEnabled = { ...base.moduleEnabled };
+  for (const mod of builtinModules) {
+    if (Object.prototype.hasOwnProperty.call(nextEnabled, mod.id)) moduleEnabled[mod.id] = nextEnabled[mod.id] !== false;
+    else if (Object.prototype.hasOwnProperty.call(priorEnabled, mod.id)) moduleEnabled[mod.id] = priorEnabled[mod.id] !== false;
+  }
+  const rawActions = Array.isArray(incoming.customActions) ? incoming.customActions : (Array.isArray(prior.customActions) ? prior.customActions : []);
+  const customActions = rawActions.map((item, index) => normalizeCustomAction(item, `act_${index}`)).filter(Boolean).slice(0, 24);
+  const phrasingIn = incoming.phrasing && typeof incoming.phrasing === 'object' ? incoming.phrasing : (prior.phrasing || {});
+  const phrasingPrior = prior.phrasing || defaultPhrasing();
+  return {
+    moduleEnabled,
+    customActions,
+    phrasing: {
+      wit: clampKnob(phrasingIn.wit, phrasingPrior.wit),
+      formality: clampKnob(phrasingIn.formality, phrasingPrior.formality),
+      brevity: clampKnob(phrasingIn.brevity, phrasingPrior.brevity)
+    }
+  };
+}
+
+export function createRuntimeRegistry(catalog = builtinModules) {
+  const modules = new Map();
+  function register(mod) {
+    const ok = validateModule(mod);
+    modules.set(ok.id, ok);
+    return ok;
+  }
+  for (const mod of catalog) register(mod);
+  return {
+    register,
+    get(id) { return modules.get(id) || null; },
+    list() { return [...modules.values()]; },
+    enabled(id, persisted) {
+      const mod = modules.get(id);
+      if (!mod) return false;
+      const map = persisted?.moduleEnabled;
+      if (map && typeof map === 'object' && Object.prototype.hasOwnProperty.call(map, id)) return map[id] !== false;
+      return mod.enabled !== false;
+    }
+  };
+}
+
+export function matchCustomAction(input, actions = []) {
+  const text = String(input || '').trim().toLowerCase();
+  if (!text) return null;
+  return (Array.isArray(actions) ? actions : []).find(action => {
+    const command = String(action.command || '').trim().toLowerCase();
+    return command && (text === command || text.includes(command));
+  }) || null;
 }
 
