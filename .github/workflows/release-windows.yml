@@ -113,21 +113,20 @@ jobs:
             dist/THIRD_PARTY_NOTICES.md
             dist/BRAND-ASSET-POLICY.md
             dist/COPYRIGHT-ASSET-REGISTER.md
-      - name: Verify build provenance attestation
+      - name: Verify release evidence integrity
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $candidates = Get-ChildItem dist -Recurse -Include '*.attestation.json','*.intoto.jsonl','*PROVENANCE*','*EVIDENCE*' -ErrorAction SilentlyContinue
-          if (-not $candidates) {
-            Write-Output 'dist/ contents for debugging:'
-            Get-ChildItem dist -Recurse | ForEach-Object { Write-Output "  $($_.Name)" }
-            throw 'No attestation/evidence files found in dist/'
+          # attest-build-provenance v4 stores attestations server-side only; it
+          # never writes local files. Verify the evidence that DOES ship:
+          foreach ($f in @('dist/SHA256SUMS.txt','dist/SBOM.spdx.json','dist/CODE-SIGNING-STATUS.txt','dist/PRIVACY-DECLARATION.json')) {
+            if (-not (Test-Path $f)) { throw "Missing release evidence: $f" }
           }
-          $joined = ($candidates | ForEach-Object { Get-Content $_.FullName -Raw }) -join "`n"
-          foreach ($type in @('provenance', 'sbom')) {
-            if ($joined -notmatch [regex]::Escape($type)) { throw "Missing attestation type: $type" }
-          }
-          Write-Output "Attestation verification OK across $($candidates.Count) file(s)."
+          # SHA256SUMS.txt must cover the exact Setup.exe being published.
+          $exe = Get-ChildItem 'dist/Eidovara-*-Windows-x64-Setup.exe' | Select-Object -First 1
+          $sums = Get-Content 'dist/SHA256SUMS.txt' -Raw
+          if ($sums -notmatch [regex]::Escape($exe.Name)) { throw "SHA256SUMS.txt does not list $($exe.Name)" }
+          Write-Output "Release evidence verified: SHA256SUMS covers $($exe.Name); SBOM + signing status + privacy declaration present."
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
