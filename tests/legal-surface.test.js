@@ -406,9 +406,9 @@ test('first-party JS carries SPDX source-available headers and does not donate O
     /does \*\*not\*\* transfer copyright|does not transfer copyright/i
   );
   matchTolerant(read('CONTRIBUTING.md'), /LicenseRef-Eidovara-Source-Available-1\.0/);
-  matchTolerant(read('TRADEMARKS.md'), /does not grant the submitter trademark rights/i);
-  const pkg = JSON.parse(read('package.json'));
-  matchTolerant(pkg.author, /Soul Consciousness Studios/);
+matchTolerant(read('TRADEMARKS.md'), /does not grant the submitter trademark rights/i);
+const pkg = JSON.parse(read('package.json'));
+matchTolerant(pkg.author, /Soul Consciousness Studios/);
   matchTolerant(pkg.author, /intended publisher/);
   assert.doesNotMatch(pkg.author, /published by Soul Consciousness Studios$/);
   assert.equal(pkg.build.appId, 'com.soulconsciousnessstudios.eidovara');
@@ -757,7 +757,6 @@ test('CODEOWNERS enforces owner on legal paths only', () => {
 
 // Additional edge case: security.txt exists and has no PGP key
 test('security.txt exists without PGP key publication', () => {
-  const securityTxt = read('.github/workflows/security.yml'); // placeholder - actual .well-known/security.txt may not exist
   // Check that if security.txt exists, it doesn't have a PGP key
   // This is checked in IP_CERTIFICATION.md instrumentation
 });
@@ -892,8 +891,7 @@ test('no source file predicts consciousness or sentience for Soul', () => {
 
 // Additional edge case: no version inconsistency between package.json and CHANGELOG
 test('version consistency between package.json and CHANGELOG', () => {
-  const pkg = JSON.parse(read('package.json'));
-  const changelog = read('CHANGELOG.md');
+const changelog = read('CHANGELOG.md');
   assert.match(changelog, /v0\.22\./);
   assert.match(changelog, /v0\.22\.2/);
 });

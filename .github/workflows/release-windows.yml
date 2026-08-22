@@ -1,6 +1,8 @@
-# Builds an Authenticode-unsigned Windows NSIS installer on windows-latest.
-# v* tags publish a GitHub Release. workflow_dispatch builds unsigned artifacts.
-# This workflow does not Authenticode-sign Setup.exe.
+# Builds a Windows NSIS installer on windows-latest and publishes it on v* tags.
+# Signing: when repository secrets WINDOWS_PFX_BASE64 + WINDOWS_PFX_PASSWORD are
+# configured, the Setup.exe is Authenticode-signed at build time (SHA-256 digest,
+# RFC 3161 timestamp) and dist/CODE-SIGNING-STATUS.txt reports the signed state.
+# Without those secrets the artifact stays intentionally unsigned.
 # Security: this workflow holds contents/id-token/attestations write permissions,
 # so it intentionally does NOT run on pull_request events.
 name: Release Windows
@@ -21,6 +23,8 @@ jobs:
     runs-on: windows-latest
     env:
       CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      WINDOWS_PFX_BASE64: ${{ secrets.WINDOWS_PFX_BASE64 }}
+      WINDOWS_PFX_PASSWORD: ${{ secrets.WINDOWS_PFX_PASSWORD }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -35,6 +39,25 @@ jobs:
       - run: pnpm run release:configure
       - name: Build Windows installer
         run: pnpm run dist:win:installer
+      - name: Authenticode sign installer (requires WINDOWS_PFX_* secrets)
+        if: env.WINDOWS_PFX_BASE64 != ''
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $pfx = Join-Path $env:RUNNER_TEMP 'eidovara-signing.pfx'
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:WINDOWS_PFX_BASE64.Trim()))
+          $kitRoot = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\bin'
+          $signtool = Get-ChildItem $kitRoot -Recurse -Filter signtool.exe -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match '\\x64' } |
+            Sort-Object FullName -Descending | Select-Object -First 1
+          if (-not $signtool) { throw 'signtool.exe not found under Windows Kits' }
+          $exe = Get-ChildItem 'dist/Eidovara-*-Windows-x64-Setup.exe' | Select-Object -First 1
+          if (-not $exe) { throw 'No Setup.exe found in dist/' }
+          & $signtool.FullName sign /f $pfx /p "$env:WINDOWS_PFX_PASSWORD" /fd SHA256 /tr https://timestamp.digicert.com /td SHA256 "$($exe.FullName)"
+          if ($LASTEXITCODE -ne 0) { throw 'Authenticode signing failed' }
+          Set-Content -Path 'dist/CODE-SIGNING-STATUS.txt' -Value "Authenticode-signed (SHA-256 digest, RFC 3161 timestamped) during this build." -Encoding utf8
+          Remove-Item $pfx -Force
+          Write-Output "Signed: $($exe.Name)"
       - name: Installed-app renderer and launch smoke test
         shell: pwsh
         run: ./scripts/windows-install-smoke.ps1

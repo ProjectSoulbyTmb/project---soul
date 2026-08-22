@@ -24,9 +24,7 @@ import {
   INSTALLER_PINNED_URL,
 } from '../src/core/release.js';
 import {
-  DESKTOP_KNOWLEDGE_VERSION,
-  INSTALLER_NAME as KNOWLEDGE_INSTALLER,
-  INSTALLER_SHA256 as KNOWLEDGE_INSTALLER_SHA256,
+DESKTOP_KNOWLEDGE_VERSION,
 } from '../src/core/knowledge.js';
 import {
   LIVE_INSTALLER_VERSION as WORKER_LIVE_INSTALLER_VERSION,
@@ -38,7 +36,6 @@ import {
 import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
-const escapeRe = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 test('one canonical source version across package, desktop kernel, site helper, and API', () => {
   const pkg = JSON.parse(read('package.json'));

@@ -1,0 +1,91 @@
+name: V2 Quality Gates
+
+# ERROR_PREVENTION_ROADMAP / V2_RELEASE_ROADMAP gates that are not yet in ci.yml.
+# Each job is independent and fails loudly.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  strict-lint:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+        with:
+          node-version: 20
+      - name: Zero-warning lint policy
+        run: npx --yes eslint . --max-warnings 0
+
+  load-probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+        with:
+          node-version: 20
+      - name: Every test file must load
+        run: node scripts/module-load-probe.mjs
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+        with:
+          node-version: 20
+      - name: Hardcoded-secret pattern scan
+        run: node scripts/ci-secret-scan.mjs
+
+  digest-pin-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: All GitHub Actions pinned by commit digest
+        shell: python
+        run: |
+          import re, sys, pathlib
+          bad = []
+          for f in pathlib.Path('.github/workflows').glob('*.y*ml'):
+              for i, line in enumerate(f.read_text(encoding='utf-8').splitlines(), 1):
+                  m = re.search(r'uses:\s*(\S+)@(\S+)', line)
+                  if m and not re.fullmatch(r'[0-9a-f]{40}', m.group(2), re.I):
+                      bad.append(f'{f.name}:{i}: {m.group(1)}@{m.group(2)}')
+          for b in bad:
+              print('FLOATING PIN:', b)
+          sys.exit(1 if bad else 0)
+
+  boot-smoke:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
+        with:
+          node-version: 20
+      - name: Enable corepack (pnpm)
+        run: corepack enable
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Boot smoke - plain launch, UI mounts, no exit(1)
+        env:
+          EIDOVARA_SKIP_PREPUSH: '1'
+        run: npx playwright test tests/e2e/boot-smoke.spec.js
+      - name: Upload boot smoke report on failure
+        if: failure()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: boot-smoke-report
+          path: playwright-report
+          retention-days: 7

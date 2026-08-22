@@ -23,7 +23,7 @@
     "test:e2e:ui": "playwright test --ui",
     "test:a11y": "playwright test --project=chromium --grep @a11y",
     "check": "node scripts/check.js",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{js,cjs,mjs,json,md,html,css}\"",
     "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,md,html,css}\"",
