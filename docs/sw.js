@@ -95,7 +95,7 @@ async function handleRequest(request, strategy) {
   const cache = await caches.open(CACHE_NAME);
 
   switch (strategy) {
-    case 'cache-first':
+    case 'cache-first': {
       const cached = await cache.match(request);
       if (cached) return cached;
       try {
@@ -104,6 +104,7 @@ async function handleRequest(request, strategy) {
         return response;
       } catch {
         return new Response('Offline', { status: 503 });
+  }
       }
 
     case 'network-first':

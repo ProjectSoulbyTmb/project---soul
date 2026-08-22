@@ -875,7 +875,7 @@ desktopUpdater = attachDesktopUpdater({
   scanUpdateForMalware,
   log,
 });
-_$_({
+_attachPlayerWindows({
   BrowserWindow,
   ipcMain,
   getMainWindow: () => mainWindow,

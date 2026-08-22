@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { _spawnSync } from 'node:child_process';
 
 const PERF_BUDGETS = {
   bundle: {
@@ -44,19 +44,19 @@ function formatBytes(bytes) {
 }
 
 function checkBudget(name, actual, budget) {
-  const actualMB = actual / (1024 * 1024);
+  const _actualMB = actual / (1024 * 1024);
   const status = actual > budget.maxSizeMB * 1024 * 1024 ? 'FAIL' : actual > budget.warningSizeMB * 1024 * 1024 ? 'WARN' : 'PASS';
   console.log(`${status} ${name}: ${formatBytes(actual)} (max: ${budget.maxSizeMB} MB, warn: ${budget.warningSizeMB} MB)`);
   return status !== 'FAIL';
 }
 
-function checkStartupTime() {
+function _checkStartupTime() {
   // This would be measured in CI with actual app launch
   // For now, we check the build output
   return true;
 }
 
-function checkMemory() {
+function _checkMemory() {
   // This would be measured at runtime
   // For now, we skip
   return true;
