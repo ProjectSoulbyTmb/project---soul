@@ -1,4 +1,4 @@
-﻿# Authorship and ownership
+# Authorship and ownership
 
 Soul Consciousness Studios is identified in this project record as Eidovara's owner, creator, product director, publisher, and claimant of rights in qualifying original first-party project materials. Soul Consciousness Studios is the business name under which he intends to publish and commercialize Eidovara. Eidovara is a trademark of Soul Consciousness Studios (unregistered).
 
