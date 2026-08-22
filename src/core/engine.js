@@ -203,7 +203,7 @@ export class SoulEngine {
   createBackup() { return this.store.createBackup(this.state); }
   listBackups() { return this.store.listBackups(); }
   restoreBackup(name) { this.state = this.store.restoreBackup(name); startKernelSession(this.state); this.store.save(this.state); return this.snapshot(); }
-  recordMedia(input) { const event = recordMediaEvent(this.state, input); this.state.audit.push({ at: event.at, type: `media.${event.event}`, details: { type: event.type, title: event.title } }); this.store.save(this.state); return entertainmentSummary(this.state); }
+  recordMedia(input) { const event = recordMediaEvent(this.state, input); if (!Array.isArray(this.state.audit)) this.state.audit = []; this.state.audit.push({ at: event.at, type: `media.${event.event}`, details: { type: event.type, title: event.title } }); this.store.save(this.state); return entertainmentSummary(this.state); }
   entertainment() { return entertainmentSummary(this.state); }
   configureSetup(input = {}) {
     const allowed = ['gaming-editing', 'stream-helper', 'studying', 'personal', 'creative', 'work-productivity', 'accessibility'];
@@ -215,7 +215,7 @@ export class SoulEngine {
       if (!['ws:', 'wss:'].includes(url.protocol)) throw new Error('OBS WebSocket must use ws:// or wss://.');
     }
     this.state.setup = { completed: true, completedAt: new Date().toISOString(), categories, customNeeds: String(input.customNeeds || '').trim().slice(0, 2000), stream: { enabled: categories.includes('stream-helper'), obsWebSocketUrl, goals: String(input.streamGoals || '').trim().slice(0, 1000) } };
-    this.state.audit.push({ at: this.state.setup.completedAt, type: 'setup.configured', details: { categories } }); this.store.save(this.state); return this.snapshot();
+    if (!Array.isArray(this.state.audit)) this.state.audit = []; this.state.audit.push({ at: this.state.setup.completedAt, type: 'setup.configured', details: { categories } }); this.store.save(this.state); return this.snapshot();
   }
   configureAssistant(input = {}) {
     const prev = this.state.assistant || {};

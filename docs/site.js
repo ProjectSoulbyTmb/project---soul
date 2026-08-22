@@ -473,30 +473,6 @@ try {
           fetch(`${base}/v1/status`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } })
         ]);
         const health = await boundedJson(healthRes);
-        const status = await boundedJson(statusRes);
-        const online = healthRes.ok && statusRes.ok && (health.status === 'ok' || health.online === true) && (status.status === 'ok' || status.online === true);
-        if (online) statusFailCount = 0;
-        else statusFailCount += 1;
-        const presence = presenceOf(online, !online);
-        const lines = [
-          `Presence: ${presence}`,
-          `Base: ${base}`,
-          `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
-          `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
-          'This website never sends desktop conversations. v1.0.0 payments stay off. Check keeps polling; Clear stops.'
-        ];
-        failClosed(lines.join('\n'));
-        stopStatusPoll();
-        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(!online));
-      } catch (error) {
-        statusFailCount += 1;
-        failClosed(`Presence: Reconnecting\nUnreachable (${error.name === 'AbortError' ? 'timeout' : (error.message || 'fetch failed')}). Fail closed. Offline Soul and this website still work.`);
-        stopStatusPoll();
-        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(true));
-      } finally {
-        clearTimeout(timer);
-      }
-    };
     probe?.addEventListener('click', async event => {
       event.preventDefault();
       statusFailCount = 0;
@@ -584,3 +560,4 @@ try {
 
 // Service worker registration (moved out of inline HTML to keep CSP script-src 'self').
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
+
