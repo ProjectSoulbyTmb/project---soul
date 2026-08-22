@@ -434,7 +434,12 @@ function createWindow() {
     mainWindow.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     mainWindow.webContents.on('will-navigate', e => e.preventDefault());
     mainWindow.webContents.on('will-attach-webview', e => e.preventDefault());
-    mainWindow.webContents.on('did-fail-load', (_e, code, desc, url) => fatal('Eidovara failed to load', new Error(`${code}: ${desc} (${url})`)));
+    let rendererRetried = false;
+    mainWindow.webContents.on('did-fail-load', (_e, code, desc, url, isMainFrame) => {
+      if (!isMainFrame) return;
+      if (!rendererRetried && !quitting) { rendererRetried = true; try { mainWindow.webContents.reload(); return; } catch {} }
+      fatal('Eidovara failed to load', new Error(`${code}: ${desc} (${url})`));
+    });
     mainWindow.webContents.on('render-process-gone', (_e, details) => fatal('Eidovara renderer stopped', new Error(JSON.stringify(details))));
     const packagedRenderer = path.join(process.resourcesPath, 'renderer', 'index.html');
     const rendererEntry = app.isPackaged ? packagedRenderer : path.join(__dirname, '../renderer/index.html');
