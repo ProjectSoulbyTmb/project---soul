@@ -158,3 +158,39 @@ test('/v1/assist is rate limited per client address', async () => {
   assert.equal(body.error, 'rate_limited');
   assert.match(body.reply, /Too many requests/);
 });
+
+test('assist POST blocks disallowed browser origins but permits origin-less clients', async () => {
+  const url = 'https://api.example.test/v1/assist';
+  const evil = await worker.fetch(
+    new Request(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', origin: 'https://evil.example' },
+      body: JSON.stringify({ query: 'download' }),
+    }),
+    {}
+  );
+  assert.equal(evil.status, 403);
+  assert.equal((await evil.json()).error, 'origin_not_allowed');
+
+  // curl / desktop / CI: no Origin header at all -> allowed (rate limiter still applies)
+  const noOrigin = await worker.fetch(
+    new Request(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'download' }),
+    }),
+    {}
+  );
+  assert.notEqual(noOrigin.status, 403);
+
+  // official site origin is allowed
+  const good = await worker.fetch(
+    new Request(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', origin: 'https://eidovara.org' },
+      body: JSON.stringify({ query: 'download' }),
+    }),
+    {}
+  );
+  assert.notEqual(good.status, 403);
+});

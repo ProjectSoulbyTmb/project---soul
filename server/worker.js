@@ -18,6 +18,22 @@ const ASSIST_RATE_MAX_REQUESTS = 30;
 const ASSIST_RATE_MAX_TRACKED_IPS = 10_000;
 const assistHits = new Map();
 
+// Origins allowed to POST /v1/assist from a browser context. Requests without
+// an Origin header (curl, desktop heartbeat, CI) are never blocked by this:
+// the goal is to stop arbitrary third-party pages from driving up assist cost,
+// not to gate non-browser clients.
+const ASSIST_ALLOWED_ORIGINS = new Set([
+  'https://eidovara.org',
+  'https://www.eidovara.org',
+  'https://projectsoulbytmb.github.io',
+]);
+
+function assistOriginBlocked(request) {
+  const origin = String(request.headers.get('origin') || '').trim().toLowerCase();
+  if (!origin || origin === 'null') return false;
+  return !ASSIST_ALLOWED_ORIGINS.has(origin);
+}
+
 function assistRateLimited(request) {
   const ip =
     String(request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || '')
@@ -60,6 +76,7 @@ const CORS = {
   'access-control-allow-methods': CORS_METHODS,
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': '600',
+  vary: 'Origin',
 };
 const JSON_HEADERS = {
   'content-type': 'application/json; charset=utf-8',
@@ -172,6 +189,11 @@ export default {
     if (url.pathname === '/v1/assist') {
       if (request.method !== 'GET' && request.method !== 'POST')
         return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, POST, OPTIONS' });
+      if (request.method === 'POST' && assistOriginBlocked(request))
+        return response(
+          { error: 'origin_not_allowed', reply: 'This origin may not call Eidovara assist.' },
+          403
+        );
       if (assistRateLimited(request))
         return response(
           {
@@ -258,5 +280,7 @@ export {
   FALLBACK_INSTALLER_SIZE as LIVE_INSTALLER_SIZE,
   LIVE_INSTALLER_URL,
   assistRateLimited,
+  assistOriginBlocked,
+  ASSIST_ALLOWED_ORIGINS,
   liveInstallerFacts,
 };
