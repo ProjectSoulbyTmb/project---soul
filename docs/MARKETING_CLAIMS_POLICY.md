@@ -33,3 +33,5 @@ Use this checklist for websites, store listings, release notes, videos, screensh
 ## Publication gate
 
 Before publishing a new claim, preserve the exact claim, supporting test or source, release version, reviewer, and date. Re-review marketing after feature, privacy, pricing, provider, licensing, or security changes. Remove outdated claims promptly. Use only approved brand assets and properly licensed screenshots, music, voices, avatars, footage, and testimonials.
+
+Eidovara is not an Apple product and is not affiliated with Apple Inc.
