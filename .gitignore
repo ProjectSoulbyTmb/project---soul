@@ -31,3 +31,6 @@ credentials*.json
 secrets*.json
 settings.json
 project-soul.log
+
+# pnpm is the canonical lockfile
+package-lock.json
