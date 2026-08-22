@@ -55,11 +55,11 @@ Completing placeholders in a git commit, opening a pull request, or merging to `
 
 This public file has **no signatures**.
 
-|           | Assignor                             | Company                              |
-| --------- | ------------------------------------ | ------------------------------------ |
-| Name      | Soul Consciousness Studios           | [Authorized signatory / title]       |
-| Signature | ******\*\*******\_\_******\*\******* | ******\*\*******\_\_******\*\******* |
-| Date      | [date]                               | [date]                               |
+|           | Assignor                                     | Company                                      |
+| --------- | -------------------------------------------- | -------------------------------------------- |
+| Name      | Soul Consciousness Studios                   | [Authorized signatory / title]               |
+| Signature | **\*\***\*\***\*\***\_\_**\*\***\*\***\*\*** | **\*\***\*\***\*\***\_\_**\*\***\*\***\*\*** |
+| Date      | [date]                                       | [date]                                       |
 
 ### Exhibit A â€” Assigned first-party schedule (complete privately)
 

@@ -458,7 +458,9 @@ test('unknown lookup failures are sanitized before reaching the conversation', a
     () =>
       fetchPublicPage('https://example.com/x', {
         fetchImpl: async () => {
-          throw new Error('OpenSSL SSL_read: unexpected eof internal=0xdeadbeef chain=/C=US/O=Internal');
+          throw new Error(
+            'OpenSSL SSL_read: unexpected eof internal=0xdeadbeef chain=/C=US/O=Internal'
+          );
         },
       }),
     /workspace is still available/i

@@ -36,7 +36,7 @@ export default {
     return { configured: true };
   },
 
-  async sync(direction = 'bidirectional') {
+  async sync(_direction = 'bidirectional') {
     if (!config.apiKey) throw new Error('Not configured. Run configure first.');
     let pushed = 0;
     for (const item of config.pending.splice(0)) {

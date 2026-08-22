@@ -79,8 +79,8 @@ import {
   setTelemetryEnabled,
   providerTelemetry,
   storeTelemetry,
-  ipcTelemetry,
-  getTelemetrySnapshot,
+  ipcTelemetry as _ipcTelemetry,
+  getTelemetrySnapshot as _getTelemetrySnapshot,
 } from './telemetry.js';
 
 export class SoulEngine {
