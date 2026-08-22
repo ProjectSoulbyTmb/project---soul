@@ -1,4 +1,4 @@
-﻿# Preliminary name-screening record
+# Preliminary name-screening record
 
 Screening date: August 20, 2026.
 
