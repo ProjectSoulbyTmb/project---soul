@@ -17,6 +17,7 @@ import {
   DEFAULT_EIDOVARA_SERVICE_BASE
 } from '../src/core/service.js';
 import worker from '../server/worker.js';
+import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 
