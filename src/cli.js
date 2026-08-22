@@ -108,6 +108,20 @@ if (args.includes('--snapshot')) {
   process.exit(0);
 }
 
+// THOTH one-shot: --thoth "calc 2+2" (runs through the same brokered bus as chat)
+const thothArgIndex = args.indexOf('--thoth');
+if (thothArgIndex !== -1) {
+  const command = args[thothArgIndex + 1] || 'help';
+  if (!engine.thoth) {
+    console.error('thoth> kernel unavailable on this installation.');
+    process.exit(1);
+  }
+  const parsed = engine.thoth.matchInvocation(`thoth ${command}`);
+  const out = await engine.thoth.handleCommand(parsed || { help: true });
+  console.log(out.reply);
+  process.exit(out.ok ? 0 : 1);
+}
+
 if (message !== undefined) {
   try {
     await replyTo(message);
@@ -128,6 +142,14 @@ while (true) {
   if (text === '/reset') {
     engine.reset();
     console.log('soul> profile reset');
+    continue;
+  }
+  if (/^\/?thoth\b/i.test(text)) {
+    const parsed = engine.thoth
+      ? engine.thoth.matchInvocation(text.replace(/^\//, ''))
+      : null;
+    const out = await engine.thoth.handleCommand(parsed || { help: true });
+    for (const line of out.reply.split('\n')) console.log(`thoth> ${line}`);
     continue;
   }
   try {

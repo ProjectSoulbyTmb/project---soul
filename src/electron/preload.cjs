@@ -85,4 +85,9 @@ contextBridge.exposeInMainWorld('soul', {
   addAdultFolderBookmark: (folderId, item) =>
     ipcRenderer.invoke('soul:addAdultFolderBookmark', folderId, item),
   stayAwake: input => ipcRenderer.invoke('soul:stayAwake', input || {}),
+  thothStatus: () => ipcRenderer.invoke('soul:thothStatus'),
+  thothRun: command =>
+    ipcRenderer.invoke('soul:thothRun', String(command || '').slice(0, 300)),
+  thothGrant: (tool, klass) => ipcRenderer.invoke('soul:thothGrant', { tool, klass }),
+  thothRevoke: tool => ipcRenderer.invoke('soul:thothRevoke', { tool }),
 });

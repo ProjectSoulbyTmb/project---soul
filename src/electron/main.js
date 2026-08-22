@@ -1256,6 +1256,62 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
   overlayManager?.hideIfGated?.();
   return publicConfig();
 });
+// ---------------------------------------------------------------------------
+// THOTH local tool kernel (P2 IPC surface)
+// Channels mirror preload.cjs exactly; parity is enforced by
+// tests/thoth-ipc-contract.test.js. Grants never accept L2 (per-call only).
+// ---------------------------------------------------------------------------
+function thothEngine() {
+  const eng = ensureEngine();
+  if (!eng.thoth) throw new Error('THOTH kernel is unavailable on this installation.');
+  return eng;
+}
+
+ipcMain.handle('soul:thothStatus', () => {
+  requireAgeGate();
+  const k = thothEngine().thoth;
+  return {
+    masterEnabled: k.state.masterEnabled !== false,
+    notes: Array.isArray(k.state.notes) ? k.state.notes.slice(-20) : [],
+    tools: k.listTools(),
+  };
+});
+
+ipcMain.handle('soul:thothRun', async (_e, rawCommand) => {
+  requireAgeGate();
+  const text = String(rawCommand || '').slice(0, 300);
+  const k = thothEngine().thoth;
+  const parsed = k.matchInvocation(text);
+  if (!parsed) return { ok: false, error: 'not-a-thoth-command' };
+  const out = await k.handleCommand(parsed, { adminAuthorized: false });
+  const eng = thothEngine();
+  eng.store.save(eng.state);
+  return { ...out, data: out.data ?? null };
+});
+
+ipcMain.handle('soul:thothGrant', (_e, input) => {
+  requireAgeGate();
+  const tool = String(input?.tool || '');
+  const klass = input?.klass === 'L0' ? 'L0' : 'L1';
+  const k = thothEngine().thoth;
+  if (!k.registry.has(tool)) throw new Error('Unknown THOTH tool.');
+  k.grant(tool, klass);
+  const eng = thothEngine();
+  eng.store.save(eng.state);
+  return { ok: true, tool, standingClass: klass };
+});
+
+ipcMain.handle('soul:thothRevoke', (_e, input) => {
+  requireAgeGate();
+  const tool = String(input?.tool || '');
+  const k = thothEngine().thoth;
+  if (!k.registry.has(tool)) throw new Error('Unknown THOTH tool.');
+  k.grant(tool, null);
+  const eng = thothEngine();
+  eng.store.save(eng.state);
+  return { ok: true, tool };
+});
+
 ipcMain.handle('soul:stayAwake', (_e, input) => {
   requireAgeGate();
   return setStayAwakeReason(input && input.reason, input && input.on === true);
