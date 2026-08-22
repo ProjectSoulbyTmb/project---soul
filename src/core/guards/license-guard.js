@@ -27,7 +27,7 @@ export const LICENSE_GUARDS = {
    * Scans for forbidden license headers
    */
   preventOpenSourceRelicense: () => {
-    const forbiddenLicenses = ['MIT', 'Apache-2.0', 'GPL-3.0', 'BSD-3-Clause', 'ISC'];
+    const _forbiddenLicenses = ['MIT', 'Apache-2.0', 'GPL-3.0', 'BSD-3-Clause', 'ISC'];
     // Runtime check for license contamination
     // This would scan for license headers in the codebase
   },
@@ -67,7 +67,7 @@ export const LICENSE_GUARDS = {
    * @returns {boolean} True if compliant
    */
   validateLicenseCompliance: () => {
-    const license = 'LicenseRef-Eidovara-Source-Available-1.0';
+    const _license = 'LicenseRef-Eidovara-Source-Available-1.0';
     // Validates no open source relicensing
     return true;
   },

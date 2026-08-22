@@ -2,211 +2,69 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * GitHub Tracker Plugin — Main Entry Point
- * Track GitHub repositories, PRs, issues, and notifications
  */
 
-const PLUGIN_ID = 'com.soul.github-tracker';
 const GITHUB_API = 'https://api.github.com';
+const CONFIG_KEY = 'plugin_github_tracker_config';
 
-let config = {
-  token: '',
-  defaultRepo: '',
-  watched: [],
-  pollIntervalMs: 2 * 60_000,
-  notify: true,
-};
-
-let pollTimer = null;
-let initialized = false;
-let seenEvents = new Set();
+let config = { token: '', watched: [], seen: new Set() };
 
 export default {
   name: 'GitHub Tracker',
   version: '1.0.0',
 
   async init() {
-    if (initialized) return;
-    console.log(`[${PLUGIN_ID}] Initializing…`);
-
-    try {
-      const stored = localStorage.getItem('plugin_github_tracker_config');
-      if (stored) config = { ...config, ...JSON.parse(stored) };
-    } catch {
-      /* private mode */
-    }
-
-    try {
-      const seen = localStorage.getItem('plugin_github_tracker_seen');
-      if (seen) seenEvents = new Set(JSON.parse(seen));
-    } catch {
-      /* private mode */
-    }
-
-    if (config.token && config.watched.length) {
-      startPolling();
-    }
-
-    initialized = true;
-    console.log(`[${PLUGIN_ID}] Initialized (${config.watched.length} repos watched)`);
+    try { const s = localStorage.getItem(CONFIG_KEY); if (s) { const d = JSON.parse(s); config = { ...config, ...d, seen: new Set(d.seen || []) }; } } catch {}
+    console.log('[GitHub Tracker] Initialized');
   },
 
   async cleanup() {
-    stopPolling();
-    persistSeen();
-    initialized = false;
-    console.log(`[${PLUGIN_ID}] Cleaned up`);
+    try { localStorage.setItem(CONFIG_KEY, JSON.stringify({ ...config, seen: [...config.seen] })); } catch {}
+    console.log('[GitHub Tracker] Cleaned up');
   },
 
-  async watch(repo, events, notify) {
-    validateRepo(repo);
-    if (config.watched.some(w => w.repo === repo)) {
-      return { alreadyWatching: true, repo };
-    }
-    config.watched.push({ repo, events: events || 'all', addedAt: new Date().toISOString() });
-    saveConfig();
-    startPolling();
-    console.log(`[${PLUGIN_ID}] Now watching ${repo}`);
-    return { watching: true, repo, events: events || 'all' };
+  async configure(token) {
+    if (!token) throw new Error('GitHub token required.');
+    config.token = token;
+    return { configured: true };
+  },
+
+  async watch(repo) {
+    if (!/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/.test(repo)) throw new Error('Use owner/repo format.');
+    if (config.watched.some(w => w.repo === repo)) return { alreadyWatching: true };
+    config.watched.push({ repo, addedAt: new Date().toISOString() });
+    return { watching: repo };
   },
 
   async unwatch(repo) {
-    validateRepo(repo);
     const before = config.watched.length;
     config.watched = config.watched.filter(w => w.repo !== repo);
-    saveConfig();
-    if (!config.watched.length) stopPolling();
-    return { unwatched: before !== config.watched.length, repo };
+    return { unwatched: before !== config.watched.length };
   },
 
   async list() {
-    return config.watched.map(w => ({ repo: w.repo, events: w.events, since: w.addedAt }));
-  },
-
-  async openPr(repo, number) {
-    validateRepo(repo);
-    if (!Number.isInteger(number) || number < 1)
-      throw new Error('PR number must be a positive integer.');
-    const url = `https://github.com/${repo}/pull/${number}`;
-    // Eidovara desktop exposes soul.openExternal; in sandbox fall back to window.open
-    if (typeof globalThis.soul?.openExternal === 'function') {
-      await globalThis.soul.openExternal(url);
-    }
-    return { url };
-  },
-
-  async configure(token, defaultRepo) {
-    if (!token) throw new Error('GitHub token is required.');
-    config.token = token;
-    if (defaultRepo) {
-      validateRepo(defaultRepo);
-      config.defaultRepo = defaultRepo;
-    }
-    saveConfig();
-    startPolling();
-    return { configured: true, watching: config.watched.length };
+    return config.watched.map(w => ({ repo: w.repo, since: w.addedAt }));
   },
 
   async pollNow() {
-    checkConfigured();
-    const notifications = [];
+    if (!config.token) throw new Error('Not configured.');
+    const items = [];
     for (const watch of config.watched) {
       try {
-        const items = await fetchRepoEvents(watch.repo);
-        for (const item of items) {
-          if (!seenEvents.has(item.id)) {
-            seenEvents.add(item.id);
-            notifications.push(item);
-            if (config.notify && typeof Notification !== 'undefined') {
-              new Notification(`GitHub · ${watch.repo}`, { body: item.title });
-            }
+        const res = await fetch(`${GITHUB_API}/repos/${watch.repo}/events?per_page=10`, {
+          headers: { 'Authorization': `Bearer ${config.token}`, 'Accept': 'application/vnd.github+json' }
+        });
+        if (!res.ok) continue;
+        const events = await res.json();
+        for (const ev of events.slice(0, 10)) {
+          if (!config.seen.has(ev.id)) {
+            config.seen.add(ev.id);
+            items.push({ repo: watch.repo, type: ev.type, actor: ev.actor?.login, at: ev.created_at });
           }
         }
-        // Cap the seen set so localStorage does not grow without bound
-        if (seenEvents.size > 2000) {
-          const arr = [...seenEvents];
-          seenEvents = new Set(arr.slice(-1000));
-        }
-      } catch (err) {
-        console.warn(`[GitHub Tracker] Poll failed for ${watch.repo}:`, err?.message || err);
-      }
+      } catch {}
     }
-    persistSeen();
-    return notifications;
-  },
-
-  async onPROpened(payload) {},
-  async onPRReviewRequested(payload) {},
-  async onIssueAssigned(payload) {},
-  async onWorkflowFailed(payload) {},
+    if (config.seen.size > 2000) config.seen = new Set([...config.seen].slice(-1000));
+    return items;
+  }
 };
-
-function validateRepo(repo) {
-  if (!/^[a-zA-Z0-9_-]+\/[a-zA-Z0-9_.-]+$/.test(String(repo))) {
-    throw new Error('Repository must be in "owner/repo" format.');
-  }
-}
-
-function checkConfigured() {
-  if (!config.token)
-    throw new Error('GitHub Tracker is not configured. Run "Configure GitHub" first.');
-}
-
-function saveConfig() {
-  try {
-    localStorage.setItem('plugin_github_tracker_config', JSON.stringify(config));
-  } catch {
-    /* private mode */
-  }
-}
-
-function persistSeen() {
-  try {
-    localStorage.setItem(
-      'plugin_github_tracker_seen',
-      JSON.stringify([...seenEvents].slice(-2000))
-    );
-  } catch {
-    /* private mode */
-  }
-}
-
-function startPolling() {
-  if (pollTimer) return;
-  pollTimer = setInterval(() => {
-    void this?.pollNow?.().catch(() => {});
-  }, config.pollIntervalMs);
-}
-
-function stopPolling() {
-  if (pollTimer) {
-    clearInterval(pollTimer);
-    pollTimer = null;
-  }
-}
-
-async function githubFetch(path) {
-  const res = await fetch(`${GITHUB_API}${path}`, {
-    headers: {
-      Authorization: `Bearer ${config.token}`,
-      Accept: 'application/vnd.github+json',
-    },
-    redirect: 'error',
-  });
-  if (!res.ok) {
-    const body = await res.text().catch(() => '');
-    throw new Error(`GitHub API ${res.status}: ${body.slice(0, 200)}`);
-  }
-  return res.json();
-}
-
-async function fetchRepoEvents(repo) {
-  const data = await githubFetch(`/repos/${repo}/events?per_page=20`);
-  if (!Array.isArray(data)) return [];
-  return data.slice(0, 20).map(ev => ({
-    id: ev.id,
-    type: ev.type,
-    repo,
-    title: `${ev.actor?.login ?? 'unknown'} — ${ev.type}`,
-    at: ev.created_at,
-  }));
-}

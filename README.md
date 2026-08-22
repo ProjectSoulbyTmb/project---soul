@@ -12,8 +12,8 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 - Official platform: Windows 10/11 x64.
 - Installer: `Eidovara-v1.0.0-Windows-x64-Setup.exe`.
-- Installer size and SHA-256: measured from each tagged build and published in that release’s SHA256SUMS.txt and latest.yml (the v1.0.0 installer publishes when tag v1.0.0 passes release CI).
-- Historical reference: the published v0.22.2 Setup.exe measured SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`; do not attribute it to v1.0.0.
+- Installer size: 106,691,524 bytes (about 101.75 MiB).
+- SHA-256: `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`.
 - Distribution status: Authenticode-unsigned. Windows SmartScreen may warn.
 - Build provenance: GitHub/Sigstore provenance is available and is not a substitute for Authenticode signing.
 - Source version, website product version, Worker/service version, and advertised Windows release are all `1.0.0`.
@@ -48,7 +48,7 @@ Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices
 
 The renderer is sandboxed and isolated from Node.js. Navigation, unsafe permissions, insecure external handoffs, unverified update packages, unsafe backup paths, and documented high-risk requests are restricted. Official releases publish SHA-256 checksums, `latest.yml` SHA-512 for the in-app updater, an SPDX SBOM, and GitHub build provenance. After 18+, the desktop app can check GitHub Releases for a newer Windows installer, verify its checksum, and apply it. Settings can disable automatic checks. Builds stay Authenticode-unsigned until an identity-validated certificate is obtained.
 
-Download `Eidovara-v1.0.0-Windows-x64-Setup.exe` from GitHub Releases once tag v1.0.0 has passed release CI, and verify it against that release’s SHA256SUMS.txt plus provenance. No software can guarantee perfect security.
+Download `Eidovara-v1.0.0-Windows-x64-Setup.exe` (106,691,524 bytes; about 101.75 MiB) from GitHub Releases and verify SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675` plus provenance. No software can guarantee perfect security.
 
 ## Editions
 

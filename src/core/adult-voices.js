@@ -13,7 +13,7 @@
  * Eidovara does not ship a neural TTS engine (no Kokoro, Piper, sherpa-onnx,
  * ElevenLabs, or cloud voice API). Celebrity cloning is refused.
  */
-import { listInstalledVoices, normalizeVoiceSettings, speakText } from './voices.js';
+import { listInstalledVoices, speakText } from './voices.js';
 
 export const ADULT_VOICE_HONESTY =
   'Adult Soul uses every speechSynthesis voice already on this Windows PC, including Microsoft Natural/Neural voices when Windows installed them. Realistic moans, wet sounds, and bed audio are files you import. Eidovara does not ship Kokoro, Piper, ElevenLabs, or any third-party neural TTS engine.';
@@ -293,7 +293,7 @@ export const CLIP_ROLES = Object.freeze([
   'afterglow',
 ]);
 
-function guessGender(name, lang) {
+function guessGender(name, _lang) {
   const n = String(name || '');
   if (FEM.test(n)) return 'feminine';
   if (MASC.test(n)) return 'masculine';

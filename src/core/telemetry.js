@@ -174,7 +174,7 @@ export function getSpanNames() {
  */
 export function exportMetrics() {
   const result = {};
-  for (const [key, data] of metrics.entries()) {
+  for (const [key] of metrics.entries()) {
     if (key.startsWith('metric.') || key.startsWith('counter.')) {
       result[key] = getMetrics(key);
     } else {
@@ -283,24 +283,25 @@ export const providerTelemetry = {
  */
 export const storeTelemetry = {
   /**
-   * Times a synchronous store operation and returns its result.
-   * The engine consumes load()/reset()/restoreBackup() synchronously, so this
-   * wrapper MUST stay synchronous — returning a Promise here silently replaces
-   * engine state with telemetry metadata.
    * @param {string} op - Operation (load, save, backup, restore)
-   * @param {() => any} fn
-   * @returns {any} the result of fn()
+   * @param {() => Promise<any>} fn
+   * @returns {any} result of fn (synchronous)
    */
   op(op, fn) {
-    const startedAt = Date.now();
+    // Store load/save are synchronous; an async wrapper here made the engine
+    // constructor assign a Promise to this.state, breaking every consumer.
+    const started = performance.now();
+    let success = true;
+    let result;
     try {
-      const result = fn();
-      this.record(op, Date.now() - startedAt, true);
-      return result;
-    } catch (error) {
-      this.record(op, Date.now() - startedAt, false);
-      throw error;
+      result = fn();
+    } catch (err) {
+      success = false;
+      throw err;
+    } finally {
+      this.record(op, performance.now() - started, success);
     }
+    return result;
   },
 
   record(op, durationMs, success = true, size) {

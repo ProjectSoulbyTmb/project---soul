@@ -41,22 +41,12 @@ jobs:
       - name: Require updater metadata
         shell: pwsh
         run: if (-not (Test-Path dist/latest.yml)) { throw 'electron-builder did not write dist/latest.yml. GitHub publish config must stay so tagged releases emit updater files. No GH_TOKEN is committed.' }
-      - name: Verify installer integrity metadata is internally consistent
+      - name: Verify installer SHA-256 matches IP_CERTIFICATION
         shell: pwsh
         run: |
-          $exe = Get-ChildItem 'dist/Eidovara-*-Windows-x64-Setup.exe' | Select-Object -First 1
-          if (-not $exe) { throw 'No Setup.exe found in dist/' }
-          $hash = (Get-FileHash -Path $exe.FullName -Algorithm SHA256).Hash
-          Write-Output "Measured SHA-256: $hash"
-          Write-Output "Measured size: $($exe.Length) bytes"
-          # Internal consistency: electron-updater latest.yml sha512 must match the built artifact.
-          $latest = Get-Content dist/latest.yml -Raw
-          $sha512Line = ($latest -split "`n" | Where-Object { $_ -match '^sha512:' }) -join ''
-          if (-not $sha512Line) { throw 'latest.yml has no sha512 entry' }
-          Write-Output "latest.yml $sha512Line"
-          Add-Content $env:GITHUB_STEP_SUMMARY "## Measured v$(${env:GITHUB_REF_NAME}) installer facts`n"
-          Add-Content $env:GITHUB_STEP_SUMMARY "- File: $($exe.Name)`n- Size: $($exe.Length) bytes`n- SHA-256: ``$hash```n"
-          Add-Content $env:GITHUB_STEP_SUMMARY "Copy these measured facts into src/core/release.js (INSTALLER_MEASURED=true + values) in the follow-up commit; SHA256SUMS.txt and latest.yml ship with this release.`n"
+          $expected = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675'
+          $actual = (Get-FileHash -Path 'dist/Eidovara-*-Windows-x64-Setup.exe' -Algorithm SHA256).Hash
+          if ($actual -ne $expected) { throw "SHA-256 mismatch: expected $expected, got $actual" }
       - run: pnpm run release:manifest
       - run: pnpm run release:evidence
       - name: Sign build provenance
@@ -86,11 +76,14 @@ jobs:
       - name: Verify build provenance attestation
         shell: pwsh
         run: |
-          # attest-build-provenance records attestations server-side (it does not
-          # drop files into dist/). Verify after download with:
-          #   gh attestation verify <file> -R <repo>
-          if (-not (Test-Path 'dist/Eidovara-*-Windows-x64-Setup.exe')) { throw 'Setup.exe missing before attestation' }
-          Write-Output 'Provenance attestations recorded by actions/attest-build-provenance.'
+          $expectedTypes = @('provenance', 'sbom')
+          $attestations = Get-ChildItem dist/*.attestation.json | ForEach-Object {
+            $content = Get-Content $_.FullName -Raw | ConvertFrom-Json
+            $content.__typename
+          }
+          foreach ($type in $expectedTypes) {
+            if (-not ($attestations -contains $type)) { throw "Missing attestation type: $type" }
+          }
       - name: Publish GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2

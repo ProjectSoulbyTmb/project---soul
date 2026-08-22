@@ -91,7 +91,7 @@
   function tileDefs(ctx) {
     const state = ctx.state || {};
     const settings = ctx.settings || {};
-    const roles = state.setup?.categories || [];
+    const _roles = state.setup?.categories || [];
     const memories = (state.memories || []).filter(x => x.active).length;
     const apps = (settings.apps || []).length;
     const taste = Object.keys(state.entertainment?.taste || {}).length;

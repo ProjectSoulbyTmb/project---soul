@@ -4,7 +4,7 @@
   const $ = sel => document.querySelector(sel);
   const LOCAL = 'eidovara-media:';
   const RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
-  const SLEEP = [0, 15, 30, 45, 60, 90];
+  const _SLEEP = [0, 15, 30, 45, 60, 90];
   let queue = [];
   let index = -1;
   let loop = 'off';
@@ -13,7 +13,7 @@
   let sleepUntil = 0;
   let sleepTimer = 0;
   let poppedOut = false;
-  let favorite = false;
+  let _favorite = false;
 
   function t(key, fallback) {
     return window.t ? window.t(key, fallback) : fallback;
@@ -393,7 +393,7 @@
       sel.classList.remove('hidden');
     }
   }
-  function armSleep(minutes) {
+  function _armSleep(minutes) {
     clearTimeout(sleepTimer);
     const mins = Number(minutes) || 0;
     sleepUntil = mins ? Date.now() + mins * 60_000 : 0;

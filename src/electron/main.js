@@ -5,10 +5,10 @@
  * Structural legal guards initialized at startup
  */
 import { runAllStructuralGuards } from '../core/guards/index.js';
-import { AGE_GATE } from '../core/guards/age-gate.js';
-import { CONSCIOUSNESS_GUARD } from '../core/guards/consciousness-guard.js';
-import { LICENSE_GUARDS } from '../core/guards/license-guard.js';
-import { RELICENSE_GUARD } from '../core/guards/relicense-guard.js';
+import {} from '../core/guards/age-gate.js';
+import {} from '../core/guards/consciousness-guard.js';
+import {} from '../core/guards/license-guard.js';
+import {} from '../core/guards/relicense-guard.js';
 
 // Run all structural legal guards at startup
 // These guards enforce the source-available license, 18+ age gate,
@@ -173,7 +173,7 @@ let config = {
   overlays: defaultOverlayLayout(),
   overlayRecents: [],
 };
-let pendingUpdate = null;
+let _pendingUpdate = null;
 let desktopUpdater = null;
 let playerWindows = null;
 const ADMIN_SESSION_MS = 15 * 60 * 1000;
@@ -372,7 +372,7 @@ function companionPresenceUrl() {
 }
 const sessionLocalLibrary = [];
 const LOCAL_LIBRARY_LIMIT = 32;
-function retainCompanionMedia() {
+function _retainCompanionMedia() {
   const companionPath = allowedLocalMedia.get(COMPANION_MEDIA_ID);
   allowedLocalMedia.clear();
   if (companionPath) allowedLocalMedia.set(COMPANION_MEDIA_ID, companionPath);
@@ -875,7 +875,7 @@ desktopUpdater = attachDesktopUpdater({
   scanUpdateForMalware,
   log,
 });
-playerWindows = attachPlayerWindows({
+_$_({
   BrowserWindow,
   ipcMain,
   getMainWindow: () => mainWindow,

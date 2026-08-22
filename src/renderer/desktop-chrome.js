@@ -5,7 +5,7 @@
   const t = (key, fallback) => window.eidovaraI18n?.t(key, fallback) || fallback || key;
 
   let sleepTimer = 0;
-  let calcResult = null;
+  let _calcResult = null;
 
   function settings() {
     return window.eidovaraSettings || {};

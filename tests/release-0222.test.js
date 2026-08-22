@@ -8,12 +8,9 @@ import {
   INSTALLER_SHA256,
   INSTALLER_SIZE_BYTES,
   INSTALLER_LATEST_URL,
-  INSTALLER_PINNED_URL,
+  INSTALLER_PINNED_URL
 } from '../src/core/release.js';
-import {
-  DESKTOP_KNOWLEDGE_VERSION,
-  INSTALLER_NAME as KNOWLEDGE_INSTALLER,
-} from '../src/core/knowledge.js';
+import { DESKTOP_KNOWLEDGE_VERSION, INSTALLER_NAME as KNOWLEDGE_INSTALLER } from '../src/core/knowledge.js';
 import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
@@ -26,28 +23,16 @@ test('source and published Windows installer use one coherent set of release met
   assert.equal(ASSIST_VERSION, SOURCE_VERSION);
   assert.equal(INSTALLER_NAME, `Eidovara-v${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`);
   assert.equal(KNOWLEDGE_INSTALLER, INSTALLER_NAME);
-  // v1.0.0 is staged: the measured digest/size arrive with the tagged build.
-  if (INSTALLER_SIZE_BYTES === null) {
-    assert.equal(INSTALLER_SHA256, null);
-  } else {
-    assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
-    assert.ok(Number.isInteger(INSTALLER_SIZE_BYTES) && INSTALLER_SIZE_BYTES > 0);
-  }
-  assert.equal(
-    INSTALLER_LATEST_URL,
-    `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`
-  );
-  assert.equal(
-    INSTALLER_PINNED_URL,
-    `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`
-  );
+  assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
+  assert.equal(INSTALLER_SIZE_BYTES, 106691524);
+  assert.equal(INSTALLER_LATEST_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`);
+  assert.equal(INSTALLER_PINNED_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`);
 });
 
 test('download page advertises exactly the canonical installer with integrity metadata', () => {
   const downloadPage = read('docs/download.html');
   assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_NAME)));
-  if (INSTALLER_SHA256) assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
-  else assert.match(downloadPage, /SHA256SUMS\.txt/);
+  assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
   assert.match(downloadPage, /Authenticode-unsigned/);
   assert.match(downloadPage, /GitHub\/Sigstore provenance/);
   assert.match(read('CHANGELOG.md'), new RegExp('## v' + escapeRe(SOURCE_VERSION)));

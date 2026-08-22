@@ -1,6 +1,6 @@
 # Companion and voice integration policy
 
-Eidovara 1.0.0 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled. Kokoro, Piper, VRM, and MakeHuman runtimes are documented future adapters only.
+Eidovara 0.19.1 ships a dependency-free 2D/3D-styled companion and uses voices already installed in Windows. No third-party voice weights, character models, biometric samples, or cloud voice credentials are bundled. Kokoro, Piper, VRM, and MakeHuman runtimes are documented future adapters only.
 
 ## Shipped first-party / Chromium engines (vanilla Electron ESM)
 
@@ -43,7 +43,7 @@ The in-app catalog is `src/core/runtime-engines.js` (also on kernel status and D
 
 This is a technical screening record, not a legal clearance opinion. Re-check the exact pinned release and every model card before distribution.
 
-## Blocked in v1.0.0 (document only — do not enable)
+## Blocked in v0.19.1 (document only — do not enable)
 
 These items may be described as future adapters. They must not be bundled, wired, or turned on in this release:
 
@@ -54,9 +54,9 @@ These items may be described as future adapters. They must not be bundled, wired
 
 Windows-installed voices, the CSS companion, explicit Wikipedia/Wikimedia research, pasted HTTPS providers, Premium Brave, GitHub updates, optional Worker health/config/status/assist, and Spotify/YouTube HTTPS search links remain the implemented surface. See NETWORK-USAGE.md.
 
-## Adult character asset decision for v1.0.0
+## Adult character asset decision for v0.19.1
 
-No third-party anatomical model is bundled in v1.0.0. The lowest-conflict future path identified is a custom, clearly adult character exported from an official unmodified MakeHuman release using only its bundled core assets. MakeHuman states that its core graphical assets and official exports are CC0, while its application code is AGPL. Eidovara may evaluate an exported asset after preserving its exact source version, hashes, export record, license snapshot, and an adult/likeness review; MakeHuman program code must not be copied into Eidovara.
+No third-party anatomical model is bundled in v0.19.1. The lowest-conflict future path identified is a custom, clearly adult character exported from an official unmodified MakeHuman release using only its bundled core assets. MakeHuman states that its core graphical assets and official exports are CC0, while its application code is AGPL. Eidovara may evaluate an exported asset after preserving its exact source version, hashes, export record, license snapshot, and an adult/likeness review; MakeHuman program code must not be copied into Eidovara.
 
 User-contributed MakeHuman assets are excluded unless each asset's license and provenance is reviewed. VRoid Hub models are excluded by default because each model may separately restrict sexual depictions, commercial use, alteration, redistribution, and attribution. Scans of real people, celebrity likenesses, age-ambiguous models, and datasets without documented consent and provenance are prohibited.
 

@@ -12,8 +12,7 @@ export function defaultSoulOnline() {
 export function normalizeSoulOnline(input = {}, prev = defaultSoulOnline()) {
   const prior = { ...defaultSoulOnline(), ...(prev && typeof prev === 'object' ? prev : {}) };
   return {
-    assistOptIn:
-      input.assistOptIn === undefined ? prior.assistOptIn === true : Boolean(input.assistOptIn),
+    assistOptIn: input.assistOptIn === undefined ? prior.assistOptIn === true : Boolean(input.assistOptIn)
   };
 }
 
@@ -33,11 +32,7 @@ async function boundedJson(res, maxBytes = ASSIST_MAX_BYTES) {
   if (declared > maxBytes) throw new Error('Assist response is too large.');
   const bytes = Buffer.from(await res.arrayBuffer());
   if (bytes.length > maxBytes) throw new Error('Assist response is too large.');
-  try {
-    return JSON.parse(bytes.toString('utf8'));
-  } catch {
-    throw new Error('Assist response was not JSON.');
-  }
+  try { return JSON.parse(bytes.toString('utf8')); } catch { throw new Error('Assist response was not JSON.'); }
 }
 
 export async function requestSoulAssist({
@@ -45,64 +40,24 @@ export async function requestSoulAssist({
   query,
   optIn = false,
   fetchImpl = globalThis.fetch,
-  timeoutMs = 8000,
+  timeoutMs = 8000
 } = {}) {
   const gate = canCallAssist({ optIn, serviceUrl: base });
   if (!gate.ok) {
-    return {
-      ok: false,
-      skipped: true,
-      reason: gate.reason,
-      assist: true,
-      soul: false,
-      conversationsSent: false,
-    };
+    return { ok: false, skipped: true, reason: gate.reason, assist: true, soul: false, conversationsSent: false };
   }
-  const q = String(query || '')
-    .trim()
-    .slice(0, ASSIST_MAX_QUERY);
-  if (!q)
-    return {
-      ok: false,
-      skipped: false,
-      reason: 'empty',
-      assist: true,
-      soul: false,
-      conversationsSent: false,
-    };
+  const q = String(query || '').trim().slice(0, ASSIST_MAX_QUERY);
+  if (!q) return { ok: false, skipped: false, reason: 'empty', assist: true, soul: false, conversationsSent: false };
   let url;
-  try {
-    url = serviceRequestUrl(base, SERVICE_ASSIST_PATH);
-  } catch (err) {
-    return {
-      ok: false,
-      skipped: false,
-      reason: String(err?.message || err),
-      assist: true,
-      soul: false,
-      conversationsSent: false,
-    };
+  try { url = serviceRequestUrl(base, SERVICE_ASSIST_PATH); }
+  catch (err) {
+    return { ok: false, skipped: false, reason: String(err?.message || err), assist: true, soul: false, conversationsSent: false };
   }
   const payload = JSON.stringify({ query: q, mode: 'help' });
   if (payload.length > ASSIST_MAX_BYTES) {
-    return {
-      ok: false,
-      skipped: false,
-      reason: 'too_large',
-      assist: true,
-      soul: false,
-      conversationsSent: false,
-    };
+    return { ok: false, skipped: false, reason: 'too_large', assist: true, soul: false, conversationsSent: false };
   }
-  if (!fetchImpl)
-    return {
-      ok: false,
-      skipped: false,
-      reason: 'no-fetch',
-      assist: true,
-      soul: false,
-      conversationsSent: false,
-    };
+  if (!fetchImpl) return { ok: false, skipped: false, reason: 'no-fetch', assist: true, soul: false, conversationsSent: false };
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -111,7 +66,7 @@ export async function requestSoulAssist({
       signal: controller.signal,
       redirect: 'error',
       headers: { accept: 'application/json', 'content-type': 'application/json' },
-      body: payload,
+      body: payload
     });
     if (!res.ok) throw new Error(`Assist returned HTTP ${res.status}.`);
     const body = await boundedJson(res);
@@ -122,24 +77,20 @@ export async function requestSoulAssist({
       assist: true,
       soul: false,
       conversationsSent: false,
-      warning:
-        'This is your Worker helper — not Soul, not a cloud mind, and not this conversation.',
+      warning: 'This is your Worker helper â€” not Soul, not a cloud mind, and not this conversation.'
     };
   } catch (err) {
     const timeout = err?.name === 'AbortError';
     return {
       ok: false,
       skipped: false,
-      reason: String(
-        timeout
-          ? 'Eidovara assist timed out. Local Soul continues on this PC.'
-          : err?.message || err
-      ).slice(0, 300),
+      reason: String(timeout ? 'Eidovara assist timed out. Local Soul continues on this PC.' : (err?.message || err)).slice(0, 300),
       assist: true,
       soul: false,
-      conversationsSent: false,
+      conversationsSent: false
     };
   } finally {
     clearTimeout(timer);
   }
 }
+

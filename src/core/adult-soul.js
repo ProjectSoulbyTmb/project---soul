@@ -119,8 +119,8 @@ export const QUICK_COMMANDS = Object.freeze([
   { id: 'faster', title: 'Faster', hint: 'Speed the stroke / grind' },
   { id: 'slower', title: 'Slower', hint: 'Drop to a tease pace' },
   { id: 'hold', title: 'Hold / edge', hint: 'Freeze on the edge' },
-  { id: 'come', title: 'Come', hint: 'Climax cue — still your body' },
-  { id: 'strip', title: 'Strip a layer', hint: 'Wrapped → bare on the figure' },
+  { id: 'come', title: 'Come', hint: 'Climax cue â€” still your body' },
+  { id: 'strip', title: 'Strip a layer', hint: 'Wrapped â†’ bare on the figure' },
   { id: 'pose', title: 'Next pose', hint: 'Cycle sexual behaviors' },
   { id: 'camera', title: 'Next camera', hint: 'Full / face / chest / hips / ass / crotch' },
   { id: 'touch-moan', title: 'React', hint: 'Short OS-voice reaction' },
@@ -336,7 +336,7 @@ export function defaultAdultPersona() {
     nickname: '',
     roleplay: 'none',
     honestLabel:
-      'Adult Soul is a separate software persona on this PC — not a person, not consciousness, and not the standard workspace Soul.',
+      'Adult Soul is a separate software persona on this PC â€” not a person, not consciousness, and not the standard workspace Soul.',
   };
 }
 
@@ -649,7 +649,7 @@ function normalizeLooks(input) {
 }
 
 function normalizeStats(input) {
-  const base = defaultAdultStats();
+  const _base = defaultAdultStats();
   const incoming = input && typeof input === 'object' ? input : {};
   return {
     sessions: Math.max(0, Number(incoming.sessions) || 0),
@@ -770,7 +770,7 @@ function sceneLead(persona) {
   if (persona.roleplay === 'bar-stranger')
     return `Two adults after last call. No one else in this scene. ${youName}, I am still a program.`;
   if (persona.roleplay === 'after-hours')
-    return `Adult coworkers staying late by choice. Consent stays revocable. ${youName} — software, not a boss with power over you.`;
+    return `Adult coworkers staying late by choice. Consent stays revocable. ${youName} â€” software, not a boss with power over you.`;
   if (persona.roleplay === 'long-distance')
     return `Cam-to-cam adults. I am a local figure on this PC, not a livestream of a person.`;
   if (persona.roleplay === 'cam-show')
@@ -817,8 +817,8 @@ function styleFlavor(style, filthy, persona = defaultAdultPersona()) {
     return (
       prefix +
       (filthy
-        ? `Tell me how you want it, ${youName}. I’ll moan and present while you stroke. This software follows.`
-        : `You set the pace. I’ll stay with you. Safeword stops everything.`)
+        ? `Tell me how you want it, ${youName}. Iâ€™ll moan and present while you stroke. This software follows.`
+        : `You set the pace. Iâ€™ll stay with you. Safeword stops everything.`)
     );
   if (style === 'filthy' || filthy)
     return (
@@ -857,7 +857,8 @@ export function sessionCatalog() {
     {
       id: 'worship',
       title: 'Body worship',
-      summary: 'Attention on cock, chest, ass, mouth — still a first-party mesh, not a real model.',
+      summary:
+        'Attention on cock, chest, ass, mouth â€” still a first-party mesh, not a real model.',
     },
     {
       id: 'hands-free-audio',
@@ -867,7 +868,7 @@ export function sessionCatalog() {
     {
       id: 'countdown-finish',
       title: 'Countdown finish',
-      summary: 'Ten slow, then faster, then come when told — or hold if you say stop.',
+      summary: 'Ten slow, then faster, then come when told â€” or hold if you say stop.',
     },
     {
       id: 'aftercare',
@@ -1006,7 +1007,7 @@ export function buildSessionBeats(
   const h = slider(heat);
   const minutes = clamp(Number(durationMin) || 8, 4, 20);
   const flavor = styleFlavor(style, filthy, persona);
-  const open = `Adult Soul is software on this PC, not a lover in the room. Safeword is ${persona.safeword || 'red'} — or revoke consent anytime. ${flavor}`;
+  const open = `Adult Soul is software on this PC, not a lover in the room. Safeword is ${persona.safeword || 'red'} â€” or revoke consent anytime. ${flavor}`;
   if (id === 'aftercare') {
     return [
       beat(0, open, { pace: 'stop', heat: 20, behavior: 'aftercare', camera: 'face' }),
@@ -1074,7 +1075,7 @@ export function buildSessionBeats(
       beat(0, open, { pace: 'medium', heat: h, behavior: 'stroke-pose' }),
       beat(
         20,
-        'Get your cock out. Stroke it like you mean it — full grip, base to head, wet enough that it sounds.',
+        'Get your cock out. Stroke it like you mean it â€” full grip, base to head, wet enough that it sounds.',
         { pace: 'medium', heat: h, behavior: 'stroke-pose', camera: 'crotch' }
       ),
       beat(50, 'Faster. Point it up. Watch the head swell. You are not allowed to come yet.', {
@@ -1154,7 +1155,7 @@ export function buildSessionBeats(
       }),
       beat(
         20,
-        'Look at the Adult Soul figure you built — adult, fictional, first-party mesh. Then look at your own body with the same attention.',
+        'Look at the Adult Soul figure you built â€” adult, fictional, first-party mesh. Then look at your own body with the same attention.',
         { pace: 'slow', heat: 50, behavior: 'present-body' }
       ),
       beat(
@@ -1308,7 +1309,7 @@ export function buildSessionBeats(
       beat(0, open, { pace: 'medium', heat: h, behavior: 'grind' }),
       beat(
         16,
-        'You stroke on the downbeat. The figure grinds on the same count. Match or ignore — it cannot feel you.',
+        'You stroke on the downbeat. The figure grinds on the same count. Match or ignore â€” it cannot feel you.',
         { pace: 'medium', heat: 60, behavior: 'grind', camera: 'hips' }
       ),
       beat(50, 'Faster together. Hips. Fist. Wet sound if you made one.', {
@@ -1348,7 +1349,7 @@ export function buildSessionBeats(
       ),
       beat(
         60,
-        'That’s it. Wet enough. You look hungry and that is allowed here. Keep the rhythm you can actually keep.',
+        'Thatâ€™s it. Wet enough. You look hungry and that is allowed here. Keep the rhythm you can actually keep.',
         { pace: 'medium', heat: 62, behavior: 'stroke-pose' }
       ),
       beat(
@@ -1705,7 +1706,7 @@ export function buildSessionBeats(
     ),
     beat(
       75,
-      'Faster. Let your hips help. Keep the other hand on balls, clit, or ass — whatever is yours and adult.',
+      'Faster. Let your hips help. Keep the other hand on balls, clit, or ass â€” whatever is yours and adult.',
       { pace: 'fast', heat: 78, behavior: 'grind' }
     ),
     beat(110, 'Slow it down. Twist under the head. You should feel stupid-sensitive. Good.', {
@@ -1725,7 +1726,7 @@ export function buildSessionBeats(
     ),
     beat(
       minutes * 60 - 45,
-      'Finish if you want — tight, fast, messy — or stop and stay aching. Say revoke consent to kill the studio.',
+      'Finish if you want â€” tight, fast, messy â€” or stop and stay aching. Say revoke consent to kill the studio.',
       { pace: 'fast', heat: 95, behavior: 'climax' }
     ),
   ];
@@ -2144,7 +2145,7 @@ export function touchReactionLine(zone, persona = defaultAdultPersona()) {
       : 'Face. Slow. Software, not a mouth.';
   if (zone === 'chest')
     return filthy
-      ? 'Yes. Hands on the chest you built. Pinch if you want — it is geometry.'
+      ? 'Yes. Hands on the chest you built. Pinch if you want â€” it is geometry.'
       : 'Chest. Breath picks up because the deform says so.';
   if (zone === 'groin')
     return filthy
@@ -2188,7 +2189,7 @@ export function adultSoulReply(input, state) {
     )
   ) {
     return {
-      reply: `${name} here — still a program on this PC. ${filthy ? 'Get your cock (or clit, or toy) in hand.' : 'Start touching yourself at a pace you can keep.'} I can run stroke-guide, edge-hold, filthy-talk, striptease, mutual-guide, countdown-finish, pose-play, or aftercare. The figure will grind, present, strip, and climax-deform with the beats. Heat is ${heat}. Safeword ${soul.stage.safeword}. Say stop or revoke consent and I drop it immediately.`,
+      reply: `${name} here â€” still a program on this PC. ${filthy ? 'Get your cock (or clit, or toy) in hand.' : 'Start touching yourself at a pace you can keep.'} I can run stroke-guide, edge-hold, filthy-talk, striptease, mutual-guide, countdown-finish, pose-play, or aftercare. The figure will grind, present, strip, and climax-deform with the beats. Heat is ${heat}. Safeword ${soul.stage.safeword}. Say stop or revoke consent and I drop it immediately.`,
       locked: false,
       suggest: adultSessionKindFromInput(text),
     };
@@ -2197,7 +2198,7 @@ export function adultSoulReply(input, state) {
     /\b(avatar|body|tits|cock on (?:the )?figure|make (?:them|her|him) naked|3d|pose)\b/i.test(text)
   ) {
     return {
-      reply: `The Adult Soul figure is a local first-party WebGL lathe you shape with sliders — not VRM, not MakeHuman, not a photo of a real person. It breathes, sways, and runs sexual behaviors (grind, ride, all-fours, climax shudder). Appearance is locked adult (${ADULT_APPEARANCE_MIN_YEARS}+). Open the Adult Soul studio.`,
+      reply: `The Adult Soul figure is a local first-party WebGL lathe you shape with sliders â€” not VRM, not MakeHuman, not a photo of a real person. It breathes, sways, and runs sexual behaviors (grind, ride, all-fours, climax shudder). Appearance is locked adult (${ADULT_APPEARANCE_MIN_YEARS}+). Open the Adult Soul studio.`,
       locked: false,
     };
   }

@@ -1,0 +1,29 @@
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
+
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+const names = fs.readdirSync('dist').filter(name => /\.(?:exe|zip|json|yml)$/i.test(name) && (name.startsWith('Eidovara-') || name === 'update.json' || name === 'latest.yml')).sort();
+if (!names.some(name => /Setup\.exe$/i.test(name))) throw new Error('The Windows setup installer is missing.');
+const files = names.map(name => { const data = fs.readFileSync(path.join('dist', name)); return { name, bytes: data.length, sha256: crypto.createHash('sha256').update(data).digest('hex').toUpperCase() }; });
+fs.writeFileSync(path.join('dist', 'SHA256SUMS.txt'), `${files.map(f => `${f.sha256}  ${f.name}`).join('\n')}\n`, 'utf8');
+const namespace = `https://github.com/${process.env.GITHUB_REPOSITORY || 'ProjectSoulbyTmb/project---soul'}/releases/tag/v${pkg.version}`;
+const sbom = { spdxVersion: 'SPDX-2.3', dataLicense: 'CC0-1.0', SPDXID: 'SPDXRef-DOCUMENT', name: `Eidovara ${pkg.version}`, documentNamespace: namespace, creationInfo: { created: new Date().toISOString(), creators: ['Tool: Eidovara-release-evidence'] }, packages: [{ name: pkg.name, SPDXID: 'SPDXRef-Package', versionInfo: pkg.version, downloadLocation: 'NOASSERTION', filesAnalyzed: true, licenseConcluded: 'LicenseRef-Eidovara-Source-Available-1.0', licenseDeclared: 'LicenseRef-Eidovara-Source-Available-1.0', copyrightText: 'Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.' }], files: files.map((f,i)=>({fileName:f.name,SPDXID:`SPDXRef-File-${i+1}`,checksums:[{algorithm:'SHA256',checksumValue:f.sha256}]})), relationships: files.map((_,i)=>({spdxElementId:'SPDXRef-Package',relationshipType:'CONTAINS',relatedSpdxElement:`SPDXRef-File-${i+1}`})) };
+fs.writeFileSync(path.join('dist', 'SBOM.spdx.json'), `${JSON.stringify(sbom, null, 2)}\n`, 'utf8');
+fs.writeFileSync(path.join('dist', 'CODE-SIGNING-STATUS.txt'), `Eidovara ${pkg.version}\n\nAuthenticode: unsigned; no valid local Windows code-signing identity was available.\nBuild provenance: signed by GitHub Actions through Sigstore and published in the repository attestations.\nIntegrity: verify SHA256SUMS.txt and the GitHub attestation before installation.\nPrivate keys and private certificates are never included in release assets.\n`, 'utf8');
+const privacy = { schemaVersion: 1, product: 'Eidovara', version: pkg.version, declarationType: 'self-declared-and-build-attested', telemetry: false, advertising: false, automaticExternalSafetyReporting: false, localConversationStorage: true, secretsExposedToRenderer: false, updater: { automaticCheck: true, autoCheckDefaultOn: true, installRequiresUserApproval: true, httpsRequired: true, sha512Required: true, sha256Required: true, authenticodeSigned: false }, documents: ['PRIVACY.md', 'TERMS.md', 'AGE.md', 'SECURITY.md', 'LEGAL_NOTICES.md', 'OWNERSHIP.md', 'docs/NETWORK_USAGE.md'] };
+fs.writeFileSync(path.join('dist', 'PRIVACY-DECLARATION.json'), `${JSON.stringify(privacy, null, 2)}\n`, 'utf8');
+fs.copyFileSync('PRIVACY.md', path.join('dist', 'PRIVACY.md')); fs.copyFileSync('TERMS.md', path.join('dist', 'TERMS.md')); fs.copyFileSync('AGE.md', path.join('dist', 'AGE.md')); fs.copyFileSync('LEGAL_NOTICES.md', path.join('dist', 'LEGAL-NOTICES.md')); fs.copyFileSync('SECURITY.md', path.join('dist', 'SECURITY.md')); fs.copyFileSync(path.join('docs', 'NETWORK_USAGE.md'), path.join('dist', 'NETWORK-USAGE.md'));
+for (const name of ['LICENSE','NOTICE.md','COPYRIGHT.txt','OWNERSHIP.md','AUTHORS.md','TRADEMARKS.md','THIRD_PARTY_NOTICES.md']) fs.copyFileSync(name, path.join('dist', name));
+fs.copyFileSync(path.join('docs', 'BRAND_ASSET_POLICY.md'), path.join('dist', 'BRAND-ASSET-POLICY.md'));
+fs.copyFileSync(path.join('docs', 'COPYRIGHT_ASSET_REGISTER.md'), path.join('dist', 'COPYRIGHT-ASSET-REGISTER.md'));
+fs.copyFileSync(path.join('docs', 'COPYRIGHT.md'), path.join('dist', 'COPYRIGHT.md'));
+fs.copyFileSync(path.join('docs', 'IP_CERTIFICATION.md'), path.join('dist', 'IP-CERTIFICATION.md'));
+fs.copyFileSync(path.join('docs', 'INFRINGEMENT.md'), path.join('dist', 'INFRINGEMENT.md'));
+fs.copyFileSync(path.join('docs', 'COPYRIGHT_DEPOSIT.md'), path.join('dist', 'COPYRIGHT-DEPOSIT.md'));
+fs.copyFileSync(path.join('docs', 'TRADEMARK_FILING.md'), path.join('dist', 'TRADEMARK-FILING.md'));
+fs.copyFileSync(path.join('docs', 'BRAND_GUIDE.md'), path.join('dist', 'BRAND-GUIDE.md'));
+console.log(`Release evidence created for ${files.length} files.`);
+

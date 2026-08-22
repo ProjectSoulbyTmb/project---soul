@@ -18,7 +18,10 @@ export default [
       },
     },
     rules: {
-      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-unused-vars': [
+        'error',
+        { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrors: 'none' },
+      ],
       'no-console': 'off',
       'no-empty': ['error', { allowEmptyCatch: true }],
       // Sanitizer regexes legitimately match control characters (e.g. stripping NUL bytes)

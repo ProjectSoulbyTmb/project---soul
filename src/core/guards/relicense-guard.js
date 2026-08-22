@@ -177,7 +177,7 @@ export const RELICENSE_GUARD = {
    * @param {string} path - Path to scan
    * @returns {Object} Scan results
    */
-  scanDirectory: async path => {
+  scanDirectory: async _path => {
     // Implementation would scan directory for license contamination
     return { violations: [], clean: true };
   },
