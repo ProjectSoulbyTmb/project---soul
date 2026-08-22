@@ -1,4 +1,4 @@
-﻿# Copyright and brand asset register
+# Copyright and brand asset register
 
 Record date: August 21, 2026  
 Claimant: Soul Consciousness Studios  
