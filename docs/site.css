@@ -1,4 +1,4 @@
-/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
+﻿/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 @import url("tokens.css");
 
@@ -1048,7 +1048,6 @@ pre code {
   .stagger-4 { transition-delay: 260ms; }
   .stagger-5 { transition-delay: 320ms; }
 }
-
 
 
 
