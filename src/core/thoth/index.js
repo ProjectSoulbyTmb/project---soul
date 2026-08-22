@@ -10,6 +10,7 @@
 
 import { createBus } from './bus.js';
 import { BUILTIN_TOOLS, normalizeTool } from './tools.js';
+import { SOFTWARE_TOOLS } from './software.js';
 import {
   PERMISSION_CLASSES,
   CLASS_ORDER,
@@ -37,7 +38,7 @@ export function createThothKernel(opts = {}) {
   if (process.env.EIDOVARA_THOTH_DISABLED === '1') state.masterEnabled = false;
   const registry = new Map();
 
-  for (const def of BUILTIN_TOOLS) {
+  for (const def of [...BUILTIN_TOOLS, ...SOFTWARE_TOOLS]) {
     const tool = normalizeTool(def);
     registry.set(tool.id, tool);
     if (!state.tools[tool.id]) state.tools[tool.id] = {};
@@ -129,7 +130,7 @@ export function createThothKernel(opts = {}) {
         .join('\n');
       return {
         ok: true,
-        reply: `THOTH tools on this device:\n${tools}\n\nUsage: thoth <intent> [args]. Example: thoth calc 2*(3+4).\n${HONESTY_NOTE}`,
+        reply: `THOTH tools on this device:\n${tools}\n\nUsage: thoth <intent> [args]. Example: thoth calc 2*(3+4).\nNetwork tools (dns, http/probe) need an L1 grant first: they are denied until you confirm once or grant standing access.\n${HONESTY_NOTE}`,
       };
     }
     const out = await runTool(parsed.toolId, parsed.args, meta);
