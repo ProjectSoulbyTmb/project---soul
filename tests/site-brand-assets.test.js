@@ -105,8 +105,8 @@ test('public site wires display marks, wallpapers, and OG image without CSP or t
   assert.match(brand, /data-page="home"/);
   assert.match(brand, /data-page="product"/);
   assert.match(brand, /data-page="download"/);
-  assert.match(brand, /eidovara-wallpaper-light\.jpg/);
-  assert.match(brand, /eidovara-wallpaper-dark\.jpg/);
+  assert.ok(fs.existsSync('docs/eidovara-wallpaper-light.jpg'), 'wallpaper asset must ship');
+  assert.ok(fs.existsSync('docs/eidovara-wallpaper-dark.jpg'), 'wallpaper asset must ship');
   assert.match(brand, /color-mix\(in srgb, var\(--grouped\)/);
   assert.doesNotMatch(brand, /unsafe-inline|unsafe-eval/);
 
