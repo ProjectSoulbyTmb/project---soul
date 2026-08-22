@@ -20,7 +20,10 @@ test('release exposes and persists the application-wide 18+ gate', () => {
 test('adult avatar controls require every adult gate and revocation clears presentation', () => {
   const main = read('src/electron/main.js');
   const renderer = read('src/renderer/renderer.js');
-  assert.match(main, /adultStatusConfirmed === true && policy\.adultSoulEnabled === true && policy\.currentConsent === true && policy\.mode === 'adult'/);
+  assert.match(
+    main,
+    /adultStatusConfirmed === true && policy\.adultSoulEnabled === true && policy\.currentConsent === true && policy\.mode === 'adult'/
+  );
   assert.match(main, /!result\.adultAllowed && config\.companion\?\.adultPresentation/);
   assert.match(renderer, /adultAvatarSettings.*hidden/s);
 });
@@ -57,7 +60,10 @@ test('advertised Free surface confirms launches and media, and does not hard-cod
   assert.match(html, /Broad web-search key \(Premium\)/);
   assert.doesNotMatch(main, /dreambot333\.workers\.dev/);
   assert.doesNotMatch(renderer, /dreambot333\.workers\.dev/);
-  assert.match(read('src/core/service.js'), /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
+  assert.match(
+    read('src/core/service.js'),
+    /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/
+  );
   assert.match(read('NETWORK-USAGE.md'), /en\.wikipedia\.org/);
   assert.match(read('README.md'), /RGB/);
 });

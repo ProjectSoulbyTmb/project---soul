@@ -5,14 +5,18 @@ This document defines the structural legal guards implemented throughout the Eid
 ## 1. Source Code Guards
 
 ### SPDX Headers
+
 All first-party source files carry SPDX headers:
+
 ```
 SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 ```
 
 ### Copyright Notices
+
 Every first-party file includes:
+
 ```
 Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.
 Tyler M. Bosworth is the sole creator and owner of Soul Consciousness Studios and all associated products.
@@ -23,6 +27,7 @@ Third-party material remains third-party.
 ### Structural Guards in Source Code
 
 #### 1. License Enforcement Guard (src/core/license-guard.js)
+
 ```javascript
 // LICENSE ENFORCEMENT GUARD
 // This module enforces the source-available license restrictions at runtime
@@ -33,7 +38,9 @@ export const LICENSE_GUARDS = {
   enforceSourceAvailable: () => {
     // Runtime check for license compliance
     if (typeof process !== 'undefined' && process.env.EIDOVARA_LICENSE_BYPASS) {
-      console.warn('LICENSE BYPASS DETECTED - This violates the Source-Available Evaluation License');
+      console.warn(
+        'LICENSE BYPASS DETECTED - This violates the Source-Available Evaluation License'
+      );
     }
   },
 
@@ -51,25 +58,26 @@ export const LICENSE_GUARDS = {
   // Prevents consciousness claims
   preventConsciousnessClaims: () => {
     // Runtime guard against consciousness/sentience claims
-  }
+  },
 };
 ```
 
 #### 2. Age Gate Enforcement (src/core/age-guard.js)
+
 ```javascript
 // AGE GATE STRUCTURAL GUARD
 // Enforces 18+ restriction at multiple levels
 
 export const AGE_GATE = {
   // Runtime enforcement
-  enforce: (context) => {
+  enforce: context => {
     if (!globalThis.eidovaraAgeGateAccepted) {
       throw new Error('AGE_GATE_REQUIRED: User must be 18+ to access Eidovara');
     }
   },
 
   // CLI enforcement
-  cliEnforce: (args) => {
+  cliEnforce: args => {
     if (!args['i-am-18-or-older'] && !process.env.EIDOVARA_AGE_GATE_ACCEPTED) {
       process.exitCode = 1;
       console.error('ERROR: Age gate required. Use --i-am-18-or-older flag.');
@@ -80,18 +88,19 @@ export const AGE_GATE = {
   // UI enforcement
   uiEnforce: () => {
     // Shows age gate modal, blocks access until confirmed
-  }
+  },
 };
 ```
 
 #### 3. Consciousness Claim Prevention (src/core/consciousness-guard.js)
+
 ```javascript
 // CONSCIOUSNESS CLAIM PREVENTION GUARD
 // Structural prevention of consciousness/sentience claims
 
 export const CONSCIOUSNESS_GUARD = {
   // Sanitizes output to prevent consciousness claims
-  sanitizeOutput: (text) => {
+  sanitizeOutput: text => {
     const forbiddenPatterns = [
       /consciousness/gi,
       /sentience/gi,
@@ -99,68 +108,80 @@ export const CONSCIOUSNESS_GUARD = {
       /alive/gi,
       /feelings?/gi,
       /emotions?/gi,
-      /conscious/gi
+      /conscious/gi,
     ];
     return text.replace(forbiddenPatterns, '[REDACTED: consciousness claim prevented]');
   },
 
   // Validates no consciousness claims in logs
-  validateLogs: (logEntry) => {
+  validateLogs: logEntry => {
     // Prevents logging of consciousness-related content
   },
 
   // Enforces "software, not consciousness" disclaimer
-  enforceDisclaimer: (output) => {
+  enforceDisclaimer: output => {
     return output + '\n\nDisclaimer: Soul is software, not consciousness.';
-  }
+  },
 };
 ```
 
 #### 4. Open Source Relicensing Prevention (src/core/relicense-guard.js)
+
 ```javascript
 // OPEN SOURCE RELICENSING PREVENTION GUARD
 // Prevents unauthorized relicensing under open source licenses
 
 export const RELICENSE_GUARD = {
   forbiddenLicenses: [
-    'MIT', 'Apache-2.0', 'GPL-3.0', 'GPL-2.0', 
-    'BSD-3-Clause', 'BSD-2-Clause', 'ISC', 
-    'MPL-2.0', 'LGPL-3.0', 'AGPL-3.0',
-    'CC0-1.0', 'CC-BY-4.0', 'CC-BY-SA-4.0'
+    'MIT',
+    'Apache-2.0',
+    'GPL-3.0',
+    'GPL-2.0',
+    'BSD-3-Clause',
+    'BSD-2-Clause',
+    'ISC',
+    'MPL-2.0',
+    'LGPL-3.0',
+    'AGPL-3.0',
+    'CC0-1.0',
+    'CC-BY-4.0',
+    'CC-BY-SA-4.0',
   ],
 
   // Scans for license contamination
-  scanForContamination: (codebase) => {
+  scanForContamination: codebase => {
     // Scans for forbidden license headers
   },
 
   // Prevents license header injection
-  preventHeaderInjection: (fileContent) => {
+  preventHeaderInjection: fileContent => {
     // Removes any open source license headers from first-party files
   },
 
   // Validates license compliance
   validateCompliance: () => {
     // Ensures only LicenseRef-Eidovara-Source-Available-1.0 is used
-  }
+  },
 };
 ```
 
 #### 5. Age Gate Enforcement (src/core/age-gate.js)
+
 ```javascript
 // AGE GATE STRUCTURAL GUARD
 export const AGE_GATE = {
   // Runtime enforcement at multiple entry points
-  enforce: (entryPoint) => {
-    const accepted = localStorage.getItem('eidovara_age_gate_accepted') === 'true' ||
-                     process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
+  enforce: entryPoint => {
+    const accepted =
+      localStorage.getItem('eidovara_age_gate_accepted') === 'true' ||
+      process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
     if (!accepted) {
       throw new Error('AGE_GATE_REQUIRED: 18+ age gate required for Eidovara access');
     }
   },
 
   // CLI argument validation
-  validateCliArgs: (args) => {
+  validateCliArgs: args => {
     if (!args.includes('--i-am-18-or-older') && !process.env.EIDOVARA_AGE_GATE_ACCEPTED) {
       console.error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag');
       process.exit(1);
@@ -170,11 +191,12 @@ export const AGE_GATE = {
   // UI modal enforcement
   showAgeGateModal: () => {
     // Displays age gate, blocks all interaction until confirmed
-  }
+  },
 };
 ```
 
 #### 6. Source-Available License Enforcement (src/core/license-enforcement.js)
+
 ```javascript
 // SOURCE-AVAILABLE LICENSE ENFORCEMENT
 export const LICENSE_ENFORCEMENT = {
@@ -197,13 +219,14 @@ export const LICENSE_ENFORCEMENT = {
   // Validates attribution preservation
   validateAttribution: () => {
     // Ensures copyright/SPDX notices are preserved
-  }
+  },
 };
 ```
 
 ## 2. Documentation Guards
 
 ### Legal Document Guards
+
 - **LICENSE**: Source-available evaluation license with structural restrictions
 - **TERMS.md**: Terms of use with 18+ enforcement
 - **PRIVACY.md**: Privacy notice with local-first guarantees
@@ -217,13 +240,16 @@ export const LICENSE_ENFORCEMENT = {
 ### Structural Guards in Documentation
 
 #### 1. Legal Disclaimer Guards
+
 Every legal document includes:
+
 ```
-**LEGAL DISCLAIMER**: This document is not legal advice, not a government registration, 
+**LEGAL DISCLAIMER**: This document is not legal advice, not a government registration,
 not a court judgment, and not a certification of compliance. It is a project record only.
 ```
 
 #### 2. Structural Integrity Guards
+
 - **No Open Source Claims**: Explicit prohibition of open source relicensing
 - **No Consciousness Claims**: Explicit prohibition of consciousness/sentience claims
 - **18+ Enforcement**: Mandatory age gate at all touchpoints
@@ -231,6 +257,7 @@ not a court judgment, and not a certification of compliance. It is a project rec
 - **Attribution Preservation**: Mandatory copyright/SPDX notice preservation
 
 #### 3. Automated Test Guards (tests/legal-surface.test.js)
+
 ```javascript
 // LEGAL SURFACE TEST GUARDS
 // Automated tests that fail the build if legal boundaries are violated
@@ -273,6 +300,7 @@ test('no open source relicensing claims', () => {
 ### GitHub Actions Workflow Guards
 
 #### 1. Security Workflow (.github/workflows/security.yml)
+
 ```yaml
 # SECURITY WORKFLOW GUARDS
 - CodeQL analysis with SARIF upload
@@ -285,6 +313,7 @@ test('no open source relicensing claims', () => {
 ```
 
 #### 2. Release Workflow (.github/workflows/release-windows.yml)
+
 ```yaml
 # RELEASE WORKFLOW GUARDS
 - SHA-256 verification against IP_CERTIFICATION.md
@@ -298,6 +327,7 @@ test('no open source relicensing claims', () => {
 ```
 
 #### 3. Pages Deploy Guard (.github/workflows/pages.yml)
+
 ```yaml
 # PAGES DEPLOY GUARD
 - Only deploys from main branch
@@ -307,6 +337,7 @@ test('no open source relicensing claims', () => {
 ```
 
 #### 4. Cloudflare Pages Guard (.github/workflows/cloudflare-pages.yml)
+
 ```yaml
 # CLOUDFLARE PAGES GUARD
 - Deploys docs/ to eidovara.org
@@ -317,12 +348,13 @@ test('no open source relicensing claims', () => {
 ## 4. Runtime Guards
 
 ### 1. Electron Main Process Guards (src/electron/main.js)
+
 ```javascript
 // ELECTRON MAIN PROCESS LEGAL GUARDS
 app.on('ready', () => {
   // Enable sandbox
   app.enableSandbox();
-  
+
   // Disable node integration in renderer
   // Enable context isolation
   // Disable node integration in renderer
@@ -331,6 +363,7 @@ app.on('ready', () => {
 ```
 
 ### 2. Renderer Process Guards (src/renderer/renderer.js)
+
 ```javascript
 // RENDERER PROCESS LEGAL GUARDS
 // Content Security Policy enforcement
@@ -342,6 +375,7 @@ app.on('ready', () => {
 ```
 
 ### 3. Network Guards
+
 ```javascript
 // NETWORK GUARDS
 // Fail-closed network handling
@@ -354,6 +388,7 @@ app.on('ready', () => {
 ## 5. Testing Guards
 
 ### Legal Surface Tests (tests/legal-surface.test.js)
+
 ```javascript
 // All legal boundary tests
 test('SPDX headers present on first-party files', () => {});
@@ -379,17 +414,20 @@ test('open source relicensing prevented in build', () => {});
 ## 6. Deployment Guards
 
 ### 1. GitHub Pages Deploy
+
 - Only deploys from main branch
 - Only docs/ directory
 - Concurrency group: pages
 - Cancel in-progress on new push
 
 ### 2. Cloudflare Pages Deploy
+
 - Deploys docs/ to eidovara.org
 - Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID
 - Only deploys on main branch changes to docs/
 
 ### 3. Release Guards
+
 - SHA-256 verification against IP_CERTIFICATION.md
 - Build provenance attestation (SLSA)
 - SHA-256SUMS.txt generation
@@ -402,28 +440,33 @@ test('open source relicensing prevented in build', () => {});
 ## 6. Compliance Guards
 
 ### 1. 18+ Age Gate Compliance
+
 - Enforced at all touchpoints: desktop UI, CLI, kernel, web
 - Cannot be removed without owner involvement
 - Local confirmation not independent verification
 
 ### 2. Source-Available License Compliance
+
 - LicenseRef-Eidovara-Source-Available-1.0
 - Prohibits open source relicensing (MIT/Apache/GPL/BSD/CC)
 - Prohibits commercial exploitation without permission
 - Prohibits redistribution without permission
 
 ### 3. Consciousness Claim Prevention
+
 - "Soul is software, not consciousness" disclaimer
 - Runtime output sanitization
 - Log validation
 - Test enforcement
 
 ### 4. Age Gate Enforcement
+
 - 18+ gate at all touchpoints
 - Cannot be removed without owner involvement
 - Local confirmation not independent verification
 
 ### 5. Open Source Relicensing Prevention
+
 - Explicit prohibition in LICENSE
 - Runtime validation
 - Test enforcement
@@ -432,20 +475,24 @@ test('open source relicensing prevented in build', () => {});
 ## 7. Monitoring & Enforcement
 
 ### 1. Automated Tests
+
 - Legal surface tests run on every push
 - Fail build if legal boundaries violated
 - Run in CI/CD pipeline
 
 ### 2. CODEOWNERS
+
 - @ProjectSoulbyTmb required for legal paths
 - Prevents unauthorized legal changes
 
 ### 3. Security.txt
+
 - Security contact information
 - Vulnerability disclosure process
 - No PGP key published (owner action required)
 
 ### 4. Security.txt
+
 - Security contact information
 - Vulnerability disclosure process
 - No PGP key published (owner action required)

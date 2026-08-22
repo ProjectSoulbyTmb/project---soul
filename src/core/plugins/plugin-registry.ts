@@ -30,7 +30,11 @@ export class PluginRegistry {
 
   emit(event: string, data?: any): void {
     for (const handler of this.listeners.get(event) ?? []) {
-      try { handler(data); } catch (err) { console.error(`[PluginRegistry] Handler error for ${event}:`, err); }
+      try {
+        handler(data);
+      } catch (err) {
+        console.error(`[PluginRegistry] Handler error for ${event}:`, err);
+      }
     }
   }
 }

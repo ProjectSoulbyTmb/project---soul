@@ -6,31 +6,31 @@ Eidovara 0.19.1 ships a dependency-free 2D/3D-styled companion and uses voices a
 
 Electron 43.4.1 embeds Chromium 150. These are wired in-app. They are not extra npm UI or game-engine frameworks.
 
-| Engine | Role | Honest limit |
-| --- | --- | --- |
-| Soul kernel | Session, modules, local self-model | Software, not consciousness |
-| Offline Soul | Local replies | Optional Ollama / OpenAI-compatible HTTP stay user-pasted |
-| WebGL2 lathe + CPU life | Adult Soul figure | Not VRM, Three.js, Babylon, Mixamo |
-| Web Audio Feel Sync | Loudness → pad / figure | One `MediaElementSource` per media element |
-| Procedural ambient | Heartbeat / breath / drone oscillators | Not a neural TTS pack |
-| Chromium HTML5 media + Media Session | `eidovara-media:` / https: playback, media keys | No ffmpeg, yt-dlp, Widevine rip, tube embeds |
-| OS `speechSynthesis` | Coaching lines | Windows-installed voices only |
-| Chromium `SpeechRecognition` | Optional hold-to-talk | Microphone stays audio-only |
-| Electron `powerSaveBlocker` | Stay-awake during playback / Adult Soul sessions | Fail closed; not an overlay |
-| Chromium Gamepad API | Optional Feel pad steer + dual-rumble | Not Lovense, not game-process haptics |
-| WebGPU | Diagnostics probe only | Figure renderer stays WebGL |
-| electron-updater | GitHub Releases | Authenticode-unsigned |
+| Engine                               | Role                                             | Honest limit                                              |
+| ------------------------------------ | ------------------------------------------------ | --------------------------------------------------------- |
+| Soul kernel                          | Session, modules, local self-model               | Software, not consciousness                               |
+| Offline Soul                         | Local replies                                    | Optional Ollama / OpenAI-compatible HTTP stay user-pasted |
+| WebGL2 lathe + CPU life              | Adult Soul figure                                | Not VRM, Three.js, Babylon, Mixamo                        |
+| Web Audio Feel Sync                  | Loudness → pad / figure                          | One `MediaElementSource` per media element                |
+| Procedural ambient                   | Heartbeat / breath / drone oscillators           | Not a neural TTS pack                                     |
+| Chromium HTML5 media + Media Session | `eidovara-media:` / https: playback, media keys  | No ffmpeg, yt-dlp, Widevine rip, tube embeds              |
+| OS `speechSynthesis`                 | Coaching lines                                   | Windows-installed voices only                             |
+| Chromium `SpeechRecognition`         | Optional hold-to-talk                            | Microphone stays audio-only                               |
+| Electron `powerSaveBlocker`          | Stay-awake during playback / Adult Soul sessions | Fail closed; not an overlay                               |
+| Chromium Gamepad API                 | Optional Feel pad steer + dual-rumble            | Not Lovense, not game-process haptics                     |
+| WebGPU                               | Diagnostics probe only                           | Figure renderer stays WebGL                               |
+| electron-updater                     | GitHub Releases                                  | Authenticode-unsigned                                     |
 
 The in-app catalog is `src/core/runtime-engines.js` (also on kernel status and Diagnostics).
 
 ## Screened future adapters
 
-| Candidate | Use | Upstream license | Decision |
-| --- | --- | --- | --- |
-| Kokoro-82M | Local neural text-to-speech | Apache-2.0 model card | Preferred research candidate; do not bundle until every voice asset and runtime dependency is independently reviewed. |
-| sherpa-onnx | Offline speech/TTS runtime | Apache-2.0 | Suitable adapter candidate; model and phonemizer licenses must be reviewed separately. |
-| three-vrm | VRM avatar rendering | MIT | Preferred optional 3D avatar adapter; user-imported models require their own rights. |
-| Piper | Local TTS | GPL-3.0 engine; per-voice terms vary | Not bundled with the source-available desktop product. May be used as a separately installed user tool only after legal review. |
+| Candidate   | Use                         | Upstream license                     | Decision                                                                                                                        |
+| ----------- | --------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| Kokoro-82M  | Local neural text-to-speech | Apache-2.0 model card                | Preferred research candidate; do not bundle until every voice asset and runtime dependency is independently reviewed.           |
+| sherpa-onnx | Offline speech/TTS runtime  | Apache-2.0                           | Suitable adapter candidate; model and phonemizer licenses must be reviewed separately.                                          |
+| three-vrm   | VRM avatar rendering        | MIT                                  | Preferred optional 3D avatar adapter; user-imported models require their own rights.                                            |
+| Piper       | Local TTS                   | GPL-3.0 engine; per-voice terms vary | Not bundled with the source-available desktop product. May be used as a separately installed user tool only after legal review. |
 
 ## Required safeguards
 

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
+import {} from 'node:child_process';
 
 const PERF_BUDGETS = {
   bundle: {
@@ -44,19 +44,26 @@ function formatBytes(bytes) {
 }
 
 function checkBudget(name, actual, budget) {
-  const actualMB = actual / (1024 * 1024);
-  const status = actual > budget.maxSizeMB * 1024 * 1024 ? 'FAIL' : actual > budget.warningSizeMB * 1024 * 1024 ? 'WARN' : 'PASS';
-  console.log(`${status} ${name}: ${formatBytes(actual)} (max: ${budget.maxSizeMB} MB, warn: ${budget.warningSizeMB} MB)`);
+  const _actualMB = actual / (1024 * 1024);
+  const status =
+    actual > budget.maxSizeMB * 1024 * 1024
+      ? 'FAIL'
+      : actual > budget.warningSizeMB * 1024 * 1024
+        ? 'WARN'
+        : 'PASS';
+  console.log(
+    `${status} ${name}: ${formatBytes(actual)} (max: ${budget.maxSizeMB} MB, warn: ${budget.warningSizeMB} MB)`
+  );
   return status !== 'FAIL';
 }
 
-function checkStartupTime() {
+function _checkStartupTime() {
   // This would be measured in CI with actual app launch
   // For now, we check the build output
   return true;
 }
 
-function checkMemory() {
+function _checkMemory() {
   // This would be measured at runtime
   // For now, we skip
   return true;
@@ -64,9 +71,9 @@ function checkMemory() {
 
 function main() {
   console.log('=== Performance Budget Check ===\n');
-  
+
   let allPassed = true;
-  
+
   // Check dist bundle size
   const distPath = path.join(process.cwd(), 'dist');
   if (fs.existsSync(distPath)) {
@@ -75,28 +82,31 @@ function main() {
   } else {
     console.log('SKIP dist/ (not built)');
   }
-  
+
   // Check renderer resources
   const rendererPath = path.join(process.cwd(), 'src', 'renderer');
   if (fs.existsSync(rendererPath)) {
     const rendererSize = getDirSize(rendererPath);
     allPassed = checkBudget('src/renderer/', rendererSize, PERF_BUDGETS.renderer) && allPassed;
   }
-  
+
   // Check node_modules size (warning only)
   const modulesPath = path.join(process.cwd(), 'node_modules');
   if (fs.existsSync(modulesPath)) {
     const modulesSize = getDirSize(modulesPath);
     console.log(`INFO node_modules/: ${formatBytes(modulesSize)}`);
   }
-  
+
   // Check for large files
   console.log('\n=== Large Files (>1MB) ===');
   function findLargeFiles(dir, prefix = '') {
     try {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory() && !['node_modules', '.git', 'dist', 'dist-mac', '.wrangler'].includes(entry.name)) {
+        if (
+          entry.isDirectory() &&
+          !['node_modules', '.git', 'dist', 'dist-mac', '.wrangler'].includes(entry.name)
+        ) {
           findLargeFiles(fullPath, prefix + entry.name + '/');
         } else if (entry.isFile()) {
           const size = fs.statSync(fullPath).size;
@@ -108,7 +118,7 @@ function main() {
     } catch {}
   }
   findLargeFiles(process.cwd());
-  
+
   console.log('\n=== Summary ===');
   if (allPassed) {
     console.log('✓ All performance budgets passed');

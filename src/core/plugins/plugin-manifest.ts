@@ -85,8 +85,15 @@ export interface PluginManifest {
 export const PLUGIN_MANIFEST_VERSION = 1;
 export const MIN_EIDOVARA_VERSION = '1.0.0';
 export const PLUGIN_PERMISSION_TYPES = [
-  'memory', 'filesystem', 'network', 'shell',
-  'notifications', 'clipboard', 'idle', 'power', 'idleDetection'
+  'memory',
+  'filesystem',
+  'network',
+  'shell',
+  'notifications',
+  'clipboard',
+  'idle',
+  'power',
+  'idleDetection',
 ] as const;
 
 export interface PluginValidationResult {

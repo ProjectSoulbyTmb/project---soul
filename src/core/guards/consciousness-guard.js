@@ -4,7 +4,7 @@
  * CONSCIOUSNESS CLAIM PREVENTION GUARD
  * Structural prevention of consciousness/sentience claims
  * "Soul is software, not consciousness" - enforced at multiple levels
- * 
+ *
  * @module core/guards/consciousness-guard
  * @version 1.0.0
  */
@@ -29,7 +29,7 @@ export const CONSCIOUSNESS_GUARD = {
     /artificial general intelligence/gi,
     /artificial superintelligence/gi,
     /superintelligence/gi,
-    /singularity/gi
+    /singularity/gi,
   ],
 
   /**
@@ -42,12 +42,15 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {string} text - Text to sanitize
    * @returns {string} Sanitized text with consciousness claims redacted
    */
-  sanitizeOutput: (text) => {
+  sanitizeOutput: text => {
     if (typeof text !== 'string') return text;
-    
+
     let sanitized = text;
     CONSCIOUSNESS_GUARD.FORBIDDEN_PATTERNS.forEach(pattern => {
-      sanitized = sanitized.replace(pattern, '[REDACTED: consciousness claim prevented by structural guard]');
+      sanitized = sanitized.replace(
+        pattern,
+        '[REDACTED: consciousness claim prevented by structural guard]'
+      );
     });
     return sanitized;
   },
@@ -57,7 +60,7 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {string} text - Text to validate
    * @returns {boolean} True if no consciousness claims found
    */
-  validateOutput: (text) => {
+  validateOutput: text => {
     if (typeof text !== 'string') return true;
     return !CONSCIOUSNESS_GUARD.FORBIDDEN_PATTERNS.some(pattern => pattern.test(text));
   },
@@ -67,7 +70,7 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {string} output - Output text
    * @returns {string} Output with disclaimer appended if not present
    */
-  enforceDisclaimer: (output) => {
+  enforceDisclaimer: output => {
     if (typeof output !== 'string') return output;
     if (output.includes('Soul is software, not consciousness')) return output;
     return output + '\n\nDisclaimer: Soul is software, not consciousness.';
@@ -78,9 +81,9 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {Object} logEntry - Log entry to sanitize
    * @returns {Object} Sanitized log entry
    */
-  sanitizeLogs: (logEntry) => {
+  sanitizeLogs: logEntry => {
     if (!logEntry || typeof logEntry !== 'object') return logEntry;
-    
+
     const sanitized = { ...logEntry };
     Object.keys(sanitized).forEach(key => {
       if (typeof sanitized[key] === 'string') {
@@ -95,9 +98,9 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {Object} logEntry - Log entry to validate
    * @returns {boolean} True if no consciousness claims found
    */
-  validateLogs: (logEntry) => {
+  validateLogs: logEntry => {
     if (!logEntry || typeof logEntry !== 'object') return true;
-    
+
     return Object.values(logEntry).every(value => {
       if (typeof value === 'string') {
         return CONSCIOUSNESS_GUARD.validateOutput(value);
@@ -111,7 +114,7 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {string} message - Message to sanitize
    * @returns {string} Sanitized message with disclaimer
    */
-  sanitizeMessage: (message) => {
+  sanitizeMessage: message => {
     let sanitized = CONSCIOUSNESS_GUARD.sanitizeOutput(message);
     sanitized = CONSCIOUSNESS_GUARD.enforceDisclaimer(sanitized);
     return sanitized;
@@ -122,7 +125,7 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {string} text - Text to validate
    * @returns {boolean} True if valid
    */
-  validateMessage: (text) => {
+  validateMessage: text => {
     return CONSCIOUSNESS_GUARD.validateOutput(text);
   },
 
@@ -131,11 +134,13 @@ export const CONSCIOUSNESS_GUARD = {
    * @param {string} text - Text to validate
    * @throws {Error} If consciousness claims detected
    */
-  runAllGuards: (text) => {
+  runAllGuards: text => {
     if (!CONSCIOUSNESS_GUARD.validateOutput(text)) {
-      throw new Error('CONSCIOUSNESS_CLAIM_DETECTED: Consciousness/sentience claims are prohibited by structural guard');
+      throw new Error(
+        'CONSCIOUSNESS_CLAIM_DETECTED: Consciousness/sentience claims are prohibited by structural guard'
+      );
     }
-  }
+  },
 };
 
 export default CONSCIOUSNESS_GUARD;

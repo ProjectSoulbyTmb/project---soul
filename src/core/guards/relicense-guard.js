@@ -3,7 +3,7 @@
 /**
  * OPEN SOURCE RELICENSING PREVENTION GUARD
  * Prevents unauthorized relicensing under open source licenses
- * 
+ *
  * @module core/guards/relicense-guard
  * @version 1.0.0
  */
@@ -39,7 +39,7 @@ export const RELICENSE_GUARD = {
     'Unlicense',
     'WTFPL',
     'Zlib',
-    'X11'
+    'X11',
   ],
 
   /**
@@ -61,7 +61,7 @@ export const RELICENSE_GUARD = {
     'CC0-1.0',
     'CC-BY-4.0',
     'CC-BY-SA-4.0',
-    'Unlicense'
+    'Unlicense',
   ],
 
   /**
@@ -74,11 +74,11 @@ export const RELICENSE_GUARD = {
    * @param {string} codebase - Codebase to scan
    * @returns {Object} Scan results
    */
-  scanForContamination: (codebase) => {
+  scanForContamination: codebase => {
     const results = {
       violations: [],
       warnings: [],
-      clean: true
+      clean: true,
     };
 
     if (typeof codebase !== 'string') return results;
@@ -90,7 +90,7 @@ export const RELICENSE_GUARD = {
         new RegExp(`License:\\s*${license}`, 'gi'),
         new RegExp(`licensed under the ${license}`, 'gi'),
         new RegExp(`licensed under ${license}`, 'gi'),
-        new RegExp(`Copyright.*${license}`, 'gi')
+        new RegExp(`Copyright.*${license}`, 'gi'),
       ];
 
       patterns.forEach(pattern => {
@@ -98,7 +98,7 @@ export const RELICENSE_GUARD = {
           results.violations.push({
             type: 'FORBIDDEN_LICENSE',
             license,
-            message: `Forbidden license detected: ${license}`
+            message: `Forbidden license detected: ${license}`,
           });
           results.clean = false;
         }
@@ -106,11 +106,13 @@ export const RELICENSE_GUARD = {
     });
 
     // Check for missing required license
-    if (!codebase.includes('LicenseRef-Eidovara-Source-Available-1.0') &&
-        !codebase.includes('LicenseRef-Eidovara-Source-Available')) {
+    if (
+      !codebase.includes('LicenseRef-Eidovara-Source-Available-1.0') &&
+      !codebase.includes('LicenseRef-Eidovara-Source-Available')
+    ) {
       results.warnings.push({
         type: 'MISSING_REQUIRED_LICENSE',
-        message: 'Required LicenseRef-Eidovara-Source-Available-1.0 not found'
+        message: 'Required LicenseRef-Eidovara-Source-Available-1.0 not found',
       });
     }
 
@@ -122,7 +124,7 @@ export const RELICENSE_GUARD = {
    * @param {string} fileContent - File content to check
    * @returns {string} Sanitized file content
    */
-  preventHeaderInjection: (fileContent) => {
+  preventHeaderInjection: fileContent => {
     if (typeof fileContent !== 'string') return fileContent;
 
     let sanitized = fileContent;
@@ -134,11 +136,14 @@ export const RELICENSE_GUARD = {
         new RegExp(`License:\\s*${license}`, 'gi'),
         new RegExp(`Copyright.*${license}`, 'gi'),
         new RegExp(`licensed under the ${license}`, 'gi'),
-        new RegExp(`licensed under ${license}`, 'gi')
+        new RegExp(`licensed under ${license}`, 'gi'),
       ];
 
       patterns.forEach(pattern => {
-        sanitized = sanitized.replace(pattern, '[REDACTED: open source license header removed by structural guard]');
+        sanitized = sanitized.replace(
+          pattern,
+          '[REDACTED: open source license header removed by structural guard]'
+        );
       });
     });
 
@@ -158,7 +163,7 @@ export const RELICENSE_GUARD = {
     const results = {
       compliant: true,
       violations: [],
-      warnings: []
+      warnings: [],
     };
 
     // Check if required license is used
@@ -172,7 +177,7 @@ export const RELICENSE_GUARD = {
    * @param {string} path - Path to scan
    * @returns {Object} Scan results
    */
-  scanDirectory: async (path) => {
+  scanDirectory: async _path => {
     // Implementation would scan directory for license contamination
     return { violations: [], clean: true };
   },
@@ -182,12 +187,14 @@ export const RELICENSE_GUARD = {
    * @param {string} codebase - Codebase to validate
    * @throws {Error} If any guard fails
    */
-  runAllGuards: (codebase) => {
+  runAllGuards: codebase => {
     const results = RELICENSE_GUARD.scanForContamination(codebase);
     if (!results.clean) {
-      throw new Error('OPEN_SOURCE_RELICENSING_DETECTED: Open source relicensing detected by structural guard');
+      throw new Error(
+        'OPEN_SOURCE_RELICENSING_DETECTED: Open source relicensing detected by structural guard'
+      );
     }
-  }
+  },
 };
 
 export default RELICENSE_GUARD;

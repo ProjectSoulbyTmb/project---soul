@@ -47,7 +47,7 @@ export class PluginSandbox {
       URL: globalThis.URL,
       URLSearchParams: globalThis.URLSearchParams,
       structuredClone: globalThis.structuredClone?.bind(globalThis),
-      queueMicrotask: globalThis.queueMicrotask?.bind(globalThis)
+      queueMicrotask: globalThis.queueMicrotask?.bind(globalThis),
     };
   }
 
@@ -72,10 +72,12 @@ export class PluginSandbox {
     const orig = globalThis.fetch;
     const allowed = new Set(this.getAllowedDomains());
     return async (input: RequestInfo | URL, init?: RequestInit) => {
-      const url = typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
+      const url =
+        typeof input === 'string' ? input : input instanceof URL ? input.toString() : input.url;
       const host = new URL(url).hostname;
       if (!this.hasPermission('network')) throw new Error('Network access not permitted');
-      if (allowed.size && !allowed.has(host)) throw new Error(`Network access to ${host} not permitted`);
+      if (allowed.size && !allowed.has(host))
+        throw new Error(`Network access to ${host} not permitted`);
       return orig(input, init);
     };
   }
@@ -102,21 +104,32 @@ export class PluginSandbox {
         let count = 0;
         for (let i = 0; i < orig.length; i++) {
           const k = orig.key(i);
-          if (k?.startsWith(prefix)) { if (count === index) return k.slice(prefix.length); count++; }
+          if (k?.startsWith(prefix)) {
+            if (count === index) return k.slice(prefix.length);
+            count++;
+          }
         }
         return null;
       },
       get length() {
         let count = 0;
-        for (let i = 0; i < orig.length; i++) { if (orig.key(i)?.startsWith(prefix)) count++; }
+        for (let i = 0; i < orig.length; i++) {
+          if (orig.key(i)?.startsWith(prefix)) count++;
+        }
         return count;
-      }
+      },
     };
   }
 
-  getContext(): Record<string, any> { return this.context; }
-  hasPermission(permission: string): boolean { return !!this.permissions.get(permission); }
-  checkPermission(permission: string): void { if (!this.hasPermission(permission)) throw new Error(`Permission denied: ${permission}`); }
+  getContext(): Record<string, any> {
+    return this.context;
+  }
+  hasPermission(permission: string): boolean {
+    return !!this.permissions.get(permission);
+  }
+  checkPermission(permission: string): void {
+    if (!this.hasPermission(permission)) throw new Error(`Permission denied: ${permission}`);
+  }
 }
 
 export function createPluginSandbox(manifest: any, permissions: Map<string, any>): PluginSandbox {

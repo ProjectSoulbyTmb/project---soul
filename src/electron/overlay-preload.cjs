@@ -12,6 +12,5 @@ contextBridge.exposeInMainWorld('overlay', {
     const listen = (_e, payload) => handler(payload);
     ipcRenderer.on('overlay:status', listen);
     return () => ipcRenderer.removeListener('overlay:status', listen);
-  }
+  },
 });
-

@@ -56,16 +56,16 @@ export function endSpan(spanId, extraAttributes = {}) {
   span.endTime = performance.now();
   span.duration = span.endTime - span.startTime;
   span.attributes = { ...span.attributes, ...extraAttributes };
-  
+
   // Store completed span for aggregation
   const key = span.name;
   if (!metrics.has(key)) metrics.set(key, []);
   metrics.get(key).push({ ...span, timestamp: Date.now() });
-  
+
   // Keep only last 1000 per metric
   const arr = metrics.get(key);
   if (arr.length > 1000) arr.shift();
-  
+
   spans.delete(spanId);
   return span.duration;
 }
@@ -109,10 +109,10 @@ export function getMetrics(name) {
   const key = name.startsWith('metric.') || name.startsWith('counter.') ? name : `metric.${name}`;
   const data = metrics.get(key) || [];
   if (!data.length) return { count: 0 };
-  
+
   const values = data.map(d => d.value ?? d.delta ?? 0).filter(v => typeof v === 'number');
   if (!values.length) return { count: data.length };
-  
+
   const sorted = [...values].sort((a, b) => a - b);
   const sum = values.reduce((a, b) => a + b, 0);
   return {
@@ -143,10 +143,10 @@ export function getMetricNames() {
 export function getSpanStats(name) {
   const data = metrics.get(name) || [];
   if (!data.length) return { count: 0 };
-  
+
   const durations = data.map(d => d.duration).filter(d => typeof d === 'number');
   if (!durations.length) return { count: data.length };
-  
+
   const sorted = [...durations].sort((a, b) => a - b);
   const sum = durations.reduce((a, b) => a + b, 0);
   return {
@@ -174,7 +174,7 @@ export function getSpanNames() {
  */
 export function exportMetrics() {
   const result = {};
-  for (const [key, data] of metrics.entries()) {
+  for (const [key] of metrics.entries()) {
     if (key.startsWith('metric.') || key.startsWith('counter.')) {
       result[key] = getMetrics(key);
     } else {
@@ -238,7 +238,7 @@ export const ipcTelemetry = {
   async handle(channel, handler) {
     return timeAsync(`ipc.${channel}`, handler, { 'ipc.channel': channel });
   },
-  
+
   /**
    * @param {string} channel
    * @param {number} durationMs
@@ -246,7 +246,9 @@ export const ipcTelemetry = {
    */
   record(channel, durationMs, success = true) {
     recordMetric(`ipc.${channel}.duration`, durationMs, { 'ipc.channel': channel });
-    incrementCounter(`ipc.${channel}.${success ? 'success' : 'error'}`, 1, { 'ipc.channel': channel });
+    incrementCounter(`ipc.${channel}.${success ? 'success' : 'error'}`, 1, {
+      'ipc.channel': channel,
+    });
   },
 };
 
@@ -260,9 +262,9 @@ export const providerTelemetry = {
    * @returns {Promise<string>}
    */
   async call(provider, call) {
-    return timeAsync(`provider.${provider}.call`, call, { 'provider': provider });
+    return timeAsync(`provider.${provider}.call`, call, { provider: provider });
   },
-  
+
   /**
    * @param {string} provider
    * @param {number} durationMs
@@ -301,7 +303,7 @@ export const storeTelemetry = {
     }
     return result;
   },
-  
+
   record(op, durationMs, success = true, size) {
     recordMetric(`store.${op}.latency`, durationMs, { op });
     incrementCounter(`store.${op}.${success ? 'success' : 'error'}`, 1, { op });

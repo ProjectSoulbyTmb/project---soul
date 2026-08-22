@@ -1,9 +1,13 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-function trimSlash(s) { return String(s || '').replace(/\/+$/, ''); }
+function trimSlash(s) {
+  return String(s || '').replace(/\/+$/, '');
+}
 
 function isLoopbackHost(hostname) {
-  const host = String(hostname || '').replace(/^\[|\]$/g, '').toLowerCase();
+  const host = String(hostname || '')
+    .replace(/^\[|\]$/g, '')
+    .toLowerCase();
   return host === 'localhost' || host === '127.0.0.1' || host === '::1';
 }
 
@@ -14,14 +18,24 @@ export const SERVICE_STATUS_PATH = '/v1/status';
 export const SERVICE_ASSIST_PATH = '/v1/assist';
 /** Official first-party custom hostname for Worker eidovara-api. HTTPS origin only; callers append paths. */
 export const DEFAULT_EIDOVARA_SERVICE_BASE = 'https://api.eidovara.org';
-const STRIP_SUFFIXES = [SERVICE_HEALTH_V1_PATH, SERVICE_HEALTH_PATH, SERVICE_CONFIG_PATH, SERVICE_STATUS_PATH, SERVICE_ASSIST_PATH];
+const STRIP_SUFFIXES = [
+  SERVICE_HEALTH_V1_PATH,
+  SERVICE_HEALTH_PATH,
+  SERVICE_CONFIG_PATH,
+  SERVICE_STATUS_PATH,
+  SERVICE_ASSIST_PATH,
+];
 
 export function normalizeServiceUrl(value) {
   let raw = String(value || '').trim();
   if (!raw) return '';
   if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) raw = `https://${raw}`;
   let url;
-  try { url = new URL(raw); } catch { throw new Error('Service URL must be an http(s) URL.'); }
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new Error('Service URL must be an http(s) URL.');
+  }
   if (url.username || url.password) throw new Error('Service URL must not include credentials.');
   const loopback = isLoopbackHost(url.hostname);
   if (!['http:', 'https:'].includes(url.protocol) || (url.protocol !== 'https:' && !loopback)) {
@@ -50,7 +64,9 @@ export function httpsOnlyUrl(value) {
     const url = new URL(String(value || ''));
     if (url.protocol !== 'https:' || url.username || url.password) return '';
     return url.toString();
-  } catch { return ''; }
+  } catch {
+    return '';
+  }
 }
 
 export function checkoutEnabledFromRemoteConfig(_body) {
@@ -67,9 +83,11 @@ export function sanitizeRemoteConfig(body) {
     ageRestricted: raw.ageRestricted === true,
     minimumAge: 18,
     authenticodeSigned: false,
-    officialPlatforms: Array.isArray(raw.officialPlatforms) ? raw.officialPlatforms.map(item => String(item).slice(0, 80)).slice(0, 8) : [],
+    officialPlatforms: Array.isArray(raw.officialPlatforms)
+      ? raw.officialPlatforms.map(item => String(item).slice(0, 80)).slice(0, 8)
+      : [],
     localFirst: true,
-    conversationsStored: false
+    conversationsStored: false,
   };
 }
 
@@ -78,11 +96,20 @@ async function boundedJson(res, maxBytes = 32_768) {
   if (declared > maxBytes) throw new Error('Service response is too large.');
   const bytes = Buffer.from(await res.arrayBuffer());
   if (bytes.length > maxBytes) throw new Error('Service response is too large.');
-  try { return JSON.parse(bytes.toString('utf8')); } catch { throw new Error('Service response was not JSON.'); }
+  try {
+    return JSON.parse(bytes.toString('utf8'));
+  } catch {
+    throw new Error('Service response was not JSON.');
+  }
 }
 
 async function getJson(fetchImpl, url, signal) {
-  const res = await fetchImpl(url, { method: 'GET', signal, redirect: 'error', headers: { accept: 'application/json' } });
+  const res = await fetchImpl(url, {
+    method: 'GET',
+    signal,
+    redirect: 'error',
+    headers: { accept: 'application/json' },
+  });
   if (!res.ok) throw new Error(`Service returned HTTP ${res.status}.`);
   return boundedJson(res);
 }
@@ -97,7 +124,7 @@ export const SERVICE_HEARTBEAT_BACKOFF_MAX_MS = 64_000;
 export const SERVICE_LIVENESS_PATHS = Object.freeze([
   SERVICE_HEALTH_V1_PATH,
   SERVICE_HEALTH_PATH,
-  SERVICE_STATUS_PATH
+  SERVICE_STATUS_PATH,
 ]);
 
 export function servicePresenceLabel({ ageGateAccepted, configured, online, reconnecting } = {}) {
@@ -151,18 +178,19 @@ const offlineOk = extra => ({
   conversationsStored: false,
   conversationsSent: false,
   lastCheckedAt: new Date().toISOString(),
-  ...extra
+  ...extra,
 });
 
 function decorateSnapshot(snapshot, { ageGateAccepted = true, reconnecting } = {}) {
   const configured = snapshot.configured === true;
   const online = snapshot.online === true;
-  const retrying = reconnecting === true || (configured === true && online !== true && snapshot.skipped !== true);
+  const retrying =
+    reconnecting === true || (configured === true && online !== true && snapshot.skipped !== true);
   const presence = servicePresenceLabel({
     ageGateAccepted,
     configured,
     online,
-    reconnecting: retrying
+    reconnecting: retrying,
   });
   return {
     ...snapshot,
@@ -174,15 +202,21 @@ function decorateSnapshot(snapshot, { ageGateAccepted = true, reconnecting } = {
     checkoutEnabled: false,
     localFirst: true,
     conversationsStored: false,
-    conversationsSent: false
+    conversationsSent: false,
   };
 }
 
-export async function fetchServiceSnapshot({ base, fetchImpl = globalThis.fetch, timeoutMs = 5000 } = {}) {
+export async function fetchServiceSnapshot({
+  base,
+  fetchImpl = globalThis.fetch,
+  timeoutMs = 5000,
+} = {}) {
   const raw = String(base || '').trim();
   if (!raw) return offlineOk();
   let normalized;
-  try { normalized = normalizeServiceUrl(raw); } catch (err) {
+  try {
+    normalized = normalizeServiceUrl(raw);
+  } catch (err) {
     return offlineOk({ error: String(err?.message || err) });
   }
   const controller = new AbortController();
@@ -192,21 +226,43 @@ export async function fetchServiceSnapshot({ base, fetchImpl = globalThis.fetch,
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_HEALTH_V1_PATH), controller.signal),
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_HEALTH_PATH), controller.signal),
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_CONFIG_PATH), controller.signal),
-      getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_STATUS_PATH), controller.signal)
+      getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_STATUS_PATH), controller.signal),
     ]);
-    const health = (healthV1Result.status === 'fulfilled' ? healthV1Result.value : null)
-      || (healthResult.status === 'fulfilled' ? healthResult.value : null);
-    const config = sanitizeRemoteConfig(configResult.status === 'fulfilled' ? configResult.value : null);
+    const health =
+      (healthV1Result.status === 'fulfilled' ? healthV1Result.value : null) ||
+      (healthResult.status === 'fulfilled' ? healthResult.value : null);
+    const config = sanitizeRemoteConfig(
+      configResult.status === 'fulfilled' ? configResult.value : null
+    );
     const status = statusResult.status === 'fulfilled' ? statusResult.value : null;
-    const healthOk = Boolean(health && (health.status === 'ok' || healthV1Result.status === 'fulfilled' || healthResult.status === 'fulfilled'));
-    const online = Boolean(healthOk && configResult.status === 'fulfilled' && statusResult.status === 'fulfilled' && (health?.status === 'ok' || status?.status === 'ok'));
-    const failure = [healthV1Result, healthResult, configResult, statusResult].find(item => item.status === 'rejected');
-    const error = online ? '' : String(failure?.reason?.message || 'Eidovara service is unreachable. Offline Soul continues locally.');
+    const healthOk = Boolean(
+      health &&
+        (health.status === 'ok' ||
+          healthV1Result.status === 'fulfilled' ||
+          healthResult.status === 'fulfilled')
+    );
+    const online = Boolean(
+      healthOk &&
+        configResult.status === 'fulfilled' &&
+        statusResult.status === 'fulfilled' &&
+        (health?.status === 'ok' || status?.status === 'ok')
+    );
+    const failure = [healthV1Result, healthResult, configResult, statusResult].find(
+      item => item.status === 'rejected'
+    );
+    const error = online
+      ? ''
+      : String(
+          failure?.reason?.message ||
+            'Eidovara service is unreachable. Offline Soul continues locally.'
+        );
     return decorateSnapshot({
       configured: true,
       online,
       paymentsEnabled: false,
-      checkoutEnabled: checkoutEnabledFromRemoteConfig(configResult.status === 'fulfilled' ? configResult.value : null),
+      checkoutEnabled: checkoutEnabledFromRemoteConfig(
+        configResult.status === 'fulfilled' ? configResult.value : null
+      ),
       service: String(health?.service || status?.service || 'Eidovara').slice(0, 100),
       version: String(health?.version || config.version || status?.version || '').slice(0, 40),
       website: config.website,
@@ -216,13 +272,19 @@ export async function fetchServiceSnapshot({ base, fetchImpl = globalThis.fetch,
       conversationsStored: false,
       conversationsSent: false,
       lastCheckedAt: new Date().toISOString(),
-      error: error.slice(0, 300)
+      error: error.slice(0, 300),
     });
   } catch (err) {
-    return decorateSnapshot(offlineOk({
-      configured: true,
-      error: String(err?.name === 'AbortError' ? 'Eidovara service timed out. Offline Soul continues locally.' : (err?.message || err)).slice(0, 300)
-    }));
+    return decorateSnapshot(
+      offlineOk({
+        configured: true,
+        error: String(
+          err?.name === 'AbortError'
+            ? 'Eidovara service timed out. Offline Soul continues locally.'
+            : err?.message || err
+        ).slice(0, 300),
+      })
+    );
   } finally {
     clearTimeout(timer);
   }
@@ -233,11 +295,17 @@ function livenessOk(body) {
   return body.status === 'ok' || body.online === true;
 }
 
-export async function fetchServiceLiveness({ base, fetchImpl = globalThis.fetch, timeoutMs = 5000 } = {}) {
+export async function fetchServiceLiveness({
+  base,
+  fetchImpl = globalThis.fetch,
+  timeoutMs = 5000,
+} = {}) {
   const raw = String(base || '').trim();
   if (!raw) return offlineOk();
   let normalized;
-  try { normalized = normalizeServiceUrl(raw); } catch (err) {
+  try {
+    normalized = normalizeServiceUrl(raw);
+  } catch (err) {
     return offlineOk({ error: String(err?.message || err) });
   }
   const controller = new AbortController();
@@ -246,16 +314,29 @@ export async function fetchServiceLiveness({ base, fetchImpl = globalThis.fetch,
     const [healthV1Result, healthResult, statusResult] = await Promise.allSettled([
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_HEALTH_V1_PATH), controller.signal),
       getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_HEALTH_PATH), controller.signal),
-      getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_STATUS_PATH), controller.signal)
+      getJson(fetchImpl, serviceRequestUrl(normalized, SERVICE_STATUS_PATH), controller.signal),
     ]);
-    const health = (healthV1Result.status === 'fulfilled' ? healthV1Result.value : null)
-      || (healthResult.status === 'fulfilled' ? healthResult.value : null);
+    const health =
+      (healthV1Result.status === 'fulfilled' ? healthV1Result.value : null) ||
+      (healthResult.status === 'fulfilled' ? healthResult.value : null);
     const status = statusResult.status === 'fulfilled' ? statusResult.value : null;
-    const healthOk = Boolean(health && (livenessOk(health) || healthV1Result.status === 'fulfilled' || healthResult.status === 'fulfilled'));
+    const healthOk = Boolean(
+      health &&
+        (livenessOk(health) ||
+          healthV1Result.status === 'fulfilled' ||
+          healthResult.status === 'fulfilled')
+    );
     const statusOk = Boolean(status && livenessOk(status));
     const online = Boolean(healthOk && statusOk);
-    const failure = [healthV1Result, healthResult, statusResult].find(item => item.status === 'rejected');
-    const error = online ? '' : String(failure?.reason?.message || 'Eidovara service is unreachable. Offline Soul continues locally.');
+    const failure = [healthV1Result, healthResult, statusResult].find(
+      item => item.status === 'rejected'
+    );
+    const error = online
+      ? ''
+      : String(
+          failure?.reason?.message ||
+            'Eidovara service is unreachable. Offline Soul continues locally.'
+        );
     return decorateSnapshot({
       configured: true,
       online,
@@ -269,14 +350,20 @@ export async function fetchServiceLiveness({ base, fetchImpl = globalThis.fetch,
       conversationsSent: false,
       lastCheckedAt: new Date().toISOString(),
       error: error.slice(0, 300),
-      liveness: true
+      liveness: true,
     });
   } catch (err) {
-    return decorateSnapshot(offlineOk({
-      configured: true,
-      error: String(err?.name === 'AbortError' ? 'Eidovara service timed out. Offline Soul continues locally.' : (err?.message || err)).slice(0, 300),
-      liveness: true
-    }));
+    return decorateSnapshot(
+      offlineOk({
+        configured: true,
+        error: String(
+          err?.name === 'AbortError'
+            ? 'Eidovara service timed out. Offline Soul continues locally.'
+            : err?.message || err
+        ).slice(0, 300),
+        liveness: true,
+      })
+    );
   } finally {
     clearTimeout(timer);
   }
@@ -289,7 +376,7 @@ export function createServiceHeartbeat({
   schedule = (fn, ms) => setTimeout(fn, ms),
   unschedule = id => clearTimeout(id),
   now = () => Date.now(),
-  random = Math.random
+  random = Math.random,
 } = {}) {
   let timer = 0;
   let generation = 0;
@@ -330,37 +417,48 @@ export function createServiceHeartbeat({
     const ctx = typeof getContext === 'function' ? getContext() : {};
     if (!shouldRunServiceHeartbeat(ctx)) {
       stop();
-      emit(offlineOk({
-        skipped: true,
-        reason: ctx.ageGateAccepted === true ? 'no-url' : 'age-gate',
-        lastCheckedAt: new Date(now()).toISOString()
-      }));
+      emit(
+        offlineOk({
+          skipped: true,
+          reason: ctx.ageGateAccepted === true ? 'no-url' : 'age-gate',
+          lastCheckedAt: new Date(now()).toISOString(),
+        })
+      );
       return;
     }
     inFlight = true;
     const gen = generation;
     try {
-      const raw = typeof probe === 'function'
-        ? await probe({ base: ctx.base, ageGateAccepted: ctx.ageGateAccepted === true })
-        : await fetchServiceLiveness({ base: ctx.base });
+      const raw =
+        typeof probe === 'function'
+          ? await probe({ base: ctx.base, ageGateAccepted: ctx.ageGateAccepted === true })
+          : await fetchServiceLiveness({ base: ctx.base });
       if (gen !== generation) return;
-      const snapshot = decorateSnapshot(raw && typeof raw === 'object' ? raw : offlineOk({ configured: true }), {
-        ageGateAccepted: true
-      });
+      const snapshot = decorateSnapshot(
+        raw && typeof raw === 'object' ? raw : offlineOk({ configured: true }),
+        {
+          ageGateAccepted: true,
+        }
+      );
       if (snapshot.online === true) failureCount = 0;
       emit({
         ...snapshot,
-        lastCheckedAt: snapshot.lastCheckedAt || new Date(now()).toISOString()
+        lastCheckedAt: snapshot.lastCheckedAt || new Date(now()).toISOString(),
       });
       arm(snapshot.online === true);
       if (snapshot.online !== true) failureCount += 1;
     } catch (err) {
       if (gen !== generation) return;
-      emit(decorateSnapshot(offlineOk({
-        configured: true,
-        error: String(err?.message || err).slice(0, 300),
-        lastCheckedAt: new Date(now()).toISOString()
-      }), { ageGateAccepted: true, reconnecting: true }));
+      emit(
+        decorateSnapshot(
+          offlineOk({
+            configured: true,
+            error: String(err?.message || err).slice(0, 300),
+            lastCheckedAt: new Date(now()).toISOString(),
+          }),
+          { ageGateAccepted: true, reconnecting: true }
+        )
+      );
       arm(false);
       failureCount += 1;
     } finally {
@@ -387,7 +485,6 @@ export function createServiceHeartbeat({
     stop,
     tick,
     isRunning: () => running,
-    failureCount: () => failureCount
+    failureCount: () => failureCount,
   };
 }
-

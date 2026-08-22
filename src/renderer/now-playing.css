@@ -33,7 +33,10 @@ body.has-now-playing .workspace {
 .now-playing-bar {
   margin: 0 12px 12px;
   display: grid;
-  grid-template-columns: 52px minmax(0, 1.4fr) auto minmax(120px, 1.6fr) auto auto auto auto auto auto auto;
+  grid-template-columns: 52px minmax(0, 1.4fr) auto minmax(
+      120px,
+      1.6fr
+    ) auto auto auto auto auto auto auto;
   gap: 8px;
   align-items: center;
   padding: 8px 10px;
@@ -44,7 +47,9 @@ body.has-now-playing .workspace {
   box-shadow: var(--shadow);
   transform: translateY(120%);
   opacity: 0;
-  transition: transform var(--motion) var(--ease), opacity var(--motion) var(--ease);
+  transition:
+    transform var(--motion) var(--ease),
+    opacity var(--motion) var(--ease);
 }
 
 .eidovara-player.is-active .now-playing-bar {
@@ -150,7 +155,9 @@ body.has-now-playing .workspace {
   transform: translateY(10%);
   opacity: 0;
   pointer-events: none;
-  transition: transform 280ms var(--ease), opacity 220ms var(--ease);
+  transition:
+    transform 280ms var(--ease),
+    opacity 220ms var(--ease);
 }
 
 .eidovara-player.is-expanded .now-playing-stage {
@@ -198,7 +205,12 @@ body.has-now-playing .workspace {
 .np-audio-art {
   position: absolute;
   inset: 0;
-  background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 40%, #0b1020), #070b14 62%, #000);
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, var(--accent) 40%, #0b1020),
+    #070b14 62%,
+    #000
+  );
 }
 
 .np-audio-art strong {
@@ -225,12 +237,12 @@ body.has-now-playing .workspace {
   pointer-events: none;
 }
 
-.np-surface[data-kind="audio"] video {
+.np-surface[data-kind='audio'] video {
   opacity: 0;
   pointer-events: none;
 }
 
-.np-surface[data-kind="video"] .np-audio-art {
+.np-surface[data-kind='video'] .np-audio-art {
   opacity: 0;
 }
 
@@ -246,7 +258,9 @@ body.has-now-playing .workspace {
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
   opacity: 0;
   transform: translateY(8px);
-  transition: opacity var(--motion) var(--ease), transform var(--motion) var(--ease);
+  transition:
+    opacity var(--motion) var(--ease),
+    transform var(--motion) var(--ease);
 }
 
 .np-surface.is-chrome-visible .np-chrome,
@@ -355,7 +369,9 @@ body.has-now-playing .workspace {
   }
 }
 
-.hidden { display: none !important; }
+.hidden {
+  display: none !important;
+}
 
 .np-extras,
 .np-quality {
@@ -437,4 +453,3 @@ body.age-gated #mediaPipBtn {
     visibility: hidden;
   }
 }
-

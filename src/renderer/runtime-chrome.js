@@ -1,11 +1,19 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { mapGamepadButtons, mapGamepadStick, nextFeelPattern, rumbleFromLevel } from '../core/adult-feel.js';
+import {
+  mapGamepadButtons,
+  mapGamepadStick,
+  nextFeelPattern,
+  rumbleFromLevel,
+} from '../core/adult-feel.js';
 import { probeRendererEngines } from '../core/runtime-engines.js';
 
 export function stayAwake(on, reason) {
-  if (!window.soul || typeof window.soul.stayAwake !== 'function') return Promise.resolve({ active: false });
-  return window.soul.stayAwake({ on: on === true, reason: String(reason || 'app').slice(0, 40) }).catch(() => ({ active: false }));
+  if (!window.soul || typeof window.soul.stayAwake !== 'function')
+    return Promise.resolve({ active: false });
+  return window.soul
+    .stayAwake({ on: on === true, reason: String(reason || 'app').slice(0, 40) })
+    .catch(() => ({ active: false }));
 }
 
 export function liveEngineProbe(host = globalThis) {
@@ -33,7 +41,9 @@ export function attachFeelGamepad(opts = {}) {
     for (const pad of pads()) {
       const actuator = pad.vibrationActuator;
       if (!actuator || typeof actuator.playEffect !== 'function') continue;
-      try { actuator.playEffect('dual-rumble', effect); } catch {}
+      try {
+        actuator.playEffect('dual-rumble', effect);
+      } catch {}
     }
   }
 
@@ -44,7 +54,9 @@ export function attachFeelGamepad(opts = {}) {
       const stick = mapGamepadStick(pad.axes, opts.getFeel ? opts.getFeel() : {});
       const buttons = mapGamepadButtons(pad.buttons, priorButtons);
       priorButtons = {};
-      (pad.buttons || []).forEach((btn, i) => { priorButtons[i] = Boolean(btn && btn.pressed); });
+      (pad.buttons || []).forEach((btn, i) => {
+        priorButtons[i] = Boolean(btn && btn.pressed);
+      });
       if (stick.moved && typeof opts.onStick === 'function') {
         const now = Date.now();
         if (now - lastSave > 280) {
@@ -74,9 +86,8 @@ export function attachFeelGamepad(opts = {}) {
     stop() {
       if (raf) cancelAnimationFrame(raf);
       raf = 0;
-    }
+    },
   };
 }
 
 export { probeRendererEngines };
-

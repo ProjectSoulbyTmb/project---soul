@@ -2,7 +2,11 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DEFAULT_EIDOVARA_SERVICE_BASE } from '../src/core/service.js';
-import { INSTALLER_NAME, INSTALLER_SHA256, DESKTOP_KNOWLEDGE_VERSION } from '../src/core/knowledge.js';
+import {
+  INSTALLER_NAME,
+  INSTALLER_SHA256,
+  DESKTOP_KNOWLEDGE_VERSION,
+} from '../src/core/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 

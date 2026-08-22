@@ -9,44 +9,44 @@
  * a licensed character pack.
  */
 
-import { SESSION_KINDS } from "./adult-soul.js";
+import { SESSION_KINDS } from './adult-soul.js';
 
 export const FIGURE_LIFE = Object.freeze({
-  backend: "eidovara-first-party-deform",
+  backend: 'eidovara-first-party-deform',
   vrm: false,
   mixamo: false,
   mocap: false,
-  note: "CPU vertex deform of the first-party lathe (~8k verts at ultra). Sexual behaviors follow session beats. prefers-reduced-motion damps motion to a faint breath.",
+  note: 'CPU vertex deform of the first-party lathe (~8k verts at ultra). Sexual behaviors follow session beats. prefers-reduced-motion damps motion to a faint breath.',
 });
 
 export const BEHAVIOR_IDS = Object.freeze([
-  "idle-breathe",
-  "eye-contact",
-  "hip-sway",
-  "present-body",
-  "slow-undulate",
-  "grind",
-  "stroke-pose",
-  "edge-hold",
-  "climax",
-  "aftercare",
-  "on-back-present",
-  "all-fours",
-  "ride",
-  "worship-pose",
-  "hands-free",
-  "striptease",
-  "chest-bounce",
-  "ass-present",
-  "spread",
-  "kiss-lean",
+  'idle-breathe',
+  'eye-contact',
+  'hip-sway',
+  'present-body',
+  'slow-undulate',
+  'grind',
+  'stroke-pose',
+  'edge-hold',
+  'climax',
+  'aftercare',
+  'on-back-present',
+  'all-fours',
+  'ride',
+  'worship-pose',
+  'hands-free',
+  'striptease',
+  'chest-bounce',
+  'ass-present',
+  'spread',
+  'kiss-lean',
 ]);
 
 const BEHAVIOR_SET = new Set(BEHAVIOR_IDS);
 
 export function normalizeBehavior(id) {
-  const key = String(id || "").trim();
-  return BEHAVIOR_SET.has(key) ? key : "idle-breathe";
+  const key = String(id || '').trim();
+  return BEHAVIOR_SET.has(key) ? key : 'idle-breathe';
 }
 
 /**
@@ -58,39 +58,43 @@ function unit(value, fallback = 0) {
   return n > 1 ? Math.max(0, Math.min(1, n / 100)) : Math.max(0, Math.min(1, n));
 }
 
-export function behaviorFromSession(kind, pace = "medium", heat = 0.5) {
-  const k = SESSION_KINDS.includes(kind) ? kind : "slow-burn";
-  const p = pace === "stop" ? "stop" : pace === "fast" ? "fast" : pace === "slow" ? "slow" : "medium";
+export function behaviorFromSession(kind, pace = 'medium', heat = 0.5) {
+  const k = SESSION_KINDS.includes(kind) ? kind : 'slow-burn';
+  const p =
+    pace === 'stop' ? 'stop' : pace === 'fast' ? 'fast' : pace === 'slow' ? 'slow' : 'medium';
   const h = unit(heat, 0);
-  if (k === "aftercare" || k === "pillow-talk") return k === "pillow-talk" && h > 0.4 ? "kiss-lean" : "aftercare";
-  if (k === "countdown-finish") return h > 0.85 ? "climax" : p === "fast" ? "grind" : "stroke-pose";
-  if (k === "edge-hold" || k === "tease-deny") return p === "stop" || h > 0.7 ? "edge-hold" : "stroke-pose";
-  if (k === "stroke-guide" || k === "mutual-guide") {
-    if (p === "stop") return "edge-hold";
-    if (p === "fast") return k === "mutual-guide" ? "ride" : "grind";
-    if (p === "slow") return "slow-undulate";
-    return k === "mutual-guide" ? "grind" : "stroke-pose";
+  if (k === 'aftercare' || k === 'pillow-talk')
+    return k === 'pillow-talk' && h > 0.4 ? 'kiss-lean' : 'aftercare';
+  if (k === 'countdown-finish') return h > 0.85 ? 'climax' : p === 'fast' ? 'grind' : 'stroke-pose';
+  if (k === 'edge-hold' || k === 'tease-deny')
+    return p === 'stop' || h > 0.7 ? 'edge-hold' : 'stroke-pose';
+  if (k === 'stroke-guide' || k === 'mutual-guide') {
+    if (p === 'stop') return 'edge-hold';
+    if (p === 'fast') return k === 'mutual-guide' ? 'ride' : 'grind';
+    if (p === 'slow') return 'slow-undulate';
+    return k === 'mutual-guide' ? 'grind' : 'stroke-pose';
   }
-  if (k === "filthy-talk") return h > 0.65 ? "grind" : "present-body";
-  if (k === "worship" || k === "praise-kink") return k === "praise-kink" ? "eye-contact" : "worship-pose";
-  if (k === "hands-free-audio" || k === "toy-pace") return h > 0.6 ? "hands-free" : "slow-undulate";
-  if (k === "striptease") return "striptease";
-  if (k === "ass-focus") return p === "fast" ? "grind" : "ass-present";
-  if (k === "chest-focus") return "chest-bounce";
-  if (k === "eye-lock") return "eye-contact";
-  if (k === "pose-play" || k === "random-mix") return p === "fast" ? "grind" : "present-body";
-  if (k === "slow-burn") {
-    if (h > 0.75) return "grind";
-    if (h > 0.4) return "hip-sway";
-    return "eye-contact";
+  if (k === 'filthy-talk') return h > 0.65 ? 'grind' : 'present-body';
+  if (k === 'worship' || k === 'praise-kink')
+    return k === 'praise-kink' ? 'eye-contact' : 'worship-pose';
+  if (k === 'hands-free-audio' || k === 'toy-pace') return h > 0.6 ? 'hands-free' : 'slow-undulate';
+  if (k === 'striptease') return 'striptease';
+  if (k === 'ass-focus') return p === 'fast' ? 'grind' : 'ass-present';
+  if (k === 'chest-focus') return 'chest-bounce';
+  if (k === 'eye-lock') return 'eye-contact';
+  if (k === 'pose-play' || k === 'random-mix') return p === 'fast' ? 'grind' : 'present-body';
+  if (k === 'slow-burn') {
+    if (h > 0.75) return 'grind';
+    if (h > 0.4) return 'hip-sway';
+    return 'eye-contact';
   }
-  return "idle-breathe";
+  return 'idle-breathe';
 }
 
 function paceHz(pace) {
-  if (pace === "stop") return 0.15;
-  if (pace === "slow") return 0.55;
-  if (pace === "fast") return 1.85;
+  if (pace === 'stop') return 0.15;
+  if (pace === 'slow') return 0.55;
+  if (pace === 'fast') return 1.85;
   return 1.05;
 }
 
@@ -106,9 +110,15 @@ export function deformAdultMesh(mesh, options = {}) {
   const timeMs = Number(options.timeMs) || 0;
   const t = timeMs / 1000;
   const behavior = normalizeBehavior(options.behavior);
-  const pace = options.pace === "stop" || options.pace === "slow" || options.pace === "fast" ? options.pace : "medium";
+  const pace =
+    options.pace === 'stop' || options.pace === 'slow' || options.pace === 'fast'
+      ? options.pace
+      : 'medium';
   const heat = unit(options.heat, 0.45);
-  const motion = options.motion && typeof options.motion === "object" ? options.motion : { breath: 0.45, sway: 0.4 };
+  const motion =
+    options.motion && typeof options.motion === 'object'
+      ? options.motion
+      : { breath: 0.45, sway: 0.4 };
   const reduced = Boolean(options.reducedMotion);
   const amp = reduced ? 0.12 : 1;
   const breathAmt = unit(motion.breath, 0.45) * amp;
@@ -133,7 +143,7 @@ export function deformAdultMesh(mesh, options = {}) {
     let y = p[i3 + 1];
     let z = p[i3 + 2];
     const yn = (y + 1.05) / 2.1;
-    const radial = Math.hypot(x, z) || 0.0001;
+    const _radial = Math.hypot(x, z) || 0.0001;
     const ang = Math.atan2(x, z);
 
     const chest = yn > 0.52 && yn < 0.78;
@@ -158,7 +168,7 @@ export function deformAdultMesh(mesh, options = {}) {
       z += Math.sin(phase * 0.21) * 0.012 * swayAmt;
     }
 
-    if (behavior === "eye-contact") {
+    if (behavior === 'eye-contact') {
       out.extraYaw = Math.sin(phase * 0.12) * 0.08;
       if (head) {
         z += 0.02;
@@ -166,31 +176,31 @@ export function deformAdultMesh(mesh, options = {}) {
       }
     }
 
-    if (behavior === "hip-sway" || behavior === "slow-undulate") {
+    if (behavior === 'hip-sway' || behavior === 'slow-undulate') {
       const w = Math.sin(phase * hz * 0.55) * (0.07 + heat * 0.05);
       if (hips || thighs) {
         x += w * (hips ? 1.15 : 0.7);
         z += Math.cos(phase * hz * 0.55) * 0.03 * (ass ? 1.3 : 0.6);
       }
-      if (behavior === "slow-undulate" && chest) {
+      if (behavior === 'slow-undulate' && chest) {
         z += Math.sin(phase * 0.7) * 0.035 * heat;
       }
     }
 
-    if (behavior === "present-body" || behavior === "worship-pose") {
+    if (behavior === 'present-body' || behavior === 'worship-pose') {
       if (chest) {
         z += 0.07 + Math.sin(phase * 0.8) * 0.02;
         y += 0.01;
       }
       if (ass) z -= 0.05;
-      if (behavior === "worship-pose" && yn > 0.15 && yn < 0.5) {
+      if (behavior === 'worship-pose' && yn > 0.15 && yn < 0.5) {
         y -= 0.04;
         z += 0.04;
       }
       out.extraPitch = -0.12;
     }
 
-    if (behavior === "grind" || behavior === "ride" || behavior === "hands-free") {
+    if (behavior === 'grind' || behavior === 'ride' || behavior === 'hands-free') {
       const g = Math.sin(phase * hz) * (0.08 + heat * 0.07);
       const g2 = Math.cos(phase * hz * 2) * 0.025 * heat;
       if (hips || groin || ass) {
@@ -202,17 +212,17 @@ export function deformAdultMesh(mesh, options = {}) {
         x += Math.sin(ang + phase * hz) * 0.02;
         y += g * 0.02;
       }
-      if (behavior === "ride") {
+      if (behavior === 'ride') {
         y += Math.abs(Math.sin(phase * hz)) * 0.09;
         if (chest) z += Math.sin(phase * hz) * 0.04;
       }
-      if (behavior === "hands-free" && chest) {
+      if (behavior === 'hands-free' && chest) {
         z += Math.sin(phase * hz * 0.5) * 0.05;
       }
       out.extraPitch = 0.06 * Math.sin(phase * hz);
     }
 
-    if (behavior === "stroke-pose") {
+    if (behavior === 'stroke-pose') {
       const s = Math.sin(phase * hz) * (0.055 + heat * 0.04);
       if (groin || hips) {
         z += s * 0.7;
@@ -223,7 +233,7 @@ export function deformAdultMesh(mesh, options = {}) {
       out.extraPitch = 0.08;
     }
 
-    if (behavior === "edge-hold") {
+    if (behavior === 'edge-hold') {
       const tremor = Math.sin(phase * 9.5) * 0.012 * heat * amp;
       const hold = Math.sin(phase * 0.4) * 0.02;
       if (hips || groin || thighs) {
@@ -235,7 +245,7 @@ export function deformAdultMesh(mesh, options = {}) {
       out.extraPitch = 0.1;
     }
 
-    if (behavior === "climax") {
+    if (behavior === 'climax') {
       const burst = Math.sin(phase * 7.2) * (0.05 + heat * 0.06) * amp;
       const lift = Math.abs(Math.sin(phase * 3.6)) * 0.045;
       x += burst * (1 - yn * 0.3);
@@ -249,7 +259,7 @@ export function deformAdultMesh(mesh, options = {}) {
       out.extraYaw = burst * 0.8;
     }
 
-    if (behavior === "aftercare") {
+    if (behavior === 'aftercare') {
       const rest = Math.sin(phase * 0.22) * 0.018 * breathAmt;
       y += rest * 0.3;
       if (head) z += 0.03;
@@ -257,7 +267,7 @@ export function deformAdultMesh(mesh, options = {}) {
       out.extraPitch = 0.16;
     }
 
-    if (behavior === "on-back-present") {
+    if (behavior === 'on-back-present') {
       // Rotate the figure toward supine presentation via extra pitch + flatten hips up.
       out.extraPitch = 1.05;
       out.extraRoll = 0.04 * Math.sin(phase * 0.5);
@@ -272,7 +282,7 @@ export function deformAdultMesh(mesh, options = {}) {
       }
     }
 
-    if (behavior === "all-fours") {
+    if (behavior === 'all-fours') {
       out.extraPitch = 0.72;
       y -= 0.18 * (1 - yn);
       if (ass) {
@@ -290,14 +300,14 @@ export function deformAdultMesh(mesh, options = {}) {
       if (hips) z += Math.sin(phase * hz) * 0.05 * heat;
     }
 
-    if (behavior === "striptease") {
+    if (behavior === 'striptease') {
       const s = Math.sin(phase * 0.55) * 0.04;
       if (hips) x += s;
       if (chest) z += 0.05 + Math.sin(phase * 0.9) * 0.03;
       out.extraYaw = s * 0.8;
     }
 
-    if (behavior === "chest-bounce") {
+    if (behavior === 'chest-bounce') {
       if (chest) {
         z += 0.06 + Math.sin(phase * hz * 1.4) * (0.04 + heat * 0.04);
         y += Math.sin(phase * hz * 1.4) * 0.012;
@@ -305,7 +315,7 @@ export function deformAdultMesh(mesh, options = {}) {
       out.extraPitch = -0.08;
     }
 
-    if (behavior === "ass-present") {
+    if (behavior === 'ass-present') {
       if (ass) {
         z -= 0.1 + Math.sin(phase * hz) * 0.04 * heat;
         y += 0.03;
@@ -315,13 +325,13 @@ export function deformAdultMesh(mesh, options = {}) {
       out.extraPitch = 0.18;
     }
 
-    if (behavior === "spread") {
+    if (behavior === 'spread') {
       if (thighs) x += Math.sign(x || 1) * (0.05 + heat * 0.03);
       if (groin) z += 0.04;
       out.extraPitch = 0.2;
     }
 
-    if (behavior === "kiss-lean") {
+    if (behavior === 'kiss-lean') {
       if (head) {
         z += 0.06;
         y -= 0.02;
@@ -383,17 +393,16 @@ export function adultLifeStatus(profile) {
   const soul = profile?.adultSoul;
   const session = soul?.session;
   const kind = session?.active && session.kind ? session.kind : null;
-  const pace = session?.pace || session?.beats?.[session.beatIndex]?.pace || "medium";
+  const pace = session?.pace || session?.beats?.[session.beatIndex]?.pace || 'medium';
   const heat = session?.heat ?? session?.beats?.[session.beatIndex]?.heat ?? 0.45;
   const override = soul?.stage?.behaviorOverride;
   return {
     backend: FIGURE_LIFE.backend,
     vrm: false,
     live: Boolean(soul?.active && kind),
-    behavior: override || (kind ? behaviorFromSession(kind, pace, heat) : "idle-breathe"),
+    behavior: override || (kind ? behaviorFromSession(kind, pace, heat) : 'idle-breathe'),
     sessionKind: kind,
     pace,
     heat: unit(heat, 0.45),
   };
 }
-

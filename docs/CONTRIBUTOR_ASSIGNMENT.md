@@ -22,12 +22,12 @@ This template is **not legal advice** and is not a court judgment. Have qualifie
 
 **Contributor (assignor):**
 
-| Field | Complete privately |
-| --- | --- |
-| Legal name | [Legal name] |
-| Address | [street, city, state/province, postal code, country] |
-| Email | [email] |
-| Age | Contributor is at least 18: [yes / no] |
+| Field                                           | Complete privately                                             |
+| ----------------------------------------------- | -------------------------------------------------------------- |
+| Legal name                                      | [Legal name]                                                   |
+| Address                                         | [street, city, state/province, postal code, country]           |
+| Email                                           | [email]                                                        |
+| Age                                             | Contributor is at least 18: [yes / no]                         |
 | GitHub username (optional, identification only) | [username â€” posting under this name is still not assignment] |
 
 ### 1. Contribution
@@ -76,11 +76,11 @@ Contributor will execute documents reasonably requested to evidence or record th
 
 This public file has **no signatures**. Complete only on a private original.
 
-| | Owner | Contributor |
-| --- | --- | --- |
-| Name | Soul Consciousness Studios | [Legal name] |
-| Signature | ______________________________ | ______________________________ |
-| Date | [date] | [date] |
+|           | Owner                            | Contributor                      |
+| --------- | -------------------------------- | -------------------------------- |
+| Name      | Soul Consciousness Studios       | [Legal name]                     |
+| Signature | **************\_\_************** | **************\_\_************** |
+| Date      | [date]                           | [date]                           |
 
 Store executed originals in private storage controlled by the Owner. Do not commit them here.
 
@@ -88,7 +88,6 @@ Store executed originals in private storage controlled by the Owner. Do not comm
 
 Leave this exhibit blank in the public repository. On a private original, list files, commit SHAs, or attach a schedule. Do not paste secrets, credentials, or third-party code the Contributor does not own.
 
-| Item | Description / path / SHA | Notes |
-| --- | --- | --- |
-| [item] | [description] | [original to Contributor / third-party excluded] |
-
+| Item   | Description / path / SHA | Notes                                            |
+| ------ | ------------------------ | ------------------------------------------------ |
+| [item] | [description]            | [original to Contributor / third-party excluded] |

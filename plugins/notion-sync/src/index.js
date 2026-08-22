@@ -15,12 +15,17 @@ export default {
   version: '1.0.0',
 
   async init() {
-    try { const s = localStorage.getItem(CONFIG_KEY); if (s) config = { ...config, ...JSON.parse(s) }; } catch {}
+    try {
+      const s = localStorage.getItem(CONFIG_KEY);
+      if (s) config = { ...config, ...JSON.parse(s) };
+    } catch {}
     console.log('[Notion Sync] Initialized');
   },
 
   async cleanup() {
-    try { localStorage.setItem(CONFIG_KEY, JSON.stringify(config)); } catch {}
+    try {
+      localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
+    } catch {}
     console.log('[Notion Sync] Cleaned up');
   },
 
@@ -31,7 +36,7 @@ export default {
     return { configured: true };
   },
 
-  async sync(direction = 'bidirectional') {
+  async sync(_direction = 'bidirectional') {
     if (!config.apiKey) throw new Error('Not configured. Run configure first.');
     let pushed = 0;
     for (const item of config.pending.splice(0)) {
@@ -39,24 +44,30 @@ export default {
         await fetch(`${NOTION_API}/pages`, {
           method: 'POST',
           headers: {
-            'Authorization': `Bearer ${config.apiKey}`,
+            Authorization: `Bearer ${config.apiKey}`,
             'Notion-Version': NOTION_VERSION,
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
             parent: { database_id: config.databaseId },
             properties: {
               Title: { title: [{ text: { content: String(item.content || '').slice(0, 100) } }] },
-              Content: { rich_text: [{ text: { content: String(item.content || '') } }] }
-            }
-          })
+              Content: { rich_text: [{ text: { content: String(item.content || '') } }] },
+            },
+          }),
         });
         pushed++;
-      } catch (err) { console.warn('[Notion Sync] Push failed:', err); }
+      } catch (err) {
+        console.warn('[Notion Sync] Push failed:', err);
+      }
     }
     return { success: true, pushed };
   },
 
-  async onMemoryCreated(memory) { config.pending.push(memory); },
-  async onMemoryUpdated(memory) { config.pending.push(memory); }
+  async onMemoryCreated(memory) {
+    config.pending.push(memory);
+  },
+  async onMemoryUpdated(memory) {
+    config.pending.push(memory);
+  },
 };

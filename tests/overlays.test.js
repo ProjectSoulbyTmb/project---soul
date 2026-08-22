@@ -5,14 +5,19 @@ import {
   classifyGuestNavigation,
   guestNavigateAllowed,
   guestWebPreferences,
-  GUEST_PARTITIONS
+  GUEST_PARTITIONS,
 } from '../src/core/guest-overlay.js';
 import {
   formatEidovaraProcessMetrics,
   overlayPaletteItems,
-  shouldDestroyGuestOverlays
+  shouldDestroyGuestOverlays,
 } from '../src/core/overlays.js';
-import { actionsForIntent, KERNEL_ACTION_TYPES, soulOverlay, suggestionsForView } from '../src/core/kernel.js';
+import {
+  actionsForIntent,
+  KERNEL_ACTION_TYPES,
+  soulOverlay,
+  suggestionsForView,
+} from '../src/core/kernel.js';
 import { defaultProfile } from '../src/core/schema.js';
 import { builtinPaletteItems, filterPalette } from '../src/core/layers.js';
 
@@ -34,21 +39,39 @@ test('guest web preferences stay sandboxed without Node', () => {
 test('guest navigation blocks http, localhost, and metadata IPs', () => {
   assert.equal(classifyGuestNavigation('http://example.com').reason, 'http');
   assert.equal(classifyGuestNavigation('https://localhost/').reason, 'private-host');
-  assert.equal(classifyGuestNavigation('https://169.254.169.254/latest/meta-data').reason, 'private-host');
+  assert.equal(
+    classifyGuestNavigation('https://169.254.169.254/latest/meta-data').reason,
+    'private-host'
+  );
   assert.equal(guestNavigateAllowed('browse', 'http://127.0.0.1/').ok, false);
   assert.equal(guestNavigateAllowed('browse', 'https://example.com').ok, true);
   assert.equal(classifyGuestNavigation('about:blank').ok, true);
 });
 
 test('adult lock closes guest overlays while age-gate closes all', () => {
-  assert.deepEqual(shouldDestroyGuestOverlays({ adultAllowed: true, ageGateAccepted: true }).closeGuests, true);
-  assert.equal(shouldDestroyGuestOverlays({ adultAllowed: true, ageGateAccepted: true }).closeAll, false);
-  assert.equal(shouldDestroyGuestOverlays({ adultAllowed: false, ageGateAccepted: false }).closeAll, true);
-  assert.equal(shouldDestroyGuestOverlays({ adultAllowed: false, ageGateAccepted: true }).closeGuests, false);
+  assert.deepEqual(
+    shouldDestroyGuestOverlays({ adultAllowed: true, ageGateAccepted: true }).closeGuests,
+    true
+  );
+  assert.equal(
+    shouldDestroyGuestOverlays({ adultAllowed: true, ageGateAccepted: true }).closeAll,
+    false
+  );
+  assert.equal(
+    shouldDestroyGuestOverlays({ adultAllowed: false, ageGateAccepted: false }).closeAll,
+    true
+  );
+  assert.equal(
+    shouldDestroyGuestOverlays({ adultAllowed: false, ageGateAccepted: true }).closeGuests,
+    false
+  );
   const main = read('src/electron/main.js');
   assert.match(main, /closeGuests/);
   assert.match(main, /hideIfGated/);
-  assert.match(read('src/electron/guest-overlays.js'), /Adult Mode is on, so guest overlays stay closed/);
+  assert.match(
+    read('src/electron/guest-overlays.js'),
+    /Adult Mode is on, so guest overlays stay closed/
+  );
 });
 
 test('workspace CSP is not widened and overlay HTML stays locked', () => {
@@ -65,7 +88,13 @@ test('workspace CSP is not widened and overlay HTML stays locked', () => {
 
 test('companion overlay chips resolve and palette lists overlay commands', () => {
   const overlay = soulOverlay(defaultProfile());
-  for (const type of ['open-chat-overlay', 'open-browse-overlay', 'open-discord-overlay', 'set-always-on-top', 'open-now-playing']) {
+  for (const type of [
+    'open-chat-overlay',
+    'open-browse-overlay',
+    'open-discord-overlay',
+    'set-always-on-top',
+    'open-now-playing',
+  ]) {
     assert.ok(KERNEL_ACTION_TYPES.includes(type), type);
     assert.match(read('src/renderer/renderer.js'), new RegExp(`action\\.type==='${type}'`));
   }
@@ -87,14 +116,18 @@ test('no Discord token storage helpers and process metrics stay Eidovara-only', 
     'src/electron/overlay-windows.js',
     'src/electron/overlay-preload.cjs',
     'src/core/guest-overlay.js',
-    'src/renderer/guest-chrome.js'
+    'src/renderer/guest-chrome.js',
   ]) {
     const text = read(file);
-    assert.doesNotMatch(text, /discordToken|botToken|Authorization:\s*['"]Bot |harvest.*token|localStorage\.setItem\(['"]token/i, file);
+    assert.doesNotMatch(
+      text,
+      /discordToken|botToken|Authorization:\s*['"]Bot |harvest.*token|localStorage\.setItem\(['"]token/i,
+      file
+    );
   }
   const metrics = formatEidovaraProcessMetrics({
     getCPUUsage: () => ({ percentCPUUsage: 1.5 }),
-    memoryUsage: () => ({ rss: 20 * 1024 * 1024, heapUsed: 8 * 1024 * 1024 })
+    memoryUsage: () => ({ rss: 20 * 1024 * 1024, heapUsed: 8 * 1024 * 1024 }),
   });
   assert.equal(metrics.source, 'eidovara-process');
   assert.match(metrics.note, /Eidovara process only/);

@@ -13,12 +13,32 @@
   "entrypoints": {
     "main": "src/index.js",
     "commands": [
-      { "id": "pomodoro.start", "name": "Start Pomodoro", "description": "Start a focus session", "shortcut": "Ctrl+Shift+P", "action": "start" },
-      { "id": "pomodoro.stop", "name": "Stop Timer", "description": "Stop the current session", "action": "stop" },
-      { "id": "pomodoro.stats", "name": "Pomodoro Stats", "description": "View today's stats", "action": "stats" }
+      {
+        "id": "pomodoro.start",
+        "name": "Start Pomodoro",
+        "description": "Start a focus session",
+        "shortcut": "Ctrl+Shift+P",
+        "action": "start"
+      },
+      {
+        "id": "pomodoro.stop",
+        "name": "Stop Timer",
+        "description": "Stop the current session",
+        "action": "stop"
+      },
+      {
+        "id": "pomodoro.stats",
+        "name": "Pomodoro Stats",
+        "description": "View today's stats",
+        "action": "stats"
+      }
     ],
     "hooks": [
-      { "name": "session-completed", "event": "pomodoro.session.completed", "handler": "onSessionCompleted" }
+      {
+        "name": "session-completed",
+        "event": "pomodoro.session.completed",
+        "handler": "onSessionCompleted"
+      }
     ]
   },
   "engines": { "eidovara": ">=1.0.0" },

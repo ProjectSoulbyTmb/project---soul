@@ -14,7 +14,10 @@ export function nodeMeetsElectronInstall(version = process.version) {
   if (!match) return false;
   const major = Number(match[1]);
   const minor = Number(match[2]);
-  return major > ELECTRON_INSTALL_NODE.major || (major === ELECTRON_INSTALL_NODE.major && minor >= ELECTRON_INSTALL_NODE.minor);
+  return (
+    major > ELECTRON_INSTALL_NODE.major ||
+    (major === ELECTRON_INSTALL_NODE.major && minor >= ELECTRON_INSTALL_NODE.minor)
+  );
 }
 
 export function electronInstallStatus(version = process.version, installPath = electronInstall) {
@@ -30,7 +33,9 @@ function run() {
     return 0;
   }
   if (status.action === 'skip') {
-    console.log(`Skipping Electron binary download: Electron 43 requires Node >=${ELECTRON_INSTALL_NODE.major}.${ELECTRON_INSTALL_NODE.minor}.0 (current ${process.version}). CLI, tests, and checks still run on Node >=20.`);
+    console.log(
+      `Skipping Electron binary download: Electron 43 requires Node >=${ELECTRON_INSTALL_NODE.major}.${ELECTRON_INSTALL_NODE.minor}.0 (current ${process.version}). CLI, tests, and checks still run on Node >=20.`
+    );
     return 0;
   }
   const result = spawnSync(process.execPath, [electronInstall], { stdio: 'inherit' });
@@ -39,4 +44,3 @@ function run() {
 
 const isMain = process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMain) process.exit(run());
-

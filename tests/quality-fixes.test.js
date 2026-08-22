@@ -8,7 +8,10 @@ test('Free edition can still clear a leftover Brave key', () => {
   const renderer = read('src/renderer/renderer.js');
   assert.match(renderer, /clearSearch\.disabled=false/);
   assert.doesNotMatch(renderer, /clearSearch\.disabled=!premium/);
-  assert.match(read('src/electron/main.js'), /if \(incoming\?\.clearSearchApiKey\) config\.encryptedSearchApiKey = ''/);
+  assert.match(
+    read('src/electron/main.js'),
+    /if \(incoming\?\.clearSearchApiKey\) config\.encryptedSearchApiKey = ''/
+  );
 });
 
 test('Ctrl+A does not steal select-all from text fields', () => {
@@ -21,17 +24,26 @@ test('age gate inert-blocks the app and refreshes backups after accept', () => {
   const renderer = read('src/renderer/renderer.js');
   assert.match(renderer, /toggleAttribute\('inert'/);
   assert.match(renderer, /function setAgeGated/);
-  assert.match(renderer, /acceptAgeGate\(true\);state=await window\.soul\.snapshot\(\);setAgeGated\(false\);await refreshAdminSession\(\)\.catch\(\(\)=>\{\}\);await refreshBackups/);
+  assert.match(
+    renderer,
+    /acceptAgeGate\(true\);state=await window\.soul\.snapshot\(\);setAgeGated\(false\);await refreshAdminSession\(\)\.catch\(\(\)=>\{\}\);await refreshBackups/
+  );
 });
 
 test('settings save normalizes local and Premium endpoints', () => {
   const main = read('src/electron/main.js');
-  assert.match(main, /normalizeProviderEndpoint\(config\.endpoint, \{ localOnly: provider === 'local' \}\)/);
+  assert.match(
+    main,
+    /normalizeProviderEndpoint\(config\.endpoint, \{ localOnly: provider === 'local' \}\)/
+  );
   assert.match(main, /remember[\s\S]*opts\?\.kind/);
 });
 
 test('memory panel can record preference kind through preload', () => {
-  assert.match(read('src/electron/preload.cjs'), /remember: \(c, opts\) => ipcRenderer\.invoke\('soul:remember', c, opts\)/);
+  assert.match(
+    read('src/electron/preload.cjs'),
+    /remember: \(c, opts\) => ipcRenderer\.invoke\('soul:remember', c, opts\)/
+  );
   assert.match(read('src/renderer/renderer.js'), /remember\(v,\{kind:'preference'\}\)/);
 });
 
@@ -67,13 +79,19 @@ test('desktop does not create a Soul profile until 18+ is accepted', () => {
   assert.match(main, /if \(config\.ageGateAccepted === true\) ensureEngine\(\)/);
   assert.match(main, /soul:snapshot[\s\S]*defaultProfile/);
   assert.match(main, /acceptAgeGate[\s\S]*ensureEngine\(\)/);
-  assert.doesNotMatch(main, /loadConfig\(\);\s*const dataDir = path\.join\(app\.getPath\('userData'\), 'profiles'\)/);
+  assert.doesNotMatch(
+    main,
+    /loadConfig\(\);\s*const dataDir = path\.join\(app\.getPath\('userData'\), 'profiles'\)/
+  );
 });
 
 test('desktop log redacts bearer tokens and obvious secrets', async () => {
   const { redactSecretsForLog } = await import('../src/core/log-redact.js');
   assert.match(redactSecretsForLog('Authorization: Bearer sk-live-abc123'), /Bearer \[redacted\]/);
-  assert.doesNotMatch(redactSecretsForLog('Authorization: Bearer sk-live-abc123'), /sk-live-abc123/);
+  assert.doesNotMatch(
+    redactSecretsForLog('Authorization: Bearer sk-live-abc123'),
+    /sk-live-abc123/
+  );
   assert.match(redactSecretsForLog('api_key=supersecret'), /api_key=\[redacted\]/i);
   const main = read('src/electron/main.js');
   assert.match(main, /redactSecretsForLog/);

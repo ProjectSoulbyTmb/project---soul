@@ -8,6 +8,8 @@ export function redactSecretsForLog(value) {
     .replace(/Authorization:\s*Bearer\s+[A-Za-z0-9._~+/=-]+/gi, 'Authorization: Bearer [redacted]')
     .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, 'Bearer [redacted]')
     .replace(/(api[_-]?key|token|secret|password)\s*[:=]\s*['"]?[^\s'"&,]+/gi, '$1=[redacted]')
-    .replace(/encrypted(?:Api|SearchApi)Key["\s:]+[A-Za-z0-9+/=]{16,}/gi, match => `${match.split(/[:"]/)[0]}=[redacted]`);
+    .replace(
+      /encrypted(?:Api|SearchApi)Key["\s:]+[A-Za-z0-9+/=]{16,}/gi,
+      match => `${match.split(/[:"]/)[0]}=[redacted]`
+    );
 }
-
