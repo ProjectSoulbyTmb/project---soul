@@ -76,7 +76,7 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(ownership, /Soul Consciousness Studios/);
   assert.match(ownership, /intended publisher/i);
   assert.match(ownership, /unregistered/);
-  assert.match(ownership, /does \*\*not\*\* claim Â®|does not claim Â®|unregistered/i);
+  assert.match(ownership, /does \*\*not\*\* claim ®|does not claim ®|unregistered/i);
   assert.doesNotMatch(ownership, /this assignment has been signed|executed by all contributors/i);
   assert.doesNotMatch(ownership, /Copyright Office registration number|USPTO Registration No/i);
   const cla = read('docs/CONTRIBUTOR_ASSIGNMENT.md');
@@ -212,16 +212,16 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   assert.match(html, /does not require licensed SF Pro/);
   assert.match(html, /not Jarvis/);
   assert.match(html, /local-admin testing only/);
-  assert.match(html, /Â© 2026 Soul Consciousness Studios\. All rights reserved/);
+  assert.match(html, /© 2026 Soul Consciousness Studios\. All rights reserved/);
   assert.match(html, /Source-available; use governed by LICENSE \+ TERMS/);
   assert.match(html, /Users own their own content/);
   assert.match(html, /not legal advice/);
-  assert.match(html, /Soul Consciousness Studiosâ„¢ \(unregistered\)/);
+  assert.match(html, /Soul Consciousness Studios™ \(unregistered\)/);
   assert.match(html, /LICENSE and TRADEMARKS\.md/);
   assert.match(html, /intended publisher only/);
   assert.match(html, /pull requests do not transfer ownership/i);
   assert.match(html, /unsigned templates only/);
-  assert.doesNotMatch(html, /I am conscious|scientifically proven consciousness|Â®/);
+  assert.doesNotMatch(html, /I am conscious|scientifically proven consciousness|®/);
 });
 
 test('legal-instrument pack is templates and notices, not registrations', () => {
@@ -285,7 +285,7 @@ test('network, security, and licensing docs match current fail-closed v0.19.1 su
   assert.match(security, /media-src https: eidovara-media:/);
   assert.match(security, /\/v1\/assist/);
   assert.match(security, /fail-on-severity: moderate/);
-  assert.match(security, /Settings â†’ Code security/);
+  assert.match(security, /Settings → Code security/);
   assert.match(security, /Dependency graph/);
   assert.match(security, /Authenticode-unsigned/);
   const legal = read('LEGAL_NOTICES.md');
@@ -363,7 +363,7 @@ test('first-party JS carries SPDX source-available headers and does not donate O
   assert.doesNotMatch(owners, /@(?!ProjectSoulbyTmb)\S+/);
   const footerPages = ['docs/index.html', 'docs/legal.html', 'docs/licensing.html', 'docs/help.html', 'docs/faq.html'];
   for (const page of footerPages) {
-    assert.match(read(page), /Â© 2026 Soul Consciousness Studios\. All rights reserved/);
+    assert.match(read(page), /© 2026 Soul Consciousness Studios\. All rights reserved/);
     assert.match(read(page), /Source-available, not open source/);
     assert.match(read(page), /intended publisher only/);
   }
@@ -393,7 +393,7 @@ test('first-party legal stack is kept; third-party brands are not product names'
   assert.match(trademarks, /does not contain a USPTO serial number|must not be used unless/i);
   assert.match(read('LEGAL_NOTICES.md'), /not Jarvis/);
   assert.match(read('TERMS.md'), /\*\*not\*\* Jarvis|\bnot Jarvis\b/);
-  assert.match(read('OWNERSHIP.md'), /does \*\*not\*\* claim Â®|unregistered/);
+  assert.match(read('OWNERSHIP.md'), /does \*\*not\*\* claim ®|unregistered/);
   assert.match(read('docs/MARKETING_CLAIMS_POLICY.md'), /Using Jarvis/);
 
   const identityMisuse = /Eidovara Jarvis|Jarvis kernel|Jarvis mode|Soul Jarvis|like Jarvis|our Jarvis|Hey Siri|OK Google|Okay Google|Hey Cortana|Eidovara (?:Raycast|Alfred|Spotlight|Copilot)/i;
@@ -530,7 +530,7 @@ test('footer pages have consistent source-available claims', () => {
   const footerPages = ['docs/index.html', 'docs/legal.html', 'docs/licensing.html', 'docs/help.html', 'docs/faq.html'];
   for (const page of footerPages) {
     const content = read(page);
-    assert.match(content, /Â© 2026 Soul Consciousness Studios\. All rights reserved/);
+    assert.match(content, /© 2026 Soul Consciousness Studios\. All rights reserved/);
     assert.match(content, /Source-available, not open source/);
     assert.match(content, /intended publisher only/);
   }
@@ -708,10 +708,10 @@ test('LICENSE explicitly states not OSI open source', () => {
   assert.doesNotMatch(license, /this is an OSI[- ]approved|OSI-approved open source license/i);
 });
 
-// Additional edge case: OWNERSHIP.md does not claim Â®
+// Additional edge case: OWNERSHIP.md does not claim ®
 test('OWNERSHIP.md does not claim registered trademarks', () => {
   const ownership = read('OWNERSHIP.md');
-  assert.match(ownership, /does \*\*not\*\* claim Â®|does not claim Â®|unregistered/i);
+  assert.match(ownership, /does \*\*not\*\* claim ®|does not claim ®|unregistered/i);
   assert.doesNotMatch(ownership, /this assignment has been signed|executed by all contributors/i);
   assert.doesNotMatch(ownership, /Copyright Office registration number|USPTO Registration No/i);
 });
