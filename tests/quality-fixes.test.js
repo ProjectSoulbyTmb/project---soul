@@ -49,7 +49,7 @@ test('desktop chrome and installer EULA match package.json version', () => {
   const version = JSON.parse(read('package.json')).version;
   const dotted = version.replace(/\./g, '\\.');
   assert.match(read('src/renderer/index.html'), new RegExp(`<title>Eidovara v${dotted}</title>`));
-  assert.match(read('src/electron/main.js'), new RegExp(`title: 'Eidovara v${dotted}'`));
+  assert.match(read('src/electron/main.js'), /title: `Eidovara v\$\{app\.getVersion\(\)\}`/);
   assert.match(read('installer/EULA.txt'), new RegExp(`Version ${dotted} Stable Alpha`));
   assert.match(read('docs/knowledge.js'), new RegExp(`export const ASSIST_VERSION = '${dotted}'`));
 });
