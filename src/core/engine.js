@@ -78,6 +78,7 @@ import {
   unpinWidget,
 } from './layers.js';
 import { setTelemetryEnabled, providerTelemetry, storeTelemetry } from './telemetry.js';
+import { attachToEngine as attachThothKernel } from './thoth/index.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
@@ -95,6 +96,15 @@ export class SoulEngine {
 
     startKernelSession(this.state);
     storeTelemetry.op('save', () => this.store.save(this.state));
+
+    // THOTH local tool kernel: additive and fail-open. Routes `thoth ...`
+    // messages through the permission-brokered bus before any provider runs.
+    try {
+      attachThothKernel(this);
+      this.state.thoth = this.thoth.state;
+    } catch {
+      this.thoth = null;
+    }
   }
   setProvider(provider) {
     this.provider = provider || new OfflineProvider();
