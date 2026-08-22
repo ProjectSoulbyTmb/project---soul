@@ -61,7 +61,7 @@ export function mixBriefing(state, intent = 'mood') {
     mood: seeds.length ? `Queue from ${seedText}, then branch with a public-source or local-file search. Favorite keepers; skip anything that does not fit.` : 'Start with one local file or a public-source search, then favorite what you want repeated.',
     favorites: favorites.length ? `Stay close to ${favorites.slice(0, 3).join(', ')}. Use Similar in the player, then open Spotify or YouTube only as an official HTTPS search.` : 'Mark a favorite from the player first. Eidovara can then suggest nearby public or local follow-ups.',
     watch: seeds.length ? `Look up a documentary, gameplay, or craft video around ${seedText} from allowlisted public sources or an official YouTube search.` : 'Name a topic in Research, or open YouTube as an official HTTPS search. Eidovara does not bypass platform playback rules.',
-    gaming: seeds.length ? `Keep the mix energetic and instrumental-leaning around ${seedText}. Enable low-overhead mode in Apps & Gaming so Eidovara does not add motion while you play.` : 'Add a local soundtrack file, or search public audio. Low-overhead mode only reduces Eidovara’s own effects; it does not change another game’s process.',
+    gaming: seeds.length ? `Keep the mix energetic and instrumental-leaning around ${seedText}. Enable low-overhead mode in Apps & Gaming so Eidovara does not add motion while you play.` : 'Add a local soundtrack file, or search public audio. Low-overhead mode only reduces Eidovaraâ€™s own effects; it does not change another gameâ€™s process.',
     study: seeds.length ? `Prefer calm, lyric-light audio near ${seedText}. Keep the player visible and pause from the dock when you need silence.` : 'Pick one calm local track or a public-domain recording. Soul will not auto-download protected catalogs.',
     surprise: seeds.length ? `Begin from ${seedText}, skip ${skipped.slice(0, 2).join(' and ') || 'nothing yet'}, and ask for one public-source track or video you have not queued lately.` : 'Ask Soul to search public Wikimedia audio/video, or open a single local file. Surprise still stays inside lawful, sourced media.'
   };
@@ -175,7 +175,7 @@ export function discoverMedia(input, { entertainment, localLibrary, query, adult
     local.length
       ? `Local library matches:\n${local.map((item, index) => `${index + 1}. ${item.title}${item.playable ? ' (play in Eidovara)' : ' (taste title; open the local file to play in Eidovara)'}`).join('\n')}`
       : 'No local library titles matched. Open a local audio or video file in Entertainment to play it in Eidovara (eidovara-media, never media-src \'self\').',
-    `Official search links (browser handoff — not Spotify/iTunes/VLC/Windows Media Player injection, not stream ripping):\n${handoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`,
+    `Official search links (browser handoff â€” not Spotify/iTunes/VLC/Windows Media Player injection, not stream ripping):\n${handoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`,
     adultHandoffs.length
       ? `Adult official searches (system browser after confirm; not embeds, not HTML scrape):\n${adultHandoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`
       : ''
