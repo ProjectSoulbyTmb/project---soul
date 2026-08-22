@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** First-party companion looks. Decorative interface chrome â€” not a living figure. */
+/** First-party companion looks. Decorative interface chrome — not a living figure. */
 
 export const PRESENCE_LOOKS = Object.freeze([
   {
@@ -13,7 +13,7 @@ export const PRESENCE_LOOKS = Object.freeze([
     id: 'hologram',
     title: 'Hologram',
     kind: 'css',
-    description: 'Scan-line silhouette chrome. Interface only â€” not a body and not a person.',
+    description: 'Scan-line silhouette chrome. Interface only — not a body and not a person.',
   },
   {
     id: 'ambient',

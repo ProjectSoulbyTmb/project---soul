@@ -75,7 +75,7 @@ export function soulOverlay(state = {}) {
     adultMode: Boolean(adult),
     sentience: false,
     label: enabled
-      ? `${name} is a software self-model on this device â€” not a claim of consciousness.`
+      ? `${name} is a software self-model on this device — not a claim of consciousness.`
       : 'Optional Soul setup is off. This workspace companion is not Soul and is not conscious.',
   };
 }

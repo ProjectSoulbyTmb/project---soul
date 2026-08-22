@@ -63,7 +63,7 @@ You are responsible for export-control, sanctions, and local law applicable to d
 
 This release does not process live payments.
 
-## 8. Commerce in v0.19.1
+## 8. Commerce in v1.0.0
 
 This release does **not** process live payments, store payment cards, or automatically unlock Premium. Premium feature gates exist for **local administrator testing only** (Ctrl+A). That override is not proof of purchase or subscription. No PCI, SOC, or similar certification is claimed. Payment-provider URLs on the optional Worker remain empty until a real store exists.
 

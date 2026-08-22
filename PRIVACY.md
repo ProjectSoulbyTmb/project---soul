@@ -2,7 +2,7 @@
 
 Last updated: August 21, 2026
 
-This notice describes Eidovara v0.19.1 Stable Alpha (Windows 10/11 x64). It is a self-declared product notice, **not** an independent audit, ISO certification, or guarantee of compliance for every deployment. Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Local age confirmation is not independent age or identity verification. See [AGE.md](AGE.md) and [NETWORK-USAGE.md](NETWORK-USAGE.md).
+This notice describes Eidovara v1.0.0 Stable Alpha (Windows 10/11 x64). It is a self-declared product notice, **not** an independent audit, ISO certification, or guarantee of compliance for every deployment. Eidovara is restricted to users age 18 or older and does not intentionally collect minors' personal information. Local age confirmation is not independent age or identity verification. See [AGE.md](AGE.md) and [NETWORK-USAGE.md](NETWORK-USAGE.md).
 
 ## Local-first: what stays on the machine
 
@@ -38,7 +38,7 @@ Network access is user-directed except for the official update-manifest check:
 | Optional desktop helper `/v1/assist`                                                    | You paste a Worker HTTPS base **and** enable **Allow one-shot Worker helper** (default off), then tick **Ask the Worker helper** on one send                                  | The typed question and mode only (about 32 KiB). Conversations, memories, and chat history stay local. Transcripts are not stored. Assist is not Soul. |
 | Optional desktop `/v1/assist`                                                           | You paste an HTTPS base in Settings, enable Soul online (default off), and check send for that message                                                                        | A single typed question and mode. Conversation history is never sent. Assist is not Soul. Transcripts are not stored.                                  |
 
-A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payments stay fail-closed (`paymentsEnabled` remains false). Payment environment variables for the optional Worker are intended to stay empty in v0.19.1. No `workers.dev` host is compiled into the app. The official default is `https://api.eidovara.org`.
+A configured provider receives only what is needed for that request and is governed by **that provider's** terms. Eidovara does not collect payment-card numbers, security codes, or payment certificates. Payments stay fail-closed (`paymentsEnabled` remains false). Payment environment variables for the optional Worker are intended to stay empty in v1.0.0. No `workers.dev` host is compiled into the app. The official default is `https://api.eidovara.org`.
 
 ## Your controls
 

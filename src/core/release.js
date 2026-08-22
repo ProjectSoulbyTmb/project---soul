@@ -4,7 +4,7 @@
  * Canonical source/product and published Windows installer metadata.
  * Values below must come from a real built and published release artifact.
  * Every consumer (worker, site helper, desktop kernel, certification JSON,
- * tests) derives from these constants â€” change them here, nowhere else, and
+ * tests) derives from these constants — change them here, nowhere else, and
  * tests/release-consistency.test.js fails if any other surface drifts.
  */
 
