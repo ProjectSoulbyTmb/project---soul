@@ -7,6 +7,7 @@ import { processLearning } from './learning.js';
 import { reflectOnGrowth } from './growth.js';
 import { updateRelationship } from './relationship.js';
 import { uid } from './schema.js';
+import { redactSecretsForLog } from './log-redact.js';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
 import { OfflineProvider } from '../providers/offline.js';
 import { buildSystemContext } from '../providers/context.js';
@@ -539,6 +540,44 @@ export class SoulEngine {
       this.state.activeConversationId = this.state.conversations[0].id;
     this.store.save(this.state);
     return this.snapshot();
+  }
+  exportConversation(id = this.state.activeConversationId, { format = 'json', redact = true } = {}) {
+    const conv = this.state.conversations.find(c => c.id === id);
+    if (!conv) throw new Error('Conversation not found.');
+    const messages = conv.messages.map(m => ({
+      role: m.role,
+      at: m.at,
+      content: redact ? redactSecretsForLog(String(m.content ?? '')) : String(m.content ?? ''),
+    }));
+    const safeTitle = redact
+      ? redactSecretsForLog(conv.title || 'Conversation')
+      : (conv.title || 'Conversation');
+    const exportedAt = new Date().toISOString();
+    const slug =
+      (conv.title || 'Conversation').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'conversation';
+    if (format === 'md') {
+      const body = [
+        `# ${conv.title || 'Conversation'}`,
+        '',
+        `- Conversation ID: ${conv.id}`,
+        `- Started: ${conv.createdAt}`,
+        `- Exported: ${exportedAt}`,
+        `- Messages: ${messages.length}`,
+        `- Redacted: ${redact ? 'yes' : 'no'}`,
+        '',
+        ...messages.map(m => `**${m.role}** (${m.at})\n\n${m.content}\n`),
+      ].join('\n');
+      return { filename: `${slug}-${conv.id}.md`, messageCount: messages.length, data: body };
+    }
+    const payload = {
+      app: 'Eidovara',
+      version: 1,
+      conversation: { id: conv.id, title: safeTitle, createdAt: conv.createdAt, updatedAt: conv.updatedAt || conv.createdAt },
+      exportedAt,
+      redacted: redact,
+      messages,
+    };
+    return { filename: `${slug}-${conv.id}.json`, messageCount: messages.length, data: JSON.stringify(payload, null, 2) };
   }
 
   async respond(input, extra = {}) {

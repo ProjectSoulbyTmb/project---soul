@@ -1469,6 +1469,12 @@ ipcMain.handle('soul:openExternal', (_e, value) => {
   if (!url) throw new Error('Only secure web links can be opened.');
   return shell.openExternal(url);
 });
+ipcMain.handle('soul:exportConversation', (_e, id, opts) => {
+  requireAgeGate();
+  const out = ensureEngine().exportConversation(id, opts || {});
+  log(`Exported conversation (${out.messageCount} messages) as ${out.filename}.`);
+  return out;
+});
 ipcMain.handle('soul:addApplication', async () => {
   requireAgeGate();
   if (entitlement() === 'free' && (config.apps || []).length >= 3)

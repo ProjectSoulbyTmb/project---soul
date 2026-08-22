@@ -35,7 +35,7 @@ while ((m = reA.exec(clean))) {
 
 let out = '# Test Failure Triage\n\n';
 out += `_Auto-generated ${new Date().toISOString()} — ${suites.size} distinct failure group(s)._\n\n`;
-for (const [key, g] of [...suites.entries()].sort((a, b) => b.tests.length - a.tests.length)) {
+for (const [_key, g] of [...suites.entries()].sort((a, b) => b.tests.length - a.tests.length)) {
   out += `## ${g.err.slice(0, 90)}\n`;
   out += `- **Failing tests (${g.tests.length}):** ${g.tests.join('; ')}\n`;
   if (g.exp) out += `- **expected:** \`${g.exp}\`\n`;

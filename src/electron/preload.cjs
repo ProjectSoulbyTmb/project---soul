@@ -36,6 +36,7 @@ contextBridge.exposeInMainWorld('soul', {
   launchApplication: id => ipcRenderer.invoke('soul:launchApplication', id),
   removeApplication: id => ipcRenderer.invoke('soul:removeApplication', id),
   openExternal: url => ipcRenderer.invoke('soul:openExternal', url),
+  exportConversation: (id, opts) => ipcRenderer.invoke('soul:exportConversation', id, opts),
   checkForUpdates: () => ipcRenderer.invoke('soul:checkForUpdates'),
   installUpdate: () => ipcRenderer.invoke('soul:installUpdate'),
   setAutoCheckUpdates: enabled => ipcRenderer.invoke('soul:setAutoCheckUpdates', enabled),
