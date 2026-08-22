@@ -6,11 +6,11 @@ This project record identifies Soul Consciousness Studios as the sole creator an
 
 - Preserve dated source snapshots, release hashes, Git history, design files, and authorship records.
 - Register qualifying computer-program code through the U.S. Copyright Office registration portal. Follow Circular 61 for the correct source-code deposit and exclude preexisting or third-party material from the claim.
-- A name cannot be copyrighted. Copyright may protect qualifying original code, prose, art, and screen displaysâ€”not ideas, systems, names, titles, or short phrases.
+- A name cannot be copyrighted. Copyright may protect qualifying original code, prose, art, and screen displays—not ideas, systems, names, titles, or short phrases.
 
 ## Trademark and personal name
 
-- Use Eidovaraâ„¢ consistently while the mark is unregistered. Do not use Â® without a registration covering the relevant goods or services.
+- Use Eidovara™ consistently while the mark is unregistered. Do not use ® without a registration covering the relevant goods or services.
 - Conduct a professional clearance search before investing heavily in the name.
 - Consider a federal trademark application for the product mark and relevant software/services. If an application includes a living person's name or likeness, follow USPTO consent requirements.
 
