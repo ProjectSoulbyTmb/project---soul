@@ -4,25 +4,26 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: eidovara-media:; connect-src 'none'; object-src 'none'; media-src eidovara-media:" />
-  <title>Eidovara chat overlay</title>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; media-src eidovara-media:" />
+  <title>Eidovara overlay</title>
   <link rel="stylesheet" href="tokens.css" />
   <link rel="stylesheet" href="overlay.css" />
 </head>
-<body class="chat-float">
-  <header class="overlay-bar" id="drag">
-    <strong>Soul chat</strong>
-    <span class="overlay-kicker">Local kernel · Assist is not Soul</span>
+<body class="overlay-chrome">
+  <div class="overlay-bar" id="drag">
+    <strong id="overlayTitle">Overlay</strong>
+    <button type="button" id="backBtn" title="Back">←</button>
+    <button type="button" id="forwardBtn" title="Forward">→</button>
+    <button type="button" id="reloadBtn" title="Reload">↻</button>
+    <input id="overlayUrl" type="text" spellcheck="false" maxlength="500" placeholder="https://" aria-label="HTTPS address" />
+    <button type="button" id="goBtn">Go</button>
     <button type="button" id="topBtn" title="Always on top">Top</button>
+    <button type="button" id="browserBtn" title="Open in system browser">Browser</button>
     <button type="button" id="closeBtn" aria-label="Close overlay">×</button>
-  </header>
-  <div id="chatLog" class="chat-float-log" aria-live="polite"></div>
-  <form id="chatForm" class="chat-float-form">
-    <textarea id="chatInput" rows="2" maxlength="4000" placeholder="Ask Soul on this PC…"></textarea>
-    <button type="submit">Send</button>
-  </form>
-  <p class="overlay-note">This is an Eidovara window, not injection into another game. Discord tokens are never sent here.</p>
-  <script src="chat-overlay.js"></script>
+  </div>
+  <p class="overlay-note" id="overlayNote">Eidovara window. Not affiliated. Does not inject into games.</p>
+  <p class="overlay-banner hidden" id="discordBanner">If discord.com refuses this Electron guest, confirm Open in browser. Eidovara is not an official Discord overlay and is not affiliated.</p>
+  <script src="guest-chrome.js"></script>
 </body>
 </html>
 
