@@ -1,168 +1,123 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/**
- * AGE GATE STRUCTURAL GUARD
- * Enforces 18+ age restriction at multiple levels
- * Cannot be removed without owner involvement
- * 
- * @module core/guards/age-gate
- * @version 1.0.0
- */
+import { ambientLevels } from '../core/adult-ambient.js';
 
-export const AGE_GATE = {
-  /**
-   * Storage key for age gate acceptance
-   */
-  STORAGE_KEY: 'eidovara_age_gate_accepted',
+function makeNoiseBuffer(ctx) {
+  const seconds = 2;
+  const buf = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * seconds)), ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i += 1) data[i] = (Math.random() * 2 - 1) * 0.35;
+  return buf;
+}
 
-  /**
-   * Environment variable for CLI age gate acceptance
-   */
-  ENV_VAR: 'EIDOVARA_AGE_GATE_ACCEPTED',
+export function createAdultAmbient(AudioContextCtor) {
+  const Ctor = AudioContextCtor || globalThis.AudioContext || globalThis.webkitAudioContext;
+  let ctx = null;
+  let heartOsc = null;
+  let heartGain = null;
+  let breathSrc = null;
+  let breathFilter = null;
+  let breathGain = null;
+  let droneOsc = null;
+  let droneGain = null;
+  let master = null;
+  let raf = 0;
+  let origin = 0;
+  let sounds = { ambient: { heartbeat: true, breath: true, drone: true }, mix: { ambient: 45 }, mute: false };
+  let feelLevel = 0;
+  let reduced = false;
 
-  /**
-   * CLI flag for age gate acceptance
-   */
-  CLI_FLAG: '--i-am-18-or-older',
+  function connected() {
+    return Boolean(ctx && heartGain && breathGain && droneGain && master);
+  }
 
-  /**
-   * Runtime enforcement at multiple entry points
-   * @param {string} context - Context where enforcement is called
-   * @throws {Error} If age gate not accepted
-   */
-  enforce: (context = 'runtime') => {
-    const accepted = typeof window !== 'undefined' 
-      ? localStorage.getItem('eidovara_age_gate_accepted') === 'true'
-      : process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
-    
-    if (!accepted && globalThis.eidovaraAgeGateAccepted !== true) {
-      const error = new Error('AGE_GATE_REQUIRED: 18+ age gate required for Eidovara access');
-      error.code = 'AGE_GATE_REQUIRED';
-      error.context = context;
-      throw error;
-    }
-  },
+  function build() {
+    if (!Ctor || connected()) return connected();
+    try {
+      ctx = new Ctor();
+      master = ctx.createGain();
+      master.gain.value = 0.0001;
+      master.connect(ctx.destination);
 
-  /**
-   * CLI argument validation
-   * @param {string[]} args - Command line arguments
-   * @throws {Error} If age gate not accepted via CLI
-   */
-  validateCliArgs: (args = process.argv) => {
-    const hasFlag = args.includes('--i-am-18-or-older');
-    const hasEnv = process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
-    
-    if (!hasFlag && !hasEnv) {
-      const error = new Error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
-      error.code = 'AGE_GATE_REQUIRED_CLI';
-      console.error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
-      process.exitCode = 1;
-      throw new Error('AGE_GATE_REQUIRED_CLI');
-    }
-  },
+      heartOsc = ctx.createOscillator();
+      heartOsc.type = 'sine';
+      heartOsc.frequency.value = 58;
+      heartGain = ctx.createGain();
+      heartGain.gain.value = 0;
+      heartOsc.connect(heartGain);
+      heartGain.connect(master);
+      heartOsc.start();
 
-  /**
-   * UI modal enforcement
-   * Shows age gate modal, blocks access until confirmed
-   * @returns {Promise<boolean>} Resolves when age gate accepted
-   */
-  showAgeGateModal: () => {
-    return new Promise((resolve) => {
-      if (typeof window === 'undefined') return resolve(false);
-      
-      const accepted = localStorage.getItem('eidovara_age_gate_accepted') === 'true';
-      if (accepted) return resolve(true);
+      breathSrc = ctx.createBufferSource();
+      breathSrc.buffer = makeNoiseBuffer(ctx);
+      breathSrc.loop = true;
+      breathFilter = ctx.createBiquadFilter();
+      breathFilter.type = 'lowpass';
+      breathFilter.frequency.value = 780;
+      breathGain = ctx.createGain();
+      breathGain.gain.value = 0;
+      breathSrc.connect(breathFilter);
+      breathFilter.connect(breathGain);
+      breathGain.connect(master);
+      breathSrc.start();
 
-      // Create age gate modal
-      const modal = document.createElement('div');
-      modal.id = 'eidovara-age-gate-modal';
-      modal.setAttribute('role', 'dialog');
-      modal.setAttribute('aria-modal', 'true');
-      modal.setAttribute('aria-labelledby', 'age-gate-title');
-      modal.innerHTML = `
-        <div class="age-gate-overlay"></div>
-        <div class="age-gate-modal" role="document">
-          <h2 id="age-gate-title">Age Verification Required</h2>
-          <p>Eidovara is restricted to users 18 years of age or older.</p>
-          <p>By confirming, you acknowledge you are 18 or older and accept the <a href="/terms.html">Terms of Use</a>.</p>
-          <p class="disclaimer">Local confirmation is not independent identity verification.</p>
-          <div class="age-gate-actions">
-            <button id="age-gate-decline" class="btn-secondary">Exit</button>
-            <button id="age-gate-accept" class="btn-primary">I confirm I am 18+ and accept the Terms</button>
-          </div>
-        </div>
-      `;
-
-      document.body.appendChild(modal);
-      document.body.style.overflow = 'hidden';
-
-      const acceptBtn = modal.querySelector('#age-gate-accept');
-      const declineBtn = modal.querySelector('#age-gate-decline');
-
-      const cleanup = () => {
-        document.body.removeChild(modal);
-        document.body.style.overflow = '';
-      };
-
-      acceptBtn.addEventListener('click', () => {
-        localStorage.setItem('eidovara_age_gate_accepted', 'true');
-        cleanup();
-        resolve(true);
-      });
-
-      declineBtn.addEventListener('click', () => {
-        cleanup();
-        window.location.href = 'about:blank';
-        resolve(false);
-      });
-
-      // Prevent closing with Escape
-      modal.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') e.preventDefault();
-      });
-    });
-  },
-
-  /**
-   * Checks if age gate is accepted
-   * @returns {boolean} True if age gate accepted
-   */
-  isAccepted: () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('eidovara_age_gate_accepted') === 'true';
-    }
-    return process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
-  },
-
-  /**
-   * Sets age gate acceptance
-   * @param {boolean} accepted - Whether age gate is accepted
-   */
-  setAccepted: (accepted = true) => {
-    if (typeof window !== 'undefined') {
-      if (accepted) {
-        localStorage.setItem('eidovara_age_gate_accepted', 'true');
-      } else {
-        localStorage.removeItem('eidovara_age_gate_accepted');
-      }
-    }
-  },
-
-  /**
-   * Runs all age gate checks
-   * @throws {Error} If any check fails
-   */
-  runAllChecks: () => {
-    if (typeof window !== 'undefined') {
-      if (localStorage.getItem('eidovara_age_gate_accepted') !== 'true') {
-        throw new Error('AGE_GATE_REQUIRED: 18+ age gate required for Eidovara access');
-      }
-    } else {
-      if (process.env.EIDOVARA_AGE_GATE_ACCEPTED !== 'true') {
-        throw new Error('AGE_GATE_REQUIRED: Set EIDOVARA_AGE_GATE_ACCEPTED=1');
-      }
+      droneOsc = ctx.createOscillator();
+      droneOsc.type = 'triangle';
+      droneOsc.frequency.value = 72;
+      droneGain = ctx.createGain();
+      droneGain.gain.value = 0;
+      droneOsc.connect(droneGain);
+      droneGain.connect(master);
+      droneOsc.start();
+      origin = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      return true;
+    } catch {
+      ctx = null;
+      return false;
     }
   }
-};
 
-export default AGE_GATE;
+  function tick() {
+    if (!connected()) return;
+    const levels = ambientLevels((typeof performance !== 'undefined' ? performance.now() : Date.now()) - origin, sounds, feelLevel);
+    const hush = reduced ? 0.4 : 1;
+    const now = ctx.currentTime;
+    try {
+      heartGain.gain.setTargetAtTime(levels.heartbeat * 0.28 * hush, now, 0.03);
+      breathGain.gain.setTargetAtTime(levels.breath * 0.1 * hush, now, 0.08);
+      droneGain.gain.setTargetAtTime(levels.drone * 0.07 * hush, now, 0.12);
+      master.gain.setTargetAtTime(0.9, now, 0.05);
+    } catch {}
+    raf = (typeof requestAnimationFrame === 'function') ? requestAnimationFrame(tick) : 0;
+  }
+
+  return {
+    start(nextSounds, opts = {}) {
+      sounds = nextSounds && typeof nextSounds === 'object' ? nextSounds : sounds;
+      reduced = opts.reducedMotion === true;
+      if (!build()) return false;
+      try { if (ctx.state === 'suspended') ctx.resume(); } catch {}
+      if (!raf) tick();
+      return true;
+    },
+    setSounds(nextSounds) {
+      if (nextSounds && typeof nextSounds === 'object') sounds = nextSounds;
+    },
+    setFeelLevel(level) {
+      feelLevel = Math.max(0, Math.min(1, Number(level) || 0));
+    },
+    stop() {
+      if (raf && typeof cancelAnimationFrame === 'function') cancelAnimationFrame(raf);
+      raf = 0;
+      if (!connected()) return;
+      const now = ctx.currentTime;
+      try {
+        heartGain.gain.setTargetAtTime(0, now, 0.05);
+        breathGain.gain.setTargetAtTime(0, now, 0.05);
+        droneGain.gain.setTargetAtTime(0, now, 0.05);
+        master.gain.setTargetAtTime(0, now, 0.08);
+      } catch {}
+    }
+  };
+}
+
