@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -192,7 +192,7 @@ test('desktop age gate requires terms checkbox and main-process enforcement', ()
   const renderer = read('src/renderer/renderer.js');
   const preload = read('src/electron/preload.cjs');
   assert.match(main, /function requireAgeGate/);
-  assert.match(main, /requireAgeGate\(\\)/);
+  assert.match(main, /requireAgeGate\(\)/);
   assert.match(main, /confirmed !== true/);
   assert.match(preload, /acceptAgeGate: confirmed/);
   assert.match(html, /ageGateTermsCheck/);
