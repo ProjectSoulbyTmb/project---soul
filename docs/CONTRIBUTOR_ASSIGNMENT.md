@@ -1,4 +1,4 @@
-﻿# Unsigned contributor assignment template
+# Unsigned contributor assignment template
 
 **Status: template only â€” not executed.**
 
