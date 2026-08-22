@@ -1,46 +1,108 @@
-# Eidovara HTTPS service
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+import { answerAssist, assistMeta, MAX_ASSIST_BODY, ASSIST_VERSION } from './knowledge.js';
 
-This dependency-free Cloudflare Worker supplies public health, status, store configuration, and website-helper endpoints. It never receives card data, passwords, model credentials, conversations, or local memories. The Electron desktop app defaults to `https://api.eidovara.org` and does not hard-code a `workers.dev` URL. Paste another HTTPS base into **Settings → Eidovara service** (or Ctrl+A **Soul HTTPS service**) to override. Ask Eidovara `/v1/assist` still needs a saved HTTPS base (localStorage).
+const LIVE_INSTALLER_VERSION = '1.0.0';
+const LIVE_INSTALLER = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
+// No tagged v1.0.0 build exists yet: measured facts stay null until the
+// Release Windows workflow publishes the artifact with SHA256SUMS.txt.
+// The deploy may override both via wrangler vars LIVE_INSTALLER_SHA256 / LIVE_INSTALLER_SIZE.
+const FALLBACK_INSTALLER_SHA256 = null;
+const FALLBACK_INSTALLER_SIZE = null;
+const LIVE_INSTALLER_URL = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe';
 
-<!-- Compatibility matrix: desktop uses GET /health /v1/config /v1/status (Connect after 18+, launch retry, Ctrl+A Test service) against https://api.eidovara.org by default, then a main-process liveness loop of GET /health and GET /v1/status with jitter and backoff; site Ask Eidovara is offline knowledge.js plus optional pasted POST /v1/assist; Status prefills the official host and polls only after Check; Fail-closed with no URL for assist; neither client sends conversations; HTTPS except loopback (desktop only). -->
+const ASSIST_RATE_WINDOW_MS = 60_000;
+const ASSIST_RATE_MAX_REQUESTS = 30;
+const ASSIST_RATE_MAX_TRACKED_IPS = 10_000;
+const assistHits = new Map();
 
-## Compatibility matrix
+function assistRateLimited(request) {
+  const ip = String(request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || '').split(',')[0].trim().slice(0, 64) || 'unknown';
+  const now = Date.now();
+  const windowStart = now - ASSIST_RATE_WINDOW_MS;
+  let stamps = assistHits.get(ip);
+  if (!stamps) {
+    stamps = [];
+    assistHits.set(ip, stamps);
+  }
+  while (stamps.length && stamps[0] <= windowStart) stamps.shift();
+  if (stamps.length >= ASSIST_RATE_MAX_REQUESTS) return true;
+  stamps.push(now);
+  if (assistHits.size > ASSIST_RATE_MAX_TRACKED_IPS) {
+    for (const [key, value] of assistHits) {
+      if (!value.length || value[value.length - 1] <= windowStart) assistHits.delete(key);
+      if (assistHits.size <= ASSIST_RATE_MAX_TRACKED_IPS / 2) break;
+    }
+  }
+  return false;
+}
 
-| Client | Endpoints | Rules |
-| --- | --- | --- |
-| Desktop Settings **Connect**, launch after 18+, Ctrl+A **Test service** | GET `/health`, GET `/v1/config`, GET `/v1/status` (also GET `/v1/health`) | HTTPS except loopback. Default base `https://api.eidovara.org`. Pasted bases strip `/health` `/v1/config` `/v1/status` `/v1/assist` `/v1/health`. Conversations are not sent on Connect. Fetch failure stays Offline Soul. `paymentsEnabled` is always false. |
-| Desktop live status (after 18+ with a service base) | GET `/health` and GET `/v1/status` on an interval with jitter; exponential backoff while Reconnecting | Main process only (workspace renderer `connect-src 'none'`). Status is **Online**, **Reconnecting**, or **Offline** — never faked. Stops when the window quits or there is no valid URL. Does not send conversations, memories, or Adult Mode payloads. Does not require `/v1/assist` or a new `/v1/heartbeat` route. Free / Offline Soul still works if the host is down. |
-| Desktop composer **Ask the Worker helper** | Optional POST `/v1/assist` after a pasted HTTPS base **and** Settings **Allow one-shot Worker helper** (default off) | Typed query only (~32 KiB). Chat history, memories, and conversations stay local. Assist is not Soul. |
-| GitHub Pages Ask Eidovara | Optional POST `/v1/assist` after a pasted HTTPS base | Works offline from `docs/knowledge.js` with no URL. Same allowlisted pack as this Worker. GET `/v1/assist` is metadata or `?q=`. |
-| GitHub Pages Status | GET `/health` and GET `/v1/status` against the official default or a pasted override | Prefills `https://api.eidovara.org`. Invalid URLs fail closed. Check starts an honest poll; Clear stops it. No fetch until Check. |
+function liveInstallerFacts(env = {}) {
+  const sha = typeof env.LIVE_INSTALLER_SHA256 === 'string' && /^[0-9a-fA-F]{64}$/.test(env.LIVE_INSTALLER_SHA256.trim())
+    ? env.LIVE_INSTALLER_SHA256.trim().toLowerCase()
+    : FALLBACK_INSTALLER_SHA256;
+  const sizeRaw = Number(env.LIVE_INSTALLER_SIZE);
+  const size = Number.isFinite(sizeRaw) && sizeRaw > 0 ? Math.round(sizeRaw) : FALLBACK_INSTALLER_SIZE;
+  return { sha256: sha, size };
+}
 
-Neither client compiles a `workers.dev` host. Desktop calls `/v1/assist` only after explicit helper opt-in (default off).
+const CORS_METHODS = 'GET, HEAD, POST, OPTIONS';
+const CORS_GET_METHODS = 'GET, HEAD, OPTIONS';
+const CORS = { 'access-control-allow-origin': '*', 'access-control-allow-methods': CORS_METHODS, 'access-control-allow-headers': 'content-type, accept', 'access-control-max-age': '600' };
+const JSON_HEADERS = { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'content-security-policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'", 'strict-transport-security': 'max-age=63072000; includeSubDomains; preload', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'referrer-policy': 'no-referrer', 'permissions-policy': 'camera=(), microphone=(), geolocation=(), payment=()', 'cross-origin-resource-policy': 'cross-origin', 'cross-origin-opener-policy': 'same-origin', ...CORS };
+const ENDPOINTS = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
+const response = (body, status = 200, extra = {}) => new Response(JSON.stringify(body), { status, headers: { ...JSON_HEADERS, ...extra } });
+const httpsUrl = value => { try { const url = new URL(String(value || '')); return url.protocol === 'https:' && !url.username && !url.password ? url.toString() : ''; } catch { return ''; } };
 
-## Free deployment
+function publicPayload(env = {}, extra = {}) {
+  const { sha256, size } = liveInstallerFacts(env);
+  return { service: 'Eidovara', status: 'ok', online: true, version: ASSIST_VERSION, liveInstallerVersion: LIVE_INSTALLER_VERSION, liveInstaller: LIVE_INSTALLER, liveInstallerSha256: sha256, liveInstallerSize: size, liveInstallerUrl: LIVE_INSTALLER_URL, edition: 'free', fullFreeAlpha: true, time: new Date().toISOString(), localFirst: true, conversations: false, conversationsStored: false, paymentsEnabled: false, checkoutEnabled: false, ageRestricted: true, minimumAge: 18, authenticodeSigned: false, unsignedWindows: true, endpoints: ENDPOINTS.slice(), ...extra };
+}
 
-1. Create a Cloudflare account and enable Workers Free.
-2. Install Wrangler locally with `npm install --save-dev wrangler` or use Cloudflare's dashboard editor. Do not add Wrangler to Eidovara's committed `package.json` unless you intend it as a product dependency.
-3. Authenticate with `npx wrangler login` or export `CLOUDFLARE_API_TOKEN` in your own shell — never commit it — then `npx wrangler deploy`. Redeploy after merging Worker changes so the live Worker does not drift behind `server/worker.js`. Skip deploy if you have no token; the Pages helper still works.
-4. Create hosted checkout links in Stripe Payment Links, PayPal Payment Links, or Gumroad only when selling. Keep those URLs empty to leave payments off.
-5. Put only the public HTTPS checkout URLs in `wrangler.toml` variables or the Cloudflare dashboard. Never add API secrets to this repository.
-6. The desktop already defaults to `https://api.eidovara.org`. After the 18+ gate, the app calls `GET /health`, `GET /v1/config`, and `GET /v1/status` on Connect, then keeps liveness current with `GET /health` and `GET /v1/status`. Paste another HTTPS **base** into Settings → **Eidovara service** only to override. If those requests fail, Offline Soul continues locally.
+async function handleAssist(request, url) {
+  if (request.method === 'GET' && !url.searchParams.has('q') && !url.searchParams.has('query')) return response(assistMeta(), 200, { 'cache-control': 'public, max-age=60' });
+  let query = url.searchParams.get('q') || url.searchParams.get('query') || '';
+  let mode = url.searchParams.get('mode') || 'help';
+  let bodyBytes = 0;
+  if (request.method === 'POST') {
+    const declared = Number(request.headers.get('content-length') || 0);
+    if (declared > MAX_ASSIST_BODY) return response({ error: 'too_large', ...answerAssist('', { bodyBytes: declared }) }, 413);
+    let raw = '';
+    try { raw = await request.text(); } catch { return response({ error: 'invalid', ...answerAssist('') }, 400); }
+    bodyBytes = raw.length;
+    if (bodyBytes > MAX_ASSIST_BODY) return response({ error: 'too_large', ...answerAssist('', { bodyBytes }) }, 413);
+    if (raw.trim()) {
+      let payload;
+      try { payload = JSON.parse(raw); } catch { return response({ error: 'invalid', reply: 'Send JSON { "query": "...", "mode": "help" }.' }, 400); }
+      if (payload && typeof payload === 'object') {
+        if ('history' in payload || 'messages' in payload || 'conversations' in payload) return response({ error: 'refused', reply: 'Desktop conversation history is not accepted. Ask a single product question.' }, 400);
+        query = payload.query ?? payload.q ?? query;
+        mode = payload.mode || mode;
+      }
+    }
+  }
+  const result = answerAssist(query, { mode, bodyBytes });
+  const error = result.ok ? undefined : result.code;
+  return response({ ...result, error }, result.status);
+}
 
-Official baked default: `https://api.eidovara.org`. Operator `workers.dev` example (not baked into the app or public site): see [docs/PAYMENTS_AND_SITE.md](docs/PAYMENTS_AND_SITE.md). The public website custom domain is `https://eidovara.org/` (Cloudflare Pages project `eidovara`, same `docs/` as GitHub Pages `https://projectsoulbytmb.github.io/project---soul/`). `server/wrangler.toml` binds the Worker to custom hostname `api.eidovara.org`.
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    env ||= {};
+    if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: { ...JSON_HEADERS, allow: CORS_METHODS } });
+    if (url.pathname === '/v1/assist') {
+      if (request.method !== 'GET' && request.method !== 'POST') return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, POST, OPTIONS' });
+      if (assistRateLimited(request)) return response({ error: 'rate_limited', reply: 'Too many requests from this address. Try again in a minute.' }, 429, { 'retry-after': '60' });
+      return handleAssist(request, url);
+    }
+    if (request.method !== 'GET' && request.method !== 'HEAD') return response({ error: 'method_not_allowed' }, 405, { allow: CORS_GET_METHODS });
+    const send = (body, extra = {}) => { const res = response(body, 200, extra); return request.method === 'HEAD' ? new Response(null, { status: res.status, headers: res.headers }) : res; };
+    if (url.pathname === '/health' || url.pathname === '/v1/health') return send(publicPayload(env), { 'cache-control': 'public, max-age=30' });
+    if (url.pathname === '/v1/status') return send(publicPayload(env, { pages: 'Official site is https://eidovara.org (Cloudflare Pages from docs/). GitHub Pages publishes the same docs/ from main.', releases: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest', installer: LIVE_INSTALLER_URL, assist: '/v1/assist knowledge-only, no transcripts', heartbeat: 'Desktop Connect uses GET /health, /v1/config, and /v1/status. Conversations are not sent by the heartbeat.' }), { 'cache-control': 'private, no-store' });
+    if (url.pathname === '/v1/config') { const { sha256, size } = liveInstallerFacts(env); return send({ version: ASSIST_VERSION, liveInstallerVersion: LIVE_INSTALLER_VERSION, liveInstaller: LIVE_INSTALLER, liveInstallerSha256: sha256, liveInstallerSize: size, liveInstallerUrl: LIVE_INSTALLER_URL, edition: 'free', fullFreeAlpha: true, premium: 'local-admin-testing-only', website: httpsUrl(env.WEBSITE_URL), store: { stripe: httpsUrl(env.STRIPE_PAYMENT_URL), paypal: httpsUrl(env.PAYPAL_PAYMENT_URL), gumroad: httpsUrl(env.GUMROAD_PRODUCT_URL) }, paymentsEnabled: false, checkoutEnabled: false, localFirst: true, conversations: false, conversationsStored: false, ageRestricted: true, minimumAge: 18, authenticodeSigned: false, officialPlatforms: ['windows-10-11-x64'], license: 'source-available-evaluation', openSource: false, entitlement: 'none-required-for-current-features', privacy: 'No payment-card data is accepted by this service. Conversations are not stored here. Network use is user-directed except official update/status checks. Website assist answers from an allowlisted knowledge pack and does not store transcripts.', terms: 'Use is limited to users 18 or older under the Eidovara Source-Available Evaluation License. Application launching is user-confirmed local Windows apps; internet research and media/provider features are user-directed.' }, { 'cache-control': 'public, max-age=300' }); }
+    return response({ error: 'not_found' }, 404);
+  }
+};
 
-For production, enable Cloudflare account two-factor authentication, keep Wrangler tokens out of source control, deploy from a protected GitHub environment, monitor `/health`, and configure more than one owner-controlled recovery method. The public service is deliberately stateless, so an outage cannot corrupt user conversations or payment records.
-
-Endpoints: `GET`/`HEAD /health`, `GET`/`HEAD /v1/health`, `GET`/`HEAD /v1/config`, `GET`/`HEAD /v1/status`, and `GET`/`POST /v1/assist`. OPTIONS is CORS-preflight (`GET, HEAD, POST`). `/health`, `/v1/config`, and `/v1/status` report `paymentsEnabled: false`, `checkoutEnabled: false`, `localFirst: true`, `conversationsStored: false`, 18+, and unsigned Windows. `/v1/status` uses `Cache-Control: private, no-store`. There is no `/v1/heartbeat` route; desktop liveness reuses `/health` and `/v1/status`. `/v1/assist` answers from the same allowlisted knowledge pack as `docs/knowledge.js`, refuses empty/oversized/abuse-shaped input, does not store transcripts, and does not accept desktop conversation history. Store URLs stay empty unless you later add provider-hosted checkout links. Live payments stay off in v1.0.0. The live launcher and desktop installer are `Eidovara-v1.0.0-Windows-x64-Setup.exe`. The desktop app ignores checkout even if a future config lied. All other methods and paths fail closed.
-
-## Publishing measured installer facts
-
-The Release Windows workflow measures the built Setup.exe and writes `dist/LIVE-INSTALLER-FACTS.json` (also attached to the GitHub Release and covered by build-provenance attestation). To make `api.eidovara.org` serve those measured values, deploy the Worker with the two supported vars — no code edit required:
-
-```
-npx wrangler deploy --var LIVE_INSTALLER_SHA256:<64-hex-from-facts-file> --var LIVE_INSTALLER_SIZE:<bytes>
-```
-
-Both values are validated by the Worker: the SHA must be exactly 64 hex characters and the size must be a positive integer; anything else falls back to `null` (honest "unmeasured" state). Until you publish them, `/health`, `/v1/config`, and `/v1/status` correctly report `liveInstallerSha256: null` / `liveInstallerSize: null`.
-
-## Abuse controls on /v1/assist
-
-The Worker keeps a best-effort per-client sliding window (30 requests per minute keyed by `cf-connecting-ip`, returning `429` with `Retry-After: 60`). This limiter lives inside a single Worker isolate, so it is not a global cap; pair it with a Cloudflare WAF rate-limiting rule for guaranteed protection at scale.
+export { httpsUrl, ENDPOINTS, LIVE_INSTALLER_VERSION, LIVE_INSTALLER, FALLBACK_INSTALLER_SHA256 as LIVE_INSTALLER_SHA256, FALLBACK_INSTALLER_SIZE as LIVE_INSTALLER_SIZE, LIVE_INSTALLER_URL, assistRateLimited, liveInstallerFacts };
