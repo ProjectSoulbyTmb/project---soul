@@ -157,7 +157,7 @@ function mount() {
     rows: '2',
     maxlength: '800',
     required: true,
-    placeholder: 'Ask about download, 18+, or what Eidovara is???????',
+    placeholder: 'Ask about download, 18+, or what Eidovara is…'',
   });
   const send = el('button', { className: 'assist-send', type: 'submit', text: 'Send' });
   const tools = el('details', { className: 'assist-service' });
@@ -249,7 +249,7 @@ function mount() {
       base = '';
     }
     if (base) {
-      sourceNote.textContent = 'Trying optional online assist???????';
+      sourceNote.textContent = 'Trying optional online assist…';
       const remote = await onlineAnswer(base, query, mode);
       if (remote && remote.reply) {
         result = remote;
