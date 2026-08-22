@@ -49,7 +49,7 @@ test('Worker health/status support HEAD, CORS, honesty flags, and private status
   assert.equal(status.version, ASSIST_VERSION);
   assert.equal(status.liveInstallerVersion, LIVE_INSTALLER_VERSION);
   assert.ok(!status.endpoints.includes('/v1/heartbeat'));
-  assert.match(status.heartbeat, /No dedicated \/v1\/heartbeat/);
+  assert.match(status.heartbeat, /Desktop Connect uses GET \/health/);
   // The live installer must be advertised with its exact filename and checksum.
   assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER.replaceAll('.', '\\.')));
   assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER_SHA256));
