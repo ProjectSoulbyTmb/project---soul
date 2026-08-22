@@ -1,40 +1,11 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/**
- * EIDOVARA RENDERER ENTRY POINT
- * Structural legal guards initialized at renderer startup
- */
-import { AGE_GATE } from '../core/guards/age-gate.js';
-import { CONSCIOUSNESS_GUARD } from '../core/guards/consciousness-guard.js';
-import { LICENSE_GUARDS } from '../core/guards/license-guard.js';
-import { RELICENSE_GUARD } from '../core/guards/relicense-guard.js';
-
-// Run all structural legal guards at renderer startup
-try {
-  console.log('[STRUCTURAL GUARDS] Initializing renderer legal guards...');
-  
-  // Enforce age gate at renderer level
-  AGE_GATE.runAllChecks();
-  
-  // Enforce license compliance
-  console.log('[LICENSE GUARD] Source-available license enforcement active');
-  
-  // Consciousness claim prevention
-  console.log('[CONSCIOUSNESS GUARD] Consciousness claim prevention active');
-  
-  // Open source relicensing prevention
-  console.log('[RELICENSE GUARD] Open source relicensing prevention active');
-
-  console.log('[STRUCTURAL GUARDS] All renderer legal guards initialized and active');
-} catch (error) {
-  console.error('[STRUCTURAL GUARDS] Renderer guard initialization failed:', error);
-  // Don't throw in renderer - log and continue with degraded functionality
-  console.error('[STRUCTURAL GUARDS] Renderer guard initialization failed:', error);
-}
+// Age gating is enforced per-feature via IPC requireAgeGate() and the UI modal;
+// this file stays a classic script so it can load before dependent UI scripts.
 
 const $ = s => document.querySelector(s);
-const START_PATH_KEY = 'eidovara.startPathDismissed';
 const $$ = s => [...document.querySelectorAll(s)];
+const START_PATH_KEY = 'eidovara.startPathDismissed';
 let state = null, settings = null, sending = false, backupCount = 0;
 let mediaQueue = [], mediaIndex = -1, sessionLibrary = [];
 const views = { chat: $('#chatView'), dashboard: $('#dashboardView'), research: $('#researchView'), apps: $('#appsView'), entertainment: $('#entertainmentView'), memory: $('#memoryView'), identity: $('#identityView'), adultSoul: $('#adultSoulView'), settings: $('#settingsView') };
@@ -190,8 +161,8 @@ async function openAdmin(){const status=await window.soul.adminStatus();applyAdm
 
 function renderConversations(){ const list=$('#conversationList'); list.textContent=''; const onlyOne=(state.conversations||[]).length<=1; for(const c of state.conversations){ const row=el('button','conversation'+(c.id===state.activeConversationId?' active':'')); row.type='button'; const label=el('span','label',c.title||'Conversation'); const del=el('button','delete','×'); del.type='button'; del.title='Delete conversation'; del.hidden=onlyOne; del.disabled=onlyOne; del.addEventListener('click',async e=>{e.stopPropagation(); if(state.conversations.length<=1)return; state=await window.soul.deleteConversation(c.id); renderAll();}); row.append(label,del); row.addEventListener('click',async()=>{state=await window.soul.selectConversation(c.id); renderAll();setView('chat');}); list.append(row); } }
 function externalLink(url,label){const a=el('button','web-link',label);a.type='button';a.addEventListener('click',()=>openResearchLink(url));return a;}
-function currentPlayer(){return window.eidovaraPlayer?.currentPlayer?.() || (mediaQueue[mediaIndex]?.type==='video'?$('#videoPlayer'):$('#audioPlayer'));}
-function loadMedia(index,autoplay=true){if(window.eidovaraPlayer?.loadMedia) return window.eidovaraPlayer.loadMedia(index,autoplay);}
+function currentPlayer() // eslint-disable-line no-unused-vars -- reserved player accessor{return window.eidovaraPlayer?.currentPlayer?.() || (mediaQueue[mediaIndex]?.type==='video'?$('#videoPlayer'):$('#audioPlayer'));}
+function loadMedia(index,autoplay=true) // eslint-disable-line no-unused-vars -- reserved media loader{if(window.eidovaraPlayer?.loadMedia) return window.eidovaraPlayer.loadMedia(index,autoplay);}
 function playMedia(items,index,opts={}){if(window.eidovaraPlayer?.playMedia) return window.eidovaraPlayer.playMedia(items,index,opts);}
 function renderResearch(target,research){
   if(!research)return;
