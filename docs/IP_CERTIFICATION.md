@@ -4,6 +4,8 @@ Record date: 21 August 2026
 Claimant: Soul Consciousness Studios  
 Intended publisher name: Soul Consciousness Studios (does not own this IP unless a formed entity receives a signed assignment)
 
+**Tyler M. Bosworth is the sole creator and owner of Soul Consciousness Studios and all associated products.** Soul Consciousness Studios is the business name under which Tyler M. Bosworth publishes and commercializes his work.
+
 This file **certifies the contents of this public repository** as of the record date: which legal instruments exist, what they do, and what they do not do. It is a dated project record and automated-test target.
 
 **It is not legal advice.** It is not a U.S. Copyright Office registration, USPTO filing, patent, Authenticode publisher certificate, PCI-DSS audit, court judgment, executed assignment, or counsel opinion. Publishing this file does not file anything with any government office.

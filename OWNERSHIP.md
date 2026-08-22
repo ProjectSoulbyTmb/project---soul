@@ -6,9 +6,13 @@ This file is a **project record**, not a court judgment, signed assignment, gove
 
 See [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) for the dated repository self-attestation (instrument inventory, v1.0.0 installer SHA, owner-only leftovers). That file is not a Copyright Office or USPTO registration.
 
+## Sole Creator and Owner
+
+**Tyler M. Bosworth** is the **sole creator and owner** of Soul Consciousness Studios and all associated products, including Eidovara. Soul Consciousness Studios is the business name under which Tyler M. Bosworth publishes and commercializes his work.
+
 ## What is claimed
 
-Soul Consciousness Studios claims copyright in **qualifying original first-party expression** in Eidovara (source, documentation, first-party UI assets, and release materials he authored). Soul Consciousness Studiosâ„¢ is his **intended publisher name**. Until a formed legal entity exists **and** he executes a written assignment to it, that name does not own this IP. See [docs/COMPANY_FORMATION.md](docs/COMPANY_FORMATION.md) and the unsigned [docs/ENTITY_IP_ASSIGNMENT.md](docs/ENTITY_IP_ASSIGNMENT.md) template.
+Soul Consciousness Studios claims copyright in **qualifying original first-party expression** in Eidovara (source, documentation, first-party UI assets, and release materials authored by Tyler M. Bosworth). Soul Consciousness Studiosâ„¢ is the **intended publisher name**. Until a formed legal entity exists **and** Tyler M. Bosworth executes a written assignment to it, that name does not own this IP. See [docs/COMPANY_FORMATION.md](docs/COMPANY_FORMATION.md) and the unsigned [docs/ENTITY_IP_ASSIGNMENT.md](docs/ENTITY_IP_ASSIGNMENT.md) template.
 
 Eidovara is **source-available, not OSI open source**, and restricted to users **18 or older**. The Eidovara Source-Available Evaluation License (`LicenseRef-Eidovara-Source-Available-1.0`) is not MIT, Apache, or GPL. No copyleft license is applied to first-party code. Viewing or forking the repository does not permit relicensing first-party material as open source.
 

@@ -1,6 +1,6 @@
 ﻿# First-party ownership and chain-of-title controls
 
-Soul Consciousness Studios claims ownership of qualifying original first-party contributions to Eidovara, including project direction, selection, coordination, arrangement, revisions, documentation, interface expression, and release materials. Soul Consciousness Studios is currently described as his intended publishing business name; it does not own intellectual property unless and until a formed entity receives it through a signed assignment. See [IP_CERTIFICATION.md](IP_CERTIFICATION.md) for the dated instrument inventory (not a government registration).
+Soul Consciousness Studios claims ownership of qualifying original first-party contributions to Eidovara, including project direction, selection, coordination, arrangement, revisions, documentation, interface expression, and release materials. **Tyler M. Bosworth is the sole creator and owner of Soul Consciousness Studios and all associated products.** Soul Consciousness Studios is currently described as his intended publishing business name; it does not own intellectual property unless and until a formed entity receives it through a signed assignment by Tyler M. Bosworth. See [IP_CERTIFICATION.md](IP_CERTIFICATION.md) for the dated instrument inventory (not a government registration).
 
 ## Repository controls
 

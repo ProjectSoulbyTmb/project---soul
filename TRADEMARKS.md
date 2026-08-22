@@ -10,6 +10,8 @@ Soul, used as the name of Eidovara's software self-model feature, is a trademark
 
 Soul Consciousness Studios is a trademark of Soul Consciousness Studios (unregistered). It is an **intended publisher / brand-house name**, not a formed company that owns these marks unless a signed assignment to a formed entity exists.
 
+**All trademarks are owned by Tyler M. Bosworth, the sole creator and owner of Soul Consciousness Studios and all associated products.**
+
 The associated approved black, white, and red emblems and distinctive branding listed in [docs/COPYRIGHT_ASSET_REGISTER.md](docs/COPYRIGHT_ASSET_REGISTER.md) are claimed as first-party brand assets of Soul Consciousness Studios. Publication of source code does not grant permission to use these marks.
 
 The â„¢ symbol used with these names in this repository means an **unregistered** common-law claim of use. It is not a claim of federal registration. **Do not use the Â® symbol** unless and until a registration actually issues for the listed goods or services. This repository does not contain a USPTO serial number, registration number, or Â® claim. The Â® symbol must not be used unless a registration actually issues.

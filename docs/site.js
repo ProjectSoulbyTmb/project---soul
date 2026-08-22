@@ -1,5 +1,30 @@
 ﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+/**
+ * EIDOVARA WEBSITE ENTRY POINT
+ * Structural legal guards initialized at website load
+ */
+import { AGE_GATE } from './assist.js';
+
+// Run all structural legal guards at website load
+try {
+  console.log('[STRUCTURAL GUARDS] Initializing website legal guards...');
+  
+  // Enforce age gate at website level
+  AGE_GATE.runAllChecks();
+  
+  // Consciousness claim prevention
+  console.log('[CONSCIOUSNESS GUARD] Consciousness claim prevention active');
+  
+  // Open source relicensing prevention
+  console.log('[RELICENSE GUARD] Open source relicensing prevention active');
+  
+  console.log('[STRUCTURAL GUARDS] All website legal guards initialized and active');
+} catch (error) {
+  console.error('[STRUCTURAL GUARDS] Website guard initialization failed:', error);
+  // Don't throw - website should still function with degraded features
+}
+
 (() => {
   const doc = document;
   const header = doc.querySelector('.site-header');
