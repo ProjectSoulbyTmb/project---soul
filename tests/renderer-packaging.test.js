@@ -7,8 +7,8 @@ import fs from 'node:fs';
 const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const main = fs.readFileSync(new URL('../src/electron/main.js', import.meta.url), 'utf8');
 
-test('v0.22.3 packages the complete renderer as an explicit runtime resource', () => {
-  assert.equal(pkg.version, '0.22.3');
+test('packages the complete renderer as an explicit runtime resource for the current version', () => {
+  assert.equal(pkg.version, '1.0.0');
   assert.ok(pkg.build.extraResources.some(entry =>
     entry.from === 'src/renderer' &&
     entry.to === 'renderer' &&
