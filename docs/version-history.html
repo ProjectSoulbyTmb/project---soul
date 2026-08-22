@@ -1,0 +1,220 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth -->
+<!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Eidovara version history — complete changelog from v1.0.0 back to initial release.">
+  <meta property="og:title" content="Version History · Eidovara">
+  <meta property="og:description" content="Complete changelog for Eidovara v1.0.0 and all previous versions.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eidovara.org/version-history.html">
+  <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
+  <link rel="canonical" href="https://eidovara.org/version-history.html">
+  <title>Version History · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body class="site" data-page="version-history">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header site-chrome">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav" aria-label="Primary">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="download.html" data-nav="download">Download</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <a href="help.html" data-nav="help">Help</a>
+        <a href="faq.html" data-nav="faq">FAQ</a>
+        <a href="version-history.html" data-nav="version-history" aria-current="page">Version History</a>
+        <a href="roadmap.html" data-nav="roadmap">Roadmap</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+        <a class="nav-cta" href="download.html" data-nav="download">Download</a>
+      </nav>
+      <div class="header-controls"></div>
+    </div>
+  </header>
+  <main id="main" class="site-main">
+    <p class="eyebrow">Version History</p>
+    <h1 class="section-title">Eidovara Changelog</h1>
+    <p class="lead">Complete version history from current release back to initial development.</p>
+
+    <section class="version-timeline">
+      <article class="version-entry animate-on-scroll">
+        <header class="version-header">
+          <span class="version-badge current">v1.0.0</span>
+          <time datetime="2026-08-21">August 21, 2026</time>
+          <span class="version-status current">Current Stable Alpha</span>
+        </header>
+        <div class="version-content">
+          <h3>Modern Website Overhaul & v1.0.0 Release</h3>
+          <ul>
+            <li><strong>Complete website overhaul:</glass morphism UI, fluid animations, scroll-triggered animations, staggered reveals</li>
+            <li><strong>Dark/light mode toggle</strong> with system preference detection and localStorage persistence</li>
+            <li><strong>Font size adjuster</strong> (A-, A, A+) with localStorage persistence</li>
+            <li><strong>High contrast toggle</strong> for accessibility</li>
+            <li><strong>Language selector</strong> (EN/ES/FR/DE) with localStorage persistence</li>
+            <li><strong>Copy-to-clipboard</strong> for SHA-256 checksums and code blocks</li>
+            <li><strong>SHA-256 verification UI</strong> on download page for installer verification</li>
+            <li><strong>Scroll animations</strong> with IntersectionObserver and staggered reveals</li>
+            <li><strong>FAQ search</strong> with real-time filtering</li>
+            <li><strong>Custom scrollbars</strong> styled for light/dark modes</li>
+            <li><strong>Reduced motion support</strong> respecting prefers-reduced-motion</li>
+            <li><strong>High contrast mode</strong> respecting prefers-contrast</li>
+            <li><strong>Print styles</strong> optimized for printing</li>
+            <li><strong>PWA-ready</strong> with manifest and service worker registration</li>
+            <li><strong>Privacy-respecting analytics</strong> integration ready (no cookies, GDPR compliant)</li>
+            <li><strong>Version history</strong> and <strong>Roadmap</strong> pages added</li>
+            <li><strong>SHA-256 verification UI</strong> on download page for installer verification</li>
+            <li><strong>Copy-to-clipboard</strong> for SHA-256 checksums and code snippets</li>
+            <li><strong>v1.0.0 version bump</strong> from v0.22.2 with all modern features</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="version-entry animate-on-scroll stagger-1">
+        <header class="version-header">
+          <span class="version-badge">v0.22.2</span>
+          <time datetime="2026-08-20">August 20, 2026</time>
+          <span class="version-status">Stable Alpha</span>
+        </header>
+        <div class="version-content">
+          <h3>Final Published Windows Release</h3>
+          <ul>
+            <li>Final published Windows release: <code>Eidovara-0.22.2-Windows-x64-Setup.exe</code>, 106,691,524 bytes (about 101.75 MiB), SHA-256 <code>F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675</code></li>
+            <li>Public site restyle plus version-honest pages: larger hero, three benefits, quieter plans, nav-cta Download control</li>
+            <li>Every public <code>docs/*.html</code> page and the live advertised installer identify <strong>v0.22.2</code></li>
+            <li>Security and licensing completeness pass: Dependabot, CodeQL, OpenSSF Scorecards, dependency-review, prohibited-secret scan</li>
+            <li>Desktop online status with honest Online/Reconnecting/Offline states</li>
+            <li>Local log redaction, single-instance lock</li>
+            <li>Website marks/wallpapers, security/licensing completeness</li>
+            <li>Adult Soul studio plus Adult Media desk after 18+ app gate and Adult Mode triple gate</li>
+            <li>Repository IP self-attestation with automated tests</li>
+            <li>Gaming/productivity workspace overlays (Soul chat, HTTPS browsing, Discord site)</li>
+            <li>Fluid now-playing bar with expand stage, frameless glass Pop out/Dock</li>
+            <li>Desktop automatic updater with SHA-256 verification</li>
+            <li>Music, watch, and mood requests with official HTTPS search chips</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="version-entry animate-on-scroll stagger-2">
+        <header class="version-header">
+          <span class="version-badge">v0.19.1</span>
+          <time datetime="2026-08-15">August 15, 2026</time>
+          <span class="version-status">Stable Alpha</span>
+        </header>
+        <div class="version-content">
+          <h3>Next-Layer Desktop Chrome</h3>
+          <ul>
+            <li>Windows tray stay-running, always-on-top, pin companion dock</li>
+            <li>Recents (confirm-launched apps, local media titles, opened memories)</li>
+            <li>In-app notice drawer (focus/sleep/backup)</li>
+            <li>Local-media sleep timer for <code>eidovara-media</code></li>
+            <li>Palette calculator and length/mass/temperature conversions</li>
+            <li>Windows-only open-at-login via Electron <code>setLoginItemSettings</code></li>
+            <li>Companion coverage: dock, conversation, apps, entertainment, memory, identity/Adult Mode, settings, help/legal, diagnostics, research, focus/study/create/gaming checklists</li>
+            <li>Research snippet filters with markup scanner</li>
+            <li>New unsigned Windows installer: <code>Eidovara-0.19.1-Windows-x64-Setup.exe</code></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="version-entry animate-on-scroll stagger-3">
+        <header class="version-header">
+          <span class="version-badge">v0.19.0</span>
+          <time datetime="2026-08-10">August 10, 2026</time>
+          <span class="version-status">Stable Alpha</span>
+        </header>
+        <div class="version-content">
+          <h3>Internet Research & Beautiful Consumer Release</h3>
+          <ul>
+            <li>Explicit internet/web/online requests for Wikipedia/Wikimedia research</li>
+            <li>Optional Internet Archive catalog search, optional Premium Brave key</li>
+            <li>Bounded HTTPS fetch of user-provided or result URLs</li>
+            <li>Assistant replies cite sanitized titles, snippets, and hostnames</li>
+            <li>Fail closed on offline/timeout/blocked host</li>
+            <li>New unsigned Windows installer: <code>Eidovara-0.19.0-Windows-x64-Setup.exe</code></li>
+            <li>Shared <code>docs/tokens.css</code> / renderer tokens honor <code>prefers-reduced-motion</code></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="version-entry animate-on-scroll stagger-4">
+        <header class="version-header">
+          <span class="version-badge">v0.18.3</span>
+          <time datetime="2026-08-05">August 5, 2026</time>
+          <span class="version-status">Stable Alpha</span>
+        </header>
+        <div class="version-content">
+          <h3>Professional Consumer Polish</h3>
+          <ul>
+            <li>After 18+, one Dashboard start path (Soul vs Assist)</li>
+            <li>Grouped Settings with short help</li>
+            <li>Ctrl+K jump list, Ctrl+/ cheatsheet, Ctrl+A away from text fields</li>
+            <li>Empty states, errors, and success copy in plain language</li>
+            <li>Consumer workspace layers on in-app Soul kernel</li>
+            <li>Ctrl+K / Ctrl+P command palette, unified local search</li>
+            <li>Pin/reorder dashboard tiles, timed focus session with remaining time</li>
+            <li>On-device scratchpad capturing into Memory</li>
+            <li>Soul online stays opt-in and fail-closed</li>
+            <li>Persistent companion dock after 18+</li>
+            <li>Customization registry persists module toggles, custom quick actions, OS speechSynthesis voice</li>
+            <li>Desktop no longer constructs Soul profile before 18+ gate</li>
+            <li>Official consumer hostname <code>https://eidovara.org</code></li>
+            <li>Marketing site lists installer size, pinned asset URL, published SHA-256</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="version-entry animate-on-scroll stagger-5">
+        <header class="version-header">
+          <span class="version-badge">v0.18.0</span>
+          <time datetime="2026-07-20">July 20, 2026</time>
+          <span class="version-status">Stable Alpha</span>
+        </header>
+        <div class="version-content">
+          <h3>Renamed to Eidovara & Source-Available License</h3>
+          <ul>
+            <li>Renamed application to Eidovara™, identified Soul Consciousness Studios™</li>
+            <li>Source-available evaluation license (<code>LicenseRef-Eidovara-Source-Available-1.0</code>)</li>
+            <li>Hardened renderer permissions, provider/network response limits</li>
+            <li>Responsive tailored dashboard with role, focus, style, memory, app, privacy summaries</li>
+            <li>Persistent response length, tone, focus, accessibility, web research, media playback, memory learning</li>
+            <li>Application launching confirmation-only, disabled research/learning policies in core engine</li>
+            <li>Validated, timestamped profile backup creation, listing, and restore controls</li>
+            <li>End-user Windows, macOS, Linux bootstrap packages</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+  </main>
+  <footer class="site-footer site-end">
+    <div class="site-footer-inner">
+      <span>© 2026 Tyler Michael Bosworth. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. 18+.</span>
+      <span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a></span>
+    </div>
+  </footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>

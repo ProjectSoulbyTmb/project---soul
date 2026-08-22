@@ -1,0 +1,44 @@
+{
+  "name": "Eidovara",
+  "short_name": "Eidovara",
+  "description": "Eidovara v1.0.0 — local-first Windows desktop workspace with media, research, optional Soul layer, persistent continuity, custom themes, and gaming mode. 18+ restricted source-available software.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "eidovara-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "eidovara-mark.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["productivity", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Download",
+      "short_name": "Download",
+      "description": "Download Eidovara v1.0.0 (18+)",
+      "url": "/download.html",
+      "icons": [{ "src": "eidovara-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Product",
+      "short_name": "Product",
+      "description": "View product features",
+      "url": "/product.html",
+      "icons": [{ "src": "eidovara-mark.png", "sizes": "192x192" }]
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": []
+}
