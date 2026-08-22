@@ -53,7 +53,7 @@ Never commit Cloudflare credentials. The Cloudflare Pages workflow expects secur
 External credentials or legal filings cannot be manufactured in git. Keep these truthful:
 
 1. Cloudflare deployment credentials must be available to the production workflow, or deployment must be performed from an authenticated owner environment.
-2. Redeploy `server/` when its source contract changes so `api.eidovara.org` does not drift from desktop/site expectations.
+2. Redeploy `server/` when its source contract changes so `api.eidovara.org` does not drift from desktop/site expectations. After each release build, publish the measured installer facts from `dist/LIVE-INSTALLER-FACTS.json` as Worker vars (`LIVE_INSTALLER_SHA256`, `LIVE_INSTALLER_SIZE`) so `/v1/config` stops reporting null checksums; see `server/README.md`. Never hardcode a digest from an older build into the Worker source.
 3. Configure optional `www.eidovara.org` in Cloudflare only if desired.
 4. Official installers remain Authenticode-unsigned until a real code-signing identity exists.
 5. Live payments/company filings remain separate future actions and must not be implied by product copy.

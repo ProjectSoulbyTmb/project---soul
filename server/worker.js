@@ -4,10 +4,54 @@ import { answerAssist, assistMeta, MAX_ASSIST_BODY, ASSIST_VERSION } from './kno
 
 const LIVE_INSTALLER_VERSION = '1.0.0';
 const LIVE_INSTALLER = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
-const LIVE_INSTALLER_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
-const LIVE_INSTALLER_SIZE = 106691524;
+// No tagged v1.0.0 build exists yet: measured facts stay null until the
+// Release Windows workflow publishes the artifact with SHA256SUMS.txt.
+// The deploy may override both via wrangler vars LIVE_INSTALLER_SHA256 / LIVE_INSTALLER_SIZE.
+// Do not hardcode a placeholder digest here: the previous F29A52F0â€¦ value belonged to v0.22.2.
+const FALLBACK_INSTALLER_SHA256 = null;
+const FALLBACK_INSTALLER_SIZE = null;
 const LIVE_INSTALLER_URL =
   'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe';
+
+const ASSIST_RATE_WINDOW_MS = 60_000;
+const ASSIST_RATE_MAX_REQUESTS = 30;
+const ASSIST_RATE_MAX_TRACKED_IPS = 10_000;
+const assistHits = new Map();
+
+function assistRateLimited(request) {
+  const ip =
+    String(request.headers.get('cf-connecting-ip') || request.headers.get('x-forwarded-for') || '')
+      .split(',')[0]
+      .trim()
+      .slice(0, 64) || 'unknown';
+  const now = Date.now();
+  const windowStart = now - ASSIST_RATE_WINDOW_MS;
+  let stamps = assistHits.get(ip);
+  if (!stamps) {
+    stamps = [];
+    assistHits.set(ip, stamps);
+  }
+  while (stamps.length && stamps[0] <= windowStart) stamps.shift();
+  if (stamps.length >= ASSIST_RATE_MAX_REQUESTS) return true;
+  stamps.push(now);
+  if (assistHits.size > ASSIST_RATE_MAX_TRACKED_IPS) {
+    for (const [key, value] of assistHits) {
+      if (!value.length || value[value.length - 1] <= windowStart) assistHits.delete(key);
+      if (assistHits.size <= ASSIST_RATE_MAX_TRACKED_IPS / 2) break;
+    }
+  }
+  return false;
+}
+
+function liveInstallerFacts(env = {}) {
+  const rawSha =
+    typeof env.LIVE_INSTALLER_SHA256 === 'string' ? env.LIVE_INSTALLER_SHA256.trim() : '';
+  const sha = /^[0-9a-fA-F]{64}$/.test(rawSha) ? rawSha.toLowerCase() : FALLBACK_INSTALLER_SHA256;
+  const sizeRaw = Number(env.LIVE_INSTALLER_SIZE);
+  const size =
+    Number.isFinite(sizeRaw) && sizeRaw > 0 ? Math.round(sizeRaw) : FALLBACK_INSTALLER_SIZE;
+  return { sha256: sha, size };
+}
 
 const CORS_METHODS = 'GET, HEAD, POST, OPTIONS';
 const CORS_GET_METHODS = 'GET, HEAD, OPTIONS';
@@ -42,7 +86,8 @@ const httpsUrl = value => {
   }
 };
 
-function publicPayload(extra = {}) {
+function publicPayload(env = {}, extra = {}) {
+  const { sha256, size } = liveInstallerFacts(env);
   return {
     service: 'Eidovara',
     status: 'ok',
@@ -50,8 +95,8 @@ function publicPayload(extra = {}) {
     version: ASSIST_VERSION,
     liveInstallerVersion: LIVE_INSTALLER_VERSION,
     liveInstaller: LIVE_INSTALLER,
-    liveInstallerSha256: LIVE_INSTALLER_SHA256,
-    liveInstallerSize: LIVE_INSTALLER_SIZE,
+    liveInstallerSha256: sha256,
+    liveInstallerSize: size,
     liveInstallerUrl: LIVE_INSTALLER_URL,
     edition: 'free',
     fullFreeAlpha: true,
@@ -127,6 +172,15 @@ export default {
     if (url.pathname === '/v1/assist') {
       if (request.method !== 'GET' && request.method !== 'POST')
         return response({ error: 'method_not_allowed' }, 405, { allow: 'GET, POST, OPTIONS' });
+      if (assistRateLimited(request))
+        return response(
+          {
+            error: 'rate_limited',
+            reply: 'Too many requests from this address. Try again in a minute.',
+          },
+          429,
+          { 'retry-after': '60' }
+        );
       return handleAssist(request, url);
     }
     if (request.method !== 'GET' && request.method !== 'HEAD')
@@ -138,10 +192,10 @@ export default {
         : res;
     };
     if (url.pathname === '/health' || url.pathname === '/v1/health')
-      return send(publicPayload(), { 'cache-control': 'public, max-age=30' });
+      return send(publicPayload(env), { 'cache-control': 'public, max-age=30' });
     if (url.pathname === '/v1/status')
       return send(
-        publicPayload({
+        publicPayload(env, {
           pages:
             'Official site is https://eidovara.org (Cloudflare Pages from docs/). GitHub Pages publishes the same docs/ from main.',
           releases: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest',
@@ -152,14 +206,15 @@ export default {
         }),
         { 'cache-control': 'private, no-store' }
       );
-    if (url.pathname === '/v1/config')
+    if (url.pathname === '/v1/config') {
+      const { sha256, size } = liveInstallerFacts(env);
       return send(
         {
           version: ASSIST_VERSION,
           liveInstallerVersion: LIVE_INSTALLER_VERSION,
           liveInstaller: LIVE_INSTALLER,
-          liveInstallerSha256: LIVE_INSTALLER_SHA256,
-          liveInstallerSize: LIVE_INSTALLER_SIZE,
+          liveInstallerSha256: sha256,
+          liveInstallerSize: size,
           liveInstallerUrl: LIVE_INSTALLER_URL,
           edition: 'free',
           fullFreeAlpha: true,
@@ -189,6 +244,7 @@ export default {
         },
         { 'cache-control': 'public, max-age=300' }
       );
+    }
     return response({ error: 'not_found' }, 404);
   },
 };
@@ -198,7 +254,9 @@ export {
   ENDPOINTS,
   LIVE_INSTALLER_VERSION,
   LIVE_INSTALLER,
-  LIVE_INSTALLER_SHA256,
-  LIVE_INSTALLER_SIZE,
+  FALLBACK_INSTALLER_SHA256 as LIVE_INSTALLER_SHA256,
+  FALLBACK_INSTALLER_SIZE as LIVE_INSTALLER_SIZE,
   LIVE_INSTALLER_URL,
+  assistRateLimited,
+  liveInstallerFacts,
 };
