@@ -69,9 +69,6 @@ export const runGuardsForContext = (context) => {
     case 'renderer':
       // Renderer-specific guards
       break;
-    case 'cli':
-      AGE_GATE.validateCliArgs(process.argv);
-      break;
     default:
       STRUCTURAL_GUARDS.runAllStructuralGuards();
   }

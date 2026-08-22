@@ -5,14 +5,11 @@
  * EIDOVARA CLI ENTRY POINT
  * Structural legal guards initialized at startup
  */
-import { AGE_GATE } from './core/guards/age-gate.js';
-import { CONSCIOUSNESS_GUARD } from './core/guards/consciousness-guard.js';
-import { LICENSE_GUARDS } from './core/guards/license-guard.js';
-import { RELICENSE_GUARD } from './core/guards/relicense-guard.js';
+import { runGuardsForContext } from './core/guards/index.js';
 
-// Structural legal guards run silently; stderr only keeps stdout machine-readable.
+// Run structural legal guards for CLI context
 try {
-  AGE_GATE.validateCliArgs(process.argv);
+  runGuardsForContext('cli');
 } catch (error) {
   console.error('[STRUCTURAL GUARDS] Guard notice:', error && error.message ? error.message : error);
 }

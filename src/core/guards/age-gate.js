@@ -35,7 +35,7 @@ export const AGE_GATE = {
       ? localStorage.getItem('eidovara_age_gate_accepted') === 'true'
       : process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
     
-    if (!globalThis.eidovaraAgeGateAccepted && !globalThis.eidovaraAgeGateAccepted !== true) {
+    if (!accepted && globalThis.eidovaraAgeGateAccepted !== true) {
       const error = new Error('AGE_GATE_REQUIRED: 18+ age gate required for Eidovara access');
       error.code = 'AGE_GATE_REQUIRED';
       error.context = context;
@@ -52,7 +52,7 @@ export const AGE_GATE = {
     const hasFlag = args.includes('--i-am-18-or-older');
     const hasEnv = process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
     
-    if (!args.includes('--i-am-18-or-older') && !process.env.EIDOVARA_AGE_GATE_ACCEPTED) {
+    if (!hasFlag && !hasEnv) {
       const error = new Error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
       error.code = 'AGE_GATE_REQUIRED_CLI';
       console.error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
@@ -121,23 +121,6 @@ export const AGE_GATE = {
         if (e.key === 'Escape') e.preventDefault();
       });
     });
-  },
-
-  /**
-   * CLI enforcement
-   * @param {string[]} args - Command line arguments
-   * @throws {Error} If age gate not accepted
-   */
-  validateCliArgs: (args = process.argv) => {
-    const hasFlag = args.includes('--i-am-18-or-older');
-    const hasEnv = process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
-    
-    if (!args.includes('--i-am-18-or-older') && !process.env.EIDOVARA_AGE_GATE_ACCEPTED) {
-      const error = new Error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
-      console.error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
-      process.exitCode = 1;
-      throw new Error('AGE_GATE_REQUIRED_CLI');
-    }
   },
 
   /**

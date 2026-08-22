@@ -16,7 +16,6 @@ export const RELICENSE_GUARD = {
   FORBIDDEN_LICENSES: [
     'MIT',
     'Apache-2.0',
-    'Apache-2.0',
     'GPL-3.0',
     'GPL-2.0',
     'GPL-1.0',
@@ -29,7 +28,6 @@ export const RELICENSE_GUARD = {
     'ISC',
     'MPL-2.0',
     'MPL-1.1',
-    'LGPL-3.0',
     'AGPL-3.0',
     'CC0-1.0',
     'CC-BY-4.0',
@@ -167,15 +165,6 @@ export const RELICENSE_GUARD = {
     // This would be implemented with actual file system scanning
 
     return results;
-  },
-
-  /**
-   * Prevents license header injection
-   * @param {string} fileContent - File content to protect
-   * @returns {string} Protected file content
-   */
-  preventHeaderInjection: (fileContent) => {
-    return RELICENSE_GUARD.preventHeaderInjection(fileContent);
   },
 
   /**

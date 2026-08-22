@@ -14,9 +14,6 @@ import { RELICENSE_GUARD } from '../core/guards/relicense-guard.js';
 // These guards enforce the source-available license, 18+ age gate,
 // consciousness claim prevention, and open source relicensing prevention
 try {
-  // Run all structural legal guards at startup
-  // This enforces the source-available license, 18+ age gate,
-  // consciousness claim prevention, and open source relicensing prevention
   console.log('[STRUCTURAL GUARDS] Initializing legal guards...');
   
   // Enforce age gate at CLI level
@@ -26,17 +23,9 @@ try {
     console.warn('[AGE GATE] No age gate confirmation detected - CLI access restricted');
   }
 
-  // Enforce license compliance
-  console.log('[LICENSE GUARD] Source-available license enforcement active');
+  // Run all structural guards - this will throw if any legal boundary is violated
+  runAllStructuralGuards();
   
-  // Consciousness claim prevention
-  console.log('[CONSCIOUSNESS GUARD] Consciousness claim prevention active');
-  
-  // Open source relicensing prevention
-  console.log('[RELICENSE GUARD] Open source relicensing prevention active');
-
-  // Run all structural guards
-  // This will throw if any legal boundary is violated
   console.log('[STRUCTURAL GUARDS] All legal guards initialized and active');
 } catch (error) {
   console.error('[STRUCTURAL GUARDS] Guard initialization failed:', error);
