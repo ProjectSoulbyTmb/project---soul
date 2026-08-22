@@ -11,7 +11,7 @@ export function normalizeVoiceSettings(input = {}, prev = defaultVoiceSettings()
   const rate = Number(input.rate);
   const pitch = Number(input.pitch);
   const uri = input.voiceURI !== undefined ? input.voiceURI : (input.voiceName !== undefined ? input.voiceName : prior.voiceURI);
-  const mute = input.mute !== undefined ? Boolean(input.mute) : (input.voiceEnabled !== undefined ? !input.voiceEnabled : Boolean(prior.mute));
+  const mute = input.mute !== undefined ? Boolean(input.mute) : (input.voiceEnabled !== undefined ? !Boolean(input.voiceEnabled) : Boolean(prior.mute));
   return {
     voiceURI: String(uri || '').trim().slice(0, 300),
     rate: Number.isFinite(rate) ? Math.max(0.5, Math.min(2, rate)) : prior.rate,
