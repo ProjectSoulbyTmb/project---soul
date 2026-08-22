@@ -10,12 +10,15 @@
  * fingerprint, embed tubes, or scrape vendor HTML.
  */
 const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value)));
-const slider = value => Math.round(clamp(Number.isFinite(Number(value)) ? Number(value) : 50, 0, 100));
+const slider = value =>
+  Math.round(clamp(Number.isFinite(Number(value)) ? Number(value) : 50, 0, 100));
 const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback);
 
-export const FEEL_HONESTY = 'Feel Sync is on-screen only: it maps local eidovara-media loudness and Adult Soul session beats to the figure, voice coach, and intensity pad. Eidovara does not pair Lovense, Vibease, or other toys, does not record the screen, does not auto-tip cam sites, and does not embed Pornhub. Hardware toys stay in their vendor app. PIN lock is local digits on this PC — not fingerprint or cloud. Revoke Adult Mode anytime.';
+export const FEEL_HONESTY =
+  'Feel Sync is on-screen only: it maps local eidovara-media loudness and Adult Soul session beats to the figure, voice coach, and intensity pad. Eidovara does not pair Lovense, Vibease, or other toys, does not record the screen, does not auto-tip cam sites, and does not embed Pornhub. Hardware toys stay in their vendor app. PIN lock is local digits on this PC — not fingerprint or cloud. Revoke Adult Mode anytime.';
 
-export const GAMEPAD_HONESTY = 'A connected Chromium-visible gamepad can steer this pad and dual-rumble that same controller. That is the Gamepad API — not Lovense, not XInput injection into a game, and not in-game haptics.';
+export const GAMEPAD_HONESTY =
+  'A connected Chromium-visible gamepad can steer this pad and dual-rumble that same controller. That is the Gamepad API — not Lovense, not XInput injection into a game, and not in-game haptics.';
 
 export const FEEL_PATTERNS = Object.freeze([
   { id: 'pulse', title: 'Pulse', hint: 'Even on/off beats' },
@@ -28,16 +31,24 @@ export const FEEL_PATTERNS = Object.freeze([
   { id: 'climb', title: 'Climb', hint: 'Keeps getting stronger' },
   { id: 'throb', title: 'Throb', hint: 'Heartbeat pairs' },
   { id: 'random', title: 'Random', hint: 'Unpredictable peaks' },
-  { id: 'hold', title: 'Hold', hint: 'Constant float strength' }
+  { id: 'hold', title: 'Hold', hint: 'Constant float strength' },
 ]);
 
 export const FEEL_PATTERN_IDS = Object.freeze(FEEL_PATTERNS.map(item => item.id));
 
 export const FEEL_SYNC_MODES = Object.freeze([
   { id: 'off', title: 'Off', hint: 'Pad only — you drag intensity' },
-  { id: 'media', title: 'Sync to local media', hint: 'Loudness of eidovara-media audio/video. Not a tube embed.' },
-  { id: 'fantasy', title: 'Fantasy / session', hint: 'Adult Soul beats drive the pad, like a story-sync mode' },
-  { id: 'voice', title: 'Voice coach', hint: 'Peaks when the OS voice is speaking' }
+  {
+    id: 'media',
+    title: 'Sync to local media',
+    hint: 'Loudness of eidovara-media audio/video. Not a tube embed.',
+  },
+  {
+    id: 'fantasy',
+    title: 'Fantasy / session',
+    hint: 'Adult Soul beats drive the pad, like a story-sync mode',
+  },
+  { id: 'voice', title: 'Voice coach', hint: 'Peaks when the OS voice is speaking' },
 ]);
 
 export const FEEL_SYNC_IDS = Object.freeze(FEEL_SYNC_MODES.map(item => item.id));
@@ -49,15 +60,35 @@ export const BOOKMARK_FOLDERS = Object.freeze([
   { id: 'audio', title: 'Audio', hint: 'Moans, beds, stories you imported' },
   { id: 'sites', title: 'Sites', hint: 'Official HTTPS homepages — opens in the system browser' },
   { id: 'streamers', title: 'Streamers', hint: 'Creator pages you bookmarked. No live embed.' },
-  { id: 'wellness', title: 'Wellness', hint: 'Local aftercare notes. Not medical advice.' }
+  { id: 'wellness', title: 'Wellness', hint: 'Local aftercare notes. Not medical advice.' },
 ]);
 
 export const WELLNESS_CARDS = Object.freeze([
-  { id: 'aftercare', title: 'Aftercare', body: 'Water, a blanket, and a pause. Adult Soul aftercare is a local session, not a clinician.' },
-  { id: 'safeword', title: 'Safeword', body: 'Red / your safeword stops the session immediately. Consent stays revocable on Identity.' },
-  { id: 'privacy', title: 'Discreet lock', body: 'A 4–8 digit PIN blanks Adult Soul and Adult Media on this PC. Not Windows Hello, not a vendor cloud lock.' },
-  { id: 'hardware', title: 'Toys stay vendor-side', body: 'Pattern, speed, and sync here move the on-screen figure and coach. Pair hardware in Lovense Remote or Vibease if you own those toys.' },
-  { id: 'browser', title: 'Adult search', body: 'Tube/creator chips open official HTTPS pages in your system browser. Guest overlays stay closed in Adult Mode.' }
+  {
+    id: 'aftercare',
+    title: 'Aftercare',
+    body: 'Water, a blanket, and a pause. Adult Soul aftercare is a local session, not a clinician.',
+  },
+  {
+    id: 'safeword',
+    title: 'Safeword',
+    body: 'Red / your safeword stops the session immediately. Consent stays revocable on Identity.',
+  },
+  {
+    id: 'privacy',
+    title: 'Discreet lock',
+    body: 'A 4–8 digit PIN blanks Adult Soul and Adult Media on this PC. Not Windows Hello, not a vendor cloud lock.',
+  },
+  {
+    id: 'hardware',
+    title: 'Toys stay vendor-side',
+    body: 'Pattern, speed, and sync here move the on-screen figure and coach. Pair hardware in Lovense Remote or Vibease if you own those toys.',
+  },
+  {
+    id: 'browser',
+    title: 'Adult search',
+    body: 'Tube/creator chips open official HTTPS pages in your system browser. Guest overlays stay closed in Adult Mode.',
+  },
 ]);
 
 export function defaultAdultFeel() {
@@ -71,7 +102,7 @@ export function defaultAdultFeel() {
     syncMode: 'media',
     lastLevel: 0,
     stealth: defaultAdultStealth(),
-    folders: defaultBookmarkFolders()
+    folders: defaultBookmarkFolders(),
   };
 }
 
@@ -84,7 +115,7 @@ export function defaultAdultStealth() {
     autoBlankMs: 0,
     hideRecents: false,
     autoClearHistory: false,
-    blanked: false
+    blanked: false,
   };
 }
 
@@ -100,7 +131,7 @@ export function publicStealth(input = {}) {
     autoBlankMs: stealth.autoBlankMs,
     hideRecents: stealth.hideRecents === true,
     autoClearHistory: stealth.autoClearHistory === true,
-    blanked: stealth.blanked === true
+    blanked: stealth.blanked === true,
   };
 }
 
@@ -109,29 +140,42 @@ export function normalizeAdultStealth(input = {}, prior = defaultAdultStealth())
   const incoming = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
   const autoBlankMs = FEEL_BLANK_MS.includes(Number(incoming.autoBlankMs))
     ? Number(incoming.autoBlankMs)
-    : (FEEL_BLANK_MS.includes(Number(base.autoBlankMs)) ? Number(base.autoBlankMs) : 0);
+    : FEEL_BLANK_MS.includes(Number(base.autoBlankMs))
+      ? Number(base.autoBlankMs)
+      : 0;
   return {
-    pinEnabled: incoming.pinEnabled === true || incoming.pinEnabled === false ? incoming.pinEnabled === true : base.pinEnabled === true,
-    pinSalt: String(incoming.pinSalt ?? base.pinSalt ?? '').replace(/[^a-f0-9]/gi, '').slice(0, 64),
-    pinHash: String(incoming.pinHash ?? base.pinHash ?? '').replace(/[^a-f0-9]/gi, '').slice(0, 128),
+    pinEnabled:
+      incoming.pinEnabled === true || incoming.pinEnabled === false
+        ? incoming.pinEnabled === true
+        : base.pinEnabled === true,
+    pinSalt: String(incoming.pinSalt ?? base.pinSalt ?? '')
+      .replace(/[^a-f0-9]/gi, '')
+      .slice(0, 64),
+    pinHash: String(incoming.pinHash ?? base.pinHash ?? '')
+      .replace(/[^a-f0-9]/gi, '')
+      .slice(0, 128),
     locked: incoming.locked === true,
     autoBlankMs,
     hideRecents: incoming.hideRecents === true,
     autoClearHistory: incoming.autoClearHistory === true,
-    blanked: incoming.blanked === true || incoming.locked === true
+    blanked: incoming.blanked === true || incoming.locked === true,
   };
 }
 
 function normalizeFolderItem(item) {
   if (!item || typeof item !== 'object') return null;
-  const title = String(item.title || '').replace(/[\u0000-\u001f]/g, ' ').trim().slice(0, 120);
+  const title = String(item.title || '')
+    .replace(/[\u0000-\u001f]/g, ' ')
+    .trim()
+    .slice(0, 120);
   if (!title) return null;
   const url = String(item.url || '');
   const local = /^eidovara-media:/i.test(url);
   let sourceUrl = '';
   try {
     const parsed = new URL(String(item.sourceUrl || url));
-    if (parsed.protocol === 'https:' && !parsed.username && !parsed.password) sourceUrl = parsed.toString().slice(0, 1000);
+    if (parsed.protocol === 'https:' && !parsed.username && !parsed.password)
+      sourceUrl = parsed.toString().slice(0, 1000);
   } catch {}
   if (!local && !sourceUrl) return null;
   return {
@@ -139,7 +183,7 @@ function normalizeFolderItem(item) {
     title,
     url: local ? url.slice(0, 400) : '',
     sourceUrl,
-    type: item.type === 'video' ? 'video' : (item.type === 'site' ? 'site' : 'audio')
+    type: item.type === 'video' ? 'video' : item.type === 'site' ? 'site' : 'audio',
   };
 }
 
@@ -147,7 +191,9 @@ export function normalizeBookmarkFolders(input) {
   const incoming = Array.isArray(input) ? input : [];
   return BOOKMARK_FOLDERS.map(meta => {
     const found = incoming.find(folder => folder && folder.id === meta.id) || {};
-    const items = Array.isArray(found.items) ? found.items.map(normalizeFolderItem).filter(Boolean).slice(0, 40) : [];
+    const items = Array.isArray(found.items)
+      ? found.items.map(normalizeFolderItem).filter(Boolean).slice(0, 40)
+      : [];
     return { id: meta.id, title: meta.title, items };
   });
 }
@@ -163,9 +209,10 @@ export function normalizeAdultFeel(input = {}, prior = defaultAdultFeel()) {
     loop: incoming.loop !== false,
     float: incoming.float === true,
     syncMode: pick(incoming.syncMode || base.syncMode, FEEL_SYNC_IDS, 'media'),
-    lastLevel: Math.round(clamp(Number(incoming.lastLevel ?? base.lastLevel) || 0, 0, 1) * 1000) / 1000,
+    lastLevel:
+      Math.round(clamp(Number(incoming.lastLevel ?? base.lastLevel) || 0, 0, 1) * 1000) / 1000,
     stealth: normalizeAdultStealth(incoming.stealth, base.stealth),
-    folders: normalizeBookmarkFolders(incoming.folders || base.folders)
+    folders: normalizeBookmarkFolders(incoming.folders || base.folders),
   };
 }
 
@@ -189,7 +236,7 @@ export function feelSample(feelInput, tMs = 0, audioLevel = 0) {
   let wave = 0.5;
   switch (feel.pattern) {
     case 'pulse':
-      wave = (phase % 1) < 0.45 ? 1 : 0.12;
+      wave = phase % 1 < 0.45 ? 1 : 0.12;
       break;
     case 'wave':
       wave = 0.5 + 0.5 * Math.sin(phase * Math.PI * 2);
@@ -265,7 +312,7 @@ export function mapGamepadStick(axes, prior = {}) {
   return {
     speed: Math.round(clamp((ax + 1) * 50, 0, 100)),
     intensity: Math.round(clamp((1 - ay) * 50, 0, 100)),
-    moved: true
+    moved: true,
   };
 }
 
@@ -275,7 +322,7 @@ export function mapGamepadButtons(buttons, priorPressed = {}) {
   return {
     cyclePattern: down(0) && !was(0),
     toggleFloat: down(1) && !was(1),
-    stopSession: down(9) && !was(9)
+    stopSession: down(9) && !was(9),
   };
 }
 
@@ -284,17 +331,20 @@ export function rumbleFromLevel(level) {
   return {
     duration: 140,
     strongMagnitude: Math.round(n * 0.72 * 1000) / 1000,
-    weakMagnitude: Math.round(n * 0.42 * 1000) / 1000
+    weakMagnitude: Math.round(n * 0.42 * 1000) / 1000,
   };
 }
 
 export function addBookmarkToFolder(feelInput, folderId, item) {
   const feel = normalizeAdultFeel(feelInput);
   const clip = normalizeFolderItem(item);
-  if (!clip) throw new Error('Bookmark needs a title and a local eidovara-media file or https:// page.');
+  if (!clip)
+    throw new Error('Bookmark needs a title and a local eidovara-media file or https:// page.');
   const folders = feel.folders.map(folder => {
     if (folder.id !== folderId) return folder;
-    const rest = folder.items.filter(row => (row.url || row.sourceUrl) !== (clip.url || clip.sourceUrl));
+    const rest = folder.items.filter(
+      row => (row.url || row.sourceUrl) !== (clip.url || clip.sourceUrl)
+    );
     return { ...folder, items: [clip, ...rest].slice(0, 40) };
   });
   return { ...feel, folders };
@@ -303,10 +353,17 @@ export function addBookmarkToFolder(feelInput, folderId, item) {
 export function classifyAdultFeelIntent(input) {
   const t = String(input || '').toLowerCase();
   if (!t.trim()) return '';
-  if (/\b(?:feel pad|vibe pad|pattern pad|toy metronome|pulse pattern|sync to (?:video|audio|music|media)|adult pin|stealth lock|discreet lock|bookmark folder|adult wellness)\b/.test(t)) {
+  if (
+    /\b(?:feel pad|vibe pad|pattern pad|toy metronome|pulse pattern|sync to (?:video|audio|music|media)|adult pin|stealth lock|discreet lock|bookmark folder|adult wellness)\b/.test(
+      t
+    )
+  ) {
     return 'adult-soul';
   }
-  if (/\b(?:vibemate|vibease|lovense)\b/.test(t) && /\b(?:setting|sync|pattern|pin|bookmark|browser)\b/.test(t)) {
+  if (
+    /\b(?:vibemate|vibease|lovense)\b/.test(t) &&
+    /\b(?:setting|sync|pattern|pin|bookmark|browser)\b/.test(t)
+  ) {
     return 'adult-soul';
   }
   return '';
@@ -317,4 +374,3 @@ export function adultFeelReply(feelInput) {
   const pattern = FEEL_PATTERNS.find(item => item.id === feel.pattern)?.title || feel.pattern;
   return `Feel Sync is ${feel.syncMode === 'off' ? 'manual' : feel.syncMode}. Pattern ${pattern}, intensity ${feel.intensity}, speed ${feel.speed}, sensitivity ${feel.sensitivity}. ${FEEL_HONESTY}`;
 }
-

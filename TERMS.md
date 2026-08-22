@@ -72,4 +72,3 @@ THE SOFTWARE IS PROVIDED "AS IS." Warranty and liability terms in LICENSE apply 
 ## 10. Contact
 
 For commercial licensing or written permission, contact the repository owner through the official Eidovara GitHub repository.
-

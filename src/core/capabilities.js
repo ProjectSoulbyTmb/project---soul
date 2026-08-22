@@ -11,4 +11,3 @@ export function premiumFeatureAllowed(edition, feature) {
   if (edition === 'premium') return true;
   return !['rgb', 'compatible', 'searchKey', 'unlimitedApps'].includes(feature);
 }
-

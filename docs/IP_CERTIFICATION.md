@@ -14,39 +14,39 @@ Machine-readable companion: [ip-certification.json](ip-certification.json).
 
 ## What this attestation covers
 
-| Layer | Attested here | Not attested here |
-| --- | --- | --- |
-| First-party copyright **claim** in qualifying original Eidovara expression | Yes — claimant Soul Consciousness Studios; notice in LICENSE, COPYRIGHT.txt, NOTICE.md, SPDX headers | U.S. Copyright Office **registration** |
-| Source-available evaluation license | Yes — `LicenseRef-Eidovara-Source-Available-1.0` in LICENSE; not MIT/Apache/GPL/OSI | A right to relicense forks as open source |
-| Unregistered marks Eidovara™, Soul (feature name), Soul Consciousness Studios™ | Yes — ™ usage and TRADEMARKS.md | registered-mark symbol, USPTO serial, or federal registration |
-| Chain of title vs third-party layers | Yes — Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded | Ownership of those third-party layers |
-| Contributor / entity assignments | Templates exist and are **unsigned** | Any executed CLA or company assignment |
-| Advertised Windows installer v1.0.0 | Filename, measured SHA-256, Authenticode-**unsigned**, GitHub/Sigstore provenance | Microsoft certification, EV signing, SmartScreen pre-approval |
-| Source version 0.22.2 | `package.json` / Worker health / website helper | A claim that provenance is Authenticode signing |
-| Inbound GitHub patches | Policy: not accepted until private written assignment | Transfer of copyright by opening a PR |
+| Layer                                                                            | Attested here                                                                                        | Not attested here                                             |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| First-party copyright **claim** in qualifying original Eidovara expression       | Yes — claimant Soul Consciousness Studios; notice in LICENSE, COPYRIGHT.txt, NOTICE.md, SPDX headers | U.S. Copyright Office **registration**                        |
+| Source-available evaluation license                                              | Yes — `LicenseRef-Eidovara-Source-Available-1.0` in LICENSE; not MIT/Apache/GPL/OSI                  | A right to relicense forks as open source                     |
+| Unregistered marks Eidovara™, Soul (feature name), Soul Consciousness Studios™ | Yes — ™ usage and TRADEMARKS.md                                                                     | registered-mark symbol, USPTO serial, or federal registration |
+| Chain of title vs third-party layers                                             | Yes — Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded                         | Ownership of those third-party layers                         |
+| Contributor / entity assignments                                                 | Templates exist and are **unsigned**                                                                 | Any executed CLA or company assignment                        |
+| Advertised Windows installer v1.0.0                                              | Filename, measured SHA-256, Authenticode-**unsigned**, GitHub/Sigstore provenance                    | Microsoft certification, EV signing, SmartScreen pre-approval |
+| Source version 0.22.2                                                            | `package.json` / Worker health / website helper                                                      | A claim that provenance is Authenticode signing               |
+| Inbound GitHub patches                                                           | Policy: not accepted until private written assignment                                                | Transfer of copyright by opening a PR                         |
 
 ## Certified product record (source v1.0.0; live installer v1.0.0)
 
 These facts match the published unsigned Windows installer plus this source cut. They are integrity facts, not a government certificate.
 
-| Field | Value |
-| --- | --- |
-| Product | Eidovara |
-| Source version | 1.0.0 |
-| Live advertised installer version | 1.0.0 |
-| App id | `com.soulconsciousnessstudios.eidovara` |
-| Official platform | Windows 10/11 x64 |
-| Installer | `Eidovara-v1.0.0-Windows-x64-Setup.exe` |
-| Size | `null` until the tagged build is measured; see release SHA256SUMS.txt |
-| SHA-256 | `null` until the tagged build is measured; see release SHA256SUMS.txt |
-| Release tag | `v1.0.0` |
-| Authenticode | unsigned |
-| Build provenance | GitHub/Sigstore provenance available; not Authenticode |
-| Age | 18 or older |
-| License | Eidovara Source-Available Evaluation License 1.0 |
-| Payments | fail-closed; no live checkout |
-| Service default | `https://api.eidovara.org` (optional; conversations not sent) |
-| Public site | `https://eidovara.org/` |
+| Field                             | Value                                                                 |
+| --------------------------------- | --------------------------------------------------------------------- |
+| Product                           | Eidovara                                                              |
+| Source version                    | 1.0.0                                                                 |
+| Live advertised installer version | 1.0.0                                                                 |
+| App id                            | `com.soulconsciousnessstudios.eidovara`                               |
+| Official platform                 | Windows 10/11 x64                                                     |
+| Installer                         | `Eidovara-v1.0.0-Windows-x64-Setup.exe`                               |
+| Size                              | `null` until the tagged build is measured; see release SHA256SUMS.txt |
+| SHA-256                           | `null` until the tagged build is measured; see release SHA256SUMS.txt |
+| Release tag                       | `v1.0.0`                                                              |
+| Authenticode                      | unsigned                                                              |
+| Build provenance                  | GitHub/Sigstore provenance available; not Authenticode                |
+| Age                               | 18 or older                                                           |
+| License                           | Eidovara Source-Available Evaluation License 1.0                      |
+| Payments                          | fail-closed; no live checkout                                         |
+| Service default                   | `https://api.eidovara.org` (optional; conversations not sent)         |
+| Public site                       | `https://eidovara.org/`                                               |
 
 ## Instrument inventory
 
@@ -57,49 +57,49 @@ Status values used below:
 - **not-filed** — a checklist only; no application has been sent
 - **owner-action-required** — cannot be completed by a commit
 
-| Instrument | Path | Status |
-| --- | --- | --- |
-| Source-available evaluation license | [LICENSE](../LICENSE) | in-repo |
-| Installer EULA (embeds LICENSE) | [installer/EULA.txt](../installer/EULA.txt) | in-repo |
-| Product terms | [TERMS.md](../TERMS.md) | in-repo |
-| Privacy notice | [PRIVACY.md](../PRIVACY.md) | in-repo |
-| Age 18+ | [AGE.md](../AGE.md) | in-repo |
-| Legal notices | [LEGAL_NOTICES.md](../LEGAL_NOTICES.md) | in-repo |
-| Security policy | [SECURITY.md](../SECURITY.md) | in-repo |
-| One-page copyright claim | [COPYRIGHT.txt](../COPYRIGHT.txt) | in-repo |
-| NOTICE / third-party runtime table | [NOTICE.md](../NOTICE.md) | in-repo |
-| Ownership limits | [OWNERSHIP.md](../OWNERSHIP.md) | in-repo |
-| Authors | [AUTHORS.md](../AUTHORS.md) | in-repo |
-| Unregistered trademark usage | [TRADEMARKS.md](../TRADEMARKS.md) | in-repo |
-| Third-party notices | [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md) | in-repo |
-| Contribution policy | [CONTRIBUTING.md](../CONTRIBUTING.md) | in-repo |
-| Citation (does not grant a license) | [CITATION.cff](../CITATION.cff) | in-repo |
-| Copyright notice + copyright.gov checklist | [COPYRIGHT.md](COPYRIGHT.md) | in-repo / not-filed |
-| Brand asset hashes | [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md) | in-repo (provenance, not registration) |
-| Copyright Office deposit instructions | [COPYRIGHT_DEPOSIT.md](COPYRIGHT_DEPOSIT.md) | in-repo / owner-action-required |
-| USPTO filing checklist | [TRADEMARK_FILING.md](TRADEMARK_FILING.md) | not-filed |
-| Knockout clearance log | [TRADEMARK_CLEARANCE_LOG.md](TRADEMARK_CLEARANCE_LOG.md) | in-repo (not comprehensive clearance) |
-| Name screening record | [NAME_CLEARANCE.md](NAME_CLEARANCE.md) | in-repo (knockout only) |
-| Chain of title | [CHAIN_OF_TITLE.md](CHAIN_OF_TITLE.md) | in-repo |
-| IP protection plan | [IP_PROTECTION.md](IP_PROTECTION.md) | in-repo |
-| Public vs private repository policy | [PUBLIC_REPOSITORY_POLICY.md](PUBLIC_REPOSITORY_POLICY.md) | in-repo |
-| Infringement / DMCA pointers | [INFRINGEMENT.md](INFRINGEMENT.md) | in-repo |
-| Contributor assignment (CLA) | [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) | unsigned-template |
-| Entity IP assignment | [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md) | unsigned-template |
-| Company formation checklist | [COMPANY_FORMATION.md](COMPANY_FORMATION.md) | not-filed |
-| SPDX first-party headers | `src/**/*.js`, `src/**/*.cjs`, `docs/*.js`, first-party HTML/CSS, `scripts/*`, `server/*` | in-repo |
-| CODEOWNERS | [.github/CODEOWNERS](../.github/CODEOWNERS) | in-repo (`@ProjectSoulbyTmb` only) |
-| security.txt | [docs/.well-known/security.txt](.well-known/security.txt) | in-repo (no PGP key published) |
-| Dependabot | [.github/dependabot.yml](../.github/dependabot.yml) | in-repo (npm + GitHub Actions) |
-| Security checks workflow | [.github/workflows/security.yml](../.github/workflows/security.yml) | in-repo |
-| CodeQL workflow | [.github/workflows/codeql.yml](../.github/workflows/codeql.yml) | in-repo |
-| OpenSSF Scorecards workflow | [.github/workflows/scorecards.yml](../.github/workflows/scorecards.yml) | in-repo |
-| Dependency review workflow | [.github/workflows/dependency-review.yml](../.github/workflows/dependency-review.yml) | in-repo (needs Dependency graph owner click) |
-| U.S. Copyright Office registration | — | owner-action-required |
-| USPTO trademark application | — | owner-action-required |
-| Patent application | — | owner-action-required (do not claim a filing until one exists) |
-| Authenticode code-signing identity | — | owner-action-required |
-| Executed CLA or entity assignment | — | owner-action-required (keep executed copies **out** of this public repo) |
+| Instrument                                 | Path                                                                                      | Status                                                                   |
+| ------------------------------------------ | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| Source-available evaluation license        | [LICENSE](../LICENSE)                                                                     | in-repo                                                                  |
+| Installer EULA (embeds LICENSE)            | [installer/EULA.txt](../installer/EULA.txt)                                               | in-repo                                                                  |
+| Product terms                              | [TERMS.md](../TERMS.md)                                                                   | in-repo                                                                  |
+| Privacy notice                             | [PRIVACY.md](../PRIVACY.md)                                                               | in-repo                                                                  |
+| Age 18+                                    | [AGE.md](../AGE.md)                                                                       | in-repo                                                                  |
+| Legal notices                              | [LEGAL_NOTICES.md](../LEGAL_NOTICES.md)                                                   | in-repo                                                                  |
+| Security policy                            | [SECURITY.md](../SECURITY.md)                                                             | in-repo                                                                  |
+| One-page copyright claim                   | [COPYRIGHT.txt](../COPYRIGHT.txt)                                                         | in-repo                                                                  |
+| NOTICE / third-party runtime table         | [NOTICE.md](../NOTICE.md)                                                                 | in-repo                                                                  |
+| Ownership limits                           | [OWNERSHIP.md](../OWNERSHIP.md)                                                           | in-repo                                                                  |
+| Authors                                    | [AUTHORS.md](../AUTHORS.md)                                                               | in-repo                                                                  |
+| Unregistered trademark usage               | [TRADEMARKS.md](../TRADEMARKS.md)                                                         | in-repo                                                                  |
+| Third-party notices                        | [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md)                                       | in-repo                                                                  |
+| Contribution policy                        | [CONTRIBUTING.md](../CONTRIBUTING.md)                                                     | in-repo                                                                  |
+| Citation (does not grant a license)        | [CITATION.cff](../CITATION.cff)                                                           | in-repo                                                                  |
+| Copyright notice + copyright.gov checklist | [COPYRIGHT.md](COPYRIGHT.md)                                                              | in-repo / not-filed                                                      |
+| Brand asset hashes                         | [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md)                                | in-repo (provenance, not registration)                                   |
+| Copyright Office deposit instructions      | [COPYRIGHT_DEPOSIT.md](COPYRIGHT_DEPOSIT.md)                                              | in-repo / owner-action-required                                          |
+| USPTO filing checklist                     | [TRADEMARK_FILING.md](TRADEMARK_FILING.md)                                                | not-filed                                                                |
+| Knockout clearance log                     | [TRADEMARK_CLEARANCE_LOG.md](TRADEMARK_CLEARANCE_LOG.md)                                  | in-repo (not comprehensive clearance)                                    |
+| Name screening record                      | [NAME_CLEARANCE.md](NAME_CLEARANCE.md)                                                    | in-repo (knockout only)                                                  |
+| Chain of title                             | [CHAIN_OF_TITLE.md](CHAIN_OF_TITLE.md)                                                    | in-repo                                                                  |
+| IP protection plan                         | [IP_PROTECTION.md](IP_PROTECTION.md)                                                      | in-repo                                                                  |
+| Public vs private repository policy        | [PUBLIC_REPOSITORY_POLICY.md](PUBLIC_REPOSITORY_POLICY.md)                                | in-repo                                                                  |
+| Infringement / DMCA pointers               | [INFRINGEMENT.md](INFRINGEMENT.md)                                                        | in-repo                                                                  |
+| Contributor assignment (CLA)               | [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md)                                    | unsigned-template                                                        |
+| Entity IP assignment                       | [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md)                                        | unsigned-template                                                        |
+| Company formation checklist                | [COMPANY_FORMATION.md](COMPANY_FORMATION.md)                                              | not-filed                                                                |
+| SPDX first-party headers                   | `src/**/*.js`, `src/**/*.cjs`, `docs/*.js`, first-party HTML/CSS, `scripts/*`, `server/*` | in-repo                                                                  |
+| CODEOWNERS                                 | [.github/CODEOWNERS](../.github/CODEOWNERS)                                               | in-repo (`@ProjectSoulbyTmb` only)                                       |
+| security.txt                               | [docs/.well-known/security.txt](.well-known/security.txt)                                 | in-repo (no PGP key published)                                           |
+| Dependabot                                 | [.github/dependabot.yml](../.github/dependabot.yml)                                       | in-repo (npm + GitHub Actions)                                           |
+| Security checks workflow                   | [.github/workflows/security.yml](../.github/workflows/security.yml)                       | in-repo                                                                  |
+| CodeQL workflow                            | [.github/workflows/codeql.yml](../.github/workflows/codeql.yml)                           | in-repo                                                                  |
+| OpenSSF Scorecards workflow                | [.github/workflows/scorecards.yml](../.github/workflows/scorecards.yml)                   | in-repo                                                                  |
+| Dependency review workflow                 | [.github/workflows/dependency-review.yml](../.github/workflows/dependency-review.yml)     | in-repo (needs Dependency graph owner click)                             |
+| U.S. Copyright Office registration         | —                                                                                         | owner-action-required                                                    |
+| USPTO trademark application                | —                                                                                         | owner-action-required                                                    |
+| Patent application                         | —                                                                                         | owner-action-required (do not claim a filing until one exists)           |
+| Authenticode code-signing identity         | —                                                                                         | owner-action-required                                                    |
+| Executed CLA or entity assignment          | —                                                                                         | owner-action-required (keep executed copies **out** of this public repo) |
 
 ## What automated tests certify
 
@@ -146,4 +146,3 @@ Complete these privately with qualified counsel. Do not paste certificates, seri
 - Do not describe Soul as consciousness or Eidovara as an Apple/Microsoft/Electron product.
 - Do not claim this self-attestation **is** a Copyright Office or USPTO registration.
 - Update the record date and inventory when a **real** filing or assignment happens; until then keep status `not-filed` / `unsigned-template` / `owner-action-required`.
-

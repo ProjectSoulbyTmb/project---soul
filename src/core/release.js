@@ -25,4 +25,3 @@ export const INSTALLER_SIZE_BYTES = null;
 export const INSTALLER_SIZE = 'measured when tag v1.0.0 is built';
 export const INSTALLER_LATEST_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`;
 export const INSTALLER_PINNED_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`;
-

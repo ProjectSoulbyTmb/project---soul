@@ -49,20 +49,20 @@ Eidovara is **not** affiliated with, endorsed by, or a product of Marvel, Disney
 
 The following names are **other people's marks**. Reference describes compatibility, an optional user-directed integration, or a platform on which Eidovara runs. **Eidovara is not affiliated with these owners.** Compatibility mention is not a license, endorsement, partnership, or transfer of trademark rights.
 
-| Name | Owner (as commonly identified) | How Eidovara refers to it |
-| --- | --- | --- |
-| Windows | Microsoft Corporation | Official advertised OS |
-| GitHub | GitHub, Inc. / Microsoft | Source hosting and Releases |
-| Electron | OpenJS Foundation / Electron contributors | Bundled desktop runtime |
-| Chromium | The Chromium authors | Bundled with Electron |
-| Node.js | OpenJS Foundation | Bundled with Electron |
-| Cloudflare | Cloudflare, Inc. | Optional Worker / Pages hosting |
-| Wikipedia / Wikimedia | Wikimedia Foundation and contributors | Explicit user-requested research |
-| Spotify | Spotify AB | Official HTTPS search handoff only |
-| YouTube | Google LLC | Official HTTPS search handoff only |
-| Brave Search | Brave Software, Inc. | Optional Premium search with a user-supplied key |
-| OBS | OBS Project / contributors | Documented future adapter only; not enabled |
-| Apple, iPhone, iOS, SF Pro | Apple Inc. | Disclaimed; not the product identity |
+| Name                       | Owner (as commonly identified)            | How Eidovara refers to it                        |
+| -------------------------- | ----------------------------------------- | ------------------------------------------------ |
+| Windows                    | Microsoft Corporation                     | Official advertised OS                           |
+| GitHub                     | GitHub, Inc. / Microsoft                  | Source hosting and Releases                      |
+| Electron                   | OpenJS Foundation / Electron contributors | Bundled desktop runtime                          |
+| Chromium                   | The Chromium authors                      | Bundled with Electron                            |
+| Node.js                    | OpenJS Foundation                         | Bundled with Electron                            |
+| Cloudflare                 | Cloudflare, Inc.                          | Optional Worker / Pages hosting                  |
+| Wikipedia / Wikimedia      | Wikimedia Foundation and contributors     | Explicit user-requested research                 |
+| Spotify                    | Spotify AB                                | Official HTTPS search handoff only               |
+| YouTube                    | Google LLC                                | Official HTTPS search handoff only               |
+| Brave Search               | Brave Software, Inc.                      | Optional Premium search with a user-supplied key |
+| OBS                        | OBS Project / contributors                | Documented future adapter only; not enabled      |
+| Apple, iPhone, iOS, SF Pro | Apple Inc.                                | Disclaimed; not the product identity             |
 
 Do not ship third-party logos, trade dress, or character art in Eidovara. See [docs/BRAND_GUIDE.md](docs/BRAND_GUIDE.md).
 

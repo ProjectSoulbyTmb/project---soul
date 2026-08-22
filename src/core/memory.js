@@ -4,7 +4,9 @@ import { uid } from './schema.js';
 
 export function addMemory(state, content, opts = {}) {
   const now = new Date().toISOString();
-  const normalized = String(content || '').trim().slice(0, 4000);
+  const normalized = String(content || '')
+    .trim()
+    .slice(0, 4000);
   if (!normalized) throw new Error('Memory cannot be empty.');
   const memory = {
     id: uid('mem'),
@@ -17,7 +19,7 @@ export function addMemory(state, content, opts = {}) {
     supersedes: opts.supersedes || null,
     createdAt: now,
     updatedAt: now,
-    provenance: opts.provenance || { channel: 'conversation' }
+    provenance: opts.provenance || { channel: 'conversation' },
   };
   if (opts.contradictsTag) {
     for (const old of state.memories) {
@@ -34,9 +36,16 @@ export function addMemory(state, content, opts = {}) {
   if (state.memories.length > 2000) {
     const active = state.memories.filter(item => item.active);
     const inactive = state.memories.filter(item => !item.active);
-    state.memories = [...inactive.slice(-Math.max(0, 2000 - active.length)), ...active.slice(-2000)];
+    state.memories = [
+      ...inactive.slice(-Math.max(0, 2000 - active.length)),
+      ...active.slice(-2000),
+    ];
   }
-  state.audit.push({ at: now, type: 'memory.added', details: { id: memory.id, tags: memory.tags } });
+  state.audit.push({
+    at: now,
+    type: 'memory.added',
+    details: { id: memory.id, tags: memory.tags },
+  });
   return memory;
 }
 
@@ -61,6 +70,8 @@ export function forgetMemory(state, idOrText) {
 }
 
 export function activeMemories(state, limit = 20) {
-  return state.memories.filter(m => m.active).slice(-limit).reverse();
+  return state.memories
+    .filter(m => m.active)
+    .slice(-limit)
+    .reverse();
 }
-

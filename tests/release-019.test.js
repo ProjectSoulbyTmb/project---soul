@@ -6,7 +6,7 @@ import {
   DESKTOP_KNOWLEDGE_VERSION,
   INSTALLER_NAME,
   INSTALLER_MEASURED,
-  INSTALLER_SHA256
+  INSTALLER_SHA256,
 } from '../src/core/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
@@ -42,10 +42,16 @@ test('historical release hashes stay in CHANGELOG; live pages advertise only the
   assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_NAME)));
   if (INSTALLER_SHA256) assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
   else assert.match(downloadPage, /SHA256SUMS\.txt/);
-  assert.doesNotMatch(downloadPage, /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/);
+  assert.doesNotMatch(
+    downloadPage,
+    /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/
+  );
   assert.match(read('src/providers/internet.js'), /RAW_DROP_TAGS/);
   assert.match(read('tests/internet.test.js'), /<SCRIPT>steal\(\)<\/SCRIPT>/);
-  assert.doesNotMatch(read('src/providers/internet.js'), /replace\(\/<(?:script|style)[\s\S]*?<\/(?:script|style)>/i);
+  assert.doesNotMatch(
+    read('src/providers/internet.js'),
+    /replace\(\/<(?:script|style)[\s\S]*?<\/(?:script|style)>/i
+  );
 });
 
 test('tokens share one system-font language, reduced motion support, and no SF Pro', () => {

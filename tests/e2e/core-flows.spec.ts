@@ -32,11 +32,13 @@ test.describe('Eidovara Core User Flows', () => {
 
   test('Age gate appears and can be accepted', async () => {
     // Check age gate modal is present
-    await expect(page.locator('#eidovara-age-gate-modal, [data-testid="age-gate"]')).toBeVisible({ timeout: 15000 });
-    
+    await expect(page.locator('#eidovara-age-gate-modal, [data-testid="age-gate"]')).toBeVisible({
+      timeout: 15000,
+    });
+
     // Accept age gate
     await page.click('button:has-text("I confirm I am 18+")');
-    
+
     // Verify dashboard loads
     await expect(page.locator('text=Your Eidovara workspace')).toBeVisible({ timeout: 10000 });
   });
@@ -47,7 +49,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     // Check main navigation
     await expect(page.locator('text=Dashboard')).toBeVisible();
     await expect(page.locator('text=Research')).toBeVisible();
@@ -63,7 +65,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     // Check companion dock
     await expect(page.locator('#soulDock, [data-testid="soul-dock"]')).toBeVisible();
     await expect(page.locator('text=Soul companion')).toBeVisible();
@@ -76,11 +78,11 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     // Navigate to settings
     await page.click('text=Settings');
     await expect(page.locator('text=Settings')).toBeVisible();
-    
+
     // Check settings sections
     await expect(page.locator('text=Models, language')).toBeVisible();
     await expect(page.locator('text=Voices')).toBeVisible();
@@ -96,7 +98,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     await page.click('text=Apps & Gaming');
     await expect(page.locator('text=Apps & Gaming Hub')).toBeVisible();
     await expect(page.locator('text=Discover installed apps')).toBeVisible();
@@ -108,7 +110,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     await page.click('text=Entertainment');
     await expect(page.locator('text=Entertainment')).toBeVisible();
     await expect(page.locator('text=Mood mix')).toBeVisible();
@@ -120,7 +122,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     await page.click('text=Memory');
     await expect(page.locator('text=Memory')).toBeVisible();
     await expect(page.locator('text=Add something Soul should remember')).toBeVisible();
@@ -131,7 +133,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     await page.click('text=Research');
     await expect(page.locator('text=Research')).toBeVisible();
     await expect(page.locator('#researchQuery')).toBeVisible();
@@ -143,7 +145,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     await page.click('text=Identity');
     await expect(page.locator('text=Identity & continuity')).toBeVisible();
     await expect(page.locator('text=Protected identity')).toBeVisible();
@@ -155,12 +157,14 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     // Press Ctrl+K
     await page.keyboard.press('Control+K');
-    
+
     // Check palette opens (implementation dependent)
-    await expect(page.locator('[data-testid="command-palette"], .palette-overlay')).toBeVisible({ timeout: 5000 });
+    await expect(page.locator('[data-testid="command-palette"], .palette-overlay')).toBeVisible({
+      timeout: 5000,
+    });
   });
 
   test('Accessibility: no critical violations on main pages', async () => {
@@ -168,7 +172,7 @@ test.describe('Eidovara Core User Flows', () => {
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
     }
-    
+
     await checkA11y(page, undefined, {
       detailedReport: true,
       detailedReportOptions: { html: true },

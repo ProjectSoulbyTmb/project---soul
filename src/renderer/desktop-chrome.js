@@ -19,7 +19,7 @@
       openAtLogin: d.openAtLogin === true,
       pinCompanion: d.pinCompanion === true,
       notices: Array.isArray(d.notices) ? d.notices : [],
-      sleepUntil: d.sleepUntil || null
+      sleepUntil: d.sleepUntil || null,
     };
   }
 
@@ -34,7 +34,7 @@
       theme: s.theme,
       companion: s.companion,
       assistOptIn: s.assistOptIn === true,
-      desktop: next
+      desktop: next,
     };
   }
 
@@ -62,16 +62,22 @@
     const login = settings().loginItem || {};
     if ($('#openAtLoginInput')) $('#openAtLoginInput').disabled = login.supported !== true;
     if ($('#openAtLoginHelp')) {
-      $('#openAtLoginHelp').textContent = login.supported === true
-        ? t('chromeHelp', 'Tray, on-top, and sign-in apply to this Eidovara window only. Open at login is Windows-only via Electron. Not a global hotkey into other apps.')
-        : 'Open at login uses Electron\'s Windows login-item setting. It is not available on this host if you are not on Windows.';
+      $('#openAtLoginHelp').textContent =
+        login.supported === true
+          ? t(
+              'chromeHelp',
+              'Tray, on-top, and sign-in apply to this Eidovara window only. Open at login is Windows-only via Electron. Not a global hotkey into other apps.'
+            )
+          : "Open at login uses Electron's Windows login-item setting. It is not available on this host if you are not on Windows.";
     }
   }
 
   function recents() {
-    return window.eidovaraState?.kernel?.workspace?.recents
-      || window.eidovaraKernel?.workspace?.recents
-      || [];
+    return (
+      window.eidovaraState?.kernel?.workspace?.recents ||
+      window.eidovaraKernel?.workspace?.recents ||
+      []
+    );
   }
 
   function renderRecents() {
@@ -80,7 +86,12 @@
     box.textContent = '';
     const items = recents();
     if (!items.length) {
-      box.append(Object.assign(document.createElement('p'), { className: 'empty', textContent: t('recentsEmpty', 'Nothing recent yet.') }));
+      box.append(
+        Object.assign(document.createElement('p'), {
+          className: 'empty',
+          textContent: t('recentsEmpty', 'Nothing recent yet.'),
+        })
+      );
       return;
     }
     for (const item of items.slice(0, 12)) {
@@ -112,7 +123,12 @@
       btn.classList.toggle('has-notices', items.length > 0);
     }
     if (!items.length) {
-      box.append(Object.assign(document.createElement('p'), { className: 'empty', textContent: t('notifyEmpty', 'No notices yet.') }));
+      box.append(
+        Object.assign(document.createElement('p'), {
+          className: 'empty',
+          textContent: t('notifyEmpty', 'No notices yet.'),
+        })
+      );
       return;
     }
     for (const item of items) {
@@ -145,9 +161,11 @@
       title: String(notice?.title || 'Notice').slice(0, 120),
       body: String(notice?.body || '').slice(0, 280),
       at: notice?.at || new Date().toISOString(),
-      kind: String(notice?.kind || 'event').slice(0, 24)
+      kind: String(notice?.kind || 'event').slice(0, 24),
     };
-    await persistDesktop({ notices: [next, ...list.filter(item => item.id !== next.id)].slice(0, 20) });
+    await persistDesktop({
+      notices: [next, ...list.filter(item => item.id !== next.id)].slice(0, 20),
+    });
   }
 
   function pauseLocalMedia() {
@@ -167,26 +185,37 @@
     const until = desktop().sleepUntil;
     if (!until) {
       if (remainEl) remainEl.textContent = '';
-      if ($('#sleepTimerSelect') && document.activeElement !== $('#sleepTimerSelect')) $('#sleepTimerSelect').value = 'off';
+      if ($('#sleepTimerSelect') && document.activeElement !== $('#sleepTimerSelect'))
+        $('#sleepTimerSelect').value = 'off';
       return;
     }
     const remain = Math.max(0, Date.parse(until) - Date.now());
     if (remainEl) remainEl.textContent = remain ? formatRemain(remain) : '';
     if (remain <= 0) {
       pauseLocalMedia();
-      persistDesktop({ sleepUntil: null }).then(() => {
-        pushNotice({
-          id: `sleep-${Date.now()}`,
-          title: 'Sleep timer',
-          body: 'Local media paused. This timer only affects Eidovara playback, not other apps.',
-          kind: 'sleep'
-        });
-      }).catch(() => {});
+      persistDesktop({ sleepUntil: null })
+        .then(() => {
+          pushNotice({
+            id: `sleep-${Date.now()}`,
+            title: 'Sleep timer',
+            body: 'Local media paused. This timer only affects Eidovara playback, not other apps.',
+            kind: 'sleep',
+          });
+        })
+        .catch(() => {});
     }
   }
 
   async function setSleepPreset(preset) {
-    const ms = { off: 0, '15': 15 * 60_000, '30': 30 * 60_000, '45': 45 * 60_000, '60': 60 * 60_000, '90': 90 * 60_000 }[String(preset)] || 0;
+    const ms =
+      {
+        off: 0,
+        15: 15 * 60_000,
+        30: 30 * 60_000,
+        45: 45 * 60_000,
+        60: 60 * 60_000,
+        90: 90 * 60_000,
+      }[String(preset)] || 0;
     const sleepUntil = ms ? new Date(Date.now() + ms).toISOString() : null;
     await persistDesktop({ sleepUntil });
     if (sleepUntil) {
@@ -194,7 +223,7 @@
         id: `sleep-set-${Date.now()}`,
         title: 'Sleep timer set',
         body: 'Eidovara will pause local media when this timer ends. Other apps are not closed.',
-        kind: 'sleep'
+        kind: 'sleep',
       });
     }
   }
@@ -218,10 +247,15 @@
     b.type = 'button';
     b.append(
       Object.assign(document.createElement('strong'), { textContent: result.title }),
-      Object.assign(document.createElement('small'), { textContent: result.kind === 'convert' ? 'Local conversion · no live FX' : 'Local calculator' })
+      Object.assign(document.createElement('small'), {
+        textContent:
+          result.kind === 'convert' ? 'Local conversion · no live FX' : 'Local calculator',
+      })
     );
     b.addEventListener('click', async () => {
-      try { await navigator.clipboard?.writeText?.(String(result.result)); } catch {}
+      try {
+        await navigator.clipboard?.writeText?.(String(result.result));
+      } catch {}
       $('#commandPalette')?.classList.add('hidden');
     });
     box.append(b);
@@ -245,7 +279,11 @@
     try {
       const kernel = await window.soul.workspace('recent', item);
       window.eidovaraKernel = kernel;
-      if (window.eidovaraState) window.eidovaraState.kernel = { ...(window.eidovaraState.kernel || {}), workspace: kernel.workspace || kernel };
+      if (window.eidovaraState)
+        window.eidovaraState.kernel = {
+          ...(window.eidovaraState.kernel || {}),
+          workspace: kernel.workspace || kernel,
+        };
       renderRecents();
     } catch {}
   }
@@ -277,9 +315,11 @@
         trayStay: $('#trayStayInput')?.checked === true,
         alwaysOnTop: $('#alwaysOnTopInput')?.checked === true,
         openAtLogin: $('#openAtLoginInput')?.checked === true,
-        pinCompanion: $('#pinCompanionInput')?.checked === true
+        pinCompanion: $('#pinCompanionInput')?.checked === true,
       });
-      if (status) status.textContent = 'Desktop chrome saved. Tray stay-running is Windows-only. Open at login is Windows-only via Electron.';
+      if (status)
+        status.textContent =
+          'Desktop chrome saved. Tray stay-running is Windows-only. Open at login is Windows-only via Electron.';
     } catch (err) {
       if (status) status.textContent = String(err?.message || err);
     }
@@ -287,7 +327,9 @@
 
   $('#notifyOpenBtn')?.addEventListener('click', () => openNotices());
   $('#notifyCloseBtn')?.addEventListener('click', () => closeNotices());
-  $('#notifyDrawer')?.addEventListener('click', e => { if (e.target === $('#notifyDrawer')) closeNotices(); });
+  $('#notifyDrawer')?.addEventListener('click', e => {
+    if (e.target === $('#notifyDrawer')) closeNotices();
+  });
   $('#notifyClearBtn')?.addEventListener('click', async () => {
     await persistDesktop({ notices: [] });
   });
@@ -308,7 +350,7 @@
           id: `backup-${Date.now()}`,
           title: 'Backup created',
           body: 'A local snapshot is on this PC. This is not cloud backup or telemetry.',
-          kind: 'backup'
+          kind: 'backup',
         }).catch(() => {});
       }
     }, 800);
@@ -325,9 +367,8 @@
     recordView,
     recordRecent,
     setAlwaysOnTop: async on => persistDesktop({ alwaysOnTop: on === true }),
-    paintCalc
+    paintCalc,
   };
 
   refresh();
 })();
-

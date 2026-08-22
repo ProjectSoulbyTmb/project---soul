@@ -4,25 +4,54 @@ import { attachAdultFigure } from './adult-figure.js';
 import { createAdultAmbient } from './adult-ambient.js';
 import { attachFeelGamepad, stayAwake } from './runtime-chrome.js';
 import {
-  HAIR_STYLES, CLOTHING, BODY_PRESENTATIONS, PERSONA_STYLES, sessionCatalog, adultSoulStudioOpen
+  HAIR_STYLES,
+  CLOTHING,
+  BODY_PRESENTATIONS,
+  PERSONA_STYLES,
+  sessionCatalog,
+  adultSoulStudioOpen,
 } from '../core/adult-soul.js';
-import { FEEL_PATTERNS, FEEL_SYNC_MODES, FEEL_HONESTY, GAMEPAD_HONESTY } from '../core/adult-feel.js';
+import {
+  FEEL_PATTERNS,
+  FEEL_SYNC_MODES,
+  FEEL_HONESTY,
+  GAMEPAD_HONESTY,
+} from '../core/adult-feel.js';
 import { AMBIENT_HONESTY } from '../core/adult-ambient.js';
 import {
-  ADULT_VOICE_PRESETS, ADULT_VOICE_HONESTY, enrichInstalledVoices, speakAdultCue,
-  adultPreviewLine, applyPresetToSounds, groupVoicesForPicker
+  ADULT_VOICE_PRESETS,
+  ADULT_VOICE_HONESTY,
+  enrichInstalledVoices,
+  speakAdultCue,
+  adultPreviewLine,
+  applyPresetToSounds,
+  groupVoicesForPicker,
 } from '../core/adult-voices.js';
 import { meshQualityScore, FIGURE_QUALITY } from '../core/adult-mesh.js';
 import { buildAdultMesh } from '../core/adult-mesh.js';
 
 const $ = s => document.querySelector(s);
 const FIGURE_SLIDERS = [
-  ['figure.height', 'Height'], ['figure.shoulders', 'Shoulders'], ['figure.bust', 'Bust'],
-  ['figure.chest', 'Chest'], ['figure.waist', 'Waist'], ['figure.hips', 'Hips'],
-  ['figure.thighs', 'Thighs'], ['figure.butt', 'Ass'], ['figure.belly', 'Belly'], ['figure.posture', 'Posture'],
-  ['head.faceWidth', 'Face width'], ['head.jaw', 'Jaw'], ['head.lips', 'Lips'], ['head.eyeSize', 'Eyes'],
-  ['explicit.nipples', 'Nipples'], ['explicit.groin', 'Groin'], ['explicit.assFocus', 'Ass focus'],
-  ['motion.breath', 'Breath'], ['motion.sway', 'Sway'], ['skin.sheen', 'Skin sheen']
+  ['figure.height', 'Height'],
+  ['figure.shoulders', 'Shoulders'],
+  ['figure.bust', 'Bust'],
+  ['figure.chest', 'Chest'],
+  ['figure.waist', 'Waist'],
+  ['figure.hips', 'Hips'],
+  ['figure.thighs', 'Thighs'],
+  ['figure.butt', 'Ass'],
+  ['figure.belly', 'Belly'],
+  ['figure.posture', 'Posture'],
+  ['head.faceWidth', 'Face width'],
+  ['head.jaw', 'Jaw'],
+  ['head.lips', 'Lips'],
+  ['head.eyeSize', 'Eyes'],
+  ['explicit.nipples', 'Nipples'],
+  ['explicit.groin', 'Groin'],
+  ['explicit.assFocus', 'Ass focus'],
+  ['motion.breath', 'Breath'],
+  ['motion.sway', 'Sway'],
+  ['skin.sheen', 'Skin sheen'],
 ];
 
 function deepSet(obj, path, value) {
@@ -48,7 +77,12 @@ let gamepadCtl = null;
 
 function adultOn() {
   const p = window.eidovaraState?.policy || {};
-  return p.mode === 'adult' && p.adultSoulEnabled === true && p.adultStatusConfirmed === true && p.currentConsent === true;
+  return (
+    p.mode === 'adult' &&
+    p.adultSoulEnabled === true &&
+    p.adultStatusConfirmed === true &&
+    p.currentConsent === true
+  );
 }
 
 async function refresh(status) {
@@ -148,7 +182,9 @@ function renderVoices() {
       const voices = enrichInstalledVoices(window.speechSynthesis);
       const sounds = applyPresetToSounds(view?.sounds || {}, presets.value, voices);
       save({ sounds });
-      speakAdultCue(window.speechSynthesis, adultPreviewLine(presets.value), sounds, { Utterance: window.SpeechSynthesisUtterance });
+      speakAdultCue(window.speechSynthesis, adultPreviewLine(presets.value), sounds, {
+        Utterance: window.SpeechSynthesisUtterance,
+      });
     });
   }
   if (!list) return;
@@ -197,7 +233,8 @@ function renderFeel() {
     pad.style.setProperty('--feel-y', `${100 - (feel.intensity || 55)}%`);
   }
   const level = $('#adultFeelLevel');
-  if (level) level.textContent = `Level ${Math.round((feel.lastLevel || 0) * 100)} · ${feel.pattern} · ${feel.syncMode}`;
+  if (level)
+    level.textContent = `Level ${Math.round((feel.lastLevel || 0) * 100)} · ${feel.pattern} · ${feel.syncMode}`;
   const blank = $('#adultAutoBlank');
   if (blank) blank.value = String(feel.stealth?.autoBlankMs || 0);
   if ($('#adultHideRecents')) $('#adultHideRecents').checked = feel.stealth?.hideRecents === true;
@@ -214,7 +251,9 @@ function bumpIdle() {
   clearTimeout(idleTimer);
   const ms = Number(view?.feel?.stealth?.autoBlankMs || 0);
   if (!ms || !view?.feel?.stealth?.pinEnabled) return;
-  idleTimer = setTimeout(() => { window.soul?.lockAdultStealth?.().then(refresh); }, ms);
+  idleTimer = setTimeout(() => {
+    window.soul?.lockAdultStealth?.().then(refresh);
+  }, ms);
 }
 
 function syncRuntime() {
@@ -226,7 +265,9 @@ function syncRuntime() {
     return;
   }
   if (!ambient) ambient = createAdultAmbient();
-  const reduced = Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const reduced = Boolean(
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
   ambient.start(view.sounds, { reducedMotion: reduced });
   ambient.setFeelLevel(Number(view?.feel?.lastLevel) || 0);
   stayAwake(Boolean(view?.session?.active), 'adult-session');
@@ -239,7 +280,10 @@ function renderCue() {
   cue.textContent = text;
   if (view?.session?.active && view.sounds?.voiceEnabled !== false && text && text !== lastSpoken) {
     lastSpoken = text;
-    speakAdultCue(window.speechSynthesis, text, view.sounds, { pace: 'medium', Utterance: window.SpeechSynthesisUtterance });
+    speakAdultCue(window.speechSynthesis, text, view.sounds, {
+      pace: 'medium',
+      Utterance: window.SpeechSynthesisUtterance,
+    });
   }
 }
 
@@ -253,7 +297,7 @@ function renderFigure() {
     motion: view.avatar.motion,
     slowMo: view.stage?.slowMo === true,
     reducedMotion: Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches),
-    sessionKind: view.session?.kind || ''
+    sessionKind: view.session?.kind || '',
   });
   const meta = $('#adultFigureMeta');
   if (meta && view.avatar) {
@@ -279,16 +323,26 @@ function render() {
   fillSelect($('#adultClothing'), CLOTHING, view.avatar?.presentationWear);
   fillSelect($('#adultSoulPresentation'), BODY_PRESENTATIONS, view.avatar?.presentation);
   fillSelect($('#adultPersonaStyle'), PERSONA_STYLES, view.persona?.style);
-  fillSelect($('#adultRenderQuality'), [
-    { id: 'ultra', title: 'Ultra (highest first-party mesh)' },
-    { id: 'high', title: 'High' },
-    { id: 'performance', title: 'Performance' }
-  ], view.avatar?.render?.quality);
-  fillSelect($('#adultLighting'), [
-    { id: 'studio', title: 'Studio' }, { id: 'soft', title: 'Soft wrap' },
-    { id: 'club', title: 'Club' }, { id: 'neon', title: 'Neon' },
-    { id: 'bedroom', title: 'Bedroom' }
-  ], view.avatar?.render?.lighting);
+  fillSelect(
+    $('#adultRenderQuality'),
+    [
+      { id: 'ultra', title: 'Ultra (highest first-party mesh)' },
+      { id: 'high', title: 'High' },
+      { id: 'performance', title: 'Performance' },
+    ],
+    view.avatar?.render?.quality
+  );
+  fillSelect(
+    $('#adultLighting'),
+    [
+      { id: 'studio', title: 'Studio' },
+      { id: 'soft', title: 'Soft wrap' },
+      { id: 'club', title: 'Club' },
+      { id: 'neon', title: 'Neon' },
+      { id: 'bedroom', title: 'Bedroom' },
+    ],
+    view.avatar?.render?.lighting
+  );
   const name = $('#adultSoulName');
   if (name && view.persona?.name) name.value = view.persona.name;
   const heat = $('#adultHeat');
@@ -299,10 +353,14 @@ function render() {
   if (ambientHelp) ambientHelp.textContent = view.ambientHonesty || AMBIENT_HONESTY;
   const ambientState = view.sounds && view.sounds.ambient ? view.sounds.ambient : {};
   const mixState = view.sounds && view.sounds.mix ? view.sounds.mix : {};
-  if ($('#adultAmbientHeartbeat')) $('#adultAmbientHeartbeat').checked = ambientState.heartbeat !== false;
+  if ($('#adultAmbientHeartbeat'))
+    $('#adultAmbientHeartbeat').checked = ambientState.heartbeat !== false;
   if ($('#adultAmbientBreath')) $('#adultAmbientBreath').checked = ambientState.breath !== false;
   if ($('#adultAmbientDrone')) $('#adultAmbientDrone').checked = ambientState.drone !== false;
-  if ($('#adultAmbientMix')) $('#adultAmbientMix').value = String(Number.isFinite(Number(mixState.ambient)) ? mixState.ambient : 45);
+  if ($('#adultAmbientMix'))
+    $('#adultAmbientMix').value = String(
+      Number.isFinite(Number(mixState.ambient)) ? mixState.ambient : 45
+    );
   syncRuntime();
   bumpIdle();
 }
@@ -333,25 +391,55 @@ function startTicker() {
 function bind() {
   const canvas = $('#adultFigureCanvas');
   if (canvas && !figure) figure = attachAdultFigure(canvas);
-  $('#adultHairStyle')?.addEventListener('change', e => save({ avatar: { ...view.avatar, hair: { ...view.avatar.hair, style: e.target.value } } }));
-  $('#adultClothing')?.addEventListener('change', e => save({ avatar: { ...view.avatar, presentationWear: e.target.value } }));
-  $('#adultSoulPresentation')?.addEventListener('change', e => save({ avatar: { ...view.avatar, presentation: e.target.value } }));
-  $('#adultPersonaStyle')?.addEventListener('change', e => save({ persona: { ...view.persona, style: e.target.value } }));
-  $('#adultRenderQuality')?.addEventListener('change', e => save({ avatar: { ...view.avatar, render: { ...view.avatar.render, quality: e.target.value } } }));
-  $('#adultLighting')?.addEventListener('change', e => save({ avatar: { ...view.avatar, render: { ...view.avatar.render, lighting: e.target.value } } }));
-  $('#adultSoulName')?.addEventListener('change', e => save({ persona: { ...view.persona, name: e.target.value } }));
-  $('#adultHeat')?.addEventListener('input', e => save({ persona: { ...view.persona, heat: Number(e.target.value) } }));
+  $('#adultHairStyle')?.addEventListener('change', e =>
+    save({ avatar: { ...view.avatar, hair: { ...view.avatar.hair, style: e.target.value } } })
+  );
+  $('#adultClothing')?.addEventListener('change', e =>
+    save({ avatar: { ...view.avatar, presentationWear: e.target.value } })
+  );
+  $('#adultSoulPresentation')?.addEventListener('change', e =>
+    save({ avatar: { ...view.avatar, presentation: e.target.value } })
+  );
+  $('#adultPersonaStyle')?.addEventListener('change', e =>
+    save({ persona: { ...view.persona, style: e.target.value } })
+  );
+  $('#adultRenderQuality')?.addEventListener('change', e =>
+    save({ avatar: { ...view.avatar, render: { ...view.avatar.render, quality: e.target.value } } })
+  );
+  $('#adultLighting')?.addEventListener('change', e =>
+    save({
+      avatar: { ...view.avatar, render: { ...view.avatar.render, lighting: e.target.value } },
+    })
+  );
+  $('#adultSoulName')?.addEventListener('change', e =>
+    save({ persona: { ...view.persona, name: e.target.value } })
+  );
+  $('#adultHeat')?.addEventListener('input', e =>
+    save({ persona: { ...view.persona, heat: Number(e.target.value) } })
+  );
   const patchFeel = extra => save({ feel: { ...(view?.feel || {}), ...extra } });
-  $('#adultFeelIntensity')?.addEventListener('input', e => patchFeel({ intensity: Number(e.target.value) }));
-  $('#adultFeelSpeed')?.addEventListener('input', e => patchFeel({ speed: Number(e.target.value) }));
-  $('#adultFeelSensitivity')?.addEventListener('input', e => patchFeel({ sensitivity: Number(e.target.value) }));
+  $('#adultFeelIntensity')?.addEventListener('input', e =>
+    patchFeel({ intensity: Number(e.target.value) })
+  );
+  $('#adultFeelSpeed')?.addEventListener('input', e =>
+    patchFeel({ speed: Number(e.target.value) })
+  );
+  $('#adultFeelSensitivity')?.addEventListener('input', e =>
+    patchFeel({ sensitivity: Number(e.target.value) })
+  );
   $('#adultFeelPattern')?.addEventListener('change', e => patchFeel({ pattern: e.target.value }));
   $('#adultFeelSync')?.addEventListener('change', e => patchFeel({ syncMode: e.target.value }));
   $('#adultFeelLoop')?.addEventListener('change', e => patchFeel({ loop: e.target.checked }));
   $('#adultFeelFloat')?.addEventListener('change', e => patchFeel({ float: e.target.checked }));
-  $('#adultAutoBlank')?.addEventListener('change', e => patchFeel({ stealth: { ...(view?.feel?.stealth || {}), autoBlankMs: Number(e.target.value) } }));
-  $('#adultHideRecents')?.addEventListener('change', e => patchFeel({ stealth: { ...(view?.feel?.stealth || {}), hideRecents: e.target.checked } }));
-  $('#adultAutoClear')?.addEventListener('change', e => patchFeel({ stealth: { ...(view?.feel?.stealth || {}), autoClearHistory: e.target.checked } }));
+  $('#adultAutoBlank')?.addEventListener('change', e =>
+    patchFeel({ stealth: { ...(view?.feel?.stealth || {}), autoBlankMs: Number(e.target.value) } })
+  );
+  $('#adultHideRecents')?.addEventListener('change', e =>
+    patchFeel({ stealth: { ...(view?.feel?.stealth || {}), hideRecents: e.target.checked } })
+  );
+  $('#adultAutoClear')?.addEventListener('change', e =>
+    patchFeel({ stealth: { ...(view?.feel?.stealth || {}), autoClearHistory: e.target.checked } })
+  );
   const pad = $('#adultFeelPad');
   const padMove = ev => {
     if (!feelPointer && ev.type === 'pointermove') return;
@@ -360,24 +448,40 @@ function bind() {
     const y = Math.max(0, Math.min(1, (ev.clientY - box.top) / box.height));
     patchFeel({ speed: Math.round(x * 100), intensity: Math.round((1 - y) * 100) });
   };
-  pad?.addEventListener('pointerdown', ev => { feelPointer = true; pad.setPointerCapture?.(ev.pointerId); padMove(ev); });
+  pad?.addEventListener('pointerdown', ev => {
+    feelPointer = true;
+    pad.setPointerCapture?.(ev.pointerId);
+    padMove(ev);
+  });
   pad?.addEventListener('pointermove', padMove);
-  pad?.addEventListener('pointerup', () => { feelPointer = false; });
+  pad?.addEventListener('pointerup', () => {
+    feelPointer = false;
+  });
   $('#adultPinSetBtn')?.addEventListener('click', async () => {
     try {
-      view = await window.soul.setAdultPin($('#adultPinInput')?.value, $('#adultPinConfirm')?.value);
+      view = await window.soul.setAdultPin(
+        $('#adultPinInput')?.value,
+        $('#adultPinConfirm')?.value
+      );
       if ($('#adultPinInput')) $('#adultPinInput').value = '';
       if ($('#adultPinConfirm')) $('#adultPinConfirm').value = '';
       render();
-    } catch (err) { alert(String(err?.message || err)); }
+    } catch (err) {
+      alert(String(err?.message || err));
+    }
   });
-  $('#adultPinLockBtn')?.addEventListener('click', async () => { view = await window.soul.lockAdultStealth(); render(); });
+  $('#adultPinLockBtn')?.addEventListener('click', async () => {
+    view = await window.soul.lockAdultStealth();
+    render();
+  });
   $('#adultPinUnlockBtn')?.addEventListener('click', async () => {
     try {
       view = await window.soul.unlockAdultStealth($('#adultPinUnlock')?.value);
       if ($('#adultPinUnlock')) $('#adultPinUnlock').value = '';
       render();
-    } catch (err) { alert(String(err?.message || err)); }
+    } catch (err) {
+      alert(String(err?.message || err));
+    }
   });
   window.addEventListener('eidovara-feel-level', async ev => {
     const level = Number(ev.detail?.level || 0);
@@ -387,21 +491,25 @@ function bind() {
     ambient?.setFeelLevel(sample.level || 0);
     gamepadCtl?.rumble(sample.level || 0);
     const line = $('#adultFeelLevel');
-    if (line && sample) line.textContent = `Level ${Math.round((sample.level || 0) * 100)} · ${sample.pattern} · ${sample.syncMode}`;
+    if (line && sample)
+      line.textContent = `Level ${Math.round((sample.level || 0) * 100)} · ${sample.pattern} · ${sample.syncMode}`;
     if (figure && view) {
       figure.setLife?.({
         behavior: view.session?.behavior || 'idle-breathe',
         pace: sample.pace || view.session?.pace || 'medium',
         heat: Math.round((sample.level || 0) * 100),
         motion: view.avatar?.motion,
-        sessionKind: view.session?.kind || ''
+        sessionKind: view.session?.kind || '',
       });
     }
   });
   window.addEventListener('keydown', ev => {
     if (ev.key === '`' && !['INPUT', 'TEXTAREA', 'SELECT'].includes(ev.target?.tagName)) {
       ev.preventDefault();
-      window.soul?.lockAdultStealth?.().then(status => { view = status; render(); });
+      window.soul?.lockAdultStealth?.().then(status => {
+        view = status;
+        render();
+      });
     }
   });
   window.addEventListener('pointerdown', bumpIdle);
@@ -420,7 +528,9 @@ function bind() {
     render();
   });
   $('#adultPreviewVoiceBtn')?.addEventListener('click', () => {
-    speakAdultCue(window.speechSynthesis, adultPreviewLine(view?.sounds?.presetId), view?.sounds, { Utterance: window.SpeechSynthesisUtterance });
+    speakAdultCue(window.speechSynthesis, adultPreviewLine(view?.sounds?.presetId), view?.sounds, {
+      Utterance: window.SpeechSynthesisUtterance,
+    });
   });
   const patchAmbient = extra => {
     const prior = view?.sounds || {};
@@ -428,13 +538,23 @@ function bind() {
     const mixNext = { ...(prior.mix || {}), ...(extra.mix || {}) };
     save({ sounds: { ...prior, ambient: ambientNext, mix: mixNext } });
   };
-  $('#adultAmbientHeartbeat')?.addEventListener('change', e => patchAmbient({ ambient: { heartbeat: e.target.checked } }));
-  $('#adultAmbientBreath')?.addEventListener('change', e => patchAmbient({ ambient: { breath: e.target.checked } }));
-  $('#adultAmbientDrone')?.addEventListener('change', e => patchAmbient({ ambient: { drone: e.target.checked } }));
-  $('#adultAmbientMix')?.addEventListener('input', e => patchAmbient({ mix: { ambient: Number(e.target.value) } }));
+  $('#adultAmbientHeartbeat')?.addEventListener('change', e =>
+    patchAmbient({ ambient: { heartbeat: e.target.checked } })
+  );
+  $('#adultAmbientBreath')?.addEventListener('change', e =>
+    patchAmbient({ ambient: { breath: e.target.checked } })
+  );
+  $('#adultAmbientDrone')?.addEventListener('change', e =>
+    patchAmbient({ ambient: { drone: e.target.checked } })
+  );
+  $('#adultAmbientMix')?.addEventListener('input', e =>
+    patchAmbient({ mix: { ambient: Number(e.target.value) } })
+  );
   if (!gamepadCtl) {
     gamepadCtl = attachFeelGamepad({
-      reducedMotion: Boolean(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches),
+      reducedMotion: Boolean(
+        window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      ),
       getFeel: () => view?.feel || {},
       onStick: stick => {
         if (!(adultOn() && view?.open)) return;
@@ -460,21 +580,29 @@ function bind() {
         if (!line) return;
         line.textContent = info.connected
           ? `${info.connected} gamepad connected · ${view?.gamepadHonesty || GAMEPAD_HONESTY}`
-          : (view?.gamepadHonesty || GAMEPAD_HONESTY);
-      }
+          : view?.gamepadHonesty || GAMEPAD_HONESTY;
+      },
     });
   }
   $('#adultVoiceList')?.addEventListener('click', e => {
     const uri = e.target.closest('button')?.dataset?.uri;
     if (!uri) return;
     save({ sounds: { ...view.sounds, voiceURI: uri, coachVoiceURI: uri } });
-    speakAdultCue(window.speechSynthesis, adultPreviewLine(view?.sounds?.presetId), { ...view.sounds, coachVoiceURI: uri }, { Utterance: window.SpeechSynthesisUtterance });
+    speakAdultCue(
+      window.speechSynthesis,
+      adultPreviewLine(view?.sounds?.presetId),
+      { ...view.sounds, coachVoiceURI: uri },
+      { Utterance: window.SpeechSynthesisUtterance }
+    );
   });
   $('#openAdultSoulFromIdentity')?.addEventListener('click', () => {
     if (window.eidovaraAdminSession?.()) window.eidovaraSetView?.('adultSoul');
     else window.eidovaraOpenAdmin?.();
   });
-  $('#adultUnlockIdentityBtn')?.addEventListener('click', () => window.eidovaraOpenAdmin?.() || window.eidovaraSetView?.('identity'));
+  $('#adultUnlockIdentityBtn')?.addEventListener(
+    'click',
+    () => window.eidovaraOpenAdmin?.() || window.eidovaraSetView?.('identity')
+  );
   if (window.speechSynthesis) {
     window.speechSynthesis.addEventListener?.('voiceschanged', () => renderVoices());
   }
@@ -483,9 +611,10 @@ function bind() {
 window.eidovaraAdultSoul = {
   refresh,
   isOpen: adultSoulStudioOpen,
-  onShow() { refresh(); }
+  onShow() {
+    refresh();
+  },
 };
 
 bind();
 void refresh();
-

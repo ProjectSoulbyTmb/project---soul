@@ -46,7 +46,7 @@ const STATIC_ASSETS = [
   'eidovara-og.png',
   'eidovara-wallpaper-light.jpg',
   'eidovara-wallpaper-dark.jpg',
-  'eidovara-wallpaper-product.jpg'
+  'eidovara-wallpaper-product.jpg',
 ].map(assetUrl);
 
 const CACHE_STRATEGIES = {
@@ -54,7 +54,7 @@ const CACHE_STRATEGIES = {
   html: 'network-first',
   images: 'cache-first',
   api: 'network-only',
-  fonts: 'cache-first'
+  fonts: 'cache-first',
 };
 
 const MAX_RUNTIME_ENTRIES = 50;
@@ -69,7 +69,7 @@ self.addEventListener('install', event => {
     Promise.all([
       caches.open(STATIC_CACHE).then(cache => cache.addAll(STATIC_ASSETS)),
       caches.open(IMAGE_CACHE),
-      caches.open(RUNTIME_CACHE)
+      caches.open(RUNTIME_CACHE),
     ]).then(() => self.skipWaiting())
   );
 });
@@ -79,13 +79,14 @@ self.addEventListener('install', event => {
 // ==========================================================================
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames
-          .filter(name => !name.startsWith(CACHE_NAME))
-          .map(name => caches.delete(name))
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.filter(name => !name.startsWith(CACHE_NAME)).map(name => caches.delete(name))
+        );
+      })
+      .then(() => self.clients.claim())
   );
 });
 
@@ -107,8 +108,11 @@ self.addEventListener('fetch', event => {
 
   // Determine request type and strategy
   const isHTML = request.headers.get('accept')?.includes('text/html');
-  const isImage = request.destination === 'image' || /\.(png|jpg|jpeg|gif|webp|svg|ico|avif)$/i.test(url.pathname);
-  const isFont = request.destination === 'font' || /\.(woff|woff2|ttf|otf|eot)$/i.test(url.pathname);
+  const isImage =
+    request.destination === 'image' ||
+    /\.(png|jpg|jpeg|gif|webp|svg|ico|avif)$/i.test(url.pathname);
+  const isFont =
+    request.destination === 'font' || /\.(woff|woff2|ttf|otf|eot)$/i.test(url.pathname);
   const isCSS = request.destination === 'style' || url.pathname.endsWith('.css');
   const isJS = request.destination === 'script' || url.pathname.endsWith('.js');
 
@@ -128,7 +132,14 @@ self.addEventListener('fetch', event => {
 async function handleRequest(request, strategy, url) {
   switch (strategy) {
     case 'cache-first':
-      return cacheFirst(request, url.pathname.match(/\.(css|js)$/) ? STATIC_CACHE : isImageRequest(request) ? IMAGE_CACHE : RUNTIME_CACHE);
+      return cacheFirst(
+        request,
+        url.pathname.match(/\.(css|js)$/)
+          ? STATIC_CACHE
+          : isImageRequest(request)
+            ? IMAGE_CACHE
+            : RUNTIME_CACHE
+      );
     case 'network-first':
       return networkFirst(request, RUNTIME_CACHE);
     case 'network-only':
@@ -152,7 +163,10 @@ async function cacheFirst(request, cacheName) {
     if (response.ok) {
       const cloned = response.clone();
       await cache.put(request, cloned);
-      await enforceCacheLimit(cacheName, cacheName === IMAGE_CACHE ? MAX_IMAGE_ENTRIES : MAX_RUNTIME_ENTRIES);
+      await enforceCacheLimit(
+        cacheName,
+        cacheName === IMAGE_CACHE ? MAX_IMAGE_ENTRIES : MAX_RUNTIME_ENTRIES
+      );
     }
     return response;
   } catch {
@@ -184,14 +198,21 @@ async function fetchAndCache(request, cacheName) {
   try {
     const response = await fetch(request);
     if (response.ok) await cache.put(request, response.clone());
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
 }
 
 // Offline fallback
 function offlineFallback(request) {
   const url = new URL(request.url);
   if (request.mode === 'navigate' || request.destination === 'document') {
-    return caches.match(OFFLINE_URL).then(res => res || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/html' } }));
+    return caches
+      .match(OFFLINE_URL)
+      .then(
+        res =>
+          res || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/html' } })
+      );
   }
   if (request.destination === 'image') {
     return new Response('', { status: 503, headers: { 'Content-Type': 'image/svg+xml' } });
@@ -201,7 +222,10 @@ function offlineFallback(request) {
 
 // Check if request is for an image
 function isImageRequest(request) {
-  return request.destination === 'image' || /\.(png|jpg|jpeg|gif|webp|svg|ico|avif)$/i.test(new URL(request.url).pathname);
+  return (
+    request.destination === 'image' ||
+    /\.(png|jpg|jpeg|gif|webp|svg|ico|avif)$/i.test(new URL(request.url).pathname)
+  );
 }
 
 // Check if cross-origin is allowed
@@ -229,7 +253,11 @@ self.addEventListener('message', event => {
   }
   if (event.data === 'clearCache') {
     event.waitUntil(
-      caches.keys().then(names => Promise.all(names.filter(n => n.startsWith(CACHE_NAME)).map(n => caches.delete(n))))
+      caches
+        .keys()
+        .then(names =>
+          Promise.all(names.filter(n => n.startsWith(CACHE_NAME)).map(n => caches.delete(n)))
+        )
     );
   }
 });
@@ -247,12 +275,16 @@ async function syncAnalytics() {
   // Send queued analytics when back online
   const cache = await caches.open(RUNTIME_CACHE);
   const requests = await cache.keys();
-  const analyticsRequests = requests.filter(r => r.url.includes('/analytics') || r.url.includes('/collect'));
+  const analyticsRequests = requests.filter(
+    r => r.url.includes('/analytics') || r.url.includes('/collect')
+  );
   for (const req of analyticsRequests) {
     try {
       await fetch(req);
       await cache.delete(req);
-    } catch { /* keep for next sync */ }
+    } catch {
+      /* keep for next sync */
+    }
   }
 }
 
@@ -272,7 +304,9 @@ async function updateContent() {
     try {
       const response = await fetch(asset, { cache: 'no-cache' });
       if (response.ok) await cache.put(asset, response.clone());
-    } catch { /* ignore */ }
+    } catch {
+      /* ignore */
+    }
   }
 }
 
@@ -281,16 +315,16 @@ async function updateContent() {
 // ==========================================================================
 self.addEventListener('push', event => {
   if (!event.data) return;
-    const data = event.data.json();
-    event.waitUntil(
-      self.registration.showNotification(data.title, {
-        body: data.body,
-        icon: assetUrl('eidovara-icon.png'),
-        badge: assetUrl('eidovara-icon.png'),
+  const data = event.data.json();
+  event.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: assetUrl('eidovara-icon.png'),
+      badge: assetUrl('eidovara-icon.png'),
       data: data.url,
       actions: data.actions || [],
       requireInteraction: false,
-      silent: false
+      silent: false,
     })
   );
 });

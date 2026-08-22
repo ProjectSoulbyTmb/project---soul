@@ -12,7 +12,7 @@ import {
   defaultPhrasing,
   defaultRegistry,
   matchCustomAction,
-  normalizeRegistry
+  normalizeRegistry,
 } from './registry.js';
 import {
   defaultWorkspaceLayers,
@@ -21,7 +21,7 @@ import {
   isFocusStopCommand,
   isScratchCaptureCommand,
   normalizeWorkspaceLayers,
-  workspacePublicView
+  workspacePublicView,
 } from './layers.js';
 
 export function defaultKernelState() {
@@ -31,7 +31,7 @@ export function defaultKernelState() {
     voice: defaultVoiceSettings(),
     presence: defaultPresence(),
     soulOnline: defaultSoulOnline(),
-    workspace: defaultWorkspaceLayers()
+    workspace: defaultWorkspaceLayers(),
   };
 }
 
@@ -42,15 +42,17 @@ export function migrateKernel(input) {
     session: {
       live: input.session?.live === true,
       startedAt: input.session?.startedAt ? String(input.session.startedAt).slice(0, 40) : null,
-      heartbeatAt: input.session?.heartbeatAt ? String(input.session.heartbeatAt).slice(0, 40) : null,
+      heartbeatAt: input.session?.heartbeatAt
+        ? String(input.session.heartbeatAt).slice(0, 40)
+        : null,
       pulseCount: Math.max(0, Number(input.session?.pulseCount) || 0),
-      source: input.session?.source === 'assist' ? 'assist' : 'offline'
+      source: input.session?.source === 'assist' ? 'assist' : 'offline',
     },
     registry: normalizeRegistry(input.registry, base.registry),
     voice: normalizeVoiceSettings(input.voice, base.voice),
     presence: normalizePresence(input.presence, base.presence),
     soulOnline: normalizeSoulOnline(input.soulOnline, base.soulOnline),
-    workspace: normalizeWorkspaceLayers(input.workspace, base.workspace)
+    workspace: normalizeWorkspaceLayers(input.workspace, base.workspace),
   };
 }
 
@@ -85,24 +87,51 @@ export function kernelHeartbeat(state, { at } = {}) {
 export function configureKernelState(state, input = {}) {
   state.kernel = migrateKernel(state.kernel);
   const next = input && typeof input === 'object' ? input : {};
-  if (next.registry) state.kernel.registry = normalizeRegistry(next.registry, state.kernel.registry);
+  if (next.registry)
+    state.kernel.registry = normalizeRegistry(next.registry, state.kernel.registry);
   if (next.moduleEnabled && typeof next.moduleEnabled === 'object') {
-    state.kernel.registry = normalizeRegistry({ ...state.kernel.registry, moduleEnabled: { ...state.kernel.registry.moduleEnabled, ...next.moduleEnabled } }, state.kernel.registry);
+    state.kernel.registry = normalizeRegistry(
+      {
+        ...state.kernel.registry,
+        moduleEnabled: { ...state.kernel.registry.moduleEnabled, ...next.moduleEnabled },
+      },
+      state.kernel.registry
+    );
   }
   if (Array.isArray(next.customActions)) {
-    state.kernel.registry = normalizeRegistry({ ...state.kernel.registry, customActions: next.customActions }, state.kernel.registry);
+    state.kernel.registry = normalizeRegistry(
+      { ...state.kernel.registry, customActions: next.customActions },
+      state.kernel.registry
+    );
   }
   if (next.phrasing) {
-    state.kernel.registry = normalizeRegistry({ ...state.kernel.registry, phrasing: next.phrasing }, state.kernel.registry);
+    state.kernel.registry = normalizeRegistry(
+      { ...state.kernel.registry, phrasing: next.phrasing },
+      state.kernel.registry
+    );
   }
   if (next.voice) state.kernel.voice = normalizeVoiceSettings(next.voice, state.kernel.voice);
-  if (next.presence) state.kernel.presence = normalizePresence(next.presence, state.kernel.presence);
-  if (next.soulOnline) state.kernel.soulOnline = normalizeSoulOnline(next.soulOnline, state.kernel.soulOnline);
-  if (next.assistOptIn !== undefined) state.kernel.soulOnline = normalizeSoulOnline({ assistOptIn: next.assistOptIn }, state.kernel.soulOnline);
-  if (next.workspace) state.kernel.workspace = normalizeWorkspaceLayers(next.workspace, state.kernel.workspace);
+  if (next.presence)
+    state.kernel.presence = normalizePresence(next.presence, state.kernel.presence);
+  if (next.soulOnline)
+    state.kernel.soulOnline = normalizeSoulOnline(next.soulOnline, state.kernel.soulOnline);
+  if (next.assistOptIn !== undefined)
+    state.kernel.soulOnline = normalizeSoulOnline(
+      { assistOptIn: next.assistOptIn },
+      state.kernel.soulOnline
+    );
+  if (next.workspace)
+    state.kernel.workspace = normalizeWorkspaceLayers(next.workspace, state.kernel.workspace);
   const at = new Date().toISOString();
   if (!Array.isArray(state.audit)) state.audit = [];
-  state.audit.push({ at, type: 'kernel.configured', details: { assistOptIn: state.kernel.soulOnline.assistOptIn === true, lookId: state.kernel.presence.lookId } });
+  state.audit.push({
+    at,
+    type: 'kernel.configured',
+    details: {
+      assistOptIn: state.kernel.soulOnline.assistOptIn === true,
+      lookId: state.kernel.presence.lookId,
+    },
+  });
   return kernelView(state);
 }
 
@@ -115,7 +144,7 @@ export function kernelView(state, runtime) {
   const registry = runtime || createRuntimeRegistry();
   const modules = registry.list().map(mod => ({
     ...mod,
-    enabled: registry.enabled(mod.id, kernel.registry)
+    enabled: registry.enabled(mod.id, kernel.registry),
   }));
   return {
     live: kernel.session.live === true,
@@ -135,16 +164,31 @@ export function kernelView(state, runtime) {
     engineHonesty: ENGINE_HONESTY,
     selfModel: state?.continuity?.selfModel || null,
     assistOptIn: kernel.soulOnline.assistOptIn === true,
-    workspace: workspacePublicView(state?.kernel?.workspace || kernel.workspace)
+    workspace: workspacePublicView(state?.kernel?.workspace || kernel.workspace),
   };
 }
 
 export const KERNEL_ACTION_TYPES = Object.freeze([
-  'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
-  'open-diagnostics', 'pick-local-media', 'discover-apps',
-  'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
-  'open-overlay', 'open-chat-overlay', 'open-browse-overlay', 'open-discord-overlay',
-  'set-always-on-top', 'open-now-playing', 'open-external'
+  'open-view',
+  'open-legal',
+  'open-service',
+  'open-updates',
+  'open-setup',
+  'open-diagnostics',
+  'pick-local-media',
+  'discover-apps',
+  'start-focus',
+  'stop-focus',
+  'capture-scratch',
+  'open-palette',
+  'open-cheatsheet',
+  'open-overlay',
+  'open-chat-overlay',
+  'open-browse-overlay',
+  'open-discord-overlay',
+  'set-always-on-top',
+  'open-now-playing',
+  'open-external',
 ]);
 
 function action(type, extra = {}) {
@@ -163,12 +207,12 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
       return [
         action('open-view', { view: 'apps', label: 'Open Apps & Gaming', auto: true }),
         action('discover-apps', { label: 'Discover installed apps' }),
-        action('open-view', { view: 'entertainment', label: 'Entertainment' })
+        action('open-view', { view: 'entertainment', label: 'Entertainment' }),
       ];
     case 'entertainment':
       return [
         action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
-        action('pick-local-media', { label: 'Open local media' })
+        action('pick-local-media', { label: 'Open local media' }),
       ];
     case 'mood':
     case 'favorites':
@@ -178,77 +222,127 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
     case 'surprise':
       return [
         action('open-view', { view: 'entertainment', label: 'Open Entertainment' }),
-        action('pick-local-media', { label: 'Open local media' })
+        action('pick-local-media', { label: 'Open local media' }),
       ];
     case 'local-media':
       return [
         action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
-        action('pick-local-media', { label: 'Open local media' })
+        action('pick-local-media', { label: 'Open local media' }),
       ];
     case 'adult-soul':
     case 'adult-session':
       return [
         action('open-view', { view: 'adultSoul', label: 'Open Adult Soul', auto: true }),
-        action('open-view', { view: 'identity', label: 'Identity & consent' })
+        action('open-view', { view: 'identity', label: 'Identity & consent' }),
       ];
     case 'adult-media':
       return [
-        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Open Adult Media', auto: true }),
-        action('pick-local-media', { label: 'Open local media' })
+        action('open-view', {
+          view: 'entertainment',
+          panel: 'adultMediaDesk',
+          label: 'Open Adult Media',
+          auto: true,
+        }),
+        action('pick-local-media', { label: 'Open local media' }),
       ];
     case 'adult-media-blocked':
       return [
         action('open-view', { view: 'identity', label: 'Identity & consent', auto: true }),
-        action('open-legal', { legal: 'age', label: 'Age 18+ notice' })
+        action('open-legal', { legal: 'age', label: 'Age 18+ notice' }),
       ];
     case 'memory':
     case 'remember':
     case 'forget':
       return [action('open-view', { view: 'memory', label: 'Open Memory', auto: true })];
     case 'identity-panel':
-      return [action('open-view', { view: 'identity', label: 'Identity & consent', auto: true }), soulStep(overlay)];
+      return [
+        action('open-view', { view: 'identity', label: 'Identity & consent', auto: true }),
+        soulStep(overlay),
+      ];
     case 'identity':
-      return [action('open-view', { view: 'identity', label: 'Identity & consent' }), soulStep(overlay)];
+      return [
+        action('open-view', { view: 'identity', label: 'Identity & consent' }),
+        soulStep(overlay),
+      ];
     case 'settings':
       return [
         action('open-view', { view: 'settings', label: 'Open Settings', auto: true }),
         action('open-service', { label: 'Service settings' }),
-        action('open-updates', { label: 'Software updates' })
+        action('open-updates', { label: 'Software updates' }),
       ];
     case 'theme':
-      return [action('open-view', { view: 'settings', panel: 'settingsForm', label: 'Theme & language', auto: true })];
+      return [
+        action('open-view', {
+          view: 'settings',
+          panel: 'settingsForm',
+          label: 'Theme & language',
+          auto: true,
+        }),
+      ];
     case 'backups':
-      return [action('open-view', { view: 'settings', panel: 'backupSection', label: 'Open backups', auto: true })];
+      return [
+        action('open-view', {
+          view: 'settings',
+          panel: 'backupSection',
+          label: 'Open backups',
+          auto: true,
+        }),
+      ];
     case 'updates':
       return [action('open-updates', { label: 'Software updates', auto: true })];
     case 'service':
       return [action('open-service', { label: 'Service settings', auto: true })];
     case 'status':
-      return [action('open-diagnostics', { label: 'Show diagnostics', auto: true }), action('open-service', { label: 'Service settings' })];
+      return [
+        action('open-diagnostics', { label: 'Show diagnostics', auto: true }),
+        action('open-service', { label: 'Service settings' }),
+      ];
     case 'setup':
-      return [action('open-setup', { label: overlay.enabled ? 'Adjust Soul setup' : 'Optional Soul setup', auto: true })];
+      return [
+        action('open-setup', {
+          label: overlay.enabled ? 'Adjust Soul setup' : 'Optional Soul setup',
+          auto: true,
+        }),
+      ];
     case 'accessibility':
-      return [action('open-view', { view: 'settings', panel: 'assistantBehaviorForm', label: 'Accessibility settings', auto: true })];
+      return [
+        action('open-view', {
+          view: 'settings',
+          panel: 'assistantBehaviorForm',
+          label: 'Accessibility settings',
+          auto: true,
+        }),
+      ];
     case 'presence':
-      return [action('open-view', { view: 'settings', panel: 'kernelCustomizeForm', label: 'Presence & voice', auto: true })];
+      return [
+        action('open-view', {
+          view: 'settings',
+          panel: 'kernelCustomizeForm',
+          label: 'Presence & voice',
+          auto: true,
+        }),
+      ];
     case 'dashboard':
       return [
         action('open-view', { view: 'dashboard', label: 'Open Dashboard', auto: true }),
         action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
         action('open-view', { view: 'entertainment', label: 'Entertainment' }),
-        soulStep(overlay)
+        soulStep(overlay),
       ];
     case 'conversation':
       return [action('open-view', { view: 'chat', label: 'Open conversation', auto: true })];
     case 'focus':
       return [
         action('open-view', { view: 'dashboard', label: 'Open Dashboard' }),
-        action('start-focus', { minutes: 25, label: 'Focus session' })
+        action('start-focus', { minutes: 25, label: 'Focus session' }),
       ];
     case 'focus-stop':
       return [action('stop-focus', { label: 'Stop focus session', auto: true })];
     case 'scratch':
-      return [action('open-view', { view: 'dashboard', label: 'Open scratchpad', auto: true }), action('capture-scratch', { label: 'Capture to memory' })];
+      return [
+        action('open-view', { view: 'dashboard', label: 'Open scratchpad', auto: true }),
+        action('capture-scratch', { label: 'Capture to memory' }),
+      ];
     case 'palette':
       return [action('open-palette', { label: 'Open command palette', auto: true })];
     case 'search':
@@ -265,29 +359,29 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
       return [
         action('open-view', { view: 'chat', label: 'Open conversation' }),
         action('open-view', { view: 'dashboard', label: 'Dashboard' }),
-        action('open-view', { view: 'memory', label: 'Memory' })
+        action('open-view', { view: 'memory', label: 'Memory' }),
       ];
     case 'hello':
     case 'thanks':
       return [
         action('open-view', { view: 'dashboard', label: 'Dashboard' }),
         action('open-view', { view: 'chat', label: 'Conversation' }),
-        soulStep(overlay)
+        soulStep(overlay),
       ];
     case 'overlay-chat':
       return [
         action('open-chat-overlay', { label: 'Soul chat overlay', auto: true }),
-        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
       ];
     case 'overlay-browse':
       return [
         action('open-browse-overlay', { label: 'Browse overlay', auto: true, url: '' }),
-        action('open-overlay', { kind: 'browse', label: 'Browse overlay' })
+        action('open-overlay', { kind: 'browse', label: 'Browse overlay' }),
       ];
     case 'overlay-discord':
       return [
         action('open-discord-overlay', { label: 'Discord guest overlay', auto: true }),
-        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
       ];
     case 'overlays':
       return [
@@ -295,7 +389,7 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
         action('open-chat-overlay', { label: 'Soul chat overlay' }),
         action('open-browse-overlay', { label: 'Browse overlay' }),
         action('open-discord-overlay', { label: 'Discord guest overlay' }),
-        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' }),
       ];
     case 'gaming':
       return [
@@ -306,20 +400,24 @@ export function actionsForIntent(intent, overlay = {}, view = '') {
         action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
         action('discover-apps', { label: 'Discover installed apps' }),
         action('set-always-on-top', { on: true, label: 'Keep Eidovara on top' }),
-        action('open-setup', { label: overlay.enabled ? 'Adjust roles' : 'Optional Soul setup' })
+        action('open-setup', { label: overlay.enabled ? 'Adjust roles' : 'Optional Soul setup' }),
       ];
     case 'research':
       return [
         action('open-view', { view: 'research', label: 'Open Research', auto: true }),
         action('open-view', { view: 'chat', label: 'Open conversation' }),
-        action('open-legal', { legal: 'privacy', label: 'Privacy notice' })
+        action('open-legal', { legal: 'privacy', label: 'Privacy notice' }),
       ];
     case 'here':
       return suggestionsForView(view, overlay);
     default: {
       const entry = knowledgeEntry(intent);
       if (entry?.actions?.length) return entry.actions.map(item => action(item.type, item));
-      return [soulStep(overlay), action('open-view', { view: 'dashboard', label: 'Dashboard' }), action('open-view', { view: 'apps', label: 'Apps & Gaming' })];
+      return [
+        soulStep(overlay),
+        action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+      ];
     }
   }
 }
@@ -333,7 +431,7 @@ export function suggestionsForView(view, overlay = {}) {
         action('open-chat-overlay', { label: 'Soul chat overlay' }),
         action('start-focus', { minutes: 25, label: 'Focus session' }),
         action('open-now-playing', { label: 'Now playing' }),
-        soulStep(overlay)
+        soulStep(overlay),
       ];
     case 'apps':
       return [
@@ -344,54 +442,62 @@ export function suggestionsForView(view, overlay = {}) {
         action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
         action('set-always-on-top', { on: true, label: 'Keep Eidovara on top' }),
         action('open-view', { view: 'entertainment', label: 'Entertainment' }),
-        action('open-view', { view: 'settings', label: 'Settings' })
+        action('open-view', { view: 'settings', label: 'Settings' }),
       ];
     case 'entertainment':
       return [
         action('pick-local-media', { label: 'Open local media' }),
         action('open-now-playing', { label: 'Now playing' }),
-        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Adult Media desk' }),
+        action('open-view', {
+          view: 'entertainment',
+          panel: 'adultMediaDesk',
+          label: 'Adult Media desk',
+        }),
         action('open-view', { view: 'adultSoul', label: 'Adult Soul' }),
         action('open-view', { view: 'apps', label: 'Play desk' }),
-        action('open-view', { view: 'chat', label: 'Conversation' })
+        action('open-view', { view: 'chat', label: 'Conversation' }),
       ];
     case 'memory':
       return [
         action('open-view', { view: 'memory', label: 'Review memory' }),
         action('open-view', { view: 'chat', label: 'Conversation' }),
-        action('open-view', { view: 'identity', label: 'Identity & consent' })
+        action('open-view', { view: 'identity', label: 'Identity & consent' }),
       ];
     case 'identity':
       return [
         action('open-view', { view: 'identity', label: 'Identity & Adult Mode' }),
         soulStep(overlay),
         action('open-view', { view: 'adultSoul', label: 'Adult Soul studio' }),
-        action('open-legal', { legal: 'age', label: 'Age 18+ notice' })
+        action('open-legal', { legal: 'age', label: 'Age 18+ notice' }),
       ];
     case 'adultSoul':
       return [
         action('open-view', { view: 'adultSoul', label: 'Stay on Adult Soul' }),
-        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Adult Media desk' }),
-        action('open-view', { view: 'identity', label: 'Identity & consent' })
+        action('open-view', {
+          view: 'entertainment',
+          panel: 'adultMediaDesk',
+          label: 'Adult Media desk',
+        }),
+        action('open-view', { view: 'identity', label: 'Identity & consent' }),
       ];
     case 'settings':
       return [
         action('open-service', { label: 'Service settings' }),
         action('open-updates', { label: 'Software updates' }),
         action('open-view', { view: 'settings', panel: 'backupSection', label: 'Backups' }),
-        action('open-diagnostics', { label: 'Diagnostics' })
+        action('open-diagnostics', { label: 'Diagnostics' }),
       ];
     case 'chat':
       return [
         action('open-view', { view: 'memory', label: 'Memory' }),
         action('open-view', { view: 'dashboard', label: 'Dashboard' }),
-        action('open-legal', { legal: 'privacy', label: 'Privacy' })
+        action('open-legal', { legal: 'privacy', label: 'Privacy' }),
       ];
     case 'research':
       return [
         action('open-view', { view: 'research', label: 'Open Research' }),
         action('open-view', { view: 'chat', label: 'Conversation' }),
-        action('open-legal', { legal: 'privacy', label: 'Privacy' })
+        action('open-legal', { legal: 'privacy', label: 'Privacy' }),
       ];
     default:
       return [
@@ -399,7 +505,7 @@ export function suggestionsForView(view, overlay = {}) {
         action('open-view', { view: 'entertainment', label: 'Entertainment' }),
         action('open-view', { view: 'memory', label: 'Memory' }),
         action('open-view', { view: 'settings', label: 'Settings' }),
-        soulStep(overlay)
+        soulStep(overlay),
       ];
   }
 }
@@ -407,10 +513,11 @@ export function suggestionsForView(view, overlay = {}) {
 export function soulOverlay(state = {}) {
   const enabled = state.setup?.completed === true;
   const policy = state.policy || {};
-  const adult = policy.mode === 'adult'
-    && policy.adultSoulEnabled === true
-    && policy.currentConsent === true
-    && policy.adultStatusConfirmed === true;
+  const adult =
+    policy.mode === 'adult' &&
+    policy.adultSoulEnabled === true &&
+    policy.currentConsent === true &&
+    policy.adultStatusConfirmed === true;
   const sm = state.continuity?.selfModel || {};
   const name = String(sm.name || 'Soul');
   return {
@@ -421,7 +528,7 @@ export function soulOverlay(state = {}) {
     sentience: false,
     label: enabled
       ? `${name} is a software self-model on this device — not a claim of consciousness.`
-      : 'Optional Soul setup is off. The workspace kernel is software, not a mind.'
+      : 'Optional Soul setup is off. The workspace kernel is software, not a mind.',
   };
 }
 
@@ -445,24 +552,39 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry(), { v
       overlay,
       knowledgeReply: null,
       usedKnowledge: false,
-      actions: actionsForIntent(intent, overlay, currentView)
+      actions: actionsForIntent(intent, overlay, currentView),
     };
   }
   const workspace = classifyWorkspaceIntent(text);
   const product = matchProductIntent(text);
-  let intent = (workspace === 'general' && product) ? product : workspace;
+  let intent = workspace === 'general' && product ? product : workspace;
   if (intent === 'focus' && isFocusStopCommand(text)) intent = 'focus-stop';
   if (intent === 'focus' && isFocusStartCommand(text)) intent = 'focus';
   if (isScratchCaptureCommand(text) && workspace === 'scratch') intent = 'scratch';
-  const productIntent = product && shouldUseKnowledgeReply(product) ? product : (shouldUseKnowledgeReply(intent) ? intent : null);
-  const mod = moduleForIntent(productIntent || intent, runtime.list()) || moduleForIntent(workspace, runtime.list());
+  const productIntent =
+    product && shouldUseKnowledgeReply(product)
+      ? product
+      : shouldUseKnowledgeReply(intent)
+        ? intent
+        : null;
+  const mod =
+    moduleForIntent(productIntent || intent, runtime.list()) ||
+    moduleForIntent(workspace, runtime.list());
   const enabled = !mod || runtime.enabled(mod.id, kernel.registry);
   const entry = productIntent ? knowledgeEntry(productIntent) : null;
-  const usedKnowledge = Boolean(enabled && entry?.reply && (intent === 'general' || shouldUseKnowledgeReply(intent) || productIntent));
-  const routedIntent = productIntent && (intent === 'general' || shouldUseKnowledgeReply(intent)) ? productIntent : intent;
+  const usedKnowledge = Boolean(
+    enabled &&
+      entry?.reply &&
+      (intent === 'general' || shouldUseKnowledgeReply(intent) || productIntent)
+  );
+  const routedIntent =
+    productIntent && (intent === 'general' || shouldUseKnowledgeReply(intent))
+      ? productIntent
+      : intent;
   const actions = actionsForIntent(routedIntent, overlay, currentView).map(item => {
     if (item.type === 'start-focus' && isFocusStartCommand(text)) return { ...item, auto: true };
-    if (item.type === 'capture-scratch' && isScratchCaptureCommand(text)) return { ...item, auto: true };
+    if (item.type === 'capture-scratch' && isScratchCaptureCommand(text))
+      return { ...item, auto: true };
     return item;
   });
   return {
@@ -470,12 +592,18 @@ export function routeKernel(input, state, runtime = createRuntimeRegistry(), { v
     moduleId: mod?.id || null,
     enabled,
     source: usedKnowledge ? 'knowledge' : 'workspace',
-    view: routedIntent === 'here' ? (currentView || 'dashboard') : (mod?.ui?.view || (routedIntent === 'palette' || routedIntent === 'search' || routedIntent === 'cheatsheet' ? 'dashboard' : 'chat')),
+    view:
+      routedIntent === 'here'
+        ? currentView || 'dashboard'
+        : mod?.ui?.view ||
+          (routedIntent === 'palette' || routedIntent === 'search' || routedIntent === 'cheatsheet'
+            ? 'dashboard'
+            : 'chat'),
     action: null,
     overlay,
     knowledgeReply: usedKnowledge ? entry.reply : null,
     usedKnowledge,
-    actions
+    actions,
   };
 }
 
@@ -485,13 +613,15 @@ export function researchResultActions(webResearch = {}, overlay = {}) {
     if (!source?.url || !/^https:\/\//i.test(source.url)) continue;
     const host = String(source.hostname || '').slice(0, 80);
     const title = String(source.title || host || 'Source').slice(0, 60);
-    actions.push(action('open-external', {
-      url: source.url,
-      hostname: host,
-      snippet: String(source.description || source.extract || '').slice(0, 180),
-      label: host ? `${title} · ${host}`.slice(0, 80) : title,
-      auto: false
-    }));
+    actions.push(
+      action('open-external', {
+        url: source.url,
+        hostname: host,
+        snippet: String(source.description || source.extract || '').slice(0, 180),
+        label: host ? `${title} · ${host}`.slice(0, 80) : title,
+        auto: false,
+      })
+    );
   }
   return actions;
 }
@@ -505,34 +635,41 @@ export function kernelPublicMeta(route) {
     source: String(value.source || 'workspace'),
     view: String(value.view || 'chat'),
     usedKnowledge: Boolean(value.usedKnowledge),
-    actions: Array.isArray(value.actions) ? value.actions.map(item => ({
-      type: String(item.type || ''),
-      view: item.view || undefined,
-      legal: item.legal || undefined,
-      panel: item.panel || undefined,
-      minutes: item.minutes || undefined,
-      kind: item.kind ? String(item.kind).slice(0, 20) : undefined,
-      on: item.on === true || item.on === false ? item.on : undefined,
-      url: item.url ? String(item.url).slice(0, 500) : undefined,
-      hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
-      snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
-      label: String(item.label || '').slice(0, 80),
-      auto: item.type === 'open-external' ? false : Boolean(item.auto)
-    })).filter(item => item.type && (
-      KERNEL_ACTION_TYPES.includes(item.type)
-      || (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))
-    ) && (item.type !== 'open-overlay' || ['chat', 'browse', 'discord'].includes(item.kind))) : [],
+    actions: Array.isArray(value.actions)
+      ? value.actions
+          .map(item => ({
+            type: String(item.type || ''),
+            view: item.view || undefined,
+            legal: item.legal || undefined,
+            panel: item.panel || undefined,
+            minutes: item.minutes || undefined,
+            kind: item.kind ? String(item.kind).slice(0, 20) : undefined,
+            on: item.on === true || item.on === false ? item.on : undefined,
+            url: item.url ? String(item.url).slice(0, 500) : undefined,
+            hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
+            snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
+            label: String(item.label || '').slice(0, 80),
+            auto: item.type === 'open-external' ? false : Boolean(item.auto),
+          }))
+          .filter(
+            item =>
+              item.type &&
+              (KERNEL_ACTION_TYPES.includes(item.type) ||
+                (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))) &&
+              (item.type !== 'open-overlay' || ['chat', 'browse', 'discord'].includes(item.kind))
+          )
+      : [],
     soul: {
       enabled: Boolean(value.overlay?.enabled),
       name: value.overlay?.enabled ? String(value.overlay?.name || 'Soul') : null,
       adultMode: Boolean(value.overlay?.adultMode),
       sentience: false,
-      label: String(value.overlay?.label || '')
+      label: String(value.overlay?.label || ''),
     },
     localOnly: true,
     network: false,
     conversationsSent: false,
-    webLookup: false
+    webLookup: false,
   };
 }
 
@@ -542,7 +679,7 @@ export function disabledModuleReply(route, locale = 'en') {
     en: `The ${title} module is turned off in Soul customization. Enable it in Settings when you want that workspace surface. Local Soul stays on this device.`,
     es: `El módulo ${title} está desactivado en la personalización de Soul. Actívalo en Configuración. Soul local sigue en este dispositivo.`,
     fr: `Le module ${title} est désactivé dans la personnalisation de Soul. Activez-le dans Paramètres. Soul local reste sur cet appareil.`,
-    de: `Das Modul ${title} ist in der Soul-Anpassung aus. Aktivieren Sie es unter Einstellungen. Lokales Soul bleibt auf diesem Gerät.`
+    de: `Das Modul ${title} ist in der Soul-Anpassung aus. Aktivieren Sie es unter Einstellungen. Lokales Soul bleibt auf diesem Gerät.`,
   };
   return copy[locale] || copy.en;
 }
@@ -551,30 +688,41 @@ export function disabledModuleReply(route, locale = 'en') {
 export function applyPhrasing(text, knobs, locale = 'en') {
   const defaults = defaultPhrasing();
   const wit = Number.isFinite(Number(knobs?.wit)) ? Number(knobs.wit) : defaults.wit;
-  const formality = Number.isFinite(Number(knobs?.formality)) ? Number(knobs.formality) : defaults.formality;
-  const brevity = Number.isFinite(Number(knobs?.brevity)) ? Number(knobs.brevity) : defaults.brevity;
+  const formality = Number.isFinite(Number(knobs?.formality))
+    ? Number(knobs.formality)
+    : defaults.formality;
+  const brevity = Number.isFinite(Number(knobs?.brevity))
+    ? Number(knobs.brevity)
+    : defaults.brevity;
   let out = String(text || '');
   const near = (value, fallback) => Math.abs(value - fallback) < 15;
   if (!near(formality, defaults.formality) && formality >= 70) {
-    const extra = {
-      en: 'Stated plainly, as software on this device — not a person.',
-      es: 'Dicho con claridad: software en este dispositivo, no una persona.',
-      fr: 'Dit clairement : un logiciel sur cet appareil, pas une personne.',
-      de: 'Klar gesagt: Software auf diesem Gerät, keine Person.'
-    }[locale] || '';
+    const extra =
+      {
+        en: 'Stated plainly, as software on this device — not a person.',
+        es: 'Dicho con claridad: software en este dispositivo, no una persona.',
+        fr: 'Dit clairement : un logiciel sur cet appareil, pas une personne.',
+        de: 'Klar gesagt: Software auf diesem Gerät, keine Person.',
+      }[locale] || '';
     if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
   }
   if (brevity < 75 && !near(wit, defaults.wit) && wit >= 70) {
-    const extra = {
-      en: 'I can keep the wording sharp without pretending to be alive.',
-      es: 'Puedo ser directo sin fingir que estoy vivo.',
-      fr: 'Je peux rester vif sans prétendre être vivant.',
-      de: 'Ich kann prägnant bleiben, ohne lebendig zu wirken.'
-    }[locale] || '';
+    const extra =
+      {
+        en: 'I can keep the wording sharp without pretending to be alive.',
+        es: 'Puedo ser directo sin fingir que estoy vivo.',
+        fr: 'Je peux rester vif sans prétendre être vivant.',
+        de: 'Ich kann prägnant bleiben, ohne lebendig zu wirken.',
+      }[locale] || '';
     if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
   }
   return out;
 }
 
-export { builtinModules, createRuntimeRegistry, FUTURE_VOICE_BACKEND, runtimeEngineCatalog, ENGINE_HONESTY };
-
+export {
+  builtinModules,
+  createRuntimeRegistry,
+  FUTURE_VOICE_BACKEND,
+  runtimeEngineCatalog,
+  ENGINE_HONESTY,
+};

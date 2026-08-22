@@ -13,7 +13,7 @@ let config = {
   defaultRepo: '',
   watched: [],
   pollIntervalMs: 2 * 60_000,
-  notify: true
+  notify: true,
 };
 
 let pollTimer = null;
@@ -31,12 +31,16 @@ export default {
     try {
       const stored = localStorage.getItem('plugin_github_tracker_config');
       if (stored) config = { ...config, ...JSON.parse(stored) };
-    } catch { /* private mode */ }
+    } catch {
+      /* private mode */
+    }
 
     try {
       const seen = localStorage.getItem('plugin_github_tracker_seen');
       if (seen) seenEvents = new Set(JSON.parse(seen));
-    } catch { /* private mode */ }
+    } catch {
+      /* private mode */
+    }
 
     if (config.token && config.watched.length) {
       startPolling();
@@ -80,7 +84,8 @@ export default {
 
   async openPr(repo, number) {
     validateRepo(repo);
-    if (!Number.isInteger(number) || number < 1) throw new Error('PR number must be a positive integer.');
+    if (!Number.isInteger(number) || number < 1)
+      throw new Error('PR number must be a positive integer.');
     const url = `https://github.com/${repo}/pull/${number}`;
     // Eidovara desktop exposes soul.openExternal; in sandbox fall back to window.open
     if (typeof globalThis.soul?.openExternal === 'function') {
@@ -132,7 +137,7 @@ export default {
   async onPROpened(payload) {},
   async onPRReviewRequested(payload) {},
   async onIssueAssigned(payload) {},
-  async onWorkflowFailed(payload) {}
+  async onWorkflowFailed(payload) {},
 };
 
 function validateRepo(repo) {
@@ -142,19 +147,27 @@ function validateRepo(repo) {
 }
 
 function checkConfigured() {
-  if (!config.token) throw new Error('GitHub Tracker is not configured. Run "Configure GitHub" first.');
+  if (!config.token)
+    throw new Error('GitHub Tracker is not configured. Run "Configure GitHub" first.');
 }
 
 function saveConfig() {
   try {
     localStorage.setItem('plugin_github_tracker_config', JSON.stringify(config));
-  } catch { /* private mode */ }
+  } catch {
+    /* private mode */
+  }
 }
 
 function persistSeen() {
   try {
-    localStorage.setItem('plugin_github_tracker_seen', JSON.stringify([...seenEvents].slice(-2000)));
-  } catch { /* private mode */ }
+    localStorage.setItem(
+      'plugin_github_tracker_seen',
+      JSON.stringify([...seenEvents].slice(-2000))
+    );
+  } catch {
+    /* private mode */
+  }
 }
 
 function startPolling() {
@@ -165,16 +178,19 @@ function startPolling() {
 }
 
 function stopPolling() {
-  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
 }
 
 async function githubFetch(path) {
   const res = await fetch(`${GITHUB_API}${path}`, {
     headers: {
-      'Authorization': `Bearer ${config.token}`,
-      'Accept': 'application/vnd.github+json'
+      Authorization: `Bearer ${config.token}`,
+      Accept: 'application/vnd.github+json',
     },
-    redirect: 'error'
+    redirect: 'error',
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
@@ -191,6 +207,6 @@ async function fetchRepoEvents(repo) {
     type: ev.type,
     repo,
     title: `${ev.actor?.login ?? 'unknown'} — ${ev.type}`,
-    at: ev.created_at
+    at: ev.created_at,
   }));
 }

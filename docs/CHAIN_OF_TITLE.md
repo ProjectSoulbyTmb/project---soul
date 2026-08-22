@@ -15,17 +15,17 @@ Soul Consciousness Studios claims ownership of qualifying original first-party c
 
 Overbroad ownership claims weaken the first-party record. Eidovara **does not** own the following layers (non-exhaustive):
 
-| Layer | Whose rights | Notes |
-| --- | --- | --- |
-| Qualifying original first-party Eidovara expression | Claimed by Soul Consciousness Studios | Notice and git history are evidence of a claim, not a court judgment or Copyright Office registration |
-| Soul Consciousness Studios name | Intended publisher identity | Does not own IP until a formed entity receives a signed assignment |
-| Electron | Electron contributors / OpenJS Foundation | MIT; redistributed runtime |
-| Chromium | Chromium authors | Bundled with Electron; see `LICENSES.chromium.html` in Windows builds |
-| Node.js | OpenJS Foundation and contributors | Bundled with Electron |
-| Microsoft Windows | Microsoft | Official advertised platform; OS, APIs, and installed voices stay Microsoft's |
-| Wikipedia / Wikimedia content | Wikimedia contributors | Retrieved on explicit request; those projects' licenses apply |
-| User content and local media | The user | Using the app does not assign the user's files or prompts to the owner |
-| Third-party marks and services | Their owners | Reference is not affiliation or a transfer of rights |
+| Layer                                               | Whose rights                              | Notes                                                                                                 |
+| --------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| Qualifying original first-party Eidovara expression | Claimed by Soul Consciousness Studios     | Notice and git history are evidence of a claim, not a court judgment or Copyright Office registration |
+| Soul Consciousness Studios name                     | Intended publisher identity               | Does not own IP until a formed entity receives a signed assignment                                    |
+| Electron                                            | Electron contributors / OpenJS Foundation | MIT; redistributed runtime                                                                            |
+| Chromium                                            | Chromium authors                          | Bundled with Electron; see `LICENSES.chromium.html` in Windows builds                                 |
+| Node.js                                             | OpenJS Foundation and contributors        | Bundled with Electron                                                                                 |
+| Microsoft Windows                                   | Microsoft                                 | Official advertised platform; OS, APIs, and installed voices stay Microsoft's                         |
+| Wikipedia / Wikimedia content                       | Wikimedia contributors                    | Retrieved on explicit request; those projects' licenses apply                                         |
+| User content and local media                        | The user                                  | Using the app does not assign the user's files or prompts to the owner                                |
+| Third-party marks and services                      | Their owners                              | Reference is not affiliation or a transfer of rights                                                  |
 
 A public GitHub repository also carries GitHub's platform terms allowing viewing and forking through GitHub functionality. The repository license restricts additional use but cannot revoke rights already granted by law, third-party licenses, or the hosting platform's terms.
 
@@ -37,11 +37,11 @@ Inbound copyrightable work is not first-party until a privately executed assignm
 
 Record date: 21 August 2026. Claimant: Soul Consciousness Studios. This schedule is evidence of a claim. It is **not** a U.S. Copyright Office registration, USPTO filing, executed assignment, or court judgment.
 
-| Work | Where | Claim |
-| --- | --- | --- |
-| Qualifying original Eidovara source, tests, and product documentation authored by Soul Consciousness Studios | `src/`, `scripts/`, `tests/`, `server/`, root legal Markdown, `docs/` product pages | First-party copyright claim |
-| Approved brand assets | [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md) | First-party copyright claim in those files; hashes are provenance, not registration |
-| Claimed unregistered marks Eidovara, Soul (feature name), and Soul Consciousness Studios | [TRADEMARKS.md](../TRADEMARKS.md) | Common-law unregistered claim; ™ only; no ® |
+| Work                                                                                                         | Where                                                                               | Claim                                                                               |
+| ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Qualifying original Eidovara source, tests, and product documentation authored by Soul Consciousness Studios | `src/`, `scripts/`, `tests/`, `server/`, root legal Markdown, `docs/` product pages | First-party copyright claim                                                         |
+| Approved brand assets                                                                                        | [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md)                          | First-party copyright claim in those files; hashes are provenance, not registration |
+| Claimed unregistered marks Eidovara, Soul (feature name), and Soul Consciousness Studios                     | [TRADEMARKS.md](../TRADEMARKS.md)                                                   | Common-law unregistered claim; ™ only; no ®                                       |
 
 Excluded from this schedule: Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user content, and every other third-party or public-domain layer listed above.
 
@@ -49,20 +49,19 @@ Excluded from this schedule: Electron, Chromium, Node.js, Microsoft Windows, Wik
 
 LICENSE is the source-available evaluation text. The assignment forms are **unsigned templates**. None of these files is a government registration.
 
-| Instrument | File | Status in git |
-| --- | --- | --- |
-| Source-available evaluation license | [LICENSE](../LICENSE) | In force as a license text; not OSI open source |
-| One-page copyright claim | [COPYRIGHT.txt](../COPYRIGHT.txt) | Notice only — not a Copyright Office registration |
-| Copyright notice + registration checklist | [COPYRIGHT.md](COPYRIGHT.md) | Checklist; **not registered** by this repository |
-| Trademark usage policy | [TRADEMARKS.md](../TRADEMARKS.md) | Unregistered common-law claim; **not filed** |
-| USPTO / office filing checklist | [TRADEMARK_FILING.md](TRADEMARK_FILING.md) | Checklist; **no application filed by this commit** |
-| Brand use (names, fonts, no third-party logos) | [BRAND_GUIDE.md](BRAND_GUIDE.md) | Internal usage note |
-| Contributor copyright assignment (CLA) | [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) | Template only — not executed |
-| Assignment of pre-formation IP to a future entity | [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md) | Template only — not executed |
+| Instrument                                        | File                                                   | Status in git                                      |
+| ------------------------------------------------- | ------------------------------------------------------ | -------------------------------------------------- |
+| Source-available evaluation license               | [LICENSE](../LICENSE)                                  | In force as a license text; not OSI open source    |
+| One-page copyright claim                          | [COPYRIGHT.txt](../COPYRIGHT.txt)                      | Notice only — not a Copyright Office registration  |
+| Copyright notice + registration checklist         | [COPYRIGHT.md](COPYRIGHT.md)                           | Checklist; **not registered** by this repository   |
+| Trademark usage policy                            | [TRADEMARKS.md](../TRADEMARKS.md)                      | Unregistered common-law claim; **not filed**       |
+| USPTO / office filing checklist                   | [TRADEMARK_FILING.md](TRADEMARK_FILING.md)             | Checklist; **no application filed by this commit** |
+| Brand use (names, fonts, no third-party logos)    | [BRAND_GUIDE.md](BRAND_GUIDE.md)                       | Internal usage note                                |
+| Contributor copyright assignment (CLA)            | [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) | Template only — not executed                       |
+| Assignment of pre-formation IP to a future entity | [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md)     | Template only — not executed                       |
 
 Publishing these templates does **not** mean any contributor or entity has signed them. Do not commit completed copies here.
 
 ## Before commercial launch
 
 Have a qualified intellectual-property attorney review the source-available license, contributor assignment form (`docs/CONTRIBUTOR_ASSIGNMENT.md`, unsigned template), trademark search and filing strategy, copyright deposit strategy, patent disclosures, contractor agreements, and any transfer to a future company (`docs/ENTITY_IP_ASSIGNMENT.md`, unsigned template). Preserve signed originals in private storage with access logging and redundant backups. Do not commit executed agreements to this public repository.
-

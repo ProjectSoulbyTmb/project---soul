@@ -34,4 +34,3 @@ test('player loadMedia function exists after Feel analyser', () => {
   assert.match(player, /function loadMedia\(nextIndex, autoplay = true\)/);
   assert.match(player, /function attachFeel\(player\)/);
 });
-

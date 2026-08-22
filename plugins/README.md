@@ -79,20 +79,20 @@ export default {
   async action(params) {
     // Called when user runs your command from the palette
     return { result: 'done' };
-  }
+  },
 };
 ```
 
 ### Permissions
 
-| Permission | Type | Description |
-|------------|------|-------------|
-| `memory` | `boolean` | Read/write Soul durable memories |
-| `filesystem` | `string[]` | Glob patterns for allowed paths |
-| `network` | `string[]` | Allowed hostnames |
-| `shell` | `string[]` | Allowed executable names |
-| `notifications` | `boolean` | Desktop notifications |
-| `clipboard` | `"read"\|"write"\|"both"` | Clipboard access |
+| Permission      | Type                      | Description                      |
+| --------------- | ------------------------- | -------------------------------- |
+| `memory`        | `boolean`                 | Read/write Soul durable memories |
+| `filesystem`    | `string[]`                | Glob patterns for allowed paths  |
+| `network`       | `string[]`                | Allowed hostnames                |
+| `shell`         | `string[]`                | Allowed executable names         |
+| `notifications` | `boolean`                 | Desktop notifications            |
+| `clipboard`     | `"read"\|"write"\|"both"` | Clipboard access                 |
 
 All permissions must be explicitly declared and are presented to the user before activation.
 
@@ -100,14 +100,14 @@ All permissions must be explicitly declared and are presented to the user before
 
 Plugins can subscribe to kernel events:
 
-| Event | Payload |
-|-------|---------|
-| `memory.created` | The new memory object |
-| `memory.updated` | The updated memory object |
-| `memory.deleted` | The deleted memory ID |
-| `pomodoro.session.completed` | Session stats |
-| `github.pr.opened` | PR payload |
-| `system.idle` | Idle duration in ms |
+| Event                        | Payload                   |
+| ---------------------------- | ------------------------- |
+| `memory.created`             | The new memory object     |
+| `memory.updated`             | The updated memory object |
+| `memory.deleted`             | The deleted memory ID     |
+| `pomodoro.session.completed` | Session stats             |
+| `github.pr.opened`           | PR payload                |
+| `system.idle`                | Idle duration in ms       |
 
 ## License
 

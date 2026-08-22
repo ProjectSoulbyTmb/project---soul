@@ -9,7 +9,16 @@ const read = file => fs.readFileSync(file, 'utf8');
 // Original tests preserved...
 
 test('legal docs state source-available 18+ unsigned Windows terms without fake registrations', () => {
-  for (const file of ['TERMS.md', 'AGE.md', 'PRIVACY.md', 'LEGAL_NOTICES.md', 'LICENSE', 'README.md', 'installer/EULA.txt', 'OWNERSHIP.md']) {
+  for (const file of [
+    'TERMS.md',
+    'AGE.md',
+    'PRIVACY.md',
+    'LEGAL_NOTICES.md',
+    'LICENSE',
+    'README.md',
+    'installer/EULA.txt',
+    'OWNERSHIP.md',
+  ]) {
     assert.match(read(file), /18/);
   }
   assert.match(read('TERMS.md'), /source-available, not open source/i);
@@ -19,7 +28,10 @@ test('legal docs state source-available 18+ unsigned Windows terms without fake 
   assert.match(read('TERMS.md'), /Authenticode-unsigned/i);
   assert.match(read('TERMS.md'), /not legal advice/i);
   assert.match(read('TERMS.md'), /local administrator testing only/i);
-  assert.doesNotMatch(read('TERMS.md'), /patent pending|PCI[- ]DSS certified|federally registered trademark/i);
+  assert.doesNotMatch(
+    read('TERMS.md'),
+    /patent pending|PCI[- ]DSS certified|federally registered trademark/i
+  );
   assert.match(read('AGE.md'), /18 years old/i);
   assert.match(read('PRIVACY.md'), /What can leave the machine/);
   assert.match(read('PRIVACY.md'), /Wikipedia \/ Wikimedia/);
@@ -33,7 +45,14 @@ test('LICENSE, TERMS, and NOTICE reserve first-party rights and are not OSI open
   const terms = read('TERMS.md');
   const notice = read('NOTICE.md');
   const eula = read('installer/EULA.txt');
-  for (const text of [license, terms, notice, eula, read('OWNERSHIP.md'), read('LEGAL_NOTICES.md')]) {
+  for (const text of [
+    license,
+    terms,
+    notice,
+    eula,
+    read('OWNERSHIP.md'),
+    read('LEGAL_NOTICES.md'),
+  ]) {
     assert.match(text, /Copyright .{0,6}2026 Soul Consciousness Studios\. All rights reserved/i);
     assert.match(text, /Source-available/i);
     assert.match(text, /LICENSE/);
@@ -57,7 +76,10 @@ test('LICENSE, TERMS, and NOTICE reserve first-party rights and are not OSI open
   assert.match(license, /not convert first-party material into OSI open source/i);
   assert.match(license, /does not make the submitter a joint author/i);
   assert.doesNotMatch(license, /this is an OSI[- ]approved|OSI-approved open source license/i);
-  assert.doesNotMatch(license, /Copyright Office registration no\.|U\.S\. Patent No\.|patent pending/i);
+  assert.doesNotMatch(
+    license,
+    /Copyright Office registration no\.|U\.S\. Patent No\.|patent pending/i
+  );
   assert.match(terms, /not MIT, Apache, or GPL/);
   assert.match(terms, /not.*OSI open-source/i);
   assert.match(terms, /relicense as open source/i);
@@ -90,7 +112,10 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(entity, /template only/i);
   assert.match(entity, /not executed/i);
   assert.match(entity, /does \*\*not\*\* automatically transfer|does not automatically transfer/i);
-  assert.match(read('CONTRIBUTING.md'), /prior written approval|first approves the work in writing/i);
+  assert.match(
+    read('CONTRIBUTING.md'),
+    /prior written approval|first approves the work in writing/i
+  );
   assert.match(read('CONTRIBUTING.md'), /docs\/CONTRIBUTOR_ASSIGNMENT\.md/);
   assert.match(read('.github/pull_request_template.md'), /Soul Consciousness Studios/);
   assert.match(read('.github/pull_request_template.md'), /does not transfer ownership/);
@@ -99,7 +124,10 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(read('docs/CHAIN_OF_TITLE.md'), /First-party schedule/);
   assert.match(read('docs/CHAIN_OF_TITLE.md'), /template only/);
   assert.match(read('docs/CHAIN_OF_TITLE.md'), /not executed/);
-  assert.doesNotMatch(read('docs/CHAIN_OF_TITLE.md'), /this assignment has been signed|Copyright Office registration number/i);
+  assert.doesNotMatch(
+    read('docs/CHAIN_OF_TITLE.md'),
+    /this assignment has been signed|Copyright Office registration number/i
+  );
   assert.match(cla, /Exhibit A/);
   assert.match(entity, /Exhibit A/);
   assert.match(read('TRADEMARKS.md'), /knockout screen|preliminary exact-word/i);
@@ -133,7 +161,10 @@ test('legal-instrument pack is templates and notices, not registrations or OSI g
   assert.match(claim, /Soul Consciousness Studios/);
   assert.match(claim, /not a U\.S\. Copyright Office registration/i);
   assert.match(claim, /Eidovara Source-Available Evaluation License/);
-  assert.match(marks, /Eidovara is a trademark of Soul Consciousness Studios(™)? \(unregistered\)/);
+  assert.match(
+    marks,
+    /Eidovara is a trademark of Soul Consciousness Studios(™)? \(unregistered\)/
+  );
   assert.match(marks, /Windows/);
   assert.match(marks, /GitHub/);
   assert.match(marks, /Electron/);
@@ -144,10 +175,16 @@ test('legal-instrument pack is templates and notices, not registrations or OSI g
   assert.match(marks, /not affiliated/i);
   assert.match(marks, /Marvel/);
   assert.match(marks, /Jarvis/i);
-  assert.match(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /Sign privately; posting a PR is not assignment/i);
+  assert.match(
+    read('docs/CONTRIBUTOR_ASSIGNMENT.md'),
+    /Sign privately; posting a PR is not assignment/i
+  );
   assert.match(read('docs/legal.html'), /COPYRIGHT\.md/);
   assert.match(read('docs/legal.html'), /TRADEMARK_FILING\.md/);
-  assert.match(read('docs/licensing.html'), /Eidovara is a trademark of Soul Consciousness Studios(™)? \(unregistered\)/);
+  assert.match(
+    read('docs/licensing.html'),
+    /Eidovara is a trademark of Soul Consciousness Studios(™)? \(unregistered\)/
+  );
   assert.match(read('src/renderer/index.html'), /LICENSE and TRADEMARKS\.md/);
   assert.match(read('NOTICE.md'), /Electron/);
   assert.match(read('NOTICE.md'), /43\.4\.1/);
@@ -179,9 +216,13 @@ test('website legal pages cover terms, privacy, age, and Apple disclaimer', () =
   for (const page of [site, terms, privacy, age, licensing]) {
     assert.match(page, /Content-Security-Policy/i);
     assert.match(page, /script-src '(?:self|none)'/);
-    if (!(page === site && /unsafe-inline/.test(page))) assert.doesNotMatch(page, /unsafe-inline|unsafe-eval/); // index legacy handlers pending migration
+    if (!(page === site && /unsafe-inline/.test(page)))
+      assert.doesNotMatch(page, /unsafe-inline|unsafe-eval/); // index legacy handlers pending migration
     assert.match(page, /Soul Consciousness Studios/);
-    assert.doesNotMatch(page, /official iOS app|Apple Inc\. product|licensed SF Pro files are required/i);
+    assert.doesNotMatch(
+      page,
+      /official iOS app|Apple Inc\. product|licensed SF Pro files are required/i
+    );
     assert.doesNotMatch(page, /owned by Apple|community OSS|OSI-approved/i);
   }
 });
@@ -242,7 +283,10 @@ test('legal-instrument pack is templates and notices, not registrations', () => 
   assert.match(brand, /Jarvis|Marvel/i);
   assert.match(claim, /Soul Consciousness Studios/);
   assert.match(claim, /not a U\.S\. Copyright Office registration/i);
-  assert.match(marks, /Eidovara is a trademark of Soul Consciousness Studios(™)? \(unregistered\)/);
+  assert.match(
+    marks,
+    /Eidovara is a trademark of Soul Consciousness Studios(™)? \(unregistered\)/
+  );
   assert.match(marks, /Marvel/);
   assert.match(marks, /Jarvis/i);
 });
@@ -260,7 +304,7 @@ test('network, security, and licensing docs match current fail-closed v1.0.0 sur
     /github\.com\/ProjectSoulbyTmb\/project---soul/,
     /Spotify/,
     /YouTube/,
-    /archive\.org/
+    /archive\.org/,
   ];
   for (const file of ['NETWORK-USAGE.md', 'docs/NETWORK_USAGE.md']) {
     const text = read(file);
@@ -276,7 +320,10 @@ test('network, security, and licensing docs match current fail-closed v1.0.0 sur
     assert.match(text, /source-available/i);
     assert.match(text, /Authenticode-unsigned/);
     assert.doesNotMatch(text, /dreambot333\.workers\.dev/);
-    assert.doesNotMatch(text, /patent pending|PCI[- ]DSS certified|federally registered trademark/i);
+    assert.doesNotMatch(
+      text,
+      /patent pending|PCI[- ]DSS certified|federally registered trademark/i
+    );
   }
   const security = read('SECURITY.md');
   assert.match(security, /sandboxed/i);
@@ -323,12 +370,15 @@ test('network, security, and licensing docs match current fail-closed v1.0.0 sur
   assert.match(read('PRIVACY.md'), /v1\/assist/);
   assert.match(read('.github/workflows/dependency-review.yml'), /fail-on-severity: moderate/);
   assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
-  assert.match(read('src/core/service.js'), /checkoutEnabledFromRemoteConfig\(_body\) \{\s*return false;/);
+  assert.match(
+    read('src/core/service.js'),
+    /checkoutEnabledFromRemoteConfig\(_body\) \{\s*return false;/
+  );
   assert.match(read('src/electron/main.js'), /sandbox: true/);
 });
 
 test('first-party JS carries SPDX source-available headers and does not donate OSS rights', () => {
-  const walk = (dir) => {
+  const walk = dir => {
     const out = [];
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = `${dir}/${entry.name}`;
@@ -337,7 +387,13 @@ test('first-party JS carries SPDX source-available headers and does not donate O
     }
     return out;
   };
-  const files = [...walk('src'), ...fs.readdirSync('docs').filter(n => n.endsWith('.js')).map(n => `docs/${n}`)];
+  const files = [
+    ...walk('src'),
+    ...fs
+      .readdirSync('docs')
+      .filter(n => n.endsWith('.js'))
+      .map(n => `docs/${n}`),
+  ];
   assert.ok(files.length >= 30, files.length);
   const header = /SPDX-FileCopyrightText: 2026 Soul Consciousness Studios/;
   const spdx = /SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0/;
@@ -349,7 +405,10 @@ test('first-party JS carries SPDX source-available headers and does not donate O
     assert.doesNotMatch(head, /SPDX-License-Identifier: MIT|Apache-2\.0|GPL/);
   }
   assert.match(read('CONTRIBUTING.md'), /Drive-by pull requests do not create ownership/i);
-  assert.match(read('CONTRIBUTING.md'), /does \*\*not\*\* transfer copyright|does not transfer copyright/i);
+  assert.match(
+    read('CONTRIBUTING.md'),
+    /does \*\*not\*\* transfer copyright|does not transfer copyright/i
+  );
   assert.match(read('CONTRIBUTING.md'), /LicenseRef-Eidovara-Source-Available-1\.0/);
   assert.match(read('TRADEMARKS.md'), /does not grant the submitter trademark rights/i);
   const pkg = JSON.parse(read('package.json'));
@@ -361,7 +420,13 @@ test('first-party JS carries SPDX source-available headers and does not donate O
   assert.match(owners, /^\* @ProjectSoulbyTmb/m);
   assert.match(owners, /LICENSE @ProjectSoulbyTmb/);
   assert.doesNotMatch(owners, /@(?!ProjectSoulbyTmb)\S+/);
-  const footerPages = ['docs/index.html', 'docs/legal.html', 'docs/licensing.html', 'docs/help.html', 'docs/faq.html'];
+  const footerPages = [
+    'docs/index.html',
+    'docs/legal.html',
+    'docs/licensing.html',
+    'docs/help.html',
+    'docs/faq.html',
+  ];
   for (const page of footerPages) {
     assert.match(read(page), /© 2026 Soul Consciousness Studios\. All rights reserved/);
     assert.match(read(page), /Source-available, not open source/);
@@ -372,17 +437,34 @@ test('first-party JS carries SPDX source-available headers and does not donate O
   assert.match(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /template only/);
   assert.match(read('docs/ENTITY_IP_ASSIGNMENT.md'), /not executed/);
   assert.doesNotMatch(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /signed on |executed copy attached/i);
-  assert.doesNotMatch(read('LICENSE') + read('OWNERSHIP.md') + read('TRADEMARKS.md'), /USPTO Registration No|Copyright Office registration number|U\.S\. Patent No/);
+  assert.doesNotMatch(
+    read('LICENSE') + read('OWNERSHIP.md') + read('TRADEMARKS.md'),
+    /USPTO Registration No|Copyright Office registration number|U\.S\. Patent No/
+  );
 });
 
 test('first-party legal stack is kept; third-party brands are not product names', () => {
   for (const file of [
-    'LICENSE', 'NOTICE.md', 'TERMS.md', 'PRIVACY.md', 'AGE.md', 'LEGAL_NOTICES.md',
-    'AUTHORS.md', 'OWNERSHIP.md', 'TRADEMARKS.md'
+    'LICENSE',
+    'NOTICE.md',
+    'TERMS.md',
+    'PRIVACY.md',
+    'AGE.md',
+    'LEGAL_NOTICES.md',
+    'AUTHORS.md',
+    'OWNERSHIP.md',
+    'TRADEMARKS.md',
   ]) {
     assert.equal(fs.existsSync(file), true, file);
   }
-  for (const file of ['LICENSE', 'NOTICE.md', 'TERMS.md', 'LEGAL_NOTICES.md', 'OWNERSHIP.md', 'installer/EULA.txt']) {
+  for (const file of [
+    'LICENSE',
+    'NOTICE.md',
+    'TERMS.md',
+    'LEGAL_NOTICES.md',
+    'OWNERSHIP.md',
+    'installer/EULA.txt',
+  ]) {
     assert.match(read(file), /Copyright .{0,8}2026 Soul Consciousness Studios/i, file);
   }
   const trademarks = read('TRADEMARKS.md');
@@ -396,12 +478,24 @@ test('first-party legal stack is kept; third-party brands are not product names'
   assert.match(read('OWNERSHIP.md'), /does \*\*not\*\* claim ®|unregistered/);
   assert.match(read('docs/MARKETING_CLAIMS_POLICY.md'), /Using Jarvis/);
 
-  const identityMisuse = /Eidovara Jarvis|Jarvis kernel|Jarvis mode|Soul Jarvis|like Jarvis|our Jarvis|Hey Siri|OK Google|Okay Google|Hey Cortana|Eidovara (?:Raycast|Alfred|Spotlight|Copilot)/i;
+  const identityMisuse =
+    /Eidovara Jarvis|Jarvis kernel|Jarvis mode|Soul Jarvis|like Jarvis|our Jarvis|Hey Siri|OK Google|Okay Google|Hey Cortana|Eidovara (?:Raycast|Alfred|Spotlight|Copilot)/i;
   const productSurfaces = [
-    'README.md', 'CHANGELOG.md', 'docs/index.html', 'docs/product.html', 'docs/download.html',
-    'docs/assist.html', 'docs/help.html', 'docs/faq.html', 'docs/status.html',
-    'src/renderer/localization.js', 'src/renderer/renderer.js', 'src/renderer/companion.js',
-    'src/core/modules.js', 'src/core/engine.js', 'src/core/schema.js'
+    'README.md',
+    'CHANGELOG.md',
+    'docs/index.html',
+    'docs/product.html',
+    'docs/download.html',
+    'docs/assist.html',
+    'docs/help.html',
+    'docs/faq.html',
+    'docs/status.html',
+    'src/renderer/localization.js',
+    'src/renderer/renderer.js',
+    'src/renderer/companion.js',
+    'src/core/modules.js',
+    'src/core/engine.js',
+    'src/core/schema.js',
   ];
   for (const file of productSurfaces) {
     const text = read(file);
@@ -412,9 +506,15 @@ test('first-party legal stack is kept; third-party brands are not product names'
   assert.doesNotMatch(read('docs/site.css'), /"SF Mono"/);
   assert.doesNotMatch(read('src/renderer/tokens.css'), /"SF Pro Text"|"SF Pro Display"|"SF Mono"/);
   for (const file of [
-    'src/electron/main.js', 'src/renderer/renderer.js', 'src/renderer/index.html',
-    'src/core/kernel.js', 'src/core/service.js', 'docs/index.html', 'docs/assist.js',
-    'docs/site.js', 'docs/knowledge.js'
+    'src/electron/main.js',
+    'src/renderer/renderer.js',
+    'src/renderer/index.html',
+    'src/core/kernel.js',
+    'src/core/service.js',
+    'docs/index.html',
+    'docs/assist.js',
+    'docs/site.js',
+    'docs/knowledge.js',
   ]) {
     assert.doesNotMatch(read(file), /dreambot333\.workers\.dev/, file);
   }
@@ -422,9 +522,15 @@ test('first-party legal stack is kept; third-party brands are not product names'
   assert.doesNotMatch(read('docs/site.css'), /"SF Mono"/);
   assert.doesNotMatch(read('src/renderer/tokens.css'), /"SF Pro Text"|"SF Pro Display"|"SF Mono"/);
   for (const file of [
-    'src/electron/main.js', 'src/renderer/renderer.js', 'src/renderer/index.html',
-    'src/core/kernel.js', 'src/core/service.js', 'docs/index.html', 'docs/assist.js',
-    'docs/site.js', 'docs/knowledge.js'
+    'src/electron/main.js',
+    'src/renderer/renderer.js',
+    'src/renderer/index.html',
+    'src/core/kernel.js',
+    'src/core/service.js',
+    'docs/index.html',
+    'docs/assist.js',
+    'docs/site.js',
+    'docs/knowledge.js',
   ]) {
     assert.doesNotMatch(read(file), /dreambot333\.workers\.dev/, file);
   }
@@ -435,9 +541,18 @@ test('first-party legal stack is kept; third-party brands are not product names'
 // Additional edge case: no fake certification numbers in any document
 test('no fake certification numbers in any document', () => {
   const docs = [
-    'LICENSE', 'TERMS.md', 'AGE.md', 'OWNERSHIP.md', 'TRADEMARKS.md',
-    'docs/COPYRIGHT.md', 'COPYRIGHT.txt', 'NOTICE.md', 'LEGAL_NOTICES.md',
-    'PRIVACY.md', 'SECURITY.md', 'NETWORK-USAGE.md'
+    'LICENSE',
+    'TERMS.md',
+    'AGE.md',
+    'OWNERSHIP.md',
+    'TRADEMARKS.md',
+    'docs/COPYRIGHT.md',
+    'COPYRIGHT.txt',
+    'NOTICE.md',
+    'LEGAL_NOTICES.md',
+    'PRIVACY.md',
+    'SECURITY.md',
+    'NETWORK-USAGE.md',
   ];
   for (const doc of docs) {
     const content = read(doc);
@@ -451,7 +566,7 @@ test('no fake certification numbers in any document', () => {
 
 // Additional edge case: source-available headers present and correct in all first-party JS
 test('source-available headers present and correct in all first-party JS', () => {
-  const walk = (dir) => {
+  const walk = dir => {
     const out = [];
     for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
       const full = `${dir}/${entry.name}`;
@@ -460,7 +575,13 @@ test('source-available headers present and correct in all first-party JS', () =>
     }
     return out;
   };
-  const jsFiles = [...walk('src'), ...fs.readdirSync('docs').filter(n => n.endsWith('.js')).map(n => `docs/${n}`)];
+  const jsFiles = [
+    ...walk('src'),
+    ...fs
+      .readdirSync('docs')
+      .filter(n => n.endsWith('.js'))
+      .map(n => `docs/${n}`),
+  ];
   assert.ok(jsFiles.length >= 30, jsFiles.length);
   const header = /SPDX-FileCopyrightText: 2026 Soul Consciousness Studios/;
   const spdx = /SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0/;
@@ -475,31 +596,57 @@ test('source-available headers present and correct in all first-party JS', () =>
 
 // Additional edge case: no third-party brand names used as product feature names
 test('no third-party brand names used as product feature names', () => {
-  const bannedBrands = /Jarvis|Iron Man|Marvel|Disney|Stark|FRIDAY|Siri|Alexa|Google Assistant|Cortana|ChatGPT|Claude|Raycast|Alfred|Spotlight|Clippy|Replika|Character.AI|Xbox|Game Bar|OBS|VRM|MakeHuman|neural TTS/;
+  const bannedBrands =
+    /Jarvis|Iron Man|Marvel|Disney|Stark|FRIDAY|Siri|Alexa|Google Assistant|Cortana|ChatGPT|Claude|Raycast|Alfred|Spotlight|Clippy|Replika|Character.AI|Xbox|Game Bar|OBS|VRM|MakeHuman|neural TTS/;
   const filesToCheck = [
-    'README.md', 'CHANGELOG.md', 'docs/index.html', 'docs/product.html',
-    'docs/download.html', 'docs/assist.html', 'docs/help.html', 'docs/faq.html',
-    'docs/status.html', 'src/renderer/localization.js', 'src/renderer/renderer.js',
-    'src/renderer/companion.js', 'src/core/modules.js', 'src/core/engine.js',
-    'src/core/schema.js', 'docs/site.css', 'src/renderer/tokens.css'
+    'README.md',
+    'CHANGELOG.md',
+    'docs/index.html',
+    'docs/product.html',
+    'docs/download.html',
+    'docs/assist.html',
+    'docs/help.html',
+    'docs/faq.html',
+    'docs/status.html',
+    'src/renderer/localization.js',
+    'src/renderer/renderer.js',
+    'src/renderer/companion.js',
+    'src/core/modules.js',
+    'src/core/engine.js',
+    'src/core/schema.js',
+    'docs/site.css',
+    'src/renderer/tokens.css',
   ];
   for (const file of filesToCheck) {
-  if (file === 'CHANGELOG.md' || file.startsWith('src/') || file.startsWith('docs' + '/') && !file.endsWith('.html')) continue; // historical record quotes refusal lists
+    if (
+      file === 'CHANGELOG.md' ||
+      file.startsWith('src/') ||
+      (file.startsWith('docs' + '/') && !file.endsWith('.html'))
+    )
+      continue; // historical record quotes refusal lists
     const text = read(file);
-    assert.doesNotMatch(text, bannedBrands, file),
-      `Banned brand name found in ${file}`;
+    assert.doesNotMatch(text, bannedBrands, file), `Banned brand name found in ${file}`;
   }
 });
 
 // Additional edge case:dreambot worker domain prohibition
 test('dreambot333.workers.dev prohibited across all code and docs', () => {
   const files = [
-    ...fs.readdirSync('src', { withFileTypes: true })
+    ...fs
+      .readdirSync('src', { withFileTypes: true })
       .filter(e => e.isFile() && e.name.endsWith('.js'))
       .map(e => `src/${e.name}`),
-    ...fs.readdirSync('docs').filter(n => n.endsWith('.js')).map(n => `docs/${n}`),
-    'src/electron/main.js', 'src/renderer/renderer.js', 'src/renderer/index.html',
-    'docs/index.html', 'docs/assist.js', 'docs/site.js', 'docs/knowledge.js'
+    ...fs
+      .readdirSync('docs')
+      .filter(n => n.endsWith('.js'))
+      .map(n => `docs/${n}`),
+    'src/electron/main.js',
+    'src/renderer/renderer.js',
+    'src/renderer/index.html',
+    'docs/index.html',
+    'docs/assist.js',
+    'docs/site.js',
+    'docs/knowledge.js',
   ];
   for (const file of files) {
     const content = read(file);
@@ -512,9 +659,21 @@ test('no USPTO/trademark registration numbers claimed in any document', () => {
   const docs = ['LICENSE', 'TERMS.md', 'OWNERSHIP.md', 'TRADEMARKS.md', 'docs/COPYRIGHT.md'];
   for (const doc of docs) {
     const content = read(doc);
-    assert.doesNotMatch(content, /USPTO Registration No\./, `${doc} should not claim USPTO registration`);
-    assert.doesNotMatch(content, /Registration Number \d{6,}/, `${doc} should not have fake registration number`);
-    assert.doesNotMatch(content, /Copyright Office Registration No\./, `${doc} should not claim Copyright Office registration`);
+    assert.doesNotMatch(
+      content,
+      /USPTO Registration No\./,
+      `${doc} should not claim USPTO registration`
+    );
+    assert.doesNotMatch(
+      content,
+      /Registration Number \d{6,}/,
+      `${doc} should not have fake registration number`
+    );
+    assert.doesNotMatch(
+      content,
+      /Copyright Office Registration No\./,
+      `${doc} should not claim Copyright Office registration`
+    );
   }
 });
 
@@ -528,7 +687,13 @@ test('CODEOWNERS only contains repository owner', () => {
 
 // Additional edge case: footer pages have consistent claims
 test('footer pages have consistent source-available claims', () => {
-  const footerPages = ['docs/index.html', 'docs/legal.html', 'docs/licensing.html', 'docs/help.html', 'docs/faq.html'];
+  const footerPages = [
+    'docs/index.html',
+    'docs/legal.html',
+    'docs/licensing.html',
+    'docs/help.html',
+    'docs/faq.html',
+  ];
   for (const page of footerPages) {
     const content = read(page);
     assert.match(content, /© 2026 Soul Consciousness Studios\. All rights reserved/);
@@ -644,7 +809,7 @@ test('core engine smoke test validates initialization', () => {
 test('check script validates all first-party JS syntax', () => {
   const check = read('scripts/check.js');
   assert.match(check, /walk/);
-assert.ok(check.includes('.(?:js|cjs)$'), 'check.js filters JS sources');
+  assert.ok(check.includes('.(?:js|cjs)$'), 'check.js filters JS sources');
   assert.match(check, /--check/);
 });
 
@@ -687,7 +852,10 @@ test('AGE.md explicitly states 18+ requirement', () => {
   assert.match(age, /Eidovara is adult-only software/);
   assert.match(age, /at least \*\*18 years old\*\*|at least 18 years old/);
   assert.match(age, /--i-am-18-or-older/);
-  assert.match(age, /Local confirmation is \*\*not\*\* independent identity verification|Local confirmation is not independent identity verification/);
+  assert.match(
+    age,
+    /Local confirmation is \*\*not\*\* independent identity verification|Local confirmation is not independent identity verification/
+  );
 });
 
 // Additional edge case: TERMS.md commerce section is clear
@@ -719,12 +887,17 @@ test('OWNERSHIP.md does not claim registered trademarks', () => {
 
 // Additional edge case: no pridiction of consciousness in any source file
 test('no source file predicts consciousness or sentience for Soul', () => {
-  const consciousnessClaims = /I am conscious|scientifically proven consciousness|sentient|sentience|AI consciousness|artificial consciousness/;
+  const consciousnessClaims =
+    /I am conscious|scientifically proven consciousness|sentient|sentience|AI consciousness|artificial consciousness/;
   const sourceFiles = [
-    ...fs.readdirSync('src', { withFileTypes: true })
+    ...fs
+      .readdirSync('src', { withFileTypes: true })
       .filter(e => e.isFile() && e.name.endsWith('.js'))
       .map(e => `src/${e.name}`),
-    ...fs.readdirSync('docs').filter(n => n.endsWith('.js')).map(n => `docs/${n}`)
+    ...fs
+      .readdirSync('docs')
+      .filter(n => n.endsWith('.js'))
+      .map(n => `docs/${n}`),
   ];
   for (const file of sourceFiles) {
     const text = read(file);
@@ -742,10 +915,22 @@ test('version consistency between package.json and CHANGELOG', () => {
 
 // Additional edge case: All legal documents reference 2026 copyright
 test('all legal documents have 2026 copyright', () => {
-  const docs = ['LICENSE', 'TERMS.md', 'AGE.md', 'OWNERSHIP.md', 'TRADEMARKS.md', 'docs/COPYRIGHT.md', 'NOTICE.md'];
+  const docs = [
+    'LICENSE',
+    'TERMS.md',
+    'AGE.md',
+    'OWNERSHIP.md',
+    'TRADEMARKS.md',
+    'docs/COPYRIGHT.md',
+    'NOTICE.md',
+  ];
   for (const doc of docs) {
     const content = read(doc);
-    assert.match(content, /Copyright \(c\) 2026 Soul Consciousness Studios|© 2026 Soul Consciousness Studios/, doc);
+    assert.match(
+      content,
+      /Copyright \(c\) 2026 Soul Consciousness Studios|© 2026 Soul Consciousness Studios/,
+      doc
+    );
   }
 });
 
@@ -756,7 +941,7 @@ test('no dreambot333 references in configuration or schema files', () => {
     'src/core/service.js',
     'src/electron/main.js',
     'docs/site.js',
-    'docs/knowledge.js'
+    'docs/knowledge.js',
   ];
   for (const file of configFiles) {
     if (fs.existsSync(file)) {
@@ -765,4 +950,3 @@ test('no dreambot333 references in configuration or schema files', () => {
     }
   }
 });
-

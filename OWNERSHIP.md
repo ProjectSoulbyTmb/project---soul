@@ -53,4 +53,3 @@ Repository notices, LICENSE, TERMS, provenance hashes, and git history are evide
 6. Patent counsel before any “patent pending” statement.
 
 Contact for licensing: the official Eidovara GitHub repository owner.
-

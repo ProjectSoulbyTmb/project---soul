@@ -2,250 +2,298 @@
 <!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
 <!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
-  <meta name="referrer" content="no-referrer">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Eidovara roadmap — planned features and development milestones for v1.1.0 and beyond.">
-  <meta property="og:title" content="Roadmap · Eidovara">
-  <meta property="og:description" content="Planned features and development milestones for Eidovara v1.1.0 and beyond.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://eidovara.org/roadmap.html">
-  <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
-  <link rel="canonical" href="https://eidovara.org/roadmap.html">
-  <title>Roadmap · Eidovara</title>
-  <link rel="stylesheet" href="tokens.css">
-  <link rel="stylesheet" href="site.css">
-  <link rel="stylesheet" href="brand.css">
-  <link rel="icon" type="image/png" href="eidovara-icon.png">
-</head>
-<body class="site" data-page="roadmap">
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header site-chrome">
-    <div class="site-header-inner">
-      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
-      <nav id="site-nav" aria-label="Primary">
-        <a href="./" data-nav="home">Home</a>
-        <a href="product.html" data-nav="product">Product</a>
-        <a class="nav-cta" href="download.html" data-nav="download">Download</a>
-        <a href="assist.html" data-nav="assist">Assist</a>
-        <a href="help.html" data-nav="help">Help</a>
-        <a href="faq.html" data-nav="faq">FAQ</a>
-        <a href="version-history.html" data-nav="version-history">Version History</a>
-        <a href="roadmap.html" data-nav="roadmap" aria-current="page">Roadmap</a>
-        <details class="nav-legal">
-          <summary>Legal</summary>
-          <div class="nav-legal-menu">
-            <a href="legal.html">Overview</a>
-            <a href="terms.html">Terms</a>
-            <a href="privacy.html">Privacy</a>
-            <a href="age.html">Age 18+</a>
-            <a href="licensing.html">Licensing</a>
-            <a href="security.html">Security</a>
-          </div>
-        </details>
-        <a href="status.html" data-nav="status">Status</a>
-        <a class="nav-cta" href="download.html" data-nav="download">Download</a>
-      </nav>
-      <div class="header-controls"></div>
-    </div>
-  </header>
-  <main id="main" class="site-main">
-    <p class="eyebrow">Development Roadmap</p>
-    <h1 class="section-title">Eidovara Roadmap</h1>
-    <p class="lead">Planned features and development milestones. All timelines are estimates and subject to change. The 18+ source-available framework remains invariant.</p>
-
-    <section class="roadmap-section animate-on-scroll">
-      <h2>v1.1.0 — Enhanced Desktop Experience (Q4 2026)</h2>
-      <div class="roadmap-grid">
-        <article class="roadmap-card animate-on-scroll">
-          <h3>🎨 Enhanced Theming</h3>
-          <ul>
-            <li>Custom theme builder with color picker</li>
-            <li>Theme marketplace (community themes)</li>
-            <li>Per-app theme overrides</li>
-            <li>Animated theme transitions</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-1">
-          <h3>🧠 Soul Layer Enhancements</h3>
-          <ul>
-            <li>Plugin architecture for Soul skills</li>
-            <li>Memory export/import (JSON)</li>
-            <li>Conversation branching</li>
-            <li>Custom personality templates</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-2">
-          <h3>🎮 Gaming Enhancements</h3>
-          <ul>
-            <li>Per-game profile auto-switching</li>
-            <li>Discord Rich Presence integration</li>
-            <li>Overlay performance metrics</li>
-            <li>Controller mapping UI</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-3">
-          <h3>📱 Mobile Companion App</h3>
-          <ul>
-            <li>Remote control for desktop</li>
-            <li>Push notifications for updates</li>
-            <li>QR code pairing</li>
-            <li>Read-only memory browser</li>
-          </ul>
-        </article>
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Eidovara roadmap — planned features and development milestones for v1.1.0 and beyond."
+    />
+    <meta property="og:title" content="Roadmap · Eidovara" />
+    <meta
+      property="og:description"
+      content="Planned features and development milestones for Eidovara v1.1.0 and beyond."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://eidovara.org/roadmap.html" />
+    <meta property="og:image" content="https://eidovara.org/eidovara-og.png" />
+    <link rel="canonical" href="https://eidovara.org/roadmap.html" />
+    <title>Roadmap · Eidovara</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="brand.css" />
+    <link rel="icon" type="image/png" href="eidovara-icon.png" />
+  </head>
+  <body class="site" data-page="roadmap">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header site-chrome">
+      <div class="site-header-inner">
+        <a class="brand" href="./"
+          ><img class="brand-icon" src="eidovara-icon.png" alt="" />Eidovara</a
+        >
+        <button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          id="navToggle"
+        >
+          Menu
+        </button>
+        <nav id="site-nav" aria-label="Primary">
+          <a href="./" data-nav="home">Home</a>
+          <a href="product.html" data-nav="product">Product</a>
+          <a class="nav-cta" href="download.html" data-nav="download">Download</a>
+          <a href="assist.html" data-nav="assist">Assist</a>
+          <a href="help.html" data-nav="help">Help</a>
+          <a href="faq.html" data-nav="faq">FAQ</a>
+          <a href="version-history.html" data-nav="version-history">Version History</a>
+          <a href="roadmap.html" data-nav="roadmap" aria-current="page">Roadmap</a>
+          <details class="nav-legal">
+            <summary>Legal</summary>
+            <div class="nav-legal-menu">
+              <a href="legal.html">Overview</a>
+              <a href="terms.html">Terms</a>
+              <a href="privacy.html">Privacy</a>
+              <a href="age.html">Age 18+</a>
+              <a href="licensing.html">Licensing</a>
+              <a href="security.html">Security</a>
+            </div>
+          </details>
+          <a href="status.html" data-nav="status">Status</a>
+          <a class="nav-cta" href="download.html" data-nav="download">Download</a>
+        </nav>
+        <div class="header-controls"></div>
       </div>
-    </section>
+    </header>
+    <main id="main" class="site-main">
+      <p class="eyebrow">Development Roadmap</p>
+      <h1 class="section-title">Eidovara Roadmap</h1>
+      <p class="lead">
+        Planned features and development milestones. All timelines are estimates and subject to
+        change. The 18+ source-available framework remains invariant.
+      </p>
 
-    <section class="roadmap-section animate-on-scroll stagger-1">
-      <h2>v1.2.0 — Ecosystem Expansion (Q1 2027)</h2>
-      <div class="roadmap-grid">
-        <article class="roadmap-card animate-on-scroll">
-          <h3>🔌 Plugin System</h3>
-          <ul>
-            <li>Official plugin SDK (TypeScript/JS)</li>
-            <li>Plugin marketplace with review process</li>
-            <li>Sandboxed plugin execution</li>
-            <li>Auto-update for plugins</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-1">
-          <h3>🌐 Web Platform</h3>
-          <ul>
-            <li>Progressive Web App (PWA) install</li>
-            <li>Offline-first with background sync</li>
-            <li>Web Share API integration</li>
-            <li>Push notifications (opt-in)</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-2">
-          <h3>🔐 Enhanced Security</h3>
-          <ul>
-            <li>Hardware security key support (WebAuthn)</li>
-            <li>Encrypted memory at rest</li>
-            <li>Audit log viewer</li>
-            <li>Automatic security updates</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-3">
-          <h3>📊 Analytics Dashboard</h3>
-          <ul>
-            <li>Local-first usage insights</li>
-            <li>Memory growth visualization</li>
-            <li>Provider usage statistics</li>
-            <li>Export to CSV/JSON</li>
-          </ul>
-        </article>
+      <section class="roadmap-section animate-on-scroll">
+        <h2>v1.1.0 — Enhanced Desktop Experience (Q4 2026)</h2>
+        <div class="roadmap-grid">
+          <article class="roadmap-card animate-on-scroll">
+            <h3>🎨 Enhanced Theming</h3>
+            <ul>
+              <li>Custom theme builder with color picker</li>
+              <li>Theme marketplace (community themes)</li>
+              <li>Per-app theme overrides</li>
+              <li>Animated theme transitions</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-1">
+            <h3>🧠 Soul Layer Enhancements</h3>
+            <ul>
+              <li>Plugin architecture for Soul skills</li>
+              <li>Memory export/import (JSON)</li>
+              <li>Conversation branching</li>
+              <li>Custom personality templates</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-2">
+            <h3>🎮 Gaming Enhancements</h3>
+            <ul>
+              <li>Per-game profile auto-switching</li>
+              <li>Discord Rich Presence integration</li>
+              <li>Overlay performance metrics</li>
+              <li>Controller mapping UI</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-3">
+            <h3>📱 Mobile Companion App</h3>
+            <ul>
+              <li>Remote control for desktop</li>
+              <li>Push notifications for updates</li>
+              <li>QR code pairing</li>
+              <li>Read-only memory browser</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="roadmap-section animate-on-scroll stagger-1">
+        <h2>v1.2.0 — Ecosystem Expansion (Q1 2027)</h2>
+        <div class="roadmap-grid">
+          <article class="roadmap-card animate-on-scroll">
+            <h3>🔌 Plugin System</h3>
+            <ul>
+              <li>Official plugin SDK (TypeScript/JS)</li>
+              <li>Plugin marketplace with review process</li>
+              <li>Sandboxed plugin execution</li>
+              <li>Auto-update for plugins</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-1">
+            <h3>🌐 Web Platform</h3>
+            <ul>
+              <li>Progressive Web App (PWA) install</li>
+              <li>Offline-first with background sync</li>
+              <li>Web Share API integration</li>
+              <li>Push notifications (opt-in)</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-2">
+            <h3>🔐 Enhanced Security</h3>
+            <ul>
+              <li>Hardware security key support (WebAuthn)</li>
+              <li>Encrypted memory at rest</li>
+              <li>Audit log viewer</li>
+              <li>Automatic security updates</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-3">
+            <h3>📊 Analytics Dashboard</h3>
+            <ul>
+              <li>Local-first usage insights</li>
+              <li>Memory growth visualization</li>
+              <li>Provider usage statistics</li>
+              <li>Export to CSV/JSON</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="roadmap-section animate-on-scroll stagger-2">
+        <h2>v2.0.0 — Platform Maturity (Q3 2027)</h2>
+        <div class="roadmap-grid">
+          <article class="roadmap-card animate-on-scroll">
+            <h3>🖥️ Multi-Platform Official Builds</h3>
+            <ul>
+              <li>Official Linux (AppImage, .deb, .rpm)</li>
+              <li>Official macOS (universal .dmg, notarized)</li>
+              <li>Authenticode-signed Windows installer</li>
+              <li>Auto-update across all platforms</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-1">
+            <h3>🏢 Enterprise Features</h3>
+            <ul>
+              <li>Group policy / MDM configuration</li>
+              <li>Centralized license management</li>
+              <li>Audit logging for compliance</li>
+              <li>Offline deployment support</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-2">
+            <h3>🤖 AI Provider Expansion</h3>
+            <ul>
+              <li>Local LLM support (llama.cpp, Ollama)</li>
+              <li>OpenRouter / OpenAI-compatible endpoints</li>
+              <li>Custom model fine-tuning pipeline</li>
+              <li>Multi-provider load balancing</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-3">
+            <h3>🌍 Internationalization</h3>
+            <ul>
+              <li>Full i18n framework (50+ languages)</li>
+              <li>RTL language support</li>
+              <li>Community translation platform</li>
+              <li>Auto-detection from OS locale</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="roadmap-section animate-on-scroll stagger-2">
+        <h2>Ongoing & Continuous</h2>
+        <div class="roadmap-grid">
+          <article class="roadmap-card animate-on-scroll">
+            <h3>🔒 Security & Compliance</h3>
+            <ul>
+              <li>Monthly dependency updates</li>
+              <li>Quarterly security audits</li>
+              <li>Bug bounty program</li>
+              <li>CVE monitoring & rapid patching</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-1">
+            <h3>📚 Documentation & Community</h3>
+            <ul>
+              <li>Interactive API documentation</li>
+              <li>Video tutorials & guides</li>
+              <li>Community forum / Discord</li>
+              <li>Plugin development guides</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-2">
+            <h3>🧪 Quality Assurance</h3>
+            <ul>
+              <li>Expanded test coverage (target 90%+)</li>
+              <li>Visual regression testing</li>
+              <li>Performance benchmarks</li>
+              <li>Automated accessibility testing</li>
+            </ul>
+          </article>
+          <article class="roadmap-card animate-on-scroll stagger-3">
+            <h3>⚖️ Legal & Compliance</h3>
+            <ul>
+              <li>Annual license review</li>
+              <li>GDPR/CCPA compliance audit</li>
+              <li>Age verification improvements</li>
+              <li>Trademark monitoring</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="roadmap-notes animate-on-scroll stagger-3">
+        <h2>Notes</h2>
+        <ul class="roadmap-notes-list">
+          <li>
+            All timelines are <strong>estimates</strong> and subject to change based on development
+            velocity, community feedback, and legal requirements.
+          </li>
+          <li>
+            The <strong>18+ age gate</strong>, <strong>source-available license</strong>, and
+            <strong>no consciousness claims</strong> are invariant — they will not be removed or
+            relaxed.
+          </li>
+          <li>
+            <strong>Authenticode signing</strong> requires owner action (code-signing certificate
+            procurement) and cannot be completed by a commit.
+          </li>
+          <li>
+            <strong>Official Linux/macOS builds</strong> require Authenticode/notarization
+            infrastructure and are not current priorities.
+          </li>
+          <li>
+            Community feature requests are welcome via GitHub Issues. Priority is given to security,
+            stability, and 18+ framework compliance.
+          </li>
+          <li>
+            All features must maintain <strong>local-first architecture</strong>,
+            <strong>no telemetry by default</strong>, and
+            <strong>fail-closed network behavior</strong>.
+          </li>
+        </ul>
+      </section>
+    </main>
+    <footer class="site-footer site-end">
+      <div class="site-footer-inner">
+        <span
+          >© 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open
+          source. Soul Consciousness Studios is the intended publisher only. 18+.</span
+        >
+        <span
+          ><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> ·
+          <a href="download.html">Download</a> · <a href="status.html">Status</a> ·
+          <a href="legal.html">Legal</a></span
+        >
       </div>
-    </section>
-
-    <section class="roadmap-section animate-on-scroll stagger-2">
-      <h2>v2.0.0 — Platform Maturity (Q3 2027)</h2>
-      <div class="roadmap-grid">
-        <article class="roadmap-card animate-on-scroll">
-          <h3>🖥️ Multi-Platform Official Builds</h3>
-          <ul>
-            <li>Official Linux (AppImage, .deb, .rpm)</li>
-            <li>Official macOS (universal .dmg, notarized)</li>
-            <li>Authenticode-signed Windows installer</li>
-            <li>Auto-update across all platforms</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-1">
-          <h3>🏢 Enterprise Features</h3>
-          <ul>
-            <li>Group policy / MDM configuration</li>
-            <li>Centralized license management</li>
-            <li>Audit logging for compliance</li>
-            <li>Offline deployment support</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-2">
-          <h3>🤖 AI Provider Expansion</h3>
-          <ul>
-            <li>Local LLM support (llama.cpp, Ollama)</li>
-            <li>OpenRouter / OpenAI-compatible endpoints</li>
-            <li>Custom model fine-tuning pipeline</li>
-            <li>Multi-provider load balancing</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-3">
-          <h3>🌍 Internationalization</h3>
-          <ul>
-            <li>Full i18n framework (50+ languages)</li>
-            <li>RTL language support</li>
-            <li>Community translation platform</li>
-            <li>Auto-detection from OS locale</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <section class="roadmap-section animate-on-scroll stagger-2">
-      <h2>Ongoing & Continuous</h2>
-      <div class="roadmap-grid">
-        <article class="roadmap-card animate-on-scroll">
-          <h3>🔒 Security & Compliance</h3>
-          <ul>
-            <li>Monthly dependency updates</li>
-            <li>Quarterly security audits</li>
-            <li>Bug bounty program</li>
-            <li>CVE monitoring & rapid patching</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-1">
-          <h3>📚 Documentation & Community</h3>
-          <ul>
-            <li>Interactive API documentation</li>
-            <li>Video tutorials & guides</li>
-            <li>Community forum / Discord</li>
-            <li>Plugin development guides</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-2">
-          <h3>🧪 Quality Assurance</h3>
-          <ul>
-            <li>Expanded test coverage (target 90%+)</li>
-            <li>Visual regression testing</li>
-            <li>Performance benchmarks</li>
-            <li>Automated accessibility testing</li>
-          </ul>
-        </article>
-        <article class="roadmap-card animate-on-scroll stagger-3">
-          <h3>⚖️ Legal & Compliance</h3>
-          <ul>
-            <li>Annual license review</li>
-            <li>GDPR/CCPA compliance audit</li>
-            <li>Age verification improvements</li>
-            <li>Trademark monitoring</li>
-          </ul>
-        </article>
-      </div>
-    </section>
-
-    <section class="roadmap-notes animate-on-scroll stagger-3">
-      <h2>Notes</h2>
-      <ul class="roadmap-notes-list">
-        <li>All timelines are <strong>estimates</strong> and subject to change based on development velocity, community feedback, and legal requirements.</li>
-        <li>The <strong>18+ age gate</strong>, <strong>source-available license</strong>, and <strong>no consciousness claims</strong> are invariant — they will not be removed or relaxed.</li>
-        <li><strong>Authenticode signing</strong> requires owner action (code-signing certificate procurement) and cannot be completed by a commit.</li>
-        <li><strong>Official Linux/macOS builds</strong> require Authenticode/notarization infrastructure and are not current priorities.</li>
-        <li>Community feature requests are welcome via GitHub Issues. Priority is given to security, stability, and 18+ framework compliance.</li>
-        <li>All features must maintain <strong>local-first architecture</strong>, <strong>no telemetry by default</strong>, and <strong>fail-closed network behavior</strong>.</li>
-      </ul>
-    </section>
-  </main>
-  <footer class="site-footer site-end">
-    <div class="site-footer-inner">
-      <span>© 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. 18+.</span>
-      <span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a></span>
-    </div>
-  </footer>
-  <script src="site.js" defer></script>
-  <script type="module" src="assist.js"></script>
-</body>
+    </footer>
+    <script src="site.js" defer></script>
+    <script type="module" src="assist.js"></script>
+  </body>
 </html>
-

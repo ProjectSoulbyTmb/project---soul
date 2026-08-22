@@ -1,0 +1,6 @@
+node_modules
+dist
+dist-mac
+.wrangler
+pnpm-lock.yaml
+.git

@@ -51,7 +51,7 @@ test('no file contains encoding-corruption signatures', () => {
     const text = fs.readFileSync(file, 'utf8');
     for (const [label, re] of CORRUPTION_SIGNATURES) {
       if (!re.test(text)) continue;
-      if (label.startsWith('cp1252') && ALLOW_ACCENTED.some((re2) => re2.test(rel))) continue;
+      if (label.startsWith('cp1252') && ALLOW_ACCENTED.some(re2 => re2.test(rel))) continue;
       offenders.push(`${rel}: ${label}`);
     }
   }

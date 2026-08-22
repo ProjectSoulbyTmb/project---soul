@@ -20,7 +20,12 @@
   }
   function adultMode() {
     const policy = window.eidovaraState?.policy || {};
-    return policy.mode === 'adult' && policy.adultSoulEnabled === true && policy.adultStatusConfirmed === true && policy.currentConsent === true;
+    return (
+      policy.mode === 'adult' &&
+      policy.adultSoulEnabled === true &&
+      policy.adultStatusConfirmed === true &&
+      policy.currentConsent === true
+    );
   }
   function ageGated() {
     return document.body.classList.contains('age-gated');
@@ -40,13 +45,23 @@
   function mediaHref(value) {
     const raw = String(value || '');
     if (!raw) return '';
-    if (/youtube\.com\/embed|youtube-nocookie|spotify\.com\/embed|sdk\.scdn\.co|pornhub\.com\/embed|xvideos\.com\/embedframe|xhamster\.com\/xembed|redgifs\.com\/ifr|spankbang\.com\/embed|chaturbate\.com\/embed/i.test(raw)) return '';
+    if (
+      /youtube\.com\/embed|youtube-nocookie|spotify\.com\/embed|sdk\.scdn\.co|pornhub\.com\/embed|xvideos\.com\/embedframe|xhamster\.com\/xembed|redgifs\.com\/ifr|spankbang\.com\/embed|chaturbate\.com\/embed/i.test(
+        raw
+      )
+    )
+      return '';
     try {
       const url = new URL(raw);
       if (url.protocol === LOCAL) return url.href;
       if (url.protocol !== 'https:') return '';
       const host = url.hostname.toLowerCase();
-      if (/(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)spotify\.com$|(^|\.)pornhub\.com$|(^|\.)xvideos\.com$|(^|\.)xhamster\.com$|(^|\.)spankbang\.com$|(^|\.)redgifs\.com$|(^|\.)chaturbate\.com$|(^|\.)onlyfans\.com$|(^|\.)fansly\.com$/.test(host)) return '';
+      if (
+        /(^|\.)youtube\.com$|(^|\.)youtu\.be$|(^|\.)spotify\.com$|(^|\.)pornhub\.com$|(^|\.)xvideos\.com$|(^|\.)xhamster\.com$|(^|\.)spankbang\.com$|(^|\.)redgifs\.com$|(^|\.)chaturbate\.com$|(^|\.)onlyfans\.com$|(^|\.)fansly\.com$/.test(
+          host
+        )
+      )
+        return '';
       return url.href;
     } catch {
       return '';
@@ -64,9 +79,14 @@
   }
   function qualityChoices(item) {
     const native = item?.url;
-    const extra = (item?.renditions || []).filter(r => r?.url && r.url !== native && allowedUrl(r.url));
+    const extra = (item?.renditions || []).filter(
+      r => r?.url && r.url !== native && allowedUrl(r.url)
+    );
     if (!native || extra.length === 0) return [];
-    return [{ id: 'native', label: 'Native', url: native }, ...extra.map((r, i) => ({ id: r.id || `r${i}`, label: r.label || 'Rendition', url: r.url }))];
+    return [
+      { id: 'native', label: 'Native', url: native },
+      ...extra.map((r, i) => ({ id: r.id || `r${i}`, label: r.label || 'Rendition', url: r.url })),
+    ];
   }
   function clock(seconds) {
     const n = Math.max(0, Number(seconds) || 0);
@@ -74,7 +94,9 @@
   }
   function mediaSignal(event, item = currentItem()) {
     if (!item || !['audio', 'video'].includes(item.type)) return;
-    window.soul.recordMedia({ event, type: item.type, title: item.title, sourceUrl: item.sourceUrl }).catch(() => {});
+    window.soul
+      .recordMedia({ event, type: item.type, title: item.title, sourceUrl: item.sourceUrl })
+      .catch(() => {});
   }
   function setActive(on) {
     const root = $('#eidovaraPlayer') || $('#mediaDock');
@@ -87,7 +109,9 @@
     const audio = $('#audioPlayer');
     const video = $('#videoPlayer');
     const playing = el => Boolean(el && el.src && !el.paused && !el.ended);
-    window.soul?.stayAwake?.({ on: playing(audio) || playing(video), reason: 'media' }).catch(() => {});
+    window.soul
+      ?.stayAwake?.({ on: playing(audio) || playing(video), reason: 'media' })
+      .catch(() => {});
   }
   function fillQuality(item) {
     const sel = $('#mediaQuality');
@@ -128,16 +152,25 @@
     navigator.mediaSession.metadata = new MediaMetadata({
       title: item.title || 'Eidovara',
       artist: item.artist || 'Eidovara',
-      album: item.local ? 'Local library' : 'Eidovara'
+      album: item.local ? 'Local library' : 'Eidovara',
     });
     const action = (name, fn) => {
-      try { navigator.mediaSession.setActionHandler(name, fn); } catch {}
+      try {
+        navigator.mediaSession.setActionHandler(name, fn);
+      } catch {}
     };
-    action('play', () => currentPlayer()?.play().catch(() => {}));
+    action('play', () =>
+      currentPlayer()
+        ?.play()
+        .catch(() => {})
+    );
     action('pause', () => currentPlayer()?.pause());
     action('previoustrack', () => loadMedia(index - 1));
     action('nexttrack', () => loadMedia(index + 1));
-    action('stop', () => { currentPlayer()?.pause(); setActive(false); });
+    action('stop', () => {
+      currentPlayer()?.pause();
+      setActive(false);
+    });
     action('seekto', details => {
       const player = currentPlayer();
       if (player && Number.isFinite(details?.seekTime)) player.currentTime = details.seekTime;
@@ -149,15 +182,23 @@
     const root = $('#eidovaraPlayer');
     if (item) {
       if ($('#mediaTitle')) $('#mediaTitle').textContent = item.title || 'Untitled media';
-      if ($('#mediaKind')) $('#mediaKind').textContent = `${item.local ? 'local ' : ''}${item.type} · ${index + 1} of ${queue.length}`;
+      if ($('#mediaKind'))
+        $('#mediaKind').textContent =
+          `${item.local ? 'local ' : ''}${item.type} · ${index + 1} of ${queue.length}`;
       if ($('#npStageTitle')) $('#npStageTitle').textContent = item.title || 'Untitled media';
-      if ($('#npStageKind')) $('#npStageKind').textContent = item.local ? 'Local file through eidovara-media' : (item.type || '');
-      if ($('#mediaPlayBtn')) $('#mediaPlayBtn').textContent = player && !player.paused ? '❚❚' : '▶';
-      if ($('#mediaLoopBtn')) $('#mediaLoopBtn').textContent = loop === 'one' ? '🔂' : loop === 'all' ? '🔁' : '🔁︎';
+      if ($('#npStageKind'))
+        $('#npStageKind').textContent = item.local
+          ? 'Local file through eidovara-media'
+          : item.type || '';
+      if ($('#mediaPlayBtn'))
+        $('#mediaPlayBtn').textContent = player && !player.paused ? '❚❚' : '▶';
+      if ($('#mediaLoopBtn'))
+        $('#mediaLoopBtn').textContent = loop === 'one' ? '🔂' : loop === 'all' ? '🔁' : '🔁︎';
       if ($('#mediaShuffleBtn')) $('#mediaShuffleBtn').classList.toggle('is-on', shuffle);
       if ($('#mediaRate')) $('#mediaRate').value = String(rate);
       if ($('#mediaPopOutBtn')) $('#mediaPopOutBtn').classList.toggle('hidden', hideFloat());
-      if ($('#mediaPipBtn')) $('#mediaPipBtn').classList.toggle('hidden', hideFloat() || item.type !== 'video');
+      if ($('#mediaPipBtn'))
+        $('#mediaPipBtn').classList.toggle('hidden', hideFloat() || item.type !== 'video');
       if ($('#mediaLyrics')) $('#mediaLyrics').textContent = 'No licensed lyrics in-app';
       document.body.classList.toggle('adult-mode', adultMode());
       root?.classList.toggle('is-expanded', root?.classList.contains('is-expanded'));
@@ -166,7 +207,8 @@
     if (seek && player && Number.isFinite(player.duration)) {
       seek.max = String(player.duration || 0);
       seek.value = String(player.currentTime || 0);
-      if ($('#mediaTime')) $('#mediaTime').textContent = `${clock(player.currentTime)} / ${clock(player.duration)}`;
+      if ($('#mediaTime'))
+        $('#mediaTime').textContent = `${clock(player.currentTime)} / ${clock(player.duration)}`;
     }
   }
   let feelCtx = null;
@@ -192,7 +234,7 @@
         feelAnalyser.getByteTimeDomainData(data);
         let sum = 0;
         for (let i = 0; i < data.length; i += 1) sum += Math.abs(data[i] - 128);
-        const level = Math.min(1, (sum / data.length) / 36);
+        const level = Math.min(1, sum / data.length / 36);
         window.dispatchEvent(new CustomEvent('eidovara-feel-level', { detail: { level } }));
         feelRaf = requestAnimationFrame(tick);
       };
@@ -204,7 +246,10 @@
     const previous = currentItem();
     if (loop === 'one' && nextIndex === index && previous) {
       const player = currentPlayer();
-      if (player) { player.currentTime = 0; player.play().catch(() => {}); }
+      if (player) {
+        player.currentTime = 0;
+        player.play().catch(() => {});
+      }
       return;
     }
     if (previous && nextIndex !== index) mediaSignal('skip', previous);
@@ -242,7 +287,13 @@
     if (autoplay) player.play().catch(() => {});
     attachFeel(player);
     if (poppedOut && !hideFloat()) {
-      window.soul.popOutPlayer?.({ kind: item.type, item, rate, adultMode: adultMode(), ageGated: ageGated() });
+      window.soul.popOutPlayer?.({
+        kind: item.type,
+        item,
+        rate,
+        adultMode: adultMode(),
+        ageGated: ageGated(),
+      });
     } else if (hideFloat()) {
       window.soul.dockPlayer?.();
       poppedOut = false;
@@ -256,9 +307,16 @@
     }
     const selected = items[at];
     if (mode === 'confirm' && !opts.alreadyConfirmed) {
-      if (!window.confirm(`${t('mediaConfirm', 'Play this media in Eidovara:')} ${selected?.title || ''}`.trim())) return;
+      if (
+        !window.confirm(
+          `${t('mediaConfirm', 'Play this media in Eidovara:')} ${selected?.title || ''}`.trim()
+        )
+      )
+        return;
     }
-    queue = (items || []).filter(m => (m.type === 'audio' || m.type === 'video') && allowedUrl(m.url));
+    queue = (items || []).filter(
+      m => (m.type === 'audio' || m.type === 'video') && allowedUrl(m.url)
+    );
     const start = Math.max(0, queue.indexOf(selected) === -1 ? 0 : queue.indexOf(selected));
     loadMedia(start);
   }
@@ -281,7 +339,13 @@
     const item = currentItem();
     if (!item) return;
     poppedOut = true;
-    await window.soul.popOutPlayer?.({ kind: item.type, item, rate, adultMode: adultMode(), ageGated: ageGated() });
+    await window.soul.popOutPlayer?.({
+      kind: item.type,
+      item,
+      rate,
+      adultMode: adultMode(),
+      ageGated: ageGated(),
+    });
     paint();
   }
   async function dock() {
@@ -314,7 +378,9 @@
       return;
     }
     if (player?.setSinkId && navigator.mediaDevices?.enumerateDevices) {
-      const devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'audiooutput');
+      const devices = (await navigator.mediaDevices.enumerateDevices()).filter(
+        d => d.kind === 'audiooutput'
+      );
       const sel = $('#mediaOutput');
       if (!sel || !devices.length) return;
       sel.textContent = '';
@@ -344,7 +410,7 @@
     loadMedia,
     currentPlayer,
     currentItem,
-    queue: () => queue.slice()
+    queue: () => queue.slice(),
   };
   window.eidovaraPlayMedia = playMedia;
 
@@ -359,27 +425,44 @@
   $('#mediaFavoriteBtn')?.addEventListener('click', async () => {
     const item = currentItem();
     if (!item) return;
-    await window.soul.recordMedia({ event: 'favorite', type: item.type, title: item.title, sourceUrl: item.sourceUrl });
+    await window.soul.recordMedia({
+      event: 'favorite',
+      type: item.type,
+      title: item.title,
+      sourceUrl: item.sourceUrl,
+    });
     $('#mediaFavoriteBtn').textContent = '♥';
   });
   $('#mediaSimilarBtn')?.addEventListener('click', async () => {
     const item = currentItem();
     if (!item || !window.eidovaraSend) return;
     const taste = await window.soul.entertainment();
-    const favorites = taste.topTitles.slice(0, 3).map(x => x.title).join(', ');
-    window.eidovaraSend(`Find something similar to my favorite music: ${item.title}${favorites ? `, considering ${favorites}` : ''}`);
+    const favorites = taste.topTitles
+      .slice(0, 3)
+      .map(x => x.title)
+      .join(', ');
+    window.eidovaraSend(
+      `Find something similar to my favorite music: ${item.title}${favorites ? `, considering ${favorites}` : ''}`
+    );
   });
   $('#mediaSpotifyBtn')?.addEventListener('click', () => {
     const item = currentItem();
-    if (item) window.soul.openExternal(`https://open.spotify.com/search/${encodeURIComponent(item.title)}`);
+    if (item)
+      window.soul.openExternal(`https://open.spotify.com/search/${encodeURIComponent(item.title)}`);
   });
   $('#mediaYouTubeBtn')?.addEventListener('click', () => {
     const item = currentItem();
-    if (item) window.soul.openExternal(`https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`);
+    if (item)
+      window.soul.openExternal(
+        `https://www.youtube.com/results?search_query=${encodeURIComponent(item.title)}`
+      );
   });
   $('#mediaArchiveBtn')?.addEventListener('click', () => {
     const item = currentItem();
-    if (item) window.soul.openExternal(`https://archive.org/search?query=${encodeURIComponent(item.title)}`);
+    if (item)
+      window.soul.openExternal(
+        `https://archive.org/search?query=${encodeURIComponent(item.title)}`
+      );
   });
   $('#mediaSourceBtn')?.addEventListener('click', () => {
     const item = currentItem();
@@ -394,7 +477,9 @@
   $('#mediaExpandBtn')?.addEventListener('click', toggleExpand);
   $('#npArt')?.addEventListener('click', toggleExpand);
   $('#mediaNow')?.addEventListener('click', toggleExpand);
-  $('#npCollapseBtn')?.addEventListener('click', () => $('#eidovaraPlayer')?.classList.remove('is-expanded'));
+  $('#npCollapseBtn')?.addEventListener('click', () =>
+    $('#eidovaraPlayer')?.classList.remove('is-expanded')
+  );
   $('#mediaPopOutBtn')?.addEventListener('click', popOut);
   $('#mediaDockBtn')?.addEventListener('click', dock);
   $('#mediaPipBtn')?.addEventListener('click', pip);
@@ -403,7 +488,10 @@
     loop = loop === 'off' ? 'one' : loop === 'one' ? 'all' : 'off';
     paint();
   });
-  $('#mediaShuffleBtn')?.addEventListener('click', () => { shuffle = !shuffle; paint(); });
+  $('#mediaShuffleBtn')?.addEventListener('click', () => {
+    shuffle = !shuffle;
+    paint();
+  });
   $('#mediaRate')?.addEventListener('change', e => {
     rate = RATES.includes(Number(e.target.value)) ? Number(e.target.value) : 1;
     const player = currentPlayer();
@@ -439,11 +527,26 @@
   $('#videoPlayer')?.addEventListener('ended', ended);
   $('#audioPlayer')?.addEventListener('timeupdate', paint);
   $('#videoPlayer')?.addEventListener('timeupdate', paint);
-  $('#audioPlayer')?.addEventListener('play', () => { paint(); mediaStayAwake(); });
-  $('#videoPlayer')?.addEventListener('play', () => { paint(); mediaStayAwake(); });
-  $('#audioPlayer')?.addEventListener('pause', () => { paint(); mediaStayAwake(); });
-  $('#videoPlayer')?.addEventListener('pause', () => { paint(); mediaStayAwake(); });
-  window.soul?.onPlayerDocked?.(() => { poppedOut = false; paint(); });
+  $('#audioPlayer')?.addEventListener('play', () => {
+    paint();
+    mediaStayAwake();
+  });
+  $('#videoPlayer')?.addEventListener('play', () => {
+    paint();
+    mediaStayAwake();
+  });
+  $('#audioPlayer')?.addEventListener('pause', () => {
+    paint();
+    mediaStayAwake();
+  });
+  $('#videoPlayer')?.addEventListener('pause', () => {
+    paint();
+    mediaStayAwake();
+  });
+  window.soul?.onPlayerDocked?.(() => {
+    poppedOut = false;
+    paint();
+  });
   window.soul?.onPlayerCommand?.(command => {
     if (command === 'previous') loadMedia(index - 1);
     if (command === 'next') loadMedia(index + 1);
@@ -457,7 +560,8 @@
     if (e.code !== 'Space' && e.key !== ' ') return;
     if (e.ctrlKey || e.metaKey || e.altKey) return;
     const tag = String(e.target?.tagName || '').toUpperCase();
-    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable) return;
+    if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || e.target?.isContentEditable)
+      return;
     if (!currentItem()) return;
     e.preventDefault();
     const player = currentPlayer();
@@ -466,4 +570,3 @@
     paint();
   });
 })();
-

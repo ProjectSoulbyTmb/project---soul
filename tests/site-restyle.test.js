@@ -4,11 +4,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import { INSTALLER_NAME, INSTALLER_MEASURED, INSTALLER_SHA256, SOURCE_VERSION } from '../src/core/release.js';
+import {
+  INSTALLER_NAME,
+  INSTALLER_MEASURED,
+  INSTALLER_SHA256,
+  SOURCE_VERSION,
+} from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 const escapeRe = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-const htmlFiles = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
+const htmlFiles = fs
+  .readdirSync('docs')
+  .filter(name => name.endsWith('.html'))
+  .map(name => path.join('docs', name));
 
 test('homepage restyle keeps three benefits, one hero fill CTA, and no Adult Soul marketing', () => {
   const home = read('docs/index.html');
@@ -39,7 +47,12 @@ test('public nav Download uses nav-cta to download.html on every HTML page', () 
 });
 
 test('public release pages advertise the real current installer', () => {
-  for (const file of ['docs/index.html', 'docs/product.html', 'docs/download.html', 'docs/status.html']) {
+  for (const file of [
+    'docs/index.html',
+    'docs/product.html',
+    'docs/download.html',
+    'docs/status.html',
+  ]) {
     const html = read(file);
     assert.match(html, new RegExp('v' + escapeRe(SOURCE_VERSION)), file);
   }
@@ -55,4 +68,3 @@ test('public release pages advertise the real current installer', () => {
   assert.match(read('docs/site.css'), /\.benefit-grid/);
   assert.equal(read('docs/tokens.css'), read('src/renderer/tokens.css'));
 });
-

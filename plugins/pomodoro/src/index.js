@@ -16,7 +16,7 @@ const DEFAULTS = {
   autoStartBreaks: true,
   autoStartFocus: false,
   soundEnabled: true,
-  ambientVolumePct: 30
+  ambientVolumePct: 30,
 };
 
 let settings = { ...DEFAULTS };
@@ -27,7 +27,7 @@ let state = {
   endsAt: null,
   pausedRemainingMs: null,
   timer: null,
-  todayStats: { focusSessions: 0, totalMinutes: 0, date: new Date().toDateString() }
+  todayStats: { focusSessions: 0, totalMinutes: 0, date: new Date().toDateString() },
 };
 
 let initialized = false;
@@ -52,7 +52,9 @@ const api = {
           state.sessionCount = parsed.sessionCount || state.todayStats.focusSessions;
         }
       }
-    } catch { /* private mode */ }
+    } catch {
+      /* private mode */
+    }
     rollDay();
     initialized = true;
     console.log(`[${PLUGIN_ID}] Initialized`);
@@ -78,7 +80,12 @@ const api = {
     state.endsAt = Date.now() + minutes * 60_000;
     startTimer();
     emitHook('pomodoro.session.started', { phase: state.phase, minutes });
-    return { started: true, phase: state.phase, minutes, endsAt: new Date(state.endsAt).toISOString() };
+    return {
+      started: true,
+      phase: state.phase,
+      minutes,
+      endsAt: new Date(state.endsAt).toISOString(),
+    };
   },
 
   async pause() {
@@ -112,11 +119,14 @@ const api = {
       phase: state.phase,
       running: state.phase !== 'idle',
       paused: state.pausedRemainingMs != null,
-      remainingMs: state.pausedRemainingMs != null
-        ? state.pausedRemainingMs
-        : (state.endsAt ? Math.max(0, state.endsAt - Date.now()) : 0),
+      remainingMs:
+        state.pausedRemainingMs != null
+          ? state.pausedRemainingMs
+          : state.endsAt
+            ? Math.max(0, state.endsAt - Date.now())
+            : 0,
       sessionCount: state.sessionCount,
-      today: getTodayStats()
+      today: getTodayStats(),
     };
   },
 
@@ -136,7 +146,7 @@ const api = {
     state.todayStats = { focusSessions: 0, totalMinutes: 0, date: new Date().toDateString() };
     persistState();
     return { ...state.todayStats };
-  }
+  },
 };
 
 export default api;
@@ -147,9 +157,12 @@ export default api;
 
 function resolveDuration(type) {
   switch (type) {
-    case 'short-break': return settings.shortBreakMin;
-    case 'long-break':  return settings.longBreakMin;
-    default:            return settings.focusDurationMin;
+    case 'short-break':
+      return settings.shortBreakMin;
+    case 'long-break':
+      return settings.longBreakMin;
+    default:
+      return settings.focusDurationMin;
   }
 }
 
@@ -159,7 +172,10 @@ function startTimer() {
 }
 
 function stopTimer() {
-  if (state.timer) { clearInterval(state.timer); state.timer = null; }
+  if (state.timer) {
+    clearInterval(state.timer);
+    state.timer = null;
+  }
 }
 
 async function tick() {
@@ -226,18 +242,24 @@ function getTodayStats() {
   return {
     ...state.todayStats,
     currentStreak: state.sessionCount,
-    nextLongBreakIn: settings.sessionsUntilLongBreak - (state.sessionCount % settings.sessionsUntilLongBreak)
+    nextLongBreakIn:
+      settings.sessionsUntilLongBreak - (state.sessionCount % settings.sessionsUntilLongBreak),
   };
 }
 
 function persistState() {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      settings,
-      todayStats: state.todayStats,
-      sessionCount: state.sessionCount
-    }));
-  } catch { /* private mode */ }
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        settings,
+        todayStats: state.todayStats,
+        sessionCount: state.sessionCount,
+      })
+    );
+  } catch {
+    /* private mode */
+  }
 }
 
 function notify(title, body) {
@@ -246,11 +268,15 @@ function notify(title, body) {
     if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
       new Notification(`Pomodoro · ${title}`, { body });
     }
-  } catch { /* notifications unavailable */ }
+  } catch {
+    /* notifications unavailable */
+  }
 }
 
 function emitHook(event, data) {
   try {
     globalThis.dispatchEvent?.(new CustomEvent(event, { detail: data }));
-  } catch { /* no DOM available */ }
+  } catch {
+    /* no DOM available */
+  }
 }

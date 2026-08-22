@@ -21,21 +21,20 @@ Eidovara's advertised Windows runtime redistributes **Electron** and the **Chrom
 
 Declared dependencies in `package.json` (v1.0.0) that this project actually invokes:
 
-| Component | Version in package.json | Role | License family (as published by that project) | Redistributed in the Windows app? |
-| --- | --- | --- | --- | --- |
-| Electron | 43.4.1 | Desktop runtime | MIT (Electron); Chromium/Node.js keep their own notices | Yes — runtime |
-| Chromium | bundled by Electron 43.4.1 | Rendering engine | Chromium authors; see `LICENSES.chromium.html` in Windows builds | Yes — via Electron |
-| Node.js | bundled by Electron 43.4.1 | JavaScript runtime | OpenJS Foundation and contributors; see Electron notices | Yes — via Electron |
-| electron-updater | 6.8.9 | Official GitHub Releases updater | MIT | Yes — application dependency |
-| electron-builder | 26.15.3 | Windows/Linux packaging | As published by electron-builder | No — build-time only |
-| rcedit | 5.0.2 | Applies the approved `.ico` during Windows `afterPack` | As published by rcedit | No — build-time only |
-| @electron/packager | 20.3.0 | macOS packaging scripts (not an official signed product) | As published by @electron/packager | No — build-time only |
-| @noble/hashes | 1.4.0 | Development helper | As published by @noble/hashes | No — development only |
-| yallist | 4.0.0 | Development helper | As published by yallist | No — development only |
+| Component          | Version in package.json    | Role                                                     | License family (as published by that project)                    | Redistributed in the Windows app? |
+| ------------------ | -------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------- |
+| Electron           | 43.4.1                     | Desktop runtime                                          | MIT (Electron); Chromium/Node.js keep their own notices          | Yes — runtime                     |
+| Chromium           | bundled by Electron 43.4.1 | Rendering engine                                         | Chromium authors; see `LICENSES.chromium.html` in Windows builds | Yes — via Electron                |
+| Node.js            | bundled by Electron 43.4.1 | JavaScript runtime                                       | OpenJS Foundation and contributors; see Electron notices         | Yes — via Electron                |
+| electron-updater   | 6.8.9                      | Official GitHub Releases updater                         | MIT                                                              | Yes — application dependency      |
+| electron-builder   | 26.15.3                    | Windows/Linux packaging                                  | As published by electron-builder                                 | No — build-time only              |
+| rcedit             | 5.0.2                      | Applies the approved `.ico` during Windows `afterPack`   | As published by rcedit                                           | No — build-time only              |
+| @electron/packager | 20.3.0                     | macOS packaging scripts (not an official signed product) | As published by @electron/packager                               | No — build-time only              |
+| @noble/hashes      | 1.4.0                      | Development helper                                       | As published by @noble/hashes                                    | No — development only             |
+| yallist            | 4.0.0                      | Development helper                                       | As published by yallist                                          | No — development only             |
 
 Windows builds must keep Electron's `LICENSE.electron.txt` and `LICENSES.chromium.html` with redistributed copies. This repository does not paste those third-party license texts into LICENSE (Eidovara is not MIT/Apache/GPL). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 Do not treat an unused or transitive listing as a grant of Eidovara rights.
 
 Microsoft Windows, GitHub, Cloudflare, Wikipedia/Wikimedia, Spotify, YouTube, Brave Search, and other named platforms are **not** redistributed as source in this repository; they remain their owners' software, services, and marks.
-

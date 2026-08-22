@@ -18,7 +18,7 @@ import {
   SERVICE_HEARTBEAT_BACKOFF_MAX_MS,
   SERVICE_ASSIST_PATH,
   SERVICE_CONFIG_PATH,
-  DEFAULT_EIDOVARA_SERVICE_BASE
+  DEFAULT_EIDOVARA_SERVICE_BASE,
 } from '../src/core/service.js';
 import { officialSearchHandoffs } from '../src/core/entertainment.js';
 import { FUTURE_VOICE_BACKEND } from '../src/core/voices.js';
@@ -31,49 +31,93 @@ function jsonResponse(payload, { ok = true, status = 200 } = {}) {
   return {
     ok,
     status,
-    headers: { get: name => name.toLowerCase() === 'content-length' ? String(body.length) : null },
-    arrayBuffer: async () => body
+    headers: {
+      get: name => (name.toLowerCase() === 'content-length' ? String(body.length) : null),
+    },
+    arrayBuffer: async () => body,
   };
 }
 
 test('presence labels stay honest Online / Reconnecting / Offline', () => {
   assert.equal(servicePresenceLabel({}), SERVICE_PRESENCE_OFFLINE);
-  assert.equal(servicePresenceLabel({ ageGateAccepted: true, configured: false }), SERVICE_PRESENCE_OFFLINE);
-  assert.equal(servicePresenceLabel({ ageGateAccepted: true, configured: true, online: true }), SERVICE_PRESENCE_ONLINE);
-  assert.equal(servicePresenceLabel({
-    ageGateAccepted: true,
-    configured: true,
-    online: false,
-    reconnecting: true
-  }), SERVICE_PRESENCE_RECONNECTING);
-  assert.equal(servicePresenceLabel({
-    ageGateAccepted: true,
-    configured: true,
-    online: false,
-    reconnecting: false
-  }), SERVICE_PRESENCE_OFFLINE);
+  assert.equal(
+    servicePresenceLabel({ ageGateAccepted: true, configured: false }),
+    SERVICE_PRESENCE_OFFLINE
+  );
+  assert.equal(
+    servicePresenceLabel({ ageGateAccepted: true, configured: true, online: true }),
+    SERVICE_PRESENCE_ONLINE
+  );
+  assert.equal(
+    servicePresenceLabel({
+      ageGateAccepted: true,
+      configured: true,
+      online: false,
+      reconnecting: true,
+    }),
+    SERVICE_PRESENCE_RECONNECTING
+  );
+  assert.equal(
+    servicePresenceLabel({
+      ageGateAccepted: true,
+      configured: true,
+      online: false,
+      reconnecting: false,
+    }),
+    SERVICE_PRESENCE_OFFLINE
+  );
   assert.notEqual(SERVICE_PRESENCE_ONLINE, 'always online');
 });
 
 test('heartbeat delay uses interval plus jitter online and exponential backoff offline', () => {
-  assert.equal(nextServiceHeartbeatDelay({ online: true, random: () => 0 }), SERVICE_HEARTBEAT_INTERVAL_MS);
-  assert.equal(nextServiceHeartbeatDelay({ online: false, failureCount: 0, random: () => 0 }), SERVICE_HEARTBEAT_BACKOFF_MIN_MS);
-  assert.equal(nextServiceHeartbeatDelay({ online: false, failureCount: 1, random: () => 0 }), 8_000);
-  assert.equal(nextServiceHeartbeatDelay({ online: false, failureCount: 2, random: () => 0 }), 16_000);
-  assert.equal(nextServiceHeartbeatDelay({ online: false, failureCount: 3, random: () => 0 }), 32_000);
-  assert.equal(nextServiceHeartbeatDelay({ online: false, failureCount: 8, random: () => 0 }), SERVICE_HEARTBEAT_BACKOFF_MAX_MS);
+  assert.equal(
+    nextServiceHeartbeatDelay({ online: true, random: () => 0 }),
+    SERVICE_HEARTBEAT_INTERVAL_MS
+  );
+  assert.equal(
+    nextServiceHeartbeatDelay({ online: false, failureCount: 0, random: () => 0 }),
+    SERVICE_HEARTBEAT_BACKOFF_MIN_MS
+  );
+  assert.equal(
+    nextServiceHeartbeatDelay({ online: false, failureCount: 1, random: () => 0 }),
+    8_000
+  );
+  assert.equal(
+    nextServiceHeartbeatDelay({ online: false, failureCount: 2, random: () => 0 }),
+    16_000
+  );
+  assert.equal(
+    nextServiceHeartbeatDelay({ online: false, failureCount: 3, random: () => 0 }),
+    32_000
+  );
+  assert.equal(
+    nextServiceHeartbeatDelay({ online: false, failureCount: 8, random: () => 0 }),
+    SERVICE_HEARTBEAT_BACKOFF_MAX_MS
+  );
   const jittered = nextServiceHeartbeatDelay({ online: true, random: () => 1 });
   assert.ok(jittered > SERVICE_HEARTBEAT_INTERVAL_MS);
   assert.ok(jittered <= SERVICE_HEARTBEAT_INTERVAL_MS + 5_000);
 });
 
 test('heartbeat does not run before 18+ or without a valid URL', () => {
-  assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: false, base: DEFAULT_EIDOVARA_SERVICE_BASE }), false);
+  assert.equal(
+    shouldRunServiceHeartbeat({ ageGateAccepted: false, base: DEFAULT_EIDOVARA_SERVICE_BASE }),
+    false
+  );
   assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: true, base: '' }), false);
   assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: true, base: '   ' }), false);
-  assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: true, base: 'http://evil.example' }), false);
-  assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: true, base: DEFAULT_EIDOVARA_SERVICE_BASE }), true);
-  assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: true, base: 'http://127.0.0.1:8787' }), true);
+  assert.equal(
+    shouldRunServiceHeartbeat({ ageGateAccepted: true, base: 'http://evil.example' }),
+    false
+  );
+  assert.equal(
+    shouldRunServiceHeartbeat({ ageGateAccepted: true, base: DEFAULT_EIDOVARA_SERVICE_BASE }),
+    true
+  );
+  assert.equal(
+    shouldRunServiceHeartbeat({ ageGateAccepted: true, base: 'http://127.0.0.1:8787' }),
+    true
+  );
 });
 
 test('liveness fetch uses only health and status GET JSON, never conversations or assist', async () => {
@@ -93,11 +137,11 @@ test('liveness fetch uses only health and status GET JSON, never conversations o
           paymentsEnabled: true,
           checkoutEnabled: true,
           conversations: true,
-          conversationsStored: true
+          conversationsStored: true,
         });
       }
       throw new Error(`unexpected ${url}`);
-    }
+    },
   });
   assert.equal(snapshot.online, true);
   assert.equal(snapshot.presence, SERVICE_PRESENCE_ONLINE);
@@ -117,7 +161,11 @@ test('liveness fetch uses only health and status GET JSON, never conversations o
 });
 
 function urlPath(value) {
-  try { return new URL(value).pathname; } catch { return String(value); }
+  try {
+    return new URL(value).pathname;
+  } catch {
+    return String(value);
+  }
 }
 
 test('heartbeat starts after 18+ with a URL, stops without URL, and does not fetch before 18+', async () => {
@@ -138,7 +186,9 @@ test('heartbeat starts after 18+ with a URL, stops without URL, and does not fet
       queued.push(fn);
       return queued.length;
     },
-    unschedule: () => { queued = []; }
+    unschedule: () => {
+      queued = [];
+    },
   });
   await hb.start();
   assert.equal(calls.length, 0);
@@ -159,7 +209,9 @@ test('heartbeat starts after 18+ with a URL, stops without URL, and does not fet
       queued.push(fn);
       return queued.length;
     },
-    unschedule: () => { queued = []; }
+    unschedule: () => {
+      queued = [];
+    },
   });
   await live.start();
   assert.equal(calls.at(-1).base, DEFAULT_EIDOVARA_SERVICE_BASE);
@@ -180,13 +232,14 @@ test('heartbeat backoff on failure uses Reconnecting and does not send conversat
   const inits = [];
   const hb = createServiceHeartbeat({
     getContext: () => ({ ageGateAccepted: true, base: 'https://api.example.test' }),
-    probe: async ({ base }) => fetchServiceLiveness({
-      base,
-      fetchImpl: async (url, init = {}) => {
-        inits.push({ url, method: init.method, body: init.body });
-        throw new Error('network down');
-      }
-    }),
+    probe: async ({ base }) =>
+      fetchServiceLiveness({
+        base,
+        fetchImpl: async (url, init = {}) => {
+          inits.push({ url, method: init.method, body: init.body });
+          throw new Error('network down');
+        },
+      }),
     onStatus: snap => {
       assert.equal(snap.conversationsSent, false);
       assert.equal(snap.online, false);
@@ -198,7 +251,9 @@ test('heartbeat backoff on failure uses Reconnecting and does not send conversat
       queued.push(fn);
       return queued.length;
     },
-    unschedule: () => { queued = []; }
+    unschedule: () => {
+      queued = [];
+    },
   });
   await hb.start();
   assert.equal(delays[0], SERVICE_HEARTBEAT_BACKOFF_MIN_MS);
@@ -257,7 +312,9 @@ test('desktop and status page keep renderer CSP and honest poll wiring', () => {
   assert.match(status, /connect-src 'self' https:/);
   assert.match(status, /script-src 'self'/);
   assert.doesNotMatch(status, /unsafe-inline|unsafe-eval/);
-  assert.deepEqual(officialSearchHandoffs('Saturn').map(item => item.provider), ['YouTube', 'Spotify', 'Internet Archive']);
+  assert.deepEqual(
+    officialSearchHandoffs('Saturn').map(item => item.provider),
+    ['YouTube', 'Spotify', 'Internet Archive']
+  );
   assert.equal(FUTURE_VOICE_BACKEND.bundled, false);
 });
-
