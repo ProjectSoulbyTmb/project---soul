@@ -7,7 +7,7 @@
  * silently drifted apart (worker advertising installers that no longer exist,
  * stale test literals, mismatched certification JSON). This file makes drift
  * impossible to merge: every surface must agree with src/core/release.js.
- * To ship a new version, change release.js (+ package.json) — this suite then
+ * To ship a new version, change release.js (+ package.json) â€” this suite then
  * forces every other surface to follow before CI goes green.
  */
 import test from 'node:test';
@@ -17,7 +17,6 @@ import {
   SOURCE_VERSION,
   LIVE_INSTALLER_VERSION,
   INSTALLER_NAME,
-  INSTALLER_MEASURED,
   INSTALLER_SHA256,
   INSTALLER_SIZE_BYTES,
   INSTALLER_LATEST_URL,
@@ -58,14 +57,8 @@ test('worker advertises exactly the canonical installer metadata', () => {
 test('installer name follows the tagged-version format and checksums are well-formed', () => {
   assert.match(LIVE_INSTALLER_VERSION, /^\d+\.\d+\.\d+(?:[-.][0-9A-Za-z.-]+)?$/);
   assert.equal(INSTALLER_NAME, `Eidovara-v${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`);
-  // Measured facts stay null until a real tagged build exists (see release.js).
-  if (INSTALLER_MEASURED) {
-    assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
-    assert.ok(Number.isInteger(INSTALLER_SIZE_BYTES) && INSTALLER_SIZE_BYTES > 0);
-  } else {
-    assert.equal(INSTALLER_SHA256, null);
-    assert.equal(INSTALLER_SIZE_BYTES, null);
-  }
+  assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
+  assert.ok(Number.isInteger(INSTALLER_SIZE_BYTES) && INSTALLER_SIZE_BYTES > 0);
   assert.equal(INSTALLER_LATEST_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`);
   assert.equal(INSTALLER_PINNED_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`);
 });
