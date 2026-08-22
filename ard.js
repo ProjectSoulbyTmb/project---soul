@@ -1,341 +1,252 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/**
- * @module core/telemetry
- * @description Lightweight observability hooks for performance monitoring
- * No external dependencies - uses native Performance API
- */
+import fs from 'node:fs';
+import path from 'node:path';
+import crypto from 'node:crypto';
 
-const metrics = new Map();
-const spans = new Map();
-let enabled = false;
+const VERSION_RE = /^(\d+)\.(\d+)\.(\d+)(?:-([0-9A-Za-z.-]+))?(?:\+[0-9A-Za-z.-]+)?$/;
+const SHA256_HEX = /^[A-F0-9]{64}$/;
+const SHA512_HEX = /^[A-F0-9]{128}$/;
+const SHA512_B64 = /^[A-Za-z0-9+/]{86,88}={0,2}$/;
+const OFFICIAL_RELEASE_PREFIX = '/ProjectSoulbyTmb/project---soul/releases/download/';
 
-/**
- * Enable/disable telemetry collection
- * @param {boolean} state
- */
-export function setTelemetryEnabled(state) {
-  enabled = Boolean(state);
+function parseSemver(value) {
+  const raw = String(value || '').trim().replace(/^v/i, '');
+  const match = raw.match(VERSION_RE);
+  if (!match) return null;
+  return {
+    major: Number(match[1]),
+    minor: Number(match[2]),
+    patch: Number(match[3]),
+    prerelease: match[4] ? match[4].split('.').map(part => (/^\d+$/.test(part) ? Number(part) : part)) : []
+  };
 }
 
-/**
- * Check if telemetry is enabled
- * @returns {boolean}
- */
-export function isTelemetryEnabled() {
-  return enabled;
+function compareIdentifiers(left, right) {
+  const numericLeft = typeof left === 'number';
+  const numericRight = typeof right === 'number';
+  if (numericLeft && numericRight) return Math.sign(left - right);
+  if (numericLeft) return -1;
+  if (numericRight) return 1;
+  if (left < right) return -1;
+  if (left > right) return 1;
+  return 0;
 }
 
-/**
- * Start a named span for timing
- * @param {string} name - Span name (e.g., 'provider.call', 'ipc.respond')
- * @param {Object} [attributes] - Additional attributes
- * @returns {string} Span ID
- */
-export function startSpan(name, attributes = {}) {
-  if (!enabled) return '';
-  const spanId = `${name}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-  spans.set(spanId, {
-    name,
-    startTime: performance.now(),
-    attributes: { ...attributes, 'span.type': 'internal' },
-    endTime: null,
+/** Semver compare. Positive when `a` is newer than `b`. Pre-release is older than the same release. */
+export function compareVersions(a, b) {
+  const left = parseSemver(a);
+  const right = parseSemver(b);
+  if (left && right) {
+    for (const key of ['major', 'minor', 'patch']) {
+      const delta = left[key] - right[key];
+      if (delta) return Math.sign(delta);
+    }
+    if (!left.prerelease.length && !right.prerelease.length) return 0;
+    if (!left.prerelease.length) return 1;
+    if (!right.prerelease.length) return -1;
+    const n = Math.max(left.prerelease.length, right.prerelease.length);
+    for (let i = 0; i < n; i++) {
+      if (left.prerelease[i] === undefined) return -1;
+      if (right.prerelease[i] === undefined) return 1;
+      const delta = compareIdentifiers(left.prerelease[i], right.prerelease[i]);
+      if (delta) return delta;
+    }
+    return 0;
+  }
+  const parts = value => String(value || '').replace(/^v/i, '').split('.').map(x => Number.parseInt(x, 10) || 0);
+  const fallbackLeft = parts(a), fallbackRight = parts(b);
+  for (let i = 0; i < Math.max(fallbackLeft.length, fallbackRight.length); i++) {
+    const d = (fallbackLeft[i] || 0) - (fallbackRight[i] || 0);
+    if (d) return Math.sign(d);
+  }
+  return 0;
+}
+
+export function isPrerelease(version) {
+  const parsed = parseSemver(version);
+  return Boolean(parsed && parsed.prerelease.length);
+}
+
+export function autoCheckEnabled(settings) {
+  if (!settings || typeof settings !== 'object') return true;
+  return settings.autoCheckUpdates !== false;
+}
+
+export function shouldOfferUpdate({ currentVersion, candidateVersion, draft = false, prerelease = false } = {}) {
+  if (draft === true) return { offer: false, reason: 'draft' };
+  const candidate = String(candidateVersion || '');
+  const current = String(currentVersion || '');
+  if (!parseSemver(candidate)) return { offer: false, reason: 'invalid-version' };
+  const candidateIsPre = prerelease === true || isPrerelease(candidate);
+  if (candidateIsPre && !isPrerelease(current)) return { offer: false, reason: 'prerelease' };
+  if (compareVersions(candidate, current) <= 0) return { offer: false, reason: 'not-newer' };
+  return { offer: true };
+}
+
+function isSha512(value) {
+  const text = String(value || '').trim();
+  return SHA512_HEX.test(text) || (SHA512_B64.test(text) && text.length >= 86);
+}
+
+function isSha256(value) {
+  return SHA256_HEX.test(String(value || '').trim().toUpperCase());
+}
+
+export function requireUpdateIntegrity(info) {
+  if (!info || typeof info !== 'object') throw new Error('Update metadata is missing. Eidovara refused to install.');
+  const sha512 = String(info.sha512 || info.files?.[0]?.sha512 || '').trim();
+  const sha256 = String(info.sha256 || '').trim().toUpperCase();
+  if (!isSha512(sha512) && !isSha256(sha256)) {
+    throw new Error('Update metadata is missing a SHA-512 or SHA-256 checksum. Eidovara refused to install.');
+  }
+  const locator = String(info.url || info.downloadUrl || '');
+  if (/^https?:\/\//i.test(locator)) trustedReleaseUrl(locator);
+  return {
+    sha512: isSha512(sha512) ? sha512 : '',
+    sha256: isSha256(sha256) ? sha256 : ''
+  };
+}
+
+export function parseLatestYml(text) {
+  const raw = String(text || '');
+  if (!raw.trim()) throw new Error('Update metadata is missing.');
+  const version = (raw.match(/^version:\s*['"]?([^\s'"]+)/m) || [])[1] || '';
+  const filePath = (raw.match(/^path:\s*['"]?([^\s'"]+)/m) || [])[1] || '';
+  const topSha = (raw.match(/^sha512:\s*['"]?([A-Za-z0-9+/=]+)/m) || [])[1] || '';
+  const fileSha = (raw.match(/^\s+-?\s*sha512:\s*['"]?([A-Za-z0-9+/=]+)/m) || raw.match(/^\s+sha512:\s*['"]?([A-Za-z0-9+/=]+)/m) || [])[1] || '';
+  const fileUrl = (raw.match(/^\s+-?\s*url:\s*['"]?([^\s'"]+)/m) || raw.match(/^\s+url:\s*['"]?([^\s'"]+)/m) || [])[1] || '';
+  const sha512 = topSha || fileSha;
+  const parsed = {
+    version,
+    path: filePath || fileUrl,
+    sha512,
+    files: fileUrl || fileSha ? [{ url: fileUrl || filePath, sha512: fileSha || topSha }] : []
+  };
+  requireUpdateIntegrity(parsed);
+  return parsed;
+}
+
+export function evaluateElectronUpdate(info, currentVersion) {
+  const integrity = requireUpdateIntegrity(info);
+  const version = String(info?.version || '');
+  const decision = shouldOfferUpdate({
+    currentVersion,
+    candidateVersion: version,
+    draft: info?.draft === true,
+    prerelease: info?.prerelease === true || isPrerelease(version)
   });
-  return spanId;
-}
-
-/**
- * End a span and record duration
- * @param {string} spanId
- * @param {Object} [extraAttributes]
- * @returns {number|null} Duration in ms, or null if not found
- */
-export function endSpan(spanId, extraAttributes = {}) {
-  if (!enabled || !spanId || !spans.has(spanId)) return null;
-  const span = spans.get(spanId);
-  span.endTime = performance.now();
-  span.duration = span.endTime - span.startTime;
-  span.attributes = { ...span.attributes, ...extraAttributes };
-  
-  // Store completed span for aggregation
-  const key = span.name;
-  if (!metrics.has(key)) metrics.set(key, []);
-  metrics.get(key).push({ ...span, timestamp: Date.now() });
-  
-  // Keep only last 1000 per metric
-  const arr = metrics.get(key);
-  if (arr.length > 1000) arr.shift();
-  
-  spans.delete(spanId);
-  return span.duration;
-}
-
-/**
- * Record a simple metric value
- * @param {string} name - Metric name
- * @param {number} value - Numeric value
- * @param {Object} [attributes]
- */
-export function recordMetric(name, value, attributes = {}) {
-  if (!enabled) return;
-  const key = `metric.${name}`;
-  if (!metrics.has(key)) metrics.set(key, []);
-  metrics.get(key).push({ value, attributes, timestamp: Date.now() });
-  const arr = metrics.get(key);
-  if (arr.length > 1000) arr.shift();
-}
-
-/**
- * Record a counter increment
- * @param {string} name
- * @param {number} [delta=1]
- * @param {Object} [attributes]
- */
-export function incrementCounter(name, delta = 1, attributes = {}) {
-  if (!enabled) return;
-  const key = `counter.${name}`;
-  if (!metrics.has(key)) metrics.set(key, []);
-  metrics.get(key).push({ delta, attributes, timestamp: Date.now() });
-  const arr = metrics.get(key);
-  if (arr.length > 1000) arr.shift();
-}
-
-/**
- * Get aggregated metrics for a name
- * @param {string} name
- * @returns {Object} Aggregated stats
- */
-export function getMetrics(name) {
-  const key = name.startsWith('metric.') || name.startsWith('counter.') ? name : `metric.${name}`;
-  const data = metrics.get(key) || [];
-  if (!data.length) return { count: 0 };
-  
-  const values = data.map(d => d.value ?? d.delta ?? 0).filter(v => typeof v === 'number');
-  if (!values.length) return { count: data.length };
-  
-  const sorted = [...values].sort((a, b) => a - b);
-  const sum = values.reduce((a, b) => a + b, 0);
   return {
-    count: values.length,
-    min: sorted[0],
-    max: sorted[sorted.length - 1],
-    mean: sum / values.length,
-    p50: sorted[Math.floor(sorted.length * 0.5)],
-    p95: sorted[Math.floor(sorted.length * 0.95)],
-    p99: sorted[Math.floor(sorted.length * 0.99)],
-    latest: values[values.length - 1],
+    configured: true,
+    available: decision.offer === true,
+    reason: decision.reason || null,
+    currentVersion,
+    version,
+    sha512: integrity.sha512,
+    sha256: integrity.sha256,
+    path: String(info?.path || info?.files?.[0]?.url || ''),
+    notes: String(info?.releaseNotes || info?.releaseName || '').slice(0, 4000)
   };
 }
 
-/**
- * Get all metric names
- * @returns {string[]}
- */
-export function getMetricNames() {
-  return [...metrics.keys()].filter(k => k.startsWith('metric.') || k.startsWith('counter.'));
+export function honestUpdateError(err) {
+  const raw = String(err?.message || err || 'Unknown update error').slice(0, 500);
+  if (/ENOTFOUND|ECONN|ETIMEDOUT|ENETUNREACH|offline|network|fetch failed|getaddrinfo/i.test(raw)) {
+    return 'Eidovara could not reach GitHub Releases. Nothing was installed. Check the network and try again.';
+  }
+  if (/sha512|sha-512|sha256|checksum|integrity|digest|hash|metadata is missing/i.test(raw)) {
+    return 'Update metadata or checksum was missing or did not match. Eidovara refused to install that file. Builds are Authenticode-unsigned; checksum verification is required.';
+  }
+  if (/smartscreen|authenticode|publisher|certificate|code.?sign/i.test(raw)) {
+    return `This build is Authenticode-unsigned. Windows SmartScreen may warn; that is not a signed update. ${raw}`;
+  }
+  return raw;
 }
 
-/**
- * Get span statistics for a name
- * @param {string} name
- * @returns {Object}
- */
-export function getSpanStats(name) {
-  const data = metrics.get(name) || [];
-  if (!data.length) return { count: 0 };
-  
-  const durations = data.map(d => d.duration).filter(d => typeof d === 'number');
-  if (!durations.length) return { count: data.length };
-  
-  const sorted = [...durations].sort((a, b) => a - b);
-  const sum = durations.reduce((a, b) => a + b, 0);
+function secureUrl(value) {
+  const url = new URL(String(value || ''));
+  if (url.protocol !== 'https:' || url.username || url.password) throw new Error('Update URLs must use HTTPS.');
+  return url;
+}
+
+function trustedReleaseUrl(value) {
+  const url = secureUrl(value);
+  if (url.hostname !== 'github.com' || !url.pathname.startsWith(OFFICIAL_RELEASE_PREFIX)) {
+    throw new Error('Update packages must come from the official GitHub release channel.');
+  }
+  return url;
+}
+
+async function response(url, options = {}) {
+  const res = await fetch(secureUrl(url), { redirect: 'follow', ...options });
+  if (!res.ok) throw new Error(`Update server returned ${res.status}.`);
+  if (res.url) secureUrl(res.url);
+  return res;
+}
+
+export async function checkForUpdate({ manifestUrl, currentVersion }) {
+  if (!manifestUrl) return { configured: false, available: false, currentVersion };
+  const res = await response(manifestUrl, { headers: { Accept: 'application/json', 'User-Agent': `Eidovara/${currentVersion}` } });
+  const manifest = await boundedJson(res, 1024 * 1024, 'Update manifest');
+  const version = String(manifest?.version || '');
+  const downloadUrl = trustedReleaseUrl(manifest?.url).toString();
+  const sha256 = String(manifest?.sha256 || '').toUpperCase();
+  if (!/^\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(version)) throw new Error('Update manifest has an invalid version.');
+  if (!SHA256_HEX.test(sha256)) throw new Error('Update manifest must contain a SHA-256 hash.');
+  const extension = path.extname(new URL(downloadUrl).pathname).toLowerCase();
+  if (!['.exe', '.zip'].includes(extension)) throw new Error('Update package type is not allowed.');
+  const decision = shouldOfferUpdate({
+    currentVersion,
+    candidateVersion: version,
+    draft: manifest?.draft === true,
+    prerelease: manifest?.prerelease === true || isPrerelease(version)
+  });
   return {
-    count: durations.length,
-    min: sorted[0],
-    max: sorted[sorted.length - 1],
-    mean: sum / durations.length,
-    p50: sorted[Math.floor(sorted.length * 0.5)],
-    p95: sorted[Math.floor(sorted.length * 0.95)],
-    p99: sorted[Math.floor(sorted.length * 0.99)],
+    configured: true,
+    available: decision.offer === true,
+    reason: decision.reason || null,
+    currentVersion,
+    version,
+    downloadUrl,
+    sha256,
+    packageType: extension === '.zip' ? 'ready-folder-zip' : 'installer',
+    notes: String(manifest.notes || '').slice(0, 4000)
   };
 }
 
-/**
- * Get all span names
- * @returns {string[]}
- */
-export function getSpanNames() {
-  return [...metrics.keys()].filter(k => !k.startsWith('metric.') && !k.startsWith('counter.'));
+async function boundedJson(res, maxBytes, label) {
+  const declared = Number(res.headers?.get?.('content-length') || 0);
+  if (declared > maxBytes) throw new Error(`${label} is too large.`);
+  const bytes = Buffer.from(await res.arrayBuffer());
+  if (bytes.length > maxBytes) throw new Error(`${label} is too large.`);
+  try { return JSON.parse(bytes.toString('utf8')); }
+  catch { throw new Error(`${label} is not valid JSON.`); }
 }
 
-/**
- * Export all metrics as JSON
- * @returns {Object}
- */
-export function exportMetrics() {
-  const result = {};
-  for (const [key, data] of metrics.entries()) {
-    if (key.startsWith('metric.') || key.startsWith('counter.')) {
-      result[key] = getMetrics(key);
-    } else {
-      result[key] = getSpanStats(key);
-    }
-  }
-  return result;
-}
-
-/**
- * Clear all metrics
- */
-export function clearMetrics() {
-  metrics.clear();
-  spans.clear();
-}
-
-/**
- * Convenience wrapper for timing async functions
- * @template T
- * @param {string} name
- * @param {() => Promise<T>} fn
- * @param {Object} [attributes]
- * @returns {Promise<T>}
- */
-export async function timeAsync(name, fn, attributes = {}) {
-  const spanId = startSpan(name, attributes);
-  try {
-    return await fn();
-  } finally {
-    endSpan(spanId);
-  }
-}
-
-/**
- * Convenience wrapper for timing sync functions
- * @template T
- * @param {string} name
- * @param {() => T} fn
- * @param {Object} [attributes]
- * @returns {T}
- */
-export function timeSync(name, fn, attributes = {}) {
-  const spanId = startSpan(name, attributes);
-  try {
-    return fn();
-  } finally {
-    endSpan(spanId);
-  }
-}
-
-/**
- * IPC-specific timing helpers
- */
-export const ipcTelemetry = {
-  /**
-   * @param {string} channel - IPC channel name
-   * @param {() => Promise<any>} handler
-   * @returns {any} synchronous result of fn
-   */
-  async handle(channel, handler) {
-    return timeAsync(`ipc.${channel}`, handler, { 'ipc.channel': channel });
-  },
-  
-  /**
-   * @param {string} channel
-   * @param {number} durationMs
-   * @param {boolean} success
-   */
-  record(channel, durationMs, success = true) {
-    recordMetric(`ipc.${channel}.duration`, durationMs, { 'ipc.channel': channel });
-    incrementCounter(`ipc.${channel}.${success ? 'success' : 'error'}`, 1, { 'ipc.channel': channel });
-  },
-};
-
-/**
- * Provider-specific timing helpers
- */
-export const providerTelemetry = {
-  /**
-   * @param {string} provider - Provider name (offline, local, compatible)
-   * @param {() => Promise<string>} call
-   * @returns {Promise<string>}
-   */
-  async call(provider, call) {
-    return timeAsync(`provider.${provider}.call`, call, { 'provider': provider });
-  },
-  
-  /**
-   * @param {string} provider
-   * @param {number} durationMs
-   * @param {boolean} success
-   * @param {number} [tokens]
-   */
-  record(provider, durationMs, success = true, tokens) {
-    recordMetric(`provider.${provider}.latency`, durationMs, { provider });
-    incrementCounter(`provider.${provider}.${success ? 'success' : 'error'}`, 1, { provider });
-    if (tokens) recordMetric(`provider.${provider}.tokens`, tokens, { provider });
-  },
-};
-
-/**
- * Store operation timing
- */
-export const storeTelemetry = {
-  /**
-   * Times a synchronous store operation and returns its result.
-   * The engine consumes load()/reset()/restoreBackup() synchronously, so this
-   * wrapper MUST stay synchronous — returning a Promise here silently replaces
-   * engine state with telemetry metadata.
-   * @param {string} op - Operation (load, save, backup, restore)
-   * @param {() => any} fn
-   * @returns {any} the result of fn()
-   */
-  op(op, fn) {
-    const startedAt = Date.now();
+export async function downloadUpdate(update, directory, maxBytes = 400 * 1024 * 1024) {
+  if (!update?.available) throw new Error('No update is available.');
+  requireUpdateIntegrity(update);
+  const res = await response(update.downloadUrl, { headers: { Accept: 'application/octet-stream' } });
+  const declared = Number(res.headers.get('content-length') || 0);
+  if (declared > maxBytes) throw new Error('Update download is too large.');
+  const bytes = Buffer.from(await res.arrayBuffer());
+  if (bytes.length > maxBytes) throw new Error('Update download is too large.');
+  const actual = crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase();
+  if (actual !== update.sha256) throw new Error('Update integrity verification failed.');
+  const extension = path.extname(trustedReleaseUrl(update.downloadUrl).pathname).toLowerCase();
+  if (!['.exe', '.zip'].includes(extension)) throw new Error('Update package type is not allowed.');
+  fs.mkdirSync(directory, { recursive: true });
+  const target = path.join(directory, `Eidovara-Update-${update.version}${extension}`);
+  const tmp = `${target}.${process.pid}.tmp`;
+  fs.writeFileSync(tmp, bytes, { mode: 0o600 });
+  fs.renameSync(tmp, target);
+  let internetZoneMarked = false;
+  if (process.platform === 'win32') {
     try {
-      const result = fn();
-      this.record(op, Date.now() - startedAt, true);
-      return result;
-    } catch (error) {
-      this.record(op, Date.now() - startedAt, false);
-      throw error;
-    }
-  },
-  
-  record(op, durationMs, success = true, size) {
-    recordMetric(`store.${op}.latency`, durationMs, { op });
-    incrementCounter(`store.${op}.${success ? 'success' : 'error'}`, 1, { op });
-    if (size) recordMetric(`store.${op}.size`, size, { op });
-  },
-};
-
-/**
- * Get telemetry snapshot for diagnostics
- * @returns {Object}
- */
-export function getTelemetrySnapshot() {
-  return {
-    enabled,
-    spans: getSpanNames().map(name => ({ name, ...getSpanStats(name) })),
-    metrics: getMetricNames().map(name => ({ name, ...getMetrics(name) })),
-    timestamp: Date.now(),
-  };
+      fs.writeFileSync(`${target}:Zone.Identifier`, '[ZoneTransfer]\r\nZoneId=3\r\nReferrerUrl=https://github.com/ProjectSoulbyTmb/project---soul/\r\n', 'utf8');
+      internetZoneMarked = true;
+    } catch {}
+  }
+  return { path: target, bytes: bytes.length, sha256: actual, version: update.version, internetZoneMarked };
 }
 
-export default {
-  setTelemetryEnabled,
-  isTelemetryEnabled,
-  startSpan,
-  endSpan,
-  recordMetric,
-  incrementCounter,
-  getMetrics,
-  getSpanStats,
-  exportMetrics,
-  clearMetrics,
-  timeAsync,
-  timeSync,
-  ipcTelemetry,
-  providerTelemetry,
-  storeTelemetry,
-  getTelemetrySnapshot,
-};
