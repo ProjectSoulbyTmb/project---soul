@@ -132,7 +132,7 @@ function mount() {
     rows: '2',
     maxlength: '800',
     required: true,
-    placeholder: 'Ask about download, 18+, or what Eidovara isâ€¦'
+    placeholder: 'Ask about download, 18+, or what Eidovara is???????'
   });
   const send = el('button', { className: 'assist-send', type: 'submit', text: 'Send' });
   const tools = el('details', { className: 'assist-service' });
@@ -205,7 +205,7 @@ function mount() {
     let base = '';
     try { base = normalizeBase(serviceInput.value || readBase()); } catch { base = ''; }
     if (base) {
-      sourceNote.textContent = 'Trying optional online assistâ€¦';
+      sourceNote.textContent = 'Trying optional online assist???????';
       const remote = await onlineAnswer(base, query, mode);
       if (remote && remote.reply) {
         result = remote;
@@ -229,4 +229,5 @@ function modeRadio(value, label, checked = false) {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
 else mount();
+
 

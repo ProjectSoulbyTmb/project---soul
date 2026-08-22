@@ -197,8 +197,8 @@ try {
     select.setAttribute('aria-label', 'Language');
     const langs = [
       { code: 'en', name: 'English' },
-      { code: 'es', name: 'EspaÃ±ol' },
-      { code: 'fr', name: 'FranÃ§ais' },
+      { code: 'es', name: 'Espa????ol' },
+      { code: 'fr', name: 'Fran????ais' },
       { code: 'de', name: 'Deutsch' }
     ];
     select.innerHTML = langs.map(l => `<option value="${l.code}" ${getStoredLang() === l.code ? 'selected' : ''}>${l.name}</option>`).join('');
@@ -220,14 +220,14 @@ try {
         const text = el.textContent.trim();
         try {
           await navigator.clipboard.writeText(text);
-          btn.textContent = 'âœ“';
+          btn.textContent = '???????';
           btn.classList.add('copied');
           setTimeout(() => {
             btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
             btn.classList.remove('copied');
           }, 2000);
         } catch (e) {
-          btn.textContent = 'âœ—';
+          btn.textContent = '???????';
           setTimeout(() => btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>', 2000);
         }
       });
@@ -247,7 +247,7 @@ try {
     fileInput.addEventListener('change', async e => {
       const file = e.target.files[0];
       if (!file) return;
-      resultEl.textContent = 'Computing SHA-256â€¦';
+      resultEl.textContent = 'Computing SHA-256???????';
       resultEl.className = 'verify-result verifying';
       try {
         const buffer = await file.arrayBuffer();
@@ -256,8 +256,8 @@ try {
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
         const match = hashHex === EXPECTED_SHA256;
         resultEl.innerHTML = match
-          ? `<span class="verify-ok">âœ“ Verified</span> SHA-256 matches: <code>${hashHex}</code>`
-          : `<span class="verify-fail">âœ— Mismatch</span> Expected: <code>${EXPECTED_SHA256}</code>, Got: <code>${hashHex}</code>`;
+          ? `<span class="verify-ok">??????? Verified</span> SHA-256 matches: <code>${hashHex}</code>`
+          : `<span class="verify-fail">??????? Mismatch</span> Expected: <code>${EXPECTED_SHA256}</code>, Got: <code>${hashHex}</code>`;
         resultEl.className = 'verify-result ' + (match ? 'verified' : 'failed');
       } catch (e) {
         resultEl.textContent = 'Error computing hash: ' + e.message;
@@ -453,10 +453,10 @@ try {
       }
       if (!base) {
         stopStatusPoll();
-        failClosed('No valid HTTPS service base. Fail closed â€” nothing was fetched.');
+        failClosed('No valid HTTPS service base. Fail closed ???????? nothing was fetched.');
         return;
       }
-      if (!fromPoll) failClosed(`Checking ${base} â€¦`);
+      if (!fromPoll) failClosed(`Checking ${base} ???????`);
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 8000);
       const boundedJson = async res => {
@@ -580,3 +580,4 @@ try {
     }
   };
 })();
+
