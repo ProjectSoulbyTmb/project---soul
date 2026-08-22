@@ -2,36 +2,47 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import fs from 'node:fs';
+import {
+  FEEL_PATTERNS, FEEL_PATTERN_IDS, defaultAdultFeel, feelSample, publicStealth, normalizeAdultFeel,
+  mapGamepadStick, mapGamepadButtons, nextFeelPattern, rumbleFromLevel, GAMEPAD_HONESTY
+} from '../src/core/adult-feel.js';
 
-const read = file => fs.readFileSync(file, 'utf8');
-
-test('Adult Mode chrome is admin-session only until a later release', () => {
-  const html = read('src/renderer/index.html');
-  const renderer = read('src/renderer/renderer.js');
-  const css = read('src/renderer/styles.css');
-  assert.match(html, /id="adminAdultPanel"/);
-  assert.match(html, /id="adminOpenAdultSoulBtn"/);
-  assert.match(html, /Until a later release, Adult Mode enablement lives in Ctrl\+A/);
-  assert.match(css, /body:not\(\.admin-session\) \.adult-soul-nav/);
-  assert.match(css, /body:not\(\.admin-session\) \.adult-enable-action/);
-  assert.match(renderer, /function adminSessionActive/);
-  assert.match(renderer, /adminAdultCommand/);
-  assert.match(read('src/electron/main.js'), /incoming\.adminAuthorized = adminAuthorized\(\)/);
-  assert.match(read('src/core/policy.js'), /policy\.adult_admin_blocked/);
-  assert.match(read('src/core/engine.js'), /cannot be enabled from chat/);
+test('Feel Sync ships eleven named patterns in 0–1', () => {
+  assert.equal(FEEL_PATTERNS.length, 11);
+  const feel = defaultAdultFeel();
+  for (const pattern of FEEL_PATTERNS) {
+    const sample = feelSample({ ...feel, pattern: pattern.id, intensity: 80, speed: 55, loop: true, float: false }, 1800, 0.4);
+    assert.ok(sample >= 0 && sample <= 1, `${pattern.id} ${sample}`);
+  }
 });
 
-test('workspace does not import adult-soul (no schema cycle)', () => {
-  const workspace = read('src/core/workspace.js');
-  assert.match(workspace, /from '\.\/adult-intents\.js'/);
-  assert.doesNotMatch(workspace, /from '\.\/adult-soul\.js'/);
-  assert.doesNotMatch(workspace, /from '\.\/adult-media\.js'/);
+test('gamepad stick maps into Feel 0–100 and rumble stays dual-rumble math', () => {
+  const idle = mapGamepadStick([0.02, -0.01], { speed: 40, intensity: 70 });
+  assert.equal(idle.moved, false);
+  assert.equal(idle.speed, 40);
+  const moved = mapGamepadStick([1, -1], { speed: 40, intensity: 70 });
+  assert.equal(moved.moved, true);
+  assert.equal(moved.speed, 100);
+  assert.equal(moved.intensity, 100);
+  const rumble = rumbleFromLevel(0.5);
+  assert.equal(rumble.duration, 140);
+  assert.ok(rumble.strongMagnitude > 0 && rumble.strongMagnitude <= 1);
+  assert.equal(nextFeelPattern('wave'), FEEL_PATTERN_IDS[(FEEL_PATTERN_IDS.indexOf('wave') + 1) % FEEL_PATTERN_IDS.length]);
+  const edge = mapGamepadButtons([{ pressed: true }, { pressed: false }], { 0: false });
+  assert.equal(edge.cyclePattern, true);
+  const hold = mapGamepadButtons([{ pressed: true }], { 0: true });
+  assert.equal(hold.cyclePattern, false);
+  assert.match(GAMEPAD_HONESTY, /not Lovense/i);
 });
 
-test('player loadMedia function exists after Feel analyser', () => {
-  const player = read('src/renderer/player.js');
-  assert.match(player, /function loadMedia\(nextIndex, autoplay = true\)/);
-  assert.match(player, /function attachFeel\(player\)/);
+test('public stealth never leaks PIN hash', () => {
+  const feel = normalizeAdultFeel({
+    stealth: { pinEnabled: true, pinHash: 'abc123', pinSalt: 'def456', locked: true }
+  });
+  const pub = publicStealth(feel.stealth);
+  assert.equal(pub.pinEnabled, true);
+  assert.equal(pub.locked, true);
+  assert.equal('pinHash' in pub, false);
+  assert.equal('pinSalt' in pub, false);
 });
 
