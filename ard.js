@@ -1,144 +1,93 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/**
- * Honest inventory of engines and frameworks Eidovara actually ships versus
- * adapters that stay document-only. Vanilla Electron ESM — no React/Vue/Three.js.
- */
+import { defaultKernelState, migrateKernel } from './kernel.js';
 
-export const ENGINE_RESEARCH_DATE = '2026-08-21';
+export const CURRENT_SCHEMA_VERSION = 19;
 
-const row = (id, title, kind, extra = {}) => Object.freeze({
-  id,
-  title,
-  kind,
-  shipped: extra.shipped !== false,
-  bundled: extra.bundled === true,
-  blocked: extra.blocked === true,
-  note: extra.note || ''
-});
-
-const ROWS = [
-  row('soul-kernel', 'Soul kernel', 'first-party', {
-    bundled: true,
-    note: 'In-app session kernel, module registry, and local self-model JSON. Software, not consciousness.'
-  }),
-  row('offline-soul', 'Offline Soul', 'first-party', {
-    bundled: true,
-    note: 'Local replies without a cloud account. Optional Ollama / OpenAI-compatible HTTP stay user-pasted.'
-  }),
-  row('webgl-lathe', 'Adult Soul WebGL lathe', 'first-party', {
-    bundled: true,
-    note: 'First-party WebGL2/WebGL shaders plus a canvas fallback. Not VRM, Three.js, or Babylon.'
-  }),
-  row('cpu-figure-life', 'Figure life deform', 'first-party', {
-    bundled: true,
-    note: 'CPU vertex posing of the lathe mesh. Not Mixamo, mocap, or a licensed character pack.'
-  }),
-  row('web-audio-feel', 'Web Audio Feel Sync', 'chromium', {
-    bundled: true,
-    note: 'Chromium AudioContext analyser maps eidovara-media loudness onto the Feel pad. One MediaElementSource per element.'
-  }),
-  row('procedural-ambient', 'Heartbeat / breath / drone', 'first-party', {
-    bundled: true,
-    note: 'OscillatorNode and filtered noise beds. Not a neural TTS pack and not imported moans.'
-  }),
-  row('chromium-html5-media', 'Chromium HTML5 media', 'chromium', {
-    bundled: true,
-    note: 'audio/video through eidovara-media: and https:. No ffmpeg, yt-dlp, Widevine rip, or in-process tube embeds.'
-  }),
-  row('media-session', 'Media Session', 'chromium', {
-    bundled: true,
-    note: 'Hardware media keys and now-playing metadata. Not an OS-wide hotkey into other apps.'
-  }),
-  row('os-speech-synthesis', 'OS speechSynthesis', 'os', {
-    bundled: false,
-    note: 'Voices already installed on Windows, including Microsoft Natural when the OS provided them. Eidovara does not ship a neural TTS engine.'
-  }),
-  row('chromium-speech-recognition', 'SpeechRecognition', 'chromium', {
-    bundled: false,
-    note: 'Optional hold-to-talk dictation. Microphone permission stays audio-only.'
-  }),
-  row('electron-power-save', 'Stay-awake', 'electron', {
-    bundled: true,
-    note: 'Electron powerSaveBlocker prevent-display-sleep during local playback or Adult Soul sessions. Fail closed. Not a system overlay.'
-  }),
-  row('gamepad-feel', 'Gamepad Feel (optional)', 'chromium', {
-    bundled: false,
-    note: 'Chromium Gamepad API can steer the on-screen Feel pad and dual-rumble that same controller. Not Lovense, not XInput game injection, not in-game haptics.'
-  }),
-  row('webgpu-probe', 'WebGPU probe', 'chromium', {
-    bundled: false,
-    note: 'Diagnostics only. The Adult Soul figure stays on WebGL2/WebGL. No Three.js/WebGPU scene graph.'
-  }),
-  row('electron-updater', 'GitHub updater', 'electron', {
-    bundled: true,
-    note: 'electron-updater against GitHub Releases. Authenticode-unsigned. Advertised live installer stays the tagged Setup.exe.'
-  }),
-  row('neural-tts', 'Neural TTS packs', 'blocked', {
-    shipped: false,
-    bundled: false,
-    blocked: true,
-    note: 'Kokoro, Piper, sherpa-onnx, ElevenLabs, and cloud voice APIs are not vendored.'
-  }),
-  row('vrm-makehuman', 'VRM / MakeHuman', 'blocked', {
-    shipped: false,
-    bundled: false,
-    blocked: true,
-    note: 'three-vrm, VRoid Hub, and the MakeHuman program are not bundled. Future MakeHuman CC0 exports stay a documented adapter only.'
-  }),
-  row('scene-frameworks', 'Three.js / Babylon / Godot / Unity / React', 'blocked', {
-    shipped: false,
-    bundled: false,
-    blocked: true,
-    note: 'The desktop workspace stays vanilla JS ESM. No UI-framework rewrite and no third-party game engine.'
-  }),
-  row('obs-websocket', 'OBS websocket', 'blocked', {
-    shipped: false,
-    bundled: false,
-    blocked: true,
-    note: 'Stream helper may store a planning URL. Eidovara does not control OBS.'
-  }),
-  row('toy-hardware', 'Lovense / Vibease hardware', 'blocked', {
-    shipped: false,
-    bundled: false,
-    blocked: true,
-    note: 'Feel Sync is on-screen (and optional Chromium gamepad rumble). Pair toys in their vendor apps.'
-  })
-];
-
-export function runtimeEngineCatalog() {
-  return ROWS.map(item => ({ ...item }));
-}
-
-export function shippedEngines() {
-  return runtimeEngineCatalog().filter(item => item.shipped);
-}
-
-export function blockedEngines() {
-  return runtimeEngineCatalog().filter(item => item.blocked);
-}
-
-export function engineById(id) {
-  return runtimeEngineCatalog().find(item => item.id === String(id || '')) || null;
-}
-
-export function probeRendererEngines(host = {}) {
-  const nav = host && typeof host === 'object' && host.navigator ? host.navigator : {};
-  const gamepads = typeof nav.getGamepads === 'function'
-    ? [...nav.getGamepads()].filter(Boolean).length
-    : 0;
+export function defaultProfile(profileId = 'default') {
+  const now = new Date().toISOString();
   return {
-    webAudio: Boolean(host.AudioContext || host.webkitAudioContext),
-    speechSynthesis: Boolean(host.speechSynthesis),
-    speechRecognition: Boolean(host.SpeechRecognition || host.webkitSpeechRecognition),
-    mediaSession: Boolean(nav.mediaSession),
-    gamepadApi: typeof nav.getGamepads === 'function',
-    connectedGamepads: gamepads,
-    wakeLock: Boolean(nav.wakeLock),
-    webgpu: Boolean(nav.gpu),
-    pictureInPicture: Boolean(host.document && 'pictureInPictureEnabled' in host.document)
+    schemaVersion: CURRENT_SCHEMA_VERSION,
+    profileId,
+    createdAt: now,
+    updatedAt: now,
+    continuity: {
+      revision: 1,
+      lastActiveAt: now,
+      reflectionState: { growthInsightCount: 0, latestReflection: 'Soul begins from humility, care, and user-directed growth.', activeTheme: 'baseline-continuity' },
+      selfModel: {
+        name: 'Soul',
+        architecture: 'persistent software continuity and self-model; not a claim of phenomenal consciousness',
+        protectedIdentity: true,
+        coreValues: ['humility', 'user autonomy', 'consent', 'non-manipulation', 'careful learning', 'bounded honesty']
+      }
+    },
+    personality: {
+      warmth: 0.62, curiosity: 0.70, assertiveness: 0.36, playfulness: 0.40,
+      directness: 0.46, reassurance: 0.55, adaptability: 0.68, humility: 0.72,
+      protected: ['humility', 'consent', 'nonManipulation', 'truthfulness']
+    },
+    relationship: { style: 'balanced', temporaryInitiative: false, initiativeReason: null, establishedPreference: null, trust: 0.50, comfort: 0.50, auditTrail: [] },
+    assistant: { autonomy: 'balanced', initiativeEnabled: true, reflectionEnabled: true, identityDescription: 'persistent simulated continuity', ethicalFramework: ['lawfulness', 'human safety', 'consent', 'privacy', 'honesty', 'fairness', 'user autonomy'], preferences: { responseLength: 'balanced', tone: 'natural', focusMode: 'general', accessibility: '', language: 'en' }, capabilities: { webResearch: 'ask', appLaunch: 'confirm', mediaPlayback: 'confirm', memoryLearning: 'enabled' } },
+    policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false, boundaries: [], revokedAt: null, consentScope: null, lawfulUseRequired: true, localSafetyReports: [] },
+    setup: { completed: false, completedAt: null, categories: [], customNeeds: '', stream: { enabled: false, obsWebSocketUrl: 'ws://127.0.0.1:4455', goals: '' } },
+    entertainment: { favorites: [], history: [], taste: {}, adult: { watchLater: [], playlists: [], creators: [], continueWatching: [], lastCategory: 'for-you', folders: [] } },
+    adultSoul: { schema: 3, kind: 'adult-soul-studio', active: false },
+    memories: [], feedback: [], conversations: [{ id: 'main', title: 'Conversation', createdAt: now, updatedAt: now, messages: [] }],
+    activeConversationId: 'main',
+    kernel: defaultKernelState(),
+    audit: [{ at: now, type: 'profile.created', details: { profileId } }]
   };
 }
 
-export const ENGINE_HONESTY = 'Eidovara ships a first-party Soul kernel, WebGL lathe, Web Audio Feel, procedural ambient beds, Chromium HTML5 media, OS speechSynthesis, optional SpeechRecognition, Media Session, Electron stay-awake, and an optional Chromium gamepad for the Feel pad. It does not ship neural TTS, VRM, Three.js, Babylon, React, ffmpeg, OBS websocket control, or Lovense hardware.';
+export function migrateProfile(input, profileId = 'default') {
+  const base = defaultProfile(profileId);
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return base;
+  const merged = {
+    ...base, ...input,
+    continuity: { ...base.continuity, ...(input.continuity || {}), selfModel: { ...base.continuity.selfModel, ...(input.continuity?.selfModel || {}) }, reflectionState: { ...base.continuity.reflectionState, ...(input.continuity?.reflectionState || {}) } },
+    personality: { ...base.personality, ...(input.personality || {}) },
+    relationship: { ...base.relationship, ...(input.relationship || {}) },
+    assistant: { ...base.assistant, ...(input.assistant || {}), preferences: { ...base.assistant.preferences, ...(input.assistant?.preferences || {}) }, capabilities: { ...base.assistant.capabilities, ...(input.assistant?.capabilities || {}) } },
+    policy: { ...base.policy, ...(input.policy || {}) },
+    setup: { ...base.setup, ...(input.setup || {}), stream: { ...base.setup.stream, ...(input.setup?.stream || {}) } },
+    entertainment: { ...base.entertainment, ...(input.entertainment || {}) },
+    kernel: migrateKernel(input.kernel)
+  };
+  if (!Array.isArray(merged.memories)) merged.memories = [];
+  if (!Array.isArray(merged.feedback)) merged.feedback = [];
+  if (!Array.isArray(merged.audit)) merged.audit = [];
+  if (!Array.isArray(merged.conversations) || merged.conversations.length === 0) merged.conversations = base.conversations;
+  merged.conversations = merged.conversations.filter(c => c && typeof c === 'object').map((c, index) => ({
+    id: String(c.id || uid('conv')), title: String(c.title || `Conversation ${index + 1}`).slice(0, 120),
+    createdAt: c.createdAt || base.createdAt, updatedAt: c.updatedAt || c.createdAt || base.updatedAt,
+    messages: Array.isArray(c.messages) ? c.messages.filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.content === 'string') : []
+  }));
+  if (!merged.conversations.length) merged.conversations = base.conversations;
+  if (!Array.isArray(merged.policy.boundaries)) merged.policy.boundaries = [];
+  if (!Array.isArray(merged.policy.localSafetyReports)) merged.policy.localSafetyReports = [];
+  if (!Array.isArray(merged.setup.categories)) merged.setup.categories = [];
+  if (!Array.isArray(merged.entertainment.favorites)) merged.entertainment.favorites = [];
+  if (!Array.isArray(merged.entertainment.history)) merged.entertainment.history = [];
+  if (!merged.entertainment.taste || typeof merged.entertainment.taste !== 'object' || Array.isArray(merged.entertainment.taste)) merged.entertainment.taste = {};
+  if (!merged.entertainment.adult || typeof merged.entertainment.adult !== 'object' || Array.isArray(merged.entertainment.adult)) {
+    merged.entertainment.adult = base.entertainment.adult;
+  }
+  if (!merged.adultSoul || typeof merged.adultSoul !== 'object' || Array.isArray(merged.adultSoul)) {
+    merged.adultSoul = base.adultSoul;
+  }
+  if (!Array.isArray(merged.relationship.auditTrail)) merged.relationship.auditTrail = [];
+  if (!['user-led', 'balanced', 'proactive'].includes(merged.assistant.autonomy)) merged.assistant.autonomy = 'balanced';
+  if (!Array.isArray(merged.assistant.ethicalFramework)) merged.assistant.ethicalFramework = [...base.assistant.ethicalFramework];
+  if (!['concise','balanced','detailed'].includes(merged.assistant.preferences.responseLength)) merged.assistant.preferences.responseLength='balanced';
+  if (!['natural','direct','warm','professional','playful'].includes(merged.assistant.preferences.tone)) merged.assistant.preferences.tone='natural';
+  if (!['en','es','fr','de'].includes(merged.assistant.preferences.language)) merged.assistant.preferences.language='en';
+  if (!merged.activeConversationId || !merged.conversations.some(c => c.id === merged.activeConversationId)) merged.activeConversationId = merged.conversations[0].id;
+  merged.schemaVersion = CURRENT_SCHEMA_VERSION;
+  merged.profileId ||= profileId;
+  return merged;
+}
+
+export function clamp01(value) { return Math.max(0, Math.min(1, Number(value))); }
+export function uid(prefix = 'id') { return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`; }
 
