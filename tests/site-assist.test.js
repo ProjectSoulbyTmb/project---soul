@@ -131,7 +131,7 @@ test('chatbot knowledge answers golden product questions', () => {
   matchTolerant(download.reply, /dist:win:installer|Windows 10\/11/i);
   matchTolerant(download.reply, /Eidovara-v1\.0\.0-Windows-x64-Setup\.exe/);
   assert.doesNotMatch(download.reply, /F29A52F0495AB111/i);
-  
+
   assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
   assert.ok(
     (download.links || []).some(
@@ -318,5 +318,8 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));
   matchTolerant(read('docs/assist.js'), /safePublicHref\(link\.href\)/);
   assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
-  matchTolerant(read('docs/404.html'), /(<base href="https:\/\/eidovara\.org\/">|rel="canonical" href="https:\/\/eidovara\.org\/")/);
+  matchTolerant(
+    read('docs/404.html'),
+    /(<base href="https:\/\/eidovara\.org\/"\s*\/?>|rel="canonical" href="https:\/\/eidovara\.org\/")/
+  );
 });

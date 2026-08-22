@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import {
   INSTALLER_NAME,
   INSTALLER_SHA256,
-    INSTALLER_LATEST_URL,
+  INSTALLER_LATEST_URL,
   INSTALLER_PINNED_URL,
   LIVE_INSTALLER_VERSION,
   SOURCE_VERSION,
@@ -24,7 +24,11 @@ test('public site presents the published local-first Windows release', () => {
   matchTolerant(site, new RegExp(escapeRe(INSTALLER_NAME)));
   assert.ok(site.includes(INSTALLER_NAME), 'site names the canonical installer');
   matchTolerant(site, /SHA256SUMS\.txt/);
-  assert.doesNotMatch(site, /F29A52F0495AB111/i, 'stale v0.22.2 hash must not be advertised as current');
+  assert.doesNotMatch(
+    site,
+    /F29A52F0495AB111/i,
+    'stale v0.22.2 hash must not be advertised as current'
+  );
   matchTolerant(site, /Authenticode-unsigned/);
   matchTolerant(site, /18\+/);
   assert.doesNotMatch(site, /dreambot333\.workers\.dev/);

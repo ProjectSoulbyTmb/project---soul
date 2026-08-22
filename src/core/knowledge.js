@@ -215,7 +215,10 @@ const PRODUCT_RULES = [
 
 const ALL_KNOWLEDGE_ENTRIES = { ...ENTRIES };
 const ALL_KNOWLEDGE_RULES = [...PRODUCT_RULES];
-const ALL_KNOWLEDGE_INTENTS = new Set([...KNOWLEDGE_INTENTS, ...Object.keys(ALL_KNOWLEDGE_ENTRIES)]);
+const ALL_KNOWLEDGE_INTENTS = new Set([
+  ...KNOWLEDGE_INTENTS,
+  ...Object.keys(ALL_KNOWLEDGE_ENTRIES),
+]);
 
 export function matchProductIntent(input) {
   const text = String(input || '');

@@ -19,7 +19,9 @@ if (process.env.EIDOVARA_SKIP_PREPUSH === '1') {
 }
 
 let targetMain = false;
-try { targetMain = /refs\/heads\/main/.test(fs.readFileSync(0, 'utf8')); } catch {}
+try {
+  targetMain = /refs\/heads\/main/.test(fs.readFileSync(0, 'utf8'));
+} catch {}
 
 const fastSteps = [
   ['invariants', 'scripts/guard-invariants.mjs'],
@@ -29,14 +31,20 @@ const fastSteps = [
 
 for (const [name, script] of fastSteps) {
   console.log(`[prepush] ${name}...`);
-  const r = spawnSync(process.execPath, [script], { stdio: "inherit" });
-  if (r.status !== 0) { console.error(`[prepush] FAIL: ${name}`); process.exit(1); }
+  const r = spawnSync(process.execPath, [script], { stdio: 'inherit' });
+  if (r.status !== 0) {
+    console.error(`[prepush] FAIL: ${name}`);
+    process.exit(1);
+  }
 }
 
-if (targetMain || process.env.EIDOVARA_PREPUSH_FULL === "1") {
+if (targetMain || process.env.EIDOVARA_PREPUSH_FULL === '1') {
   console.log('[prepush] targeting main - running full quality gate...');
   const r = spawnSync(process.execPath, ['scripts/quality-gate.mjs'], { stdio: 'inherit' });
-  if (r.status !== 0) { console.error("[prepush] FAIL: quality gate"); process.exit(1); }
+  if (r.status !== 0) {
+    console.error('[prepush] FAIL: quality gate');
+    process.exit(1);
+  }
 }
 
 console.log('[prepush] PASS');

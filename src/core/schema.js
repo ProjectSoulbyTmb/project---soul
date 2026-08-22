@@ -122,7 +122,12 @@ export function defaultProfile(profileId = 'default') {
     activeConversationId: 'main',
     kernel: defaultKernelState(),
     audit: [{ at: now, type: 'profile.created', details: { profileId } }],
-    funnel: { installedAt: now, ageGateAcceptedAt: null, setupCompletedAt: null, firstReplyAt: null },
+    funnel: {
+      installedAt: now,
+      ageGateAcceptedAt: null,
+      setupCompletedAt: null,
+      firstReplyAt: null,
+    },
   };
 }
 

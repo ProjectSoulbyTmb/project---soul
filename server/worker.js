@@ -29,7 +29,9 @@ const ASSIST_ALLOWED_ORIGINS = new Set([
 ]);
 
 function assistOriginBlocked(request) {
-  const origin = String(request.headers.get('origin') || '').trim().toLowerCase();
+  const origin = String(request.headers.get('origin') || '')
+    .trim()
+    .toLowerCase();
   if (!origin || origin === 'null') return false;
   return !ASSIST_ALLOWED_ORIGINS.has(origin);
 }

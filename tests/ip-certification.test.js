@@ -33,7 +33,10 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.product.liveInstallerVersion, '1.0.0');
   assert.equal(cert.product.installer, INSTALLER_NAME);
   const certSha = cert.product.sha256;
-  assert.ok(certSha === null || /^[0-9a-f]{64}$/i.test(String(certSha)), 'cert sha256 must be null or a measured hex digest');
+  assert.ok(
+    certSha === null || /^[0-9a-f]{64}$/i.test(String(certSha)),
+    'cert sha256 must be null or a measured hex digest'
+  );
   if (certSha) assert.equal(String(certSha).toLowerCase(), INSTALLER_SHA256.toLowerCase());
   assert.equal(cert.product.authenticode, 'unsigned');
   assert.equal(cert.product.appId, 'com.soulconsciousnessstudios.eidovara');
@@ -67,8 +70,8 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.instruments.find(row => row.id === 'trademark-filing').status, 'not-filed');
   matchTolerant(md, /not a U\.S\. Copyright Office registration/i);
   matchTolerant(md, /repository self-attestation/i);
-matchTolerant(md, /SHA256SUMS\.txt/);
-assert.doesNotMatch(md, new RegExp(INSTALLER_SHA256));
+  matchTolerant(md, /SHA256SUMS\.txt/);
+  assert.doesNotMatch(md, new RegExp(INSTALLER_SHA256));
   matchTolerant(md, /unsigned-template/);
   matchTolerant(md, /owner-action-required/);
   matchTolerant(md, /LicenseRef-Eidovara-Source-Available-1\.0/);

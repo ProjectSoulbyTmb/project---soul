@@ -86,8 +86,8 @@ test('LICENSE, TERMS, and NOTICE reserve first-party rights and are not OSI open
   matchTolerant(terms, /relicense as open source/i);
   assert.ok(eula.includes('Eidovara Source-Available Evaluation License 1.0'));
   assert.ok(eula.includes('NOT open source'));
-assert.ok(eula.includes('18 years of age or older'));
-assert.ok(eula.includes('Source-Available') || eula.includes('source-available'));
+  assert.ok(eula.includes('18 years of age or older'));
+  assert.ok(eula.includes('Source-Available') || eula.includes('source-available'));
   matchTolerant(read('package.json'), /SEE LICENSE IN LICENSE/);
   assert.doesNotMatch(read('package.json'), /"license":\s*"(MIT|Apache-2\.0|ISC|GPL)/);
 });
@@ -252,7 +252,10 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   matchTolerant(html, /does not require licensed SF Pro/);
   matchTolerant(html, /not Jarvis/);
   matchTolerant(html, /local-admin testing only/);
-matchTolerant(html, /(© 2026 Soul Consciousness Studios\. All rights reserved|SPDX-FileCopyrightText: 2026 Soul Consciousness Studios)/);
+  matchTolerant(
+    html,
+    /(© 2026 Soul Consciousness Studios\. All rights reserved|SPDX-FileCopyrightText: 2026 Soul Consciousness Studios)/
+  );
   matchTolerant(html, /Source-available; use governed by LICENSE \+ TERMS/);
   matchTolerant(html, /Users own their own content/);
   matchTolerant(html, /not legal advice/);
@@ -406,9 +409,9 @@ test('first-party JS carries SPDX source-available headers and does not donate O
     /does \*\*not\*\* transfer copyright|does not transfer copyright/i
   );
   matchTolerant(read('CONTRIBUTING.md'), /LicenseRef-Eidovara-Source-Available-1\.0/);
-matchTolerant(read('TRADEMARKS.md'), /does not grant the submitter trademark rights/i);
-const pkg = JSON.parse(read('package.json'));
-matchTolerant(pkg.author, /Soul Consciousness Studios/);
+  matchTolerant(read('TRADEMARKS.md'), /does not grant the submitter trademark rights/i);
+  const pkg = JSON.parse(read('package.json'));
+  matchTolerant(pkg.author, /Soul Consciousness Studios/);
   matchTolerant(pkg.author, /intended publisher/);
   assert.doesNotMatch(pkg.author, /published by Soul Consciousness Studios$/);
   assert.equal(pkg.build.appId, 'com.soulconsciousnessstudios.eidovara');
@@ -424,7 +427,10 @@ matchTolerant(pkg.author, /Soul Consciousness Studios/);
     'docs/faq.html',
   ];
   for (const page of footerPages) {
-    matchTolerant(read(page), /(© 2026 Soul Consciousness Studios\. All rights reserved|SPDX-FileCopyrightText: 2026 Soul Consciousness Studios)/);
+    matchTolerant(
+      read(page),
+      /(© 2026 Soul Consciousness Studios\. All rights reserved|SPDX-FileCopyrightText: 2026 Soul Consciousness Studios)/
+    );
     matchTolerant(read(page), /Source-available, not open source/);
     matchTolerant(read(page), /intended publisher only/);
   }
@@ -684,7 +690,10 @@ test('footer pages have consistent source-available claims', () => {
   ];
   for (const page of footerPages) {
     const content = read(page);
-matchTolerant(content, /(© 2026 Soul Consciousness Studios\. All rights reserved|SPDX-FileCopyrightText: 2026 Soul Consciousness Studios)/);
+    matchTolerant(
+      content,
+      /(© 2026 Soul Consciousness Studios\. All rights reserved|SPDX-FileCopyrightText: 2026 Soul Consciousness Studios)/
+    );
     matchTolerant(content, /Source-available, not open source/);
     matchTolerant(content, /intended publisher only/);
   }
@@ -891,7 +900,7 @@ test('no source file predicts consciousness or sentience for Soul', () => {
 
 // Additional edge case: no version inconsistency between package.json and CHANGELOG
 test('version consistency between package.json and CHANGELOG', () => {
-const changelog = read('CHANGELOG.md');
+  const changelog = read('CHANGELOG.md');
   assert.match(changelog, /v0\.22\./);
   assert.match(changelog, /v0\.22\.2/);
 });
@@ -909,7 +918,11 @@ test('all legal documents have 2026 copyright', () => {
   ];
   for (const doc of docs) {
     const content = read(doc);
-    matchTolerant(content, /(Copyright \(c\)|Copyright \u00A9|\u00A9) ?2026 Soul Consciousness Studios/, doc);
+    matchTolerant(
+      content,
+      /(Copyright \(c\)|Copyright \u00A9|\u00A9) ?2026 Soul Consciousness Studios/,
+      doc
+    );
   }
 });
 

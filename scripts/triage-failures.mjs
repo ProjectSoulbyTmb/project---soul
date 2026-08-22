@@ -9,9 +9,10 @@
  */
 import fs from 'node:fs';
 
-const src = process.argv[2] && fs.existsSync(process.argv[2])
-  ? fs.readFileSync(process.argv[2], 'utf8')
-  : fs.readFileSync(0, 'utf8');
+const src =
+  process.argv[2] && fs.existsSync(process.argv[2])
+    ? fs.readFileSync(process.argv[2], 'utf8')
+    : fs.readFileSync(0, 'utf8');
 const clean = src.replace(/\x1b\[[0-9;]*m/g, '');
 
 const suites = new Map();
@@ -22,11 +23,13 @@ const reB = /test at (tests\\[^\n]+?):(\d+):1\n([\s\S]*?)(?=\ntest at tests|\n$|
 let m;
 while ((m = reB.exec(clean))) {
   const key = `${m[1]}:${m[2]}`;
-  const err = (m[3].match(/AssertionError \[[^\]]*\]: ([^\n]+)/) ||
-               m[3].match(/Error: ([^\n]+)/) || [])[1] || 'failure';
+  const err =
+    (m[3].match(/AssertionError \[[^\]]*\]: ([^\n]+)/) || m[3].match(/Error: ([^\n]+)/) || [])[1] ||
+    'failure';
   const exp = (m[3].match(/expected: '?([^\n]{0,80})/) || [])[1] || '';
   const act = (m[3].match(/actual: '?([^\n]{0,80})/) || [])[1] || '';
-  if (!suites.has(key)) suites.set(key, { err: err.slice(0, 90), exp, act, tests: [`${m[1]}:${m[2]}`] });
+  if (!suites.has(key))
+    suites.set(key, { err: err.slice(0, 90), exp, act, tests: [`${m[1]}:${m[2]}`] });
 }
 while ((m = reA.exec(clean))) {
   const g = [...suites.values()][0];
@@ -40,7 +43,8 @@ for (const [_key, g] of [...suites.entries()].sort((a, b) => b.tests.length - a.
   out += `- **Failing tests (${g.tests.length}):** ${g.tests.join('; ')}\n`;
   if (g.exp) out += `- **expected:** \`${g.exp}\`\n`;
   if (g.act) out += `- **actual:** \`${g.act}\`\n`;
-  out += '- **likely cause:** test expectation drifted from doc/content change — verify which side is authoritative, update one side\n\n';
+  out +=
+    '- **likely cause:** test expectation drifted from doc/content change — verify which side is authoritative, update one side\n\n';
 }
 fs.writeFileSync('docs/TEST_TRIAGE.md', out);
 console.log(`triage written: ${suites.size} groups`);

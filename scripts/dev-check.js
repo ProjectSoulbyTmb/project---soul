@@ -34,7 +34,10 @@ for (const step of steps) {
   } catch (error) {
     failed++;
     process.stdout.write('FAILED\n');
-    const tail = String(error.stderr || error.stdout || error.message || '').split('\n').slice(-15).join('\n');
+    const tail = String(error.stderr || error.stdout || error.message || '')
+      .split('\n')
+      .slice(-15)
+      .join('\n');
     console.error(tail);
     break;
   }

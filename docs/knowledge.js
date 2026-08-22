@@ -288,7 +288,17 @@ export const ENTRIES = [
   {
     id: 'brands',
     modes: ['help', 'legal'],
-    tags: ['brand', 'trademark', 'affiliated', 'third-party', 'assistant', 'platform', 'jarvis', 'iron', 'man'],
+    tags: [
+      'brand',
+      'trademark',
+      'affiliated',
+      'third-party',
+      'assistant',
+      'platform',
+      'jarvis',
+      'iron',
+      'man',
+    ],
     title: 'First-party names only',
     reply:
       'Eidovara, Soul, and the Soul kernel are first-party software names. Third-party products, platforms, models, media services, and marks remain owned by their respective owners. Eidovara is not Jarvis, not Iron Man, and not affiliated with any fictional AI assistant. References to interoperable services are factual platform or user-directed handoff information and do not imply sponsorship or affiliation.',

@@ -324,15 +324,22 @@ export function moodMix(state, mood = 'focus', limit = 6) {
   const key = String(mood || '').toLowerCase();
   const keywords = MOOD_KEYWORDS[key] || MOOD_KEYWORDS.focus;
   const pool = [];
-  for (const it of state?.entertainment?.favorites || []) pool.push({ title: String(it.title || ''), weight: 4 });
-  for (const it of state?.entertainment?.history || []) pool.push({ title: String(it.title || ''), weight: 1 });
+  for (const it of state?.entertainment?.favorites || [])
+    pool.push({ title: String(it.title || ''), weight: 4 });
+  for (const it of state?.entertainment?.history || [])
+    pool.push({ title: String(it.title || ''), weight: 1 });
   const seen = new Set();
   const items = [];
   for (const it of pool) {
     const title = it.title.toLowerCase();
     if (!title || seen.has(title)) continue;
     seen.add(title);
-    items.push({ title: it.title, score: (state.entertainment.taste?.[title] || 0) + keywords.filter((k) => title.includes(k)).length * 2 });
+    items.push({
+      title: it.title,
+      score:
+        (state.entertainment.taste?.[title] || 0) +
+        keywords.filter(k => title.includes(k)).length * 2,
+    });
   }
   items.sort((a, b) => b.score - a.score);
   return { mood: key, keywords, items: items.slice(0, limit) };

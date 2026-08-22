@@ -24,10 +24,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import {
-  INSTALLER_SHA256,
-  INSTALLER_FACTS_MEASURED,
-} from '../src/core/release.js';
+import { INSTALLER_SHA256, INSTALLER_FACTS_MEASURED } from '../src/core/release.js';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 

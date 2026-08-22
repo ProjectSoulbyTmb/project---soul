@@ -49,7 +49,12 @@ const git = args => {
 
 const problems = [];
 
-for (const marker of ['.git/rebase-merge', '.git/rebase-apply', '.git/MERGE_HEAD', '.git/CHERRY_PICK_HEAD']) {
+for (const marker of [
+  '.git/rebase-merge',
+  '.git/rebase-apply',
+  '.git/MERGE_HEAD',
+  '.git/CHERRY_PICK_HEAD',
+]) {
   if (fs.existsSync(path.join(repoRoot, marker))) {
     problems.push(`Interrupted git operation in progress: ${marker}`);
   }

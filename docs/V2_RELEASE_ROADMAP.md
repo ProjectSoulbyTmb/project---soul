@@ -8,14 +8,14 @@ v2.0.0 is official when **all six gates (G1-G6) pass**. "Official" means: Authen
 
 ## Current baseline (2026-08-22)
 
-| Area | State |
-|---|---|
-| Tests | 326/326 passing on public main; smoke OK |
-| Lint | 0 errors / 7 warnings |
-| Installer | v1.0.0 shipped, SHA-pinned, provenance + SBOM, **Authenticode-unsigned** |
-| Update chain | Checksum-mandatory, HTTPS-only, signature verification disabled (blocked by W1) |
-| Payments | Disabled; Free edition is full surface |
-| Experimental kernel | Withdrawn from public lineage; preserved privately |
+| Area                | State                                                                           |
+| ------------------- | ------------------------------------------------------------------------------- |
+| Tests               | 326/326 passing on public main; smoke OK                                        |
+| Lint                | 0 errors / 7 warnings                                                           |
+| Installer           | v1.0.0 shipped, SHA-pinned, provenance + SBOM, **Authenticode-unsigned**        |
+| Update chain        | Checksum-mandatory, HTTPS-only, signature verification disabled (blocked by W1) |
+| Payments            | Disabled; Free edition is full surface                                          |
+| Experimental kernel | Withdrawn from public lineage; preserved privately                              |
 
 ## Workstreams
 
@@ -69,14 +69,14 @@ v2.0.0 is official when **all six gates (G1-G6) pass**. "Official" means: Authen
 
 ## Gates
 
-| Gate | Requirement |
-|---|---|
-| G1 | W1 complete: signed builds verify end-to-end |
-| G2 | 14 consecutive days: suite green, boot-smoke green, zero-warning lint in CI |
-| G3 | Security checklist (W3) signed off |
-| G4 | Beta soak: >=2 tagged pre-releases, no regression-class incidents filed |
-| G5 | Docs/site final pass (W5) |
-| G6 | Release checklist executed without waivers |
+| Gate | Requirement                                                                 |
+| ---- | --------------------------------------------------------------------------- |
+| G1   | W1 complete: signed builds verify end-to-end                                |
+| G2   | 14 consecutive days: suite green, boot-smoke green, zero-warning lint in CI |
+| G3   | Security checklist (W3) signed off                                          |
+| G4   | Beta soak: >=2 tagged pre-releases, no regression-class incidents filed     |
+| G5   | Docs/site final pass (W5)                                                   |
+| G6   | Release checklist executed without waivers                                  |
 
 ## Indicative timeline
 

@@ -16,24 +16,33 @@ const SIGNS = [
   [/\?{4,}/, 'question-mark glyph run'],
 ];
 const files = execSync('git ls-files', { encoding: 'utf8' })
-  .split(/\r?\n/).filter(Boolean)
-  .filter((f) => /\.(js|cjs|mjs|ts|html|css|json|md|txt|yml|yaml|toml|xml|cff)$/i.test(f))
-  .filter((f) => !f.includes('localization.js'));
+  .split(/\r?\n/)
+  .filter(Boolean)
+  .filter(f => /\.(js|cjs|mjs|ts|html|css|json|md|txt|yml|yaml|toml|xml|cff)$/i.test(f))
+  .filter(f => !f.includes('localization.js'));
 const corrupted = [];
 for (const f of files) {
   let t = '';
-  try { t = fs.readFileSync(f, 'utf8'); } catch { continue; }
+  try {
+    t = fs.readFileSync(f, 'utf8');
+  } catch {
+    continue;
+  }
   const hits = SIGNS.filter(([re]) => re.test(t)).map(([, label]) => label);
   if (hits.length) corrupted.push(`${f} (${hits.join(', ')})`);
 }
 const baseline = fs.existsSync(BASELINE_PATH())
   ? JSON.parse(fs.readFileSync(BASELINE_PATH(), 'utf8'))
   : [];
-function BASELINE_PATH() { return BASELINE; }
+function BASELINE_PATH() {
+  return BASELINE;
+}
 const known = new Set(baseline);
-const fresh = corrupted.filter((c) => !known.has(c));
-const healed = baseline.filter((c) => !corrupted.includes(c));
-console.log(`[encoding] corrupted: ${corrupted.length} | baseline: ${baseline.length} | NEW: ${fresh.length} | healed: ${healed.length}`);
+const fresh = corrupted.filter(c => !known.has(c));
+const healed = baseline.filter(c => !corrupted.includes(c));
+console.log(
+  `[encoding] corrupted: ${corrupted.length} | baseline: ${baseline.length} | NEW: ${fresh.length} | healed: ${healed.length}`
+);
 if (UPDATE) {
   fs.writeFileSync(BASELINE_PATH(), JSON.stringify(corrupted, null, 2) + '\n');
   console.log('[encoding] baseline rewritten');
@@ -41,9 +50,9 @@ if (UPDATE) {
 }
 if (fresh.length) {
   console.error('[encoding] REGRESSION - newly corrupted files:');
-  fresh.forEach((c) => console.error('  NEW: ' + c));
+  fresh.forEach(c => console.error('  NEW: ' + c));
   if (healed.length) console.log('[encoding] healed since baseline: ' + healed.join(' | '));
   process.exit(1);
 }
-healed.forEach((c) => console.log('[encoding] healed (re-baseline with --update): ' + c));
+healed.forEach(c => console.log('[encoding] healed (re-baseline with --update): ' + c));
 console.log('[encoding] PASS - no new corruption');

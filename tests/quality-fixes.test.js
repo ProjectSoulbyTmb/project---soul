@@ -33,10 +33,7 @@ test('age gate inert-blocks the app and refreshes backups after accept', () => {
 
 test('settings save normalizes local and Premium endpoints', () => {
   const main = read('src/electron/main.js');
-  matchTolerant(
-    main,
-    /normalizeProviderEndpoint\(config\.endpoint,/
-  );
+  matchTolerant(main, /normalizeProviderEndpoint\(config\.endpoint,/);
   matchTolerant(main, /localOnly: provider === 'local'/);
   matchTolerant(main, /remember[\s\S]*opts\?\.kind/);
 });

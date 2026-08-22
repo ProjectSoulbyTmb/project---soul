@@ -56,7 +56,7 @@ test('public release pages advertise the real current installer', () => {
     const html = read(file);
     matchTolerant(html, new RegExp(escapeRe(INSTALLER_NAME)), file);
     // Pending tagged build: pages point at SHA256SUMS.txt instead of a digest.
-matchTolerant(html, /SHA256SUMS\.txt/, file);
+    matchTolerant(html, /SHA256SUMS\.txt/, file);
   }
   matchTolerant(read('docs/site.css'), /--eidovara-visual:\s*modern-2026/);
   matchTolerant(read('docs/site.css'), /#site-nav > a\.nav-cta/);

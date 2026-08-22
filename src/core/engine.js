@@ -273,7 +273,8 @@ export class SoulEngine {
   }
   configureSetup(input = {}) {
     if (!this.state.funnel) this.state.funnel = {};
-    if (!this.state.funnel.setupCompletedAt) this.state.funnel.setupCompletedAt = new Date().toISOString();
+    if (!this.state.funnel.setupCompletedAt)
+      this.state.funnel.setupCompletedAt = new Date().toISOString();
     const allowed = [
       'gaming-editing',
       'stream-helper',
@@ -561,7 +562,10 @@ export class SoulEngine {
     this.store.save(this.state);
     return this.snapshot();
   }
-  exportConversation(id = this.state.activeConversationId, { format = 'json', redact = true } = {}) {
+  exportConversation(
+    id = this.state.activeConversationId,
+    { format = 'json', redact = true } = {}
+  ) {
     const conv = this.state.conversations.find(c => c.id === id);
     if (!conv) throw new Error('Conversation not found.');
     const messages = conv.messages.map(m => ({
@@ -571,10 +575,13 @@ export class SoulEngine {
     }));
     const safeTitle = redact
       ? redactSecretsForLog(conv.title || 'Conversation')
-      : (conv.title || 'Conversation');
+      : conv.title || 'Conversation';
     const exportedAt = new Date().toISOString();
     const slug =
-      (conv.title || 'Conversation').replace(/[^\w\- ]+/g, '').trim().replace(/\s+/g, '-') || 'conversation';
+      (conv.title || 'Conversation')
+        .replace(/[^\w\- ]+/g, '')
+        .trim()
+        .replace(/\s+/g, '-') || 'conversation';
     if (format === 'md') {
       const body = [
         `# ${conv.title || 'Conversation'}`,
@@ -592,12 +599,21 @@ export class SoulEngine {
     const payload = {
       app: 'Eidovara',
       version: 1,
-      conversation: { id: conv.id, title: safeTitle, createdAt: conv.createdAt, updatedAt: conv.updatedAt || conv.createdAt },
+      conversation: {
+        id: conv.id,
+        title: safeTitle,
+        createdAt: conv.createdAt,
+        updatedAt: conv.updatedAt || conv.createdAt,
+      },
       exportedAt,
       redacted: redact,
       messages,
     };
-    return { filename: `${slug}-${conv.id}.json`, messageCount: messages.length, data: JSON.stringify(payload, null, 2) };
+    return {
+      filename: `${slug}-${conv.id}.json`,
+      messageCount: messages.length,
+      data: JSON.stringify(payload, null, 2),
+    };
   }
 
   async respond(input, extra = {}) {

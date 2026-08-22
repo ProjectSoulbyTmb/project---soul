@@ -45,8 +45,8 @@ These files require a green boot-smoke test before merge (see Phase 5.3 of ERROR
 
 ## 5. Environment variable contract
 
-| Variable | Who sets it | Dev behavior | Packaged behavior |
-|---|---|---|---|
+| Variable                     | Who sets it       | Dev behavior              | Packaged behavior                                |
+| ---------------------------- | ----------------- | ------------------------- | ------------------------------------------------ |
 | `EIDOVARA_AGE_GATE_ACCEPTED` | Test harness only | Enables CLI/test age gate | **Never set** — startup code MUST NOT require it |
 
 Any new env var must be added to this table in the same commit.

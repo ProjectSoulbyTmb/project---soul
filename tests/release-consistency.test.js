@@ -23,9 +23,7 @@ import {
   INSTALLER_LATEST_URL,
   INSTALLER_PINNED_URL,
 } from '../src/core/release.js';
-import {
-DESKTOP_KNOWLEDGE_VERSION,
-} from '../src/core/knowledge.js';
+import { DESKTOP_KNOWLEDGE_VERSION } from '../src/core/knowledge.js';
 import {
   LIVE_INSTALLER_VERSION as WORKER_LIVE_INSTALLER_VERSION,
   LIVE_INSTALLER as WORKER_LIVE_INSTALLER,
@@ -115,8 +113,11 @@ test('ip-certification inventory matches the canonical release metadata', () => 
   assert.equal(cert.liveInstallerVersion, LIVE_INSTALLER_VERSION);
   assert.equal(cert.installer, INSTALLER_NAME);
   const certSha = cert.sha256;
-assert.ok(certSha === null || /^[0-9a-f]{64}$/i.test(String(certSha)), 'cert sha256 must be null or measured');
-if (certSha) assert.equal(String(certSha).toLowerCase(), INSTALLER_SHA256.toLowerCase());
+  assert.ok(
+    certSha === null || /^[0-9a-f]{64}$/i.test(String(certSha)),
+    'cert sha256 must be null or measured'
+  );
+  if (certSha) assert.equal(String(certSha).toLowerCase(), INSTALLER_SHA256.toLowerCase());
 });
 
 test('site helper download pointers match the canonical installer without importing app code', () => {

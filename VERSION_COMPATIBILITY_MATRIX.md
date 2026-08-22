@@ -33,7 +33,7 @@ Released: August 21, 2026
 
 | Installer Version | Electron | Node | Status        | SHA-256                                                          |
 | ----------------- | -------- | ---- | ------------- | ---------------------------------------------------------------- |
-| **v1.0.0**        | 43.4.1   | 20+  | ✅ Current   | measured at release (SHA256SUMS.txt) |
+| **v1.0.0**        | 43.4.1   | 20+  | ✅ Current    | measured at release (SHA256SUMS.txt)                             |
 | v0.22.2           | 43.4.1   | 20+  | ⚠️ Historical | A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE |
 | v0.19.1           | 43.x     | 20+  | ⚠️ Historical | 72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8 |
 

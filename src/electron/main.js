@@ -34,8 +34,10 @@ try {
 
   console.log('[STRUCTURAL GUARDS] All legal guards initialized and active');
 } catch (error) {
-  console.error('[STRUCTURAL GUARDS] Guard initialization failed:', error);
-  process.exit(1);
+  // Non-fatal by design: packaged builds never set EIDOVARA_AGE_GATE_ACCEPTED,
+  // and killing the process here made every plain launch exit(1). Real
+  // enforcement is per-feature via requireAgeGate()/requireAdmin() IPC gates.
+  console.error('[STRUCTURAL GUARDS] Guard initialization failed (non-fatal):', error);
 }
 
 import {
