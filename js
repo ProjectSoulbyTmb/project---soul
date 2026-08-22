@@ -1,126 +1,72 @@
-/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
-/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
-/* Eidovara interface tokens — system-inspired visual language, not an Apple product.
-   System font stack only; do not ship or require licensed SF Pro or SF Mono files. */
-:root {
-  color-scheme: light dark;
-  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
-  --font-mono: ui-monospace, "Cascadia Code", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
-  --space-10: 40px;
-  --space-12: 48px;
-  --space-16: 64px;
-  --space-20: 80px;
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
-  --radius-2xl: 24px;
-  --radius-3xl: 32px;
-  --radius-full: 999px;
-  --hairline: 0.5px;
-  --text-xs: 11px;
-  --text-sm: 13px;
-  --text-base: 15px;
-  --text-lg: 17px;
-  --text-xl: 20px;
-  --text-2xl: 24px;
-  --text-3xl: 30px;
-  --text-4xl: 38px;
-  --text-5xl: 48px;
-  --text-6xl: 64px;
-  --title-1: 28px;
-  --title-2: 22px;
-  --title-3: 20px;
-  --headline: 17px;
-  --body: 17px;
-  --subhead: 15px;
-  --footnote: 13px;
-  --caption: 12px;
-  --font-weight-normal: 400;
-  --font-weight-medium: 500;
-  --font-weight-semibold: 600;
-  --font-weight-bold: 650;
-  --line-height-tight: 1.1;
-  --line-height-snug: 1.35;
-  --line-height-normal: 1.5;
-  --line-height-relaxed: 1.65;
-  --letter-spacing-tight: -0.04em;
-  --letter-spacing-normal: -0.014em;
-  --letter-spacing-wide: 0.02em;
-  --motion-fast: 120ms;
-  --motion-normal: 200ms;
-  --motion-slow: 320ms;
-  --motion-slower: 480ms;
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --blur: saturate(180%) blur(24px);
-  --blur-strong: saturate(200%) blur(40px);
-  --tint: #007aff;
-  --tint-hover: #0066cc;
-  --tint-light: #d6eaff;
-  --accent2: #5856d6;
-  --accent3: #af52de;
-  --danger: #ff3b30;
-  --danger-light: #ffd6d6;
-  --good: #34c759;
-  --good-light: #d6f5dd;
-  --warning: #ff9f0a;
-  --warning-light: #fff4d6;
-  --bg: #f2f2f7;
-  --bg-secondary: #e8e8ed;
-  --grouped: #f2f2f7;
-  --side: #f2f2f7;
-  --panel: #ffffff;
-  --panel-hover: #fafafa;
-  --panel2: #f2f2f7;
-  --elevated: #ffffff;
-  --line: rgba(60, 60, 67, 0.18);
-  --line-strong: rgba(60, 60, 67, 0.28);
-  --separator: rgba(60, 60, 67, 0.1);
-  --text: #000000;
-  --text-primary: #1d1d1f;
-  --muted: rgba(60, 60, 67, 0.5);
-  --tertiary: rgba(60, 60, 67, 0.25);
-  --accent: var(--tint);
-  --on-accent: #ffffff;
-  --fill: rgba(120, 120, 128, 0.12);
-  --fill-secondary: rgba(120, 120, 128, 0.08);
-  --fill-tertiary: rgba(118, 118, 128, 0.05);
-  --btn-gray: rgba(120, 120, 128, 0.12);
-  --on-accent: #ffffff;
-  --nav-bar: rgba(249, 249, 249, 0.9);
-  --overlay: rgba(0, 0, 0, 0.25);
-  --overlay-strong: rgba(0, 0, 0, 0.5);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
-  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.05);
-  --shadow-2xl: 0 32px 64px rgba(0, 0, 0, 0.12), 0 12px 24px rgba(0, 0, 0, 0.06);
-  --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.02);
-  --aqua: var(--tint);
-  --surface-opacity: 96%;
-  --gradient-primary: linear-gradient(135deg, var(--tint) 0%, var(--accent2) 100%);
-  --gradient-secondary: linear-gradient(135deg, var(--accent2) 0%, var(--accent3) 100%);
-  --gradient-hero: radial-gradient(1200px 600px at 10% -20%, color-mix(in srgb, var(--tint) 18%, transparent), transparent 65%), radial-gradient(800px 500px at 90% 10%, color-mix(in srgb, var(--accent2) 14%, transparent), transparent 60%);
-  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--tint) 40%, transparent);
-}
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+/**
+ * Encoding-hygiene regression guard.
+ *
+ * A series of bulk text transforms (BOM stripping, name replacement, encoding
+ * "fixes") destroyed non-ASCII characters across the repo: UTF-8 sequences were
+ * re-decoded as cp1252 (em dash became a-circumflex + euro + right-double-quote,
+ * Espanol gained a capital A-tilde), unmappable bytes became U+FFFD, and whole
+ * glyphs collapsed into runs of literal '?' on the public site.
+ * This suite fails if any of those corruption signatures reappear.
+ */
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
+const SCAN_EXTENSIONS = /\.(js|cjs|mjs|html|css|json|md|txt|yml|toml|xml|cff)$/;
+const SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'dist-mac']);
 
+// Files where these characters are legitimate content (localized strings).
+const ALLOW_ACCENTED = [/src[/\\]renderer[/\\]localization\.js$/];
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+function* walk(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    if (SKIP_DIRS.has(entry.name)) continue;
+    const p = path.join(dir, entry.name);
+    if (entry.isDirectory()) yield* walk(p);
+    else if (SCAN_EXTENSIONS.test(entry.name)) yield p;
   }
 }
+
+function collectFiles() {
+  return [...walk(ROOT)];
+}
+
+const CORRUPTION_SIGNATURES = [
+  ['U+FFFD replacement char', /\uFFFD/],
+  ['cp1252 mojibake lead pair', /[\u00C2\u00C3\u00E2][\u0080-\u00FF]/],
+  ['mangled curly-quote/dash trio', /\u00E2\u20AC[\u009D\u201D\u00A6]/],
+  ['literal question-mark runs (destroyed glyphs)', /\?{3,}/],
+];
+
+test('no file contains encoding-corruption signatures', () => {
+  const offenders = [];
+  for (const file of collectFiles()) {
+    const rel = path.relative(ROOT, file);
+    const text = fs.readFileSync(file, 'utf8');
+    for (const [label, re] of CORRUPTION_SIGNATURES) {
+      if (!re.test(text)) continue;
+      if (label.startsWith('cp1252') && ALLOW_ACCENTED.some((re2) => re2.test(rel))) continue;
+      offenders.push(`${rel}: ${label}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `Encoding corruption detected:\n${offenders.join('\n')}`);
+});
+
+test('public site pages keep their typographic separators intact', () => {
+  const checks = [
+    ['docs/index.html', /—/],
+    ['docs/download.html', /·|—/],
+    ['docs/roadmap.html', /—|©/],
+  ];
+  for (const [file, re] of checks) {
+    const text = fs.readFileSync(path.join(ROOT, file), 'utf8');
+    assert.match(text, re, `${file} lost its typographic characters`);
+    assert.doesNotMatch(text, /\?{3,}/, `${file} has destroyed-glyph runs`);
+  }
+});
