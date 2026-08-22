@@ -12,7 +12,7 @@ const htmlFiles = fs.readdirSync('docs').filter(name => name.endsWith('.html')).
 
 test('homepage restyle keeps three benefits, one hero fill CTA, and no Adult Soul marketing', () => {
   const home = read('docs/index.html');
-  const benefits = [...home.matchAll(/<article class="benefit">/g)];
+  const benefits = [...home.matchAll(/<article class="benefit[ "]/g)];
   assert.equal(benefits.length, 3);
   assert.match(home, /Local Windows workspace/);
   assert.match(home, /Media and research/);
@@ -23,8 +23,8 @@ test('homepage restyle keeps three benefits, one hero fill CTA, and no Adult Sou
   const heroPrimary = [...hero.matchAll(/<a class="primary[^"]*"/g)];
   assert.equal(heroPrimary.length, 1);
   assert.match(hero, /class="text-link"/);
-  assert.match(home, /v0\.22\.2 is published/);
-  assert.match(home, /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
+  assert.match(home, /v1\.0\.0 is published/);
+  assert.match(home, /Eidovara-v1\.0\.0-Windows-x64-Setup\.exe/);
   assert.match(home, /Authenticode-unsigned/);
 });
 
@@ -48,7 +48,7 @@ test('public release pages advertise the real current installer', () => {
     assert.match(html, new RegExp(escapeRe(INSTALLER_NAME)), file);
     assert.match(html, new RegExp(INSTALLER_SHA256), file);
   }
-  assert.match(read('docs/site.css'), /--eidovara-visual:\s*sleek-c180/);
+  assert.match(read('docs/site.css'), /--eidovara-visual:\s*modern-2026/);
   assert.match(read('docs/site.css'), /#site-nav > a\.nav-cta/);
   assert.match(read('docs/site.css'), /\.benefit-grid/);
   assert.equal(read('docs/tokens.css'), read('src/renderer/tokens.css'));
