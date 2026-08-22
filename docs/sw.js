@@ -104,10 +104,9 @@ async function handleRequest(request, strategy) {
         return response;
       } catch {
         return new Response('Offline', { status: 503 });
-  }
       }
     }
-    case 'network-first':
+    case 'network-first': {
       try {
         const response = await fetch(request);
         if (response.ok) cache.put(request, response.clone());
@@ -117,7 +116,7 @@ async function handleRequest(request, strategy) {
         if (cached) return cached;
         return new Response('Offline', { status: 503 });
       }
-
+    }
     default:
       return fetch(request);
   }

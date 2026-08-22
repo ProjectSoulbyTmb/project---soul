@@ -230,7 +230,7 @@
   }
 
   function paintCalc(result) {
-    _calcResult = result;
+    calcResult = result;
     let box = $('#paletteCalc');
     if (!box) {
       box = document.createElement('div');
