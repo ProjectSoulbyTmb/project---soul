@@ -585,3 +585,4 @@ try {
 // Service worker registration (moved out of inline HTML to keep CSP script-src 'self').
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
 
+
