@@ -8,9 +8,7 @@ body.gaming-mode *::after {
   transition: none !important;
   scroll-behavior: auto !important;
 }
-body.gaming-mode .workspace {
-  background: var(--grouped);
-}
+body.gaming-mode .workspace { background: var(--grouped); }
 body.gaming-mode .topbar,
 body.gaming-mode .card,
 body.gaming-mode .settings-card,
@@ -25,10 +23,7 @@ body.gaming-mode .setup-dialog {
   box-shadow: none !important;
   background: var(--panel);
 }
-body.gaming-mode .sidebar {
-  background: var(--side);
-}
+body.gaming-mode .sidebar { background: var(--side); }
 body.gaming-mode .soul-mark,
-body.gaming-mode .companion-avatar {
-  box-shadow: none !important;
-}
+body.gaming-mode .companion-avatar { box-shadow: none !important; }
+

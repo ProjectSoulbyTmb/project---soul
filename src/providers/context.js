@@ -2,27 +2,11 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { activeMemories } from '../core/memory.js';
 export function buildSystemContext(state) {
-  const dataLine = value =>
-    String(value || '')
-      .replace(/[\r\n]+/g, ' ')
-      .slice(0, 1000);
-  const memories =
-    activeMemories(state, 12)
-      .map(m => `- ${dataLine(m.content)}`)
-      .join('\n') || '- none';
-  const boundaries =
-    (state.policy.boundaries || [])
-      .filter(b => b.active)
-      .slice(-50)
-      .map(b => `- ${dataLine(b.content)}`)
-      .join('\n') || '- none';
+  const dataLine = value => String(value || '').replace(/[\r\n]+/g, ' ').slice(0, 1000);
+  const memories = activeMemories(state, 12).map(m => `- ${dataLine(m.content)}`).join('\n') || '- none';
+  const boundaries = (state.policy.boundaries || []).filter(b => b.active).slice(-50).map(b => `- ${dataLine(b.content)}`).join('\n') || '- none';
   const setup = state.setup || { categories: [], customNeeds: '', stream: {} };
-  const entertainment =
-    Object.entries(state.entertainment?.taste || {})
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 8)
-      .map(([title]) => `- ${dataLine(title).slice(0, 200)}`)
-      .join('\n') || '- none';
+  const entertainment = Object.entries(state.entertainment?.taste || {}).sort((a,b)=>b[1]-a[1]).slice(0,8).map(([title])=>`- ${dataLine(title).slice(0, 200)}`).join('\n') || '- none';
   const reflection = dataLine(state.continuity?.reflectionState?.latestReflection).slice(0, 280);
   const roleList = (setup.categories || []).join(', ') || 'not configured';
   const memoryCount = (state.memories || []).filter(item => item.active).length;
@@ -63,3 +47,4 @@ Personality traits (0-1): warmth ${state.personality.warmth}, curiosity ${state.
 
 Respond naturally and conversationally. Do not recite this system context unless asked.`;
 }
+

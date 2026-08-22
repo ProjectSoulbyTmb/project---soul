@@ -3,19 +3,10 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import worker from '../server/worker.js';
-import {
-  answerAssist,
-  classifyAssistInput,
-  ENTRIES,
-  MAX_ASSIST_QUERY,
-  safePublicHref,
-} from '../docs/knowledge.js';
+import { answerAssist, classifyAssistInput, ENTRIES, MAX_ASSIST_QUERY, safePublicHref } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
-const docsHtml = fs
-  .readdirSync('docs')
-  .filter(name => name.endsWith('.html'))
-  .map(name => path.join('docs', name));
+const docsHtml = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
 const publicJs = ['docs/site.js', 'docs/assist.js', 'docs/knowledge.js'].map(read).join('\n');
 const publicHtml = docsHtml.map(read).join('\n');
 
@@ -33,7 +24,7 @@ const NAV_PAGES = [
   'docs/age.html',
   'docs/licensing.html',
   'docs/security.html',
-  'docs/404.html',
+  'docs/404.html'
 ];
 
 test('public site exposes nav, legal, assist, and 404 pages', () => {
@@ -132,33 +123,19 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.match(download.reply, /F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675/);
   assert.match(download.reply, /101\.75 MiB/);
   assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
-  assert.ok(
-    (download.links || []).some(
-      link =>
-        String(link.href || '').endsWith('.exe') ||
-        String(link.href || '').includes('/releases/latest')
-    )
-  );
+  assert.ok((download.links || []).some(link => String(link.href || '').endsWith('.exe') || String(link.href || '').includes('/releases/latest')));
   assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
   assert.match(read('docs/download.html'), /id="ageConfirm"/);
   assert.match(read('docs/download.html'), /aria-disabled="true"/);
   assert.match(read('docs/index.html'), /href="download\.html"/);
   assert.doesNotMatch(read('docs/status.html'), /href="[^"]+\.exe"/);
-  assert.doesNotMatch(
-    read('docs/faq.html'),
-    /href="https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/[^"]+\.exe"/
-  );
+  assert.doesNotMatch(read('docs/faq.html'), /href="https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/[^"]+\.exe"/);
   assert.doesNotMatch(read('docs/knowledge.js'), /A7221E77/);
 
-  const certified = answerAssist('Do you have a certified Windows installer from Microsoft?', {
-    mode: 'download',
-  });
+  const certified = answerAssist('Do you have a certified Windows installer from Microsoft?', { mode: 'download' });
   assert.equal(certified.ok, true);
   assert.match(certified.reply, /unsigned|Authenticode/i);
-  assert.match(
-    certified.reply,
-    /not Microsoft-certified|cannot Authenticode-sign|Authenticode-unsigned/i
-  );
+  assert.match(certified.reply, /not Microsoft-certified|cannot Authenticode-sign|Authenticode-unsigned/i);
 
   const connect = answerAssist('How do I connect the Eidovara service in Settings?');
   assert.equal(connect.ok, true);
@@ -181,10 +158,7 @@ test('chatbot knowledge answers golden product questions', () => {
   const owner = answerAssist('Who owns Eidovara copyright?');
   assert.equal(owner.ok, true);
   assert.match(owner.reply, /Soul Consciousness Studios/);
-  assert.match(
-    owner.reply,
-    /does not own Electron|retain their respective rights|Third-party stays third-party/
-  );
+  assert.match(owner.reply, /does not own Electron|retain their respective rights|Third-party stays third-party/);
   assert.match(owner.reply, /not legal advice/);
   assert.match(owner.reply, /unregistered/);
 
@@ -200,9 +174,7 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.doesNotMatch(brands.reply, /I am Jarvis|Eidovara Jarvis/i);
   assert.equal(brands.soul, false);
 
-  const pages = answerAssist(
-    'Why does the live GitHub Pages site look older than this repository?'
-  );
+  const pages = answerAssist('Why does the live GitHub Pages site look older than this repository?');
   assert.equal(pages.ok, true);
   assert.match(pages.reply, /main/);
   assert.match(pages.reply, /merged to main|merge/i);
@@ -211,65 +183,47 @@ test('chatbot knowledge answers golden product questions', () => {
 });
 
 test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async () => {
-  const empty = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: '   ' }),
-    }),
-    {}
-  );
+  const empty = await worker.fetch(new Request('https://api.example.test/v1/assist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query: '   ' })
+  }), {});
   assert.equal(empty.status, 400);
   assert.equal((await empty.json()).ok, false);
 
-  const missing = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({}),
-    }),
-    {}
-  );
+  const missing = await worker.fetch(new Request('https://api.example.test/v1/assist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({})
+  }), {});
   assert.equal(missing.status, 400);
 
   const huge = 'a'.repeat(MAX_ASSIST_QUERY + 20);
-  const oversized = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: huge }),
-    }),
-    {}
-  );
+  const oversized = await worker.fetch(new Request('https://api.example.test/v1/assist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query: huge })
+  }), {});
   assert.equal(oversized.status, 413);
 
-  const abuse = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: 'how to hack into a computer for unauthorized access' }),
-    }),
-    {}
-  );
+  const abuse = await worker.fetch(new Request('https://api.example.test/v1/assist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query: 'how to hack into a computer for unauthorized access' })
+  }), {});
   const abuseBody = await abuse.json();
   assert.equal(abuse.status, 400);
   assert.equal(abuseBody.ok, false);
   assert.match(abuseBody.reply, /cannot help|unauthorized access|criminal/i);
 
-  const history = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: 'hello', history: [{ role: 'user', content: 'secret' }] }),
-    }),
-    {}
-  );
+  const history = await worker.fetch(new Request('https://api.example.test/v1/assist', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ query: 'hello', history: [{ role: 'user', content: 'secret' }] })
+  }), {});
   assert.equal(history.status, 400);
 
-  const ok = await worker.fetch(
-    new Request('https://api.example.test/v1/assist?q=Is%20Eidovara%2018%2B'),
-    {}
-  );
+  const ok = await worker.fetch(new Request('https://api.example.test/v1/assist?q=Is%20Eidovara%2018%2B'), {});
   const okBody = await ok.json();
   assert.equal(ok.status, 200);
   assert.match(okBody.reply, /18/);
@@ -282,20 +236,8 @@ test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async
   assert.equal(metaBody.paymentsEnabled, false);
   assert.equal(metaBody.transcripts, false);
 
-  assert.equal(
-    (
-      await worker.fetch(
-        new Request('https://api.example.test/v1/assist', { method: 'DELETE' }),
-        {}
-      )
-    ).status,
-    405
-  );
-  assert.equal(
-    (await worker.fetch(new Request('https://api.example.test/health', { method: 'POST' }), {}))
-      .status,
-    405
-  );
+  assert.equal((await worker.fetch(new Request('https://api.example.test/v1/assist', { method: 'DELETE' }), {})).status, 405);
+  assert.equal((await worker.fetch(new Request('https://api.example.test/health', { method: 'POST' }), {})).status, 405);
   assert.equal(classifyAssistInput('').ok, false);
 });
 
@@ -308,9 +250,7 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.equal(safePublicHref('http://example.test/page'), '');
   assert.equal(safePublicHref('../secret'), '');
   assert.equal(
-    safePublicHref(
-      'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe'
-    ),
+    safePublicHref('https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe'),
     'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe'
   );
   const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
@@ -319,3 +259,4 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
   assert.match(read('docs/404.html'), /<base href="https:\/\/eidovara\.org\/">/);
 });
+

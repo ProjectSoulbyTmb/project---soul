@@ -2,18 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { classifyWorkspaceIntent } from '../src/core/workspace.js';
-import {
-  actionsForIntent,
-  KERNEL_ACTION_TYPES,
-  routeKernel,
-  soulOverlay,
-} from '../src/core/kernel.js';
+import { actionsForIntent, KERNEL_ACTION_TYPES, routeKernel, soulOverlay } from '../src/core/kernel.js';
 import { defaultProfile } from '../src/core/schema.js';
 import {
   classifyGuestNavigation,
   guestNavigateAllowed,
   overlayWindowOptions,
-  resolveOverlayTarget,
+  resolveOverlayTarget
 } from '../src/core/guest-overlay.js';
 import { composeOfflineReply } from '../src/providers/offline.js';
 
@@ -42,10 +37,7 @@ test('guest overlay policy blocks private, loopback, http, file, and non-Discord
   assert.equal(classifyGuestNavigation('file:///etc/passwd').ok, false);
   assert.equal(classifyGuestNavigation('https://localhost/admin').ok, false);
   assert.equal(classifyGuestNavigation('https://127.0.0.1/').reason, 'private-host');
-  assert.equal(
-    classifyGuestNavigation('https://169.254.169.254/latest/meta-data').reason,
-    'private-host'
-  );
+  assert.equal(classifyGuestNavigation('https://169.254.169.254/latest/meta-data').reason, 'private-host');
   assert.equal(classifyGuestNavigation('https://192.168.1.1/').reason, 'private-host');
   assert.equal(classifyGuestNavigation('https://10.0.0.1/').reason, 'private-host');
   assert.equal(classifyGuestNavigation('https://[::1]/').reason, 'private-host');
@@ -63,10 +55,7 @@ test('guest overlay policy blocks private, loopback, http, file, and non-Discord
   const discord = resolveOverlayTarget('discord', '');
   assert.equal(discord.ok, true);
   assert.equal(discord.url, 'https://discord.com/app');
-  assert.equal(
-    resolveOverlayTarget('discord', 'https://www.youtube.com/watch?v=dQw4w9wgGcQ').reason,
-    'not-discord'
-  );
+  assert.equal(resolveOverlayTarget('discord', 'https://www.youtube.com/watch?v=dQw4w9wgGcQ').reason, 'not-discord');
   assert.equal(resolveOverlayTarget('discord', 'https://discord.gg/invite').ok, true);
   assert.equal(guestNavigateAllowed('discord', 'https://example.com').reason, 'not-discord');
   assert.equal(guestNavigateAllowed('browse', 'https://example.com').ok, true);
@@ -82,11 +71,7 @@ test('guest overlay policy blocks private, loopback, http, file, and non-Discord
 });
 
 test('overlay HTML keeps media-src off self and the workspace renderer stays locked', () => {
-  for (const file of [
-    'src/renderer/guest-chrome.html',
-    'src/renderer/chat-overlay.html',
-    'src/renderer/index.html',
-  ]) {
+  for (const file of ['src/renderer/guest-chrome.html', 'src/renderer/chat-overlay.html', 'src/renderer/index.html']) {
     const html = read(file);
     assert.doesNotMatch(html, /media-src [^"]*'self'/, file);
     assert.match(html, /connect-src 'none'/, file);
@@ -104,28 +89,17 @@ test('overlay HTML keeps media-src off self and the workspace renderer stays loc
   const guest = read('src/electron/guest-overlays.js');
   assert.match(guest, /nodeIntegration: false/);
   assert.match(guest, /will-navigate/);
-  const createGuestBody = guest.slice(
-    guest.indexOf('function createGuest(kind'),
-    guest.indexOf('function wirePair')
-  );
+  const createGuestBody = guest.slice(guest.indexOf('function createGuest(kind'), guest.indexOf('function wirePair'));
   assert.match(createGuestBody, /partition: opts\.partition/);
   assert.doesNotMatch(createGuestBody, /preload:/);
 });
 
 test('gaming overlay copy stays honest and guest windows are Eidovara-owned', () => {
-  const reply = composeOfflineReply({
-    input: 'Open the Discord overlay',
-    state: defaultProfile(),
-    intent: 'overlay-discord',
-  });
+  const reply = composeOfflineReply({ input: 'Open the Discord overlay', state: defaultProfile(), intent: 'overlay-discord' });
   assert.match(reply, /Eidovara windows/i);
   assert.match(reply, /do not inject/i);
   assert.doesNotMatch(reply, /official Discord overlay/i);
-  const gaming = composeOfflineReply({
-    input: 'Help me prepare my gaming or streaming setup.',
-    state: defaultProfile(),
-    intent: 'gaming',
-  });
+  const gaming = composeOfflineReply({ input: 'Help me prepare my gaming or streaming setup.', state: defaultProfile(), intent: 'gaming' });
   assert.match(gaming, /checklist|process injection|low-overhead/i);
   assert.match(read('src/electron/overlay-preload.cjs'), /exposeInMainWorld\('overlay'/);
   assert.match(read('src/renderer/chat-overlay.js'), /window\.soul\.send/);

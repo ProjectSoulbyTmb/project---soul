@@ -9,15 +9,12 @@ const main = fs.readFileSync(new URL('../src/electron/main.js', import.meta.url)
 
 test('packages the complete renderer as an explicit runtime resource for the current version', () => {
   assert.equal(pkg.version, '1.0.0');
-  assert.ok(
-    pkg.build.extraResources.some(
-      entry =>
-        entry.from === 'src/renderer' &&
-        entry.to === 'renderer' &&
-        Array.isArray(entry.filter) &&
-        entry.filter.includes('**/*')
-    )
-  );
+  assert.ok(pkg.build.extraResources.some(entry =>
+    entry.from === 'src/renderer' &&
+    entry.to === 'renderer' &&
+    Array.isArray(entry.filter) &&
+    entry.filter.includes('**/*')
+  ));
 });
 
 test('packaged startup loads and validates the explicit renderer entry', () => {
@@ -31,3 +28,4 @@ test('Windows executable metadata uses the electron-builder 26 option', () => {
   assert.equal(pkg.build.win.signExecutable, false);
   assert.equal(Object.hasOwn(pkg.build.win, 'signAndEditExecutable'), false);
 });
+

@@ -3,7 +3,7 @@
 /**
  * STRUCTURAL LEGAL GUARDS - MAIN ENTRY POINT
  * Main entry point for all structural legal guards
- *
+ * 
  * @module core/guards
  * @version 1.0.0
  */
@@ -21,7 +21,7 @@ export const STRUCTURAL_GUARDS = {
   LICENSE_GUARDS,
   AGE_GATE,
   CONSCIOUSNESS_GUARD,
-  RELICENSE_GUARD,
+  RELICENSE_GUARD
 };
 
 /**
@@ -31,16 +31,16 @@ export const STRUCTURAL_GUARDS = {
 export const runAllStructuralGuards = () => {
   // Run license guards
   LICENSE_GUARDS.runAllGuards();
-
+  
   // Run age gate checks
   AGE_GATE.runAllChecks();
-
+  
   // Run consciousness guards
   CONSCIOUSNESS_GUARD.runAllGuards('');
-
+  
   // Run relicense guards (would scan codebase)
   // RELICENSE_GUARD.runAllGuards(codebase);
-
+  
   // Log successful guard initialization
   if (typeof console !== 'undefined') {
     console.log('[STRUCTURAL GUARDS] All legal guards initialized and active');
@@ -55,7 +55,7 @@ export const runAllStructuralGuards = () => {
  * Runs all guards for a specific context
  * @param {string} context - Context where guards are run
  */
-export const runGuardsForContext = context => {
+export const runGuardsForContext = (context) => {
   switch (context) {
     case 'startup':
       STRUCTURAL_GUARDS.runAllStructuralGuards();
@@ -79,11 +79,11 @@ export const runGuardsForContext = context => {
  * @param {string} text - Text to validate
  * @returns {Object} Validation results
  */
-export const validateLegalCompliance = text => {
+export const validateLegalCompliance = (text) => {
   const results = {
     valid: true,
     violations: [],
-    warnings: [],
+    warnings: []
   };
 
   // Check consciousness claims
@@ -91,7 +91,7 @@ export const validateLegalCompliance = text => {
     results.valid = false;
     results.violations.push({
       type: 'CONSCIOUSNESS_CLAIM',
-      message: 'Consciousness/sentience claim detected',
+      message: 'Consciousness/sentience claim detected'
     });
   }
 
@@ -107,6 +107,11 @@ export const validateLegalCompliance = text => {
   return results;
 };
 
-export { LICENSE_GUARDS, AGE_GATE, CONSCIOUSNESS_GUARD, RELICENSE_GUARD };
+export {
+  LICENSE_GUARDS,
+  AGE_GATE,
+  CONSCIOUSNESS_GUARD,
+  RELICENSE_GUARD
+};
 
 export default STRUCTURAL_GUARDS;

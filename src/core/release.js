@@ -16,3 +16,4 @@ export const INSTALLER_SIZE_BYTES = 106691524;
 export const INSTALLER_SIZE = 'about 101.75 MiB';
 export const INSTALLER_LATEST_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`;
 export const INSTALLER_PINNED_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`;
+

@@ -24,16 +24,16 @@ See [COMPANY_FORMATION.md](COMPANY_FORMATION.md) and [CHAIN_OF_TITLE.md](CHAIN_O
 
 **Assignee (â€œCompanyâ€) â€” complete only after formation:**
 
-| Field                        | Complete privately                                                                          |
-| ---------------------------- | ------------------------------------------------------------------------------------------- |
-| Legal entity name            | [Legal entity name â€” do not treat â€œSoul Consciousness Studiosâ€ as formed unless it is] |
-| Entity type                  | [LLC / corporation / other]                                                                 |
-| Formation jurisdiction       | [State / country]                                                                           |
-| Formation date               | [YYYY-MM-DD]                                                                                |
-| File / SOS number            | [if issued]                                                                                 |
-| EIN                          | [if issued; do not commit to git]                                                           |
-| Principal address            | [address]                                                                                   |
-| Authorized signatory / title | [name, title]                                                                               |
+| Field | Complete privately |
+| --- | --- |
+| Legal entity name | [Legal entity name â€” do not treat â€œSoul Consciousness Studiosâ€ as formed unless it is] |
+| Entity type | [LLC / corporation / other] |
+| Formation jurisdiction | [State / country] |
+| Formation date | [YYYY-MM-DD] |
+| File / SOS number | [if issued] |
+| EIN | [if issued; do not commit to git] |
+| Principal address | [address] |
+| Authorized signatory / title | [name, title] |
 
 **Excluded property:** Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created content, and all other third-party or public-domain material; any rights Assignor does not own; and [list other exclusions].
 
@@ -55,11 +55,11 @@ Completing placeholders in a git commit, opening a pull request, or merging to `
 
 This public file has **no signatures**.
 
-|           | Assignor                         | Company                          |
-| --------- | -------------------------------- | -------------------------------- |
-| Name      | Soul Consciousness Studios       | [Authorized signatory / title]   |
-| Signature | **************\_\_************** | **************\_\_************** |
-| Date      | [date]                           | [date]                           |
+| | Assignor | Company |
+| --- | --- | --- |
+| Name | Soul Consciousness Studios | [Authorized signatory / title] |
+| Signature | ______________________________ | ______________________________ |
+| Date | [date] | [date] |
 
 ### Exhibit A â€” Assigned first-party schedule (complete privately)
 
@@ -72,3 +72,4 @@ Leave this exhibit blank in the public repository. On a private original, attach
 **Still excluded:** Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created content, and all other third-party or public-domain material.
 
 Store executed originals in private storage. Do not commit them here.
+

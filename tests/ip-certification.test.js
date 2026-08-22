@@ -8,8 +8,7 @@ import { ENTRIES, answerAssist } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 
-const FAKE =
-  /USPTO Registration No|Copyright Office registration number|U\.S\. Patent No|patent pending|PCI[- ]DSS certified|federally registered trademark|Certificate of Registration issued|Serial No\.\s*\d{7}/i;
+const FAKE = /USPTO Registration No|Copyright Office registration number|U\.S\. Patent No|patent pending|PCI[- ]DSS certified|federally registered trademark|Certificate of Registration issued|Serial No\.\s*\d{7}/i;
 
 function walk(dir, pred, acc = []) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -35,14 +34,8 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.product.authenticode, 'unsigned');
   assert.equal(cert.product.appId, 'com.soulconsciousnessstudios.eidovara');
   for (const item of [
-    'copyright-office-registration',
-    'uspto-registration',
-    'patent',
-    'patent-pending',
-    'authenticode-certificate',
-    'pci-dss-certification',
-    'executed-cla',
-    'formed-company',
+    'copyright-office-registration', 'uspto-registration', 'patent', 'patent-pending',
+    'authenticode-certificate', 'pci-dss-certification', 'executed-cla', 'formed-company'
   ]) {
     assert.ok(cert.thisFileIsNot.includes(item), item);
   }
@@ -57,10 +50,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
     ids.add(row.id);
   }
   assert.equal(cert.instruments.find(row => row.id === 'cla').status, 'unsigned-template');
-  assert.equal(
-    cert.instruments.find(row => row.id === 'entity-assignment').status,
-    'unsigned-template'
-  );
+  assert.equal(cert.instruments.find(row => row.id === 'entity-assignment').status, 'unsigned-template');
   assert.equal(cert.instruments.find(row => row.id === 'trademark-filing').status, 'not-filed');
   assert.match(md, /not a U\.S\. Copyright Office registration/i);
   assert.match(md, /repository self-attestation/i);
@@ -89,7 +79,7 @@ test('first-party HTML, CSS, scripts, and server files carry source-available SP
     ...walk('src', name => /\.(?:js|cjs|css|html)$/.test(name)),
     ...walk('docs', name => /\.(?:js|css|html)$/.test(name)),
     ...walk('scripts', name => /\.(?:js|cjs)$/.test(name)),
-    ...walk('server', name => /\.(?:js|cjs)$/.test(name)),
+    ...walk('server', name => /\.(?:js|cjs)$/.test(name))
   ];
   assert.ok(files.length >= 50, files.length);
   for (const file of files) {
@@ -125,9 +115,7 @@ test('website helper answers IP certification questions without claiming governm
   assert.match(reply.reply, /not a U\.S\. Copyright Office registration|not registered/i);
   assert.match(reply.reply, /unregistered/i);
   assert.doesNotMatch(reply.reply, FAKE);
-  assert.ok(
-    (reply.links || []).some(link => String(link.href || '').includes('IP_CERTIFICATION.md'))
-  );
+  assert.ok((reply.links || []).some(link => String(link.href || '').includes('IP_CERTIFICATION.md')));
 });
 
 test('copyright deposit helper writes a gitignored listing and refuses secrets', () => {
@@ -136,13 +124,9 @@ test('copyright deposit helper writes a gitignored listing and refuses secrets',
   assert.match(script, /SKIP_DIR/);
   assert.doesNotMatch(script, /copyright\.gov\/login|pay the fee/i);
   const out = path.join('copyright-deposit', 'test-run');
-  const result = spawnSync(
-    process.execPath,
-    ['scripts/prepare-copyright-deposit.js', '--out', out],
-    {
-      encoding: 'utf8',
-    }
-  );
+  const result = spawnSync(process.execPath, ['scripts/prepare-copyright-deposit.js', '--out', out], {
+    encoding: 'utf8'
+  });
   assert.equal(result.status, 0, result.stderr || result.stdout);
   const manifest = read(path.join(out, 'MANIFEST.txt'));
   assert.match(manifest, /not a U\.S\. Copyright Office registration/i);
@@ -151,3 +135,4 @@ test('copyright deposit helper writes a gitignored listing and refuses secrets',
   assert.doesNotMatch(manifest, /node_modules/);
   fs.rmSync('copyright-deposit', { recursive: true, force: true });
 });
+

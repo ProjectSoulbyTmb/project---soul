@@ -67,7 +67,7 @@ Registration, if desired, is done by the **owner or the owner's agent** at [http
 4. Create an account on copyright.gov. Complete the application **in your own name** (or the formed entity's name only after a signed assignment).
 5. Pay the **then-current** fee listed by the Copyright Office. Fees change; do not rely on a number written in this file.
 6. Keep the application, payment receipt, and any later certificate in **private** storage. Do not commit certificates, applicant addresses, or deposit packages to this public repository.
-7. After a certificate issues, you may state that _that specific work_ is registered and cite the registration number. Until then, say "copyright claimed," not "registered."
+7. After a certificate issues, you may state that *that specific work* is registered and cite the registration number. Until then, say "copyright claimed," not "registered."
 
 Registration can support statutory damages and attorney-fee eligibility for qualifying U.S. claims when the statutory timing rules are met. It is not automatic from putting a LICENSE in git. Foreign protection and Berne Convention points need counsel.
 
@@ -81,3 +81,4 @@ Copyright does not protect ideas, procedures, processes, systems, methods of ope
 - Do not invent a registration number or "Txu" / "VAu" identifier.
 - Do not apply GPL, MIT, Apache, or CC-BY to first-party Eidovara code; LICENSE is the Eidovara Source-Available Evaluation License.
 - Do not include other people's lyrics, novels, or copied product licenses as if they were first-party.
+

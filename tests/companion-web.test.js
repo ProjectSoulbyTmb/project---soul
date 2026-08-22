@@ -11,25 +11,16 @@ import {
   HONEST_RESEARCH_COPY,
   researchInternet,
   researchOpenActions,
-  sanitizeSnippet,
+  sanitizeSnippet
 } from '../src/providers/internet.js';
 import { isExplicitInternetRequest } from '../src/core/workspace.js';
 
-function tmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-companion-web-'));
-}
+function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-companion-web-')); }
 function make(dir, provider) {
-  return new SoulEngine({
-    store: new JsonStore({ dataDir: dir }),
-    provider: provider || new OfflineProvider(),
-  });
+  return new SoulEngine({ store: new JsonStore({ dataDir: dir }), provider: provider || new OfflineProvider() });
 }
 function hostnameOf(value) {
-  try {
-    return new URL(String(value)).hostname.toLowerCase();
-  } catch {
-    return '';
-  }
+  try { return new URL(String(value)).hostname.toLowerCase(); } catch { return ''; }
 }
 function isWikipediaHost(value) {
   const host = hostnameOf(value);
@@ -47,10 +38,10 @@ function wikiJson() {
           title: 'Saturn',
           extract: '<b>Sixth</b> planet <script>alert(1)</script> of the solar system',
           description: '<img src=x onerror=alert(1)>Gas giant',
-          fullurl: 'https://en.wikipedia.org/wiki/Saturn',
-        },
-      },
-    },
+          fullurl: 'https://en.wikipedia.org/wiki/Saturn'
+        }
+      }
+    }
   };
 }
 
@@ -83,10 +74,7 @@ test('explicit companion/engine turn pulls sanitized titles, snippets, and hostn
   try {
     const s = make(tmp());
     const r = await s.respond('Search the internet for information about Saturn');
-    assert.equal(
-      isExplicitInternetRequest('Search the internet for information about Saturn'),
-      true
-    );
+    assert.equal(isExplicitInternetRequest('Search the internet for information about Saturn'), true);
     assert.ok(r.webResearch);
     assert.equal(r.kernel.intent, 'research');
     assert.equal(r.kernel.webLookup, true);
@@ -104,19 +92,9 @@ test('explicit companion/engine turn pulls sanitized titles, snippets, and hostn
     assert.match(r.reply, /en\.wikipedia\.org/);
     assert.match(r.reply, /Gas giant|Sixth planet/);
     assert.match(r.reply, /full-internet index/i);
-    assert.ok(
-      r.kernel.actions.some(
-        a =>
-          a.type === 'open-external' &&
-          a.url === 'https://en.wikipedia.org/wiki/Saturn' &&
-          a.auto === false
-      )
-    );
+    assert.ok(r.kernel.actions.some(a => a.type === 'open-external' && a.url === 'https://en.wikipedia.org/wiki/Saturn' && a.auto === false));
     assert.ok(urls.some(url => isWikipediaHost(url)));
-    assert.equal(
-      urls.every(url => !url.includes('/v1/assist') && !url.includes('workers.dev')),
-      true
-    );
+    assert.equal(urls.every(url => !url.includes('/v1/assist') && !url.includes('workers.dev')), true);
     const stored = r.state.conversations[0].messages.filter(m => m.role === 'assistant').at(-1);
     assert.ok(stored.webResearch);
     assert.ok(stored.actions.some(a => a.type === 'open-external'));
@@ -128,10 +106,7 @@ test('explicit companion/engine turn pulls sanitized titles, snippets, and hostn
 test('hello and missing internet phrases do not fetch during engine.respond', async () => {
   let called = 0;
   const original = globalThis.fetch;
-  globalThis.fetch = async () => {
-    called += 1;
-    throw new Error('network should not run');
-  };
+  globalThis.fetch = async () => { called += 1; throw new Error('network should not run'); };
   try {
     const s = make(tmp());
     const hello = await s.respond('Hello Soul. Tell me who you are.');
@@ -151,14 +126,12 @@ test('model replies without citations still get sanitized source lines', () => {
   const research = {
     query: 'Saturn',
     disclaimer: HONEST_RESEARCH_COPY,
-    sources: [
-      {
-        title: 'Saturn',
-        hostname: 'en.wikipedia.org',
-        description: '<b>Sixth</b> planet',
-        url: 'https://en.wikipedia.org/wiki/Saturn',
-      },
-    ],
+    sources: [{
+      title: 'Saturn',
+      hostname: 'en.wikipedia.org',
+      description: '<b>Sixth</b> planet',
+      url: 'https://en.wikipedia.org/wiki/Saturn'
+    }]
   };
   const cited = citeResearchInReply('Here is a short answer.', research);
   assert.match(cited, /Saturn/);
@@ -183,10 +156,7 @@ test('companion log renders research with textContent and confirm/openExternal c
   assert.match(companion, /snip\.textContent/);
   assert.match(companion, /eidovaraOpenResearch/);
   assert.doesNotMatch(companion, /innerHTML\s*=\s*source/);
-  assert.match(
-    renderer,
-    /noteExchange\?\.\(text, replyText, assistNote, \{ research: res\.webResearch/
-  );
+  assert.match(renderer, /noteExchange\?\.\(text, replyText, assistNote, \{ research: res\.webResearch/);
   assert.match(renderer, /window\.confirm/);
   assert.match(renderer, /openExternal/);
   assert.match(renderer, /window\.eidovaraOpenResearch\s*=\s*openResearchLink/);

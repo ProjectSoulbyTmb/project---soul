@@ -24,3 +24,4 @@ This project record identifies Soul Consciousness Studios as the sole creator an
 
 - Publish SHA-256 checksums, an SBOM, and GitHub build-provenance attestations with each release.
 - Obtain an Authenticode certificate from a recognized certificate authority when financially practical. Never publish the private key or a private certificate bundle.
+

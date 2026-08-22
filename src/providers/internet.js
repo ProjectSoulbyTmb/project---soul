@@ -7,74 +7,22 @@ import { SOURCE_VERSION } from '../core/release.js';
 const AGENT = `Eidovara/${SOURCE_VERSION} (desktop research client)`;
 export const PAGE_BYTE_LIMIT = 512 * 1024;
 export const PAGE_TIMEOUT_MS = 15_000;
-export const HONEST_RESEARCH_COPY =
-  'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.';
-const HANDOFF_HOSTS = [
-  'youtube.com',
-  'youtu.be',
-  'spotify.com',
-  'pornhub.com',
-  'xvideos.com',
-  'xhamster.com',
-  'spankbang.com',
-  'redgifs.com',
-  'xnxx.com',
-  'chaturbate.com',
-  'stripchat.com',
-  'onlyfans.com',
-  'fansly.com',
-  'manyvids.com',
-  'youporn.com',
-  'redtube.com',
-  'tube8.com',
-];
+export const HONEST_RESEARCH_COPY = 'Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search links. Local files play in Eidovara.';
+const HANDOFF_HOSTS = ['youtube.com', 'youtu.be', 'spotify.com',
+  'pornhub.com', 'xvideos.com', 'xhamster.com', 'spankbang.com', 'redgifs.com',
+  'xnxx.com', 'chaturbate.com', 'stripchat.com', 'onlyfans.com', 'fansly.com',
+  'manyvids.com', 'youporn.com', 'redtube.com', 'tube8.com'];
 const ARCHIVE_HOSTS = ['archive.org'];
-const RAW_DROP_TAGS = new Set([
-  'script',
-  'style',
-  'noscript',
-  'iframe',
-  'object',
-  'embed',
-  'textarea',
-  'xmp',
-  'noembed',
-  'noframes',
-]);
+const RAW_DROP_TAGS = new Set(['script', 'style', 'noscript', 'iframe', 'object', 'embed', 'textarea', 'xmp', 'noembed', 'noframes']);
 const TREE_DROP_TAGS = new Set(['head', 'svg', 'canvas']);
-const BREAK_TAGS = new Set([
-  'p',
-  'div',
-  'h1',
-  'h2',
-  'h3',
-  'h4',
-  'h5',
-  'h6',
-  'li',
-  'tr',
-  'br',
-  'hr',
-  'blockquote',
-  'ul',
-  'ol',
-  'table',
-  'section',
-  'article',
-  'pre',
-  'thead',
-  'tbody',
-  'tfoot',
-  'td',
-  'th',
-]);
+const BREAK_TAGS = new Set(['p', 'div', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'li', 'tr', 'br', 'hr', 'blockquote', 'ul', 'ol', 'table', 'section', 'article', 'pre', 'thead', 'tbody', 'tfoot', 'td', 'th']);
 const NAMED_ENTITIES = new Map([
   ['nbsp', ' '],
   ['amp', '&'],
   ['quot', '"'],
   ['apos', "'"],
   ['lt', '<'],
-  ['gt', '>'],
+  ['gt', '>']
 ]);
 
 function isWs(ch) {
@@ -88,13 +36,7 @@ function isAlpha(ch) {
 
 function isNameChar(ch) {
   const code = ch.charCodeAt(0);
-  return (
-    (code >= 65 && code <= 90) ||
-    (code >= 97 && code <= 122) ||
-    (code >= 48 && code <= 57) ||
-    ch === '-' ||
-    ch === ':'
-  );
+  return (code >= 65 && code <= 90) || (code >= 97 && code <= 122) || (code >= 48 && code <= 57) || ch === '-' || ch === ':';
 }
 
 function foldAscii(ch) {
@@ -141,13 +83,7 @@ function skipUntilGt(s, index) {
 function inspectMarkup(s, index) {
   if (s.startsWith('<!--', index)) {
     const end = s.indexOf('-->', index + 4);
-    return {
-      kind: 'comment',
-      name: '',
-      closing: false,
-      start: index,
-      end: end < 0 ? s.length : end + 3,
-    };
+    return { kind: 'comment', name: '', closing: false, start: index, end: end < 0 ? s.length : end + 3 };
   }
   let i = index + 1;
   if (i < s.length && (s[i] === '!' || s[i] === '?')) {
@@ -169,10 +105,7 @@ function findRawEnd(s, from, name) {
     if (s[i] === '<' && s[i + 1] === '/') {
       let j = i + 2;
       while (j < s.length && isWs(s[j])) j += 1;
-      if (
-        matchFolded(s, j, name) &&
-        (j + name.length >= s.length || !isNameChar(s[j + name.length]))
-      ) {
+      if (matchFolded(s, j, name) && (j + name.length >= s.length || !isNameChar(s[j + name.length]))) {
         return { contentEnd: i, after: skipUntilGt(s, j + name.length) };
       }
     }
@@ -192,11 +125,7 @@ function dropHtmlToText(html, { dropTrees = false, breaks = false } = {}) {
       continue;
     }
     const tag = inspectMarkup(s, i);
-    if (
-      tag.kind === 'tag' &&
-      !tag.closing &&
-      (RAW_DROP_TAGS.has(tag.name) || (dropTrees && TREE_DROP_TAGS.has(tag.name)))
-    ) {
+    if (tag.kind === 'tag' && !tag.closing && (RAW_DROP_TAGS.has(tag.name) || (dropTrees && TREE_DROP_TAGS.has(tag.name)))) {
       i = findRawEnd(s, tag.end, tag.name).after;
       out += breaks ? '\n' : ' ';
       continue;
@@ -301,10 +230,7 @@ export function readableExtract(html, max = 2000) {
 function subject(text) {
   return String(text)
     .replace(/https:\/\/[^\s<>"'`]+/gi, ' ')
-    .replace(
-      /\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to)\b/gi,
-      ' '
-    )
+    .replace(/\b(?:please|can you|could you|search|look up|find|pull|get|show|play|me|from|on|the|internet|web|online|information|info|pictures?|images?|photos?|videos?|audio|music|songs?|sound|recordings?|about|of|for|and|similar|to)\b/gi, ' ')
     .replace(/[^\p{L}\p{N}\s'_-]/gu, ' ')
     .replace(/\s+/g, ' ')
     .trim()
@@ -312,11 +238,7 @@ function subject(text) {
 }
 
 function sourceHost(href) {
-  try {
-    return new URL(href).hostname.toLowerCase();
-  } catch {
-    return '';
-  }
+  try { return new URL(href).hostname.toLowerCase(); } catch { return ''; }
 }
 
 function isPrivateIPv4(host) {
@@ -338,20 +260,9 @@ export function isBlockedResearchHost(value) {
     const url = value instanceof URL ? value : new URL(String(value || ''));
     const host = url.hostname.replace(/^\[|\]$/g, '').toLowerCase();
     if (!host) return true;
-    if (
-      host === 'localhost' ||
-      host.endsWith('.localhost') ||
-      host.endsWith('.local') ||
-      host.endsWith('.internal') ||
-      host.endsWith('.lan')
-    )
-      return true;
+    if (host === 'localhost' || host.endsWith('.localhost') || host.endsWith('.local') || host.endsWith('.internal') || host.endsWith('.lan')) return true;
     if (host === '::1' || host === '0.0.0.0' || host === 'metadata.google.internal') return true;
-    if (
-      host.includes(':') &&
-      (host === '::1' || host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd'))
-    )
-      return true;
+    if (host.includes(':') && (host === '::1' || host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd'))) return true;
     if (isPrivateIPv4(host)) return true;
     return false;
   } catch {
@@ -416,15 +327,11 @@ export function classifyLookupError(err) {
   if (name === 'AbortError' || /aborted|timed out|timeout/i.test(message)) {
     return new Error('Internet lookup timed out. The workspace is still available.');
   }
-  if (/blocked for in-app lookup/i.test(message))
-    return err instanceof Error ? err : new Error(message);
+  if (/blocked for in-app lookup/i.test(message)) return err instanceof Error ? err : new Error(message);
   if (/ENOTFOUND|ECONNREFUSED|ENETUNREACH|EAI_AGAIN|offline|fetch failed|network/i.test(message)) {
-    return new Error(
-      'The public web lookup is unavailable (offline or blocked). The workspace is still available.'
-    );
+    return new Error('The public web lookup is unavailable (offline or blocked). The workspace is still available.');
   }
-  if (/redirect/i.test(message))
-    return new Error('That page redirected and was not opened. The workspace is still available.');
+  if (/redirect/i.test(message)) return new Error('That page redirected and was not opened. The workspace is still available.');
   return err instanceof Error ? err : new Error(message);
 }
 
@@ -438,12 +345,7 @@ async function json(url, timeoutMs = 15000, headers = {}, fetchImpl = globalThis
       signal: controller.signal,
       redirect: 'error',
       credentials: 'omit',
-      headers: {
-        'Api-User-Agent': AGENT,
-        'User-Agent': AGENT,
-        Accept: 'application/json',
-        ...headers,
-      },
+      headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'application/json', ...headers }
     });
     if (!res.ok) throw new Error(`Internet source returned ${res.status}.`);
     const limit = 5 * 1024 * 1024;
@@ -482,7 +384,7 @@ function asSource(item) {
     url,
     hostname: item.hostname || sourceHost(url),
     provider: item.provider || '',
-    thumbnail: item.thumbnail || null,
+    thumbnail: item.thumbnail || null
   };
 }
 
@@ -497,166 +399,80 @@ async function searchArchive(query, fetchImpl) {
   params.set('rows', '5');
   const data = await json(`https://archive.org/advancedsearch.php?${params}`, 15000, {}, fetchImpl);
   const docs = Array.isArray(data?.response?.docs) ? data.response.docs : [];
-  return docs
-    .map(doc => {
-      const identifier = String(doc.identifier || '').trim();
-      const url = identifier
-        ? asHttps(`https://archive.org/details/${encodeURIComponent(identifier)}`, ARCHIVE_HOSTS)
-        : '';
-      const kind = String(doc.mediatype || '').toLowerCase();
-      return asSource({
-        type: kind === 'audio' || kind === 'movies' ? 'source' : 'source',
-        title: Array.isArray(doc.title) ? doc.title[0] : doc.title,
-        description: Array.isArray(doc.description)
-          ? doc.description[0]
-          : doc.description || doc.mediatype || 'Internet Archive',
-        url,
-        provider: 'Internet Archive',
-        hostname: 'archive.org',
-      });
-    })
-    .filter(item => item.title && item.url)
-    .slice(0, 5);
+  return docs.map(doc => {
+    const identifier = String(doc.identifier || '').trim();
+    const url = identifier ? asHttps(`https://archive.org/details/${encodeURIComponent(identifier)}`, ARCHIVE_HOSTS) : '';
+    const kind = String(doc.mediatype || '').toLowerCase();
+    return asSource({
+      type: kind === 'audio' || kind === 'movies' ? 'source' : 'source',
+      title: Array.isArray(doc.title) ? doc.title[0] : doc.title,
+      description: Array.isArray(doc.description) ? doc.description[0] : (doc.description || doc.mediatype || 'Internet Archive'),
+      url,
+      provider: 'Internet Archive',
+      hostname: 'archive.org'
+    });
+  }).filter(item => item.title && item.url).slice(0, 5);
 }
 
 async function searchArticles(query, fetchImpl) {
-  const params = new URLSearchParams({
-    action: 'query',
-    format: 'json',
-    origin: '*',
-    generator: 'search',
-    gsrsearch: query,
-    gsrlimit: '5',
-    prop: 'extracts|description|pageimages|info',
-    inprop: 'url',
-    exintro: '1',
-    explaintext: '1',
-    exsentences: '3',
-    piprop: 'thumbnail',
-    pithumbsize: '600',
-  });
+  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrsearch: query, gsrlimit: '5', prop: 'extracts|description|pageimages|info', inprop: 'url', exintro: '1', explaintext: '1', exsentences: '3', piprop: 'thumbnail', pithumbsize: '600' });
   const data = await json(`https://en.wikipedia.org/w/api.php?${params}`, 15000, {}, fetchImpl);
-  return orderedPages(data)
-    .slice(0, 5)
-    .map(p =>
-      asSource({
-        type: 'source',
-        title: p.title,
-        description: p.description || p.extract || p.excerpt,
-        extract: p.extract || p.description || '',
-        url: wikiUrl(p),
-        thumbnail:
-          asHttps(p.thumbnail?.source || p.thumbnail?.url, [
-            'upload.wikimedia.org',
-            'wikimedia.org',
-            'wikipedia.org',
-          ]) || null,
-      })
-    )
-    .filter(p => p.title && p.url);
+  return orderedPages(data).slice(0, 5).map(p => asSource({
+    type: 'source',
+    title: p.title,
+    description: p.description || p.extract || p.excerpt,
+    extract: p.extract || p.description || '',
+    url: wikiUrl(p),
+    thumbnail: asHttps(p.thumbnail?.source || p.thumbnail?.url, ['upload.wikimedia.org', 'wikimedia.org', 'wikipedia.org']) || null
+  })).filter(p => p.title && p.url);
 }
 
 async function searchMedia(query, kind, fetchImpl) {
   const type = kind === 'video' ? 'video' : kind === 'audio' ? 'audio' : 'bitmap';
-  const params = new URLSearchParams({
-    action: 'query',
-    format: 'json',
-    origin: '*',
-    generator: 'search',
-    gsrnamespace: '6',
-    gsrsearch: `${query} filetype:${type}`,
-    gsrlimit: '6',
-    prop: 'imageinfo',
-    iiprop: 'url|mime|size',
-  });
+  const params = new URLSearchParams({ action: 'query', format: 'json', origin: '*', generator: 'search', gsrnamespace: '6', gsrsearch: `${query} filetype:${type}`, gsrlimit: '6', prop: 'imageinfo', iiprop: 'url|mime|size' });
   if (kind === 'image') params.set('iiurlwidth', '900');
-  const data = await json(
-    `https://commons.wikimedia.org/w/api.php?${params}`,
-    15000,
-    {},
-    fetchImpl
-  );
-  return orderedPages(data)
-    .map(p => {
-      const i = p.imageinfo?.[0] || {};
-      const original = asHttps(i.url, ['upload.wikimedia.org', 'wikimedia.org']);
-      const thumb = asHttps(i.thumburl, ['upload.wikimedia.org', 'wikimedia.org']);
-      const url = kind === 'image' ? thumb || original : original || thumb;
-      const sourceUrl = asHttps(i.descriptionurl, [
-        'commons.wikimedia.org',
-        'wikimedia.org',
-        'wikipedia.org',
-      ]);
-      return {
-        type: kind,
-        title: plain(String(p.title || '').replace(/^File:/, '')),
-        url,
-        originalUrl: original,
-        sourceUrl,
-        hostname: sourceHost(sourceUrl || url),
-        mime: i.mime,
-      };
-    })
-    .filter(x => x.url && x.sourceUrl)
-    .slice(0, 4);
+  const data = await json(`https://commons.wikimedia.org/w/api.php?${params}`, 15000, {}, fetchImpl);
+  return orderedPages(data).map(p => {
+    const i = p.imageinfo?.[0] || {};
+    const original = asHttps(i.url, ['upload.wikimedia.org', 'wikimedia.org']);
+    const thumb = asHttps(i.thumburl, ['upload.wikimedia.org', 'wikimedia.org']);
+    const url = kind === 'image' ? (thumb || original) : (original || thumb);
+    const sourceUrl = asHttps(i.descriptionurl, ['commons.wikimedia.org', 'wikimedia.org', 'wikipedia.org']);
+    return {
+      type: kind,
+      title: plain(String(p.title || '').replace(/^File:/, '')),
+      url,
+      originalUrl: original,
+      sourceUrl,
+      hostname: sourceHost(sourceUrl || url),
+      mime: i.mime
+    };
+  }).filter(x => x.url && x.sourceUrl).slice(0, 4);
 }
 
 async function searchBroad(query, apiKey, wantsImages, fetchImpl) {
-  const params = new URLSearchParams({
-    q: query,
-    count: '10',
-    search_lang: 'en',
-    safesearch: 'strict',
-  });
+  const params = new URLSearchParams({ q: query, count: '10', search_lang: 'en', safesearch: 'strict' });
   const headers = { 'X-Subscription-Token': apiKey };
-  const web = await json(
-    `https://api.search.brave.com/res/v1/web/search?${params}`,
-    15000,
-    headers,
-    fetchImpl
-  );
-  const sources = (web.web?.results || [])
-    .slice(0, 8)
-    .map(r =>
-      asSource({
-        title: r.title,
-        description: r.description,
-        url: asHttps(r.url),
-        thumbnail: asHttps(r.thumbnail?.src) || null,
-      })
-    )
-    .filter(r => r.url);
+  const web = await json(`https://api.search.brave.com/res/v1/web/search?${params}`, 15000, headers, fetchImpl);
+  const sources = (web.web?.results || []).slice(0, 8).map(r => asSource({
+    title: r.title,
+    description: r.description,
+    url: asHttps(r.url),
+    thumbnail: asHttps(r.thumbnail?.src) || null
+  })).filter(r => r.url);
   let media = [];
   if (wantsImages) {
-    const images = await json(
-      `https://api.search.brave.com/res/v1/images/search?${params}`,
-      15000,
-      headers,
-      fetchImpl
-    );
-    media = (images.results || [])
-      .slice(0, 6)
-      .map(r => {
-        const url = asHttps(r.thumbnail?.src || r.properties?.url);
-        const sourceUrl = asHttps(r.url || r.page_url);
-        return {
-          type: 'image',
-          title: plain(r.title),
-          url,
-          sourceUrl,
-          hostname: sourceHost(sourceUrl || url),
-          mime: 'image/*',
-        };
-      })
-      .filter(r => r.url && r.sourceUrl);
+    const images = await json(`https://api.search.brave.com/res/v1/images/search?${params}`, 15000, headers, fetchImpl);
+    media = (images.results || []).slice(0, 6).map(r => {
+      const url = asHttps(r.thumbnail?.src || r.properties?.url);
+      const sourceUrl = asHttps(r.url || r.page_url);
+      return { type: 'image', title: plain(r.title), url, sourceUrl, hostname: sourceHost(sourceUrl || url), mime: 'image/*' };
+    }).filter(r => r.url && r.sourceUrl);
   }
   return { sources, media };
 }
 
-export async function fetchPublicPage(
-  href,
-  { fetchImpl = globalThis.fetch, timeoutMs = PAGE_TIMEOUT_MS } = {}
-) {
+export async function fetchPublicPage(href, { fetchImpl = globalThis.fetch, timeoutMs = PAGE_TIMEOUT_MS } = {}) {
   let parsed;
   try {
     parsed = new URL(String(href || ''));
@@ -669,10 +485,7 @@ export async function fetchPublicPage(
   if (isBlockedResearchHost(parsed)) throw new Error('That host is blocked for in-app lookup.');
   const url = publicHttpsUrl(href);
   if (!url) throw new Error('Only credential-free HTTPS pages can be opened.');
-  if (isHandoffOnlyHost(url))
-    throw new Error(
-      'YouTube and Spotify stay official browser searches. Eidovara does not fetch their HTML.'
-    );
+  if (isHandoffOnlyHost(url)) throw new Error('YouTube and Spotify stay official browser searches. Eidovara does not fetch their HTML.');
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
   try {
@@ -681,19 +494,11 @@ export async function fetchPublicPage(
       signal: controller.signal,
       redirect: 'error',
       credentials: 'omit',
-      headers: {
-        'Api-User-Agent': AGENT,
-        'User-Agent': AGENT,
-        Accept: 'text/html, text/plain;q=0.9',
-        'Cache-Control': 'no-store',
-      },
+      headers: { 'Api-User-Agent': AGENT, 'User-Agent': AGENT, Accept: 'text/html, text/plain;q=0.9', 'Cache-Control': 'no-store' }
     });
     if (!res.ok) throw new Error(`Internet source returned ${res.status}.`);
     const type = String(res.headers?.get?.('content-type') || '').toLowerCase();
-    if (
-      type &&
-      !/(text\/html|text\/plain|application\/xhtml\+xml|application\/xml|\btext\/)/.test(type)
-    ) {
+    if (type && !/(text\/html|text\/plain|application\/xhtml\+xml|application\/xml|\btext\/)/.test(type)) {
       throw new Error('That page is not readable text.');
     }
     const declared = Number(res.headers?.get?.('content-length') || 0);
@@ -705,8 +510,7 @@ export async function fetchPublicPage(
       raw = bytes.toString('utf8');
     } else if (typeof res.text === 'function') {
       raw = await res.text();
-      if (Buffer.byteLength(raw, 'utf8') > PAGE_BYTE_LIMIT)
-        throw new Error('Internet response is too large.');
+      if (Buffer.byteLength(raw, 'utf8') > PAGE_BYTE_LIMIT) throw new Error('Internet response is too large.');
     } else {
       throw new Error('Internet source returned an unreadable body.');
     }
@@ -716,7 +520,7 @@ export async function fetchPublicPage(
       hostname: sourceHost(url),
       title: sanitizeSnippet(extractHtmlTitle(raw) || sourceHost(url), 200),
       extract,
-      snippet: sanitizeSnippet(extract, 600),
+      snippet: sanitizeSnippet(extract, 600)
     };
   } catch (err) {
     throw classifyLookupError(err);
@@ -726,12 +530,7 @@ export async function fetchPublicPage(
 }
 
 function isStructuredCatalogHost(href) {
-  return hostnameAllowed(href, [
-    'wikipedia.org',
-    'wikimedia.org',
-    'archive.org',
-    'api.search.brave.com',
-  ]);
+  return hostnameAllowed(href, ['wikipedia.org', 'wikimedia.org', 'archive.org', 'api.search.brave.com']);
 }
 
 async function attachPageExtracts(sources, urls, fetchImpl) {
@@ -760,15 +559,13 @@ async function attachPageExtracts(sources, urls, fetchImpl) {
         if (!existing.description) existing.description = page.snippet;
         if (!existing.hostname) existing.hostname = page.hostname;
       } else {
-        extra.push(
-          asSource({
-            title: page.title,
-            description: page.snippet,
-            extract: page.extract,
-            url: page.url,
-            hostname: page.hostname,
-          })
-        );
+        extra.push(asSource({
+          title: page.title,
+          description: page.snippet,
+          extract: page.extract,
+          url: page.url,
+          hostname: page.hostname
+        }));
       }
     } catch {
       // Fail closed per URL: skip the extract, keep Wikipedia/keyed hits, workspace continues.
@@ -782,12 +579,7 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
   const pageFetch = fetchImpl || globalThis.fetch;
   const userUrls = extractHttpsUrls(input);
   const pageUrls = userUrls.filter(href => !isHandoffOnlyHost(href));
-  const query =
-    subject(input) ||
-    pageUrls
-      .map(href => sourceHost(href))
-      .filter(Boolean)
-      .join(' ');
+  const query = subject(input) || pageUrls.map(href => sourceHost(href)).filter(Boolean).join(' ');
   if (!query && !userUrls.length) throw new Error('Tell me what you want me to search for.');
   const wantsImages = /\b(picture|image|photo)s?\b/i.test(input);
   const wantsVideos = /\bvideos?\b/i.test(input);
@@ -806,8 +598,7 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
   let index = 0;
   if (query) {
     if (settled[index]?.status === 'fulfilled') sources.push(...settled[index].value);
-    else if (settled[index]?.status === 'rejected')
-      lookupErrors.push(String(settled[index].reason?.message || settled[index].reason));
+    else if (settled[index]?.status === 'rejected') lookupErrors.push(String(settled[index].reason?.message || settled[index].reason));
     index += 1;
   }
   if (query && wantsImages) {
@@ -840,9 +631,7 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
     if (!pastedHandoffs.length) {
       const first = lookupErrors[0];
       if (first) throw classifyLookupError(new Error(first));
-      throw new Error(
-        'No usable internet results were returned. The workspace is still available.'
-      );
+      throw new Error('No usable internet results were returned. The workspace is still available.');
     }
   }
   const handoffs = officialSearchHandoffs(query || 'media');
@@ -852,11 +641,8 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
     }
   }
   const context = [
-    ...sources.map(
-      (s, i) =>
-        `[${i + 1}] ${s.title}${s.hostname ? ` (${s.hostname})` : ''}: ${s.description}\n${s.url}`
-    ),
-    ...handoffs.map(item => `${item.provider} search (browser handoff): ${item.url}`),
+    ...sources.map((s, i) => `[${i + 1}] ${s.title}${s.hostname ? ` (${s.hostname})` : ''}: ${s.description}\n${s.url}`),
+    ...handoffs.map(item => `${item.provider} search (browser handoff): ${item.url}`)
   ].join('\n\n');
   return {
     query,
@@ -867,51 +653,42 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
     local: [],
     context,
     lookupErrors,
-    disclaimer: HONEST_RESEARCH_COPY,
+    disclaimer: HONEST_RESEARCH_COPY
   };
 }
 
 export function researchOpenActions(webResearch) {
-  const fromSources = (webResearch?.sources || [])
-    .slice(0, 6)
-    .map(source => {
-      const url = publicHttpsUrl(source.url);
-      if (!url) return null;
-      let hostname = String(source.hostname || '').toLowerCase();
-      if (!hostname) {
-        try {
-          hostname = new URL(url).hostname.toLowerCase();
-        } catch {
-          hostname = '';
-        }
-      }
-      if (!hostname) return null;
-      const title = sanitizeSnippet(source.title || hostname, 80);
-      return {
-        type: 'open-external',
-        url,
-        hostname,
-        snippet: sanitizeSnippet(source.description || source.extract || '', 180),
-        label: `${title} · ${hostname}`.slice(0, 80),
-        auto: false,
-      };
-    })
-    .filter(Boolean);
-  const fromHandoffs = (webResearch?.handoffs || [])
-    .map(item => {
-      const url = publicHttpsUrl(item.url);
-      if (!url) return null;
-      const hostname = sourceHost(url);
-      return {
-        type: 'open-external',
-        url,
-        hostname,
-        snippet: sanitizeSnippet(item.title || item.provider || '', 180),
-        label: `${item.provider || 'Search'} · ${hostname}`.slice(0, 80),
-        auto: false,
-      };
-    })
-    .filter(Boolean);
+  const fromSources = (webResearch?.sources || []).slice(0, 6).map(source => {
+    const url = publicHttpsUrl(source.url);
+    if (!url) return null;
+    let hostname = String(source.hostname || '').toLowerCase();
+    if (!hostname) {
+      try { hostname = new URL(url).hostname.toLowerCase(); } catch { hostname = ''; }
+    }
+    if (!hostname) return null;
+    const title = sanitizeSnippet(source.title || hostname, 80);
+    return {
+      type: 'open-external',
+      url,
+      hostname,
+      snippet: sanitizeSnippet(source.description || source.extract || '', 180),
+      label: `${title} · ${hostname}`.slice(0, 80),
+      auto: false
+    };
+  }).filter(Boolean);
+  const fromHandoffs = (webResearch?.handoffs || []).map(item => {
+    const url = publicHttpsUrl(item.url);
+    if (!url) return null;
+    const hostname = sourceHost(url);
+    return {
+      type: 'open-external',
+      url,
+      hostname,
+      snippet: sanitizeSnippet(item.title || item.provider || '', 180),
+      label: `${item.provider || 'Search'} · ${hostname}`.slice(0, 80),
+      auto: false
+    };
+  }).filter(Boolean);
   return [...fromSources, ...fromHandoffs];
 }
 
@@ -930,19 +707,14 @@ export function citeResearchInReply(reply, webResearch, internetError) {
     const hasHost = !host || text.includes(host) || text.includes(source.url || '');
     return hasTitle && hasHost;
   });
-  const handoffsCited =
-    !handoffs.length ||
-    handoffs.some(item => text.includes(item.url) || text.includes(item.provider));
+  const handoffsCited = !handoffs.length || handoffs.some(item => text.includes(item.url) || text.includes(item.provider));
   const disclaimer = webResearch?.disclaimer || HONEST_RESEARCH_COPY;
   if (sources.length && !cited) {
-    const block = sources
-      .slice(0, 4)
-      .map((source, index) => {
-        const host = source.hostname ? ` (${source.hostname})` : '';
-        const snippet = sanitizeSnippet(source.description || source.extract || '', 240);
-        return `${index + 1}. ${source.title || 'Source'}${host}${snippet ? ` — ${snippet}` : ''}`;
-      })
-      .join('\n');
+    const block = sources.slice(0, 4).map((source, index) => {
+      const host = source.hostname ? ` (${source.hostname})` : '';
+      const snippet = sanitizeSnippet(source.description || source.extract || '', 240);
+      return `${index + 1}. ${source.title || 'Source'}${host}${snippet ? ` — ${snippet}` : ''}`;
+    }).join('\n');
     text = `${text}\n\n${disclaimer}\n${block}`.trim();
   } else if (disclaimer && sources.length && !/full-internet index/i.test(text)) {
     text = `${text}\n\n${disclaimer}`;
@@ -955,3 +727,4 @@ export function citeResearchInReply(reply, webResearch, internetError) {
   }
   return text;
 }
+

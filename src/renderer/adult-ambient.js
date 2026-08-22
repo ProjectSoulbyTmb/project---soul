@@ -4,11 +4,7 @@ import { ambientLevels } from '../core/adult-ambient.js';
 
 function makeNoiseBuffer(ctx) {
   const seconds = 2;
-  const buf = ctx.createBuffer(
-    1,
-    Math.max(1, Math.floor(ctx.sampleRate * seconds)),
-    ctx.sampleRate
-  );
+  const buf = ctx.createBuffer(1, Math.max(1, Math.floor(ctx.sampleRate * seconds)), ctx.sampleRate);
   const data = buf.getChannelData(0);
   for (let i = 0; i < data.length; i += 1) data[i] = (Math.random() * 2 - 1) * 0.35;
   return buf;
@@ -27,11 +23,7 @@ export function createAdultAmbient(AudioContextCtor) {
   let master = null;
   let raf = 0;
   let origin = 0;
-  let sounds = {
-    ambient: { heartbeat: true, breath: true, drone: true },
-    mix: { ambient: 45 },
-    mute: false,
-  };
+  let sounds = { ambient: { heartbeat: true, breath: true, drone: true }, mix: { ambient: 45 }, mute: false };
   let feelLevel = 0;
   let reduced = false;
 
@@ -77,7 +69,7 @@ export function createAdultAmbient(AudioContextCtor) {
       droneOsc.connect(droneGain);
       droneGain.connect(master);
       droneOsc.start();
-      origin = typeof performance !== 'undefined' ? performance.now() : Date.now();
+      origin = (typeof performance !== 'undefined' ? performance.now() : Date.now());
       return true;
     } catch {
       ctx = null;
@@ -87,11 +79,7 @@ export function createAdultAmbient(AudioContextCtor) {
 
   function tick() {
     if (!connected()) return;
-    const levels = ambientLevels(
-      (typeof performance !== 'undefined' ? performance.now() : Date.now()) - origin,
-      sounds,
-      feelLevel
-    );
+    const levels = ambientLevels((typeof performance !== 'undefined' ? performance.now() : Date.now()) - origin, sounds, feelLevel);
     const hush = reduced ? 0.4 : 1;
     const now = ctx.currentTime;
     try {
@@ -100,7 +88,7 @@ export function createAdultAmbient(AudioContextCtor) {
       droneGain.gain.setTargetAtTime(levels.drone * 0.07 * hush, now, 0.12);
       master.gain.setTargetAtTime(0.9, now, 0.05);
     } catch {}
-    raf = typeof requestAnimationFrame === 'function' ? requestAnimationFrame(tick) : 0;
+    raf = (typeof requestAnimationFrame === 'function') ? requestAnimationFrame(tick) : 0;
   }
 
   return {
@@ -108,9 +96,7 @@ export function createAdultAmbient(AudioContextCtor) {
       sounds = nextSounds && typeof nextSounds === 'object' ? nextSounds : sounds;
       reduced = opts.reducedMotion === true;
       if (!build()) return false;
-      try {
-        if (ctx.state === 'suspended') ctx.resume();
-      } catch {}
+      try { if (ctx.state === 'suspended') ctx.resume(); } catch {}
       if (!raf) tick();
       return true;
     },
@@ -131,6 +117,7 @@ export function createAdultAmbient(AudioContextCtor) {
         droneGain.gain.setTargetAtTime(0, now, 0.05);
         master.gain.setTargetAtTime(0, now, 0.08);
       } catch {}
-    },
+    }
   };
 }
+

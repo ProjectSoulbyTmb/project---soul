@@ -7,5 +7,11 @@
   "bracketSpacing": true,
   "arrowParens": "avoid",
   "endOfLine": "lf",
-  "ignorePaths": ["node_modules", "dist", "dist-mac", ".wrangler", "pnpm-lock.yaml"]
+  "ignorePaths": [
+    "node_modules",
+    "dist",
+    "dist-mac",
+    ".wrangler",
+    "pnpm-lock.yaml"
+  ]
 }

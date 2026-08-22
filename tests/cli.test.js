@@ -7,9 +7,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const cli = fileURLToPath(new URL('../src/cli.js', import.meta.url));
-function tmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-cli-test-'));
-}
+function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-cli-test-')); }
 function run(args) {
   return spawnSync(process.execPath, [cli, ...args], { encoding: 'utf8', timeout: 15_000 });
 }
@@ -77,3 +75,4 @@ test('cli empty --message exits with an error', () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /empty/i);
 });
+

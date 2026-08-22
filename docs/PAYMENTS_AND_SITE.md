@@ -2,10 +2,10 @@ Eidovara v1.0.0 is the current **local-first Windows desktop release**. Making i
 
 ## Current v1.0.0 live facts
 
-| Source          | `main` is v1.0.0.                                                                 |
-| --------------- | --------------------------------------------------------------------------------- |
-| Windows release | GitHub Release `v1.0.0`, installer `Eidovara-v1.0.0-Windows-x64-Setup.exe`.       |
-| Edition         | Full free v1.0.0 Alpha; no paid entitlement is required for implemented features. |
+| Source | `main` is v1.0.0. |
+| --- | --- |
+| Windows release | GitHub Release `v1.0.0`, installer `Eidovara-v1.0.0-Windows-x64-Setup.exe`. |
+| Edition | Full free v1.0.0 Alpha; no paid entitlement is required for implemented features. |
 
 ## Website updates are not complete until
 

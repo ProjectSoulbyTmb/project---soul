@@ -5,7 +5,11 @@ import { createGuestOverlayManager } from './guest-overlays.js';
 let ipcBound = false;
 
 export function attachOverlayWindows(opts = {}) {
-  const { ipcMain, registerIpc = true, requireAgeGate } = opts;
+  const {
+    ipcMain,
+    registerIpc = true,
+    requireAgeGate
+  } = opts;
   const manager = (opts.createGuestOverlayManager || createGuestOverlayManager)(opts);
 
   if (registerIpc && ipcMain && !ipcBound) {
@@ -46,3 +50,4 @@ export function attachOverlayWindows(opts = {}) {
 
   return manager;
 }
+

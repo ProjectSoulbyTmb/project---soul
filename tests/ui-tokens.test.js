@@ -29,8 +29,5 @@ test('site and renderer load tokens without claiming Apple affiliation', () => {
 
 test('premium RGB lighting remains gated in the desktop settings save path', () => {
   const main = read('src/electron/main.js');
-  assert.match(
-    main,
-    /rgbEffects: entitlement\(\) === 'premium' && Boolean\(incoming\.theme\.rgbEffects\)/
-  );
+  assert.match(main, /rgbEffects: entitlement\(\) === 'premium' && Boolean\(incoming\.theme\.rgbEffects\)/);
 });

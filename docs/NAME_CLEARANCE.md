@@ -9,3 +9,4 @@ Broad exact-name web searches performed before adoption did not identify an exac
 This is only a preliminary knockout search. Search-engine silence does not establish availability, priority, registrability, domain ownership, or freedom to operate. Before filing or material commercial investment, conduct a comprehensive USPTO search for spelling, sound, appearance, meaning, translations, related goods/services, coordinated classes, owners, and common-law use; repeat equivalent state and relevant international searches; and obtain professional clearance advice.
 
 Do not state that either name is registered, certified, exclusive worldwide, or “completely unused.” Use ™ unless and until an applicable registration issues; use ® only for the registered mark and covered goods/services.
+

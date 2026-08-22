@@ -9,3 +9,4 @@ exports.default = async function afterPack(context) {
   const icon = path.resolve(context.packager.projectDir, 'assets', 'branding', 'eidovara.ico');
   await rcedit(executable, { icon });
 };
+

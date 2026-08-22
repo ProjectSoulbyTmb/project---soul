@@ -3,28 +3,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  FEEL_PATTERNS,
-  FEEL_PATTERN_IDS,
-  defaultAdultFeel,
-  feelSample,
-  publicStealth,
-  normalizeAdultFeel,
-  mapGamepadStick,
-  mapGamepadButtons,
-  nextFeelPattern,
-  rumbleFromLevel,
-  GAMEPAD_HONESTY,
+  FEEL_PATTERNS, FEEL_PATTERN_IDS, defaultAdultFeel, feelSample, publicStealth, normalizeAdultFeel,
+  mapGamepadStick, mapGamepadButtons, nextFeelPattern, rumbleFromLevel, GAMEPAD_HONESTY
 } from '../src/core/adult-feel.js';
 
 test('Feel Sync ships eleven named patterns in 0â€“1', () => {
   assert.equal(FEEL_PATTERNS.length, 11);
   const feel = defaultAdultFeel();
   for (const pattern of FEEL_PATTERNS) {
-    const sample = feelSample(
-      { ...feel, pattern: pattern.id, intensity: 80, speed: 55, loop: true, float: false },
-      1800,
-      0.4
-    );
+    const sample = feelSample({ ...feel, pattern: pattern.id, intensity: 80, speed: 55, loop: true, float: false }, 1800, 0.4);
     assert.ok(sample >= 0 && sample <= 1, `${pattern.id} ${sample}`);
   }
 });
@@ -40,10 +27,7 @@ test('gamepad stick maps into Feel 0â€“100 and rumble stays dual-rumble mat
   const rumble = rumbleFromLevel(0.5);
   assert.equal(rumble.duration, 140);
   assert.ok(rumble.strongMagnitude > 0 && rumble.strongMagnitude <= 1);
-  assert.equal(
-    nextFeelPattern('wave'),
-    FEEL_PATTERN_IDS[(FEEL_PATTERN_IDS.indexOf('wave') + 1) % FEEL_PATTERN_IDS.length]
-  );
+  assert.equal(nextFeelPattern('wave'), FEEL_PATTERN_IDS[(FEEL_PATTERN_IDS.indexOf('wave') + 1) % FEEL_PATTERN_IDS.length]);
   const edge = mapGamepadButtons([{ pressed: true }, { pressed: false }], { 0: false });
   assert.equal(edge.cyclePattern, true);
   const hold = mapGamepadButtons([{ pressed: true }], { 0: true });
@@ -53,7 +37,7 @@ test('gamepad stick maps into Feel 0â€“100 and rumble stays dual-rumble mat
 
 test('public stealth never leaks PIN hash', () => {
   const feel = normalizeAdultFeel({
-    stealth: { pinEnabled: true, pinHash: 'abc123', pinSalt: 'def456', locked: true },
+    stealth: { pinEnabled: true, pinHash: 'abc123', pinSalt: 'def456', locked: true }
   });
   const pub = publicStealth(feel.stealth);
   assert.equal(pub.pinEnabled, true);
@@ -61,3 +45,4 @@ test('public stealth never leaks PIN hash', () => {
   assert.equal('pinHash' in pub, false);
   assert.equal('pinSalt' in pub, false);
 });
+

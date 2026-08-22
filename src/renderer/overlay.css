@@ -1,17 +1,12 @@
 /* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
-html,
-body {
+html, body {
   margin: 0;
   background: transparent;
   color: var(--text, #f5f5f7);
-  font:
-    13px/1.4 ui-sans-serif,
-    system-ui,
-    sans-serif;
+  font: 13px/1.4 ui-sans-serif, system-ui, sans-serif;
 }
-.overlay-chrome,
-.chat-float {
+.overlay-chrome, .chat-float {
   min-height: 100%;
 }
 .overlay-bar {
@@ -31,10 +26,7 @@ body {
 .chat-float-form textarea {
   -webkit-app-region: no-drag;
 }
-.overlay-bar strong {
-  white-space: nowrap;
-  font-size: 12px;
-}
+.overlay-bar strong { white-space: nowrap; font-size: 12px; }
 .overlay-bar input {
   flex: 1;
   min-width: 0;
@@ -53,19 +45,12 @@ body {
   color: #fff;
   cursor: pointer;
 }
-.overlay-bar button.is-on {
-  outline: 2px solid #fff;
-}
-#closeBtn {
-  background: transparent;
-  color: inherit;
-  font-size: 18px;
-}
+.overlay-bar button.is-on { outline: 2px solid #fff; }
+#closeBtn { background: transparent; color: inherit; font-size: 18px; }
 .overlay-chrome {
   overflow: hidden;
 }
-.overlay-note,
-.overlay-kicker {
+.overlay-note, .overlay-kicker {
   margin: 4px 10px 0;
   font-size: 11px;
   opacity: 0.75;
@@ -90,12 +75,8 @@ body {
   border: 1px solid color-mix(in srgb, var(--accent, #0a84ff) 25%, transparent);
   backdrop-filter: blur(18px);
 }
-.chat-float-log p {
-  margin: 0 0 8px;
-}
-.chat-float-log .is-user {
-  opacity: 0.85;
-}
+.chat-float-log p { margin: 0 0 8px; }
+.chat-float-log .is-user { opacity: 0.85; }
 .chat-float-form {
   display: flex;
   gap: 8px;
@@ -116,13 +97,8 @@ body {
   border-radius: 8px;
   background: color-mix(in srgb, #b45309 35%, transparent);
 }
-.overlay-banner.hidden,
-.hidden {
-  display: none;
-}
+.overlay-banner.hidden, .hidden { display: none; }
 @media (prefers-reduced-motion: reduce) {
-  .overlay-bar,
-  .chat-float-log {
-    backdrop-filter: none;
-  }
+  .overlay-bar, .chat-float-log { backdrop-filter: none; }
 }
+

@@ -5,8 +5,7 @@ export function reflectOnGrowth(state, text) {
   const isGrowth = /\b(growth|wisdom|reflect|patience|rest|learn|restraint|clarity)\b/.test(t);
   if (!isGrowth) return null;
   const now = new Date().toISOString();
-  const insight =
-    'Growth is contextual: sometimes action, sometimes patience, repair, listening, rest, or changing direction.';
+  const insight = 'Growth is contextual: sometimes action, sometimes patience, repair, listening, rest, or changing direction.';
   state.continuity.revision += 1;
   state.continuity.lastActiveAt = now;
   state.continuity.reflectionState.growthInsightCount += 1;
@@ -15,3 +14,4 @@ export function reflectOnGrowth(state, text) {
   state.audit.push({ at: now, type: 'continuity.reflection', details: { insight } });
   return insight;
 }
+

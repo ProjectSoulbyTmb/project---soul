@@ -28,3 +28,4 @@ Never commit `copyright-deposit/`, registration certificates, applicant addresse
 ## After a certificate issues
 
 You may then state that **that specific work** is registered and cite the real registration number. Until then, say â€œcopyright claimed,â€ not â€œregistered.â€ Update [IP_CERTIFICATION.md](IP_CERTIFICATION.md) only with true numbers.
+

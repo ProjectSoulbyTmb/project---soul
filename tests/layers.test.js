@@ -21,18 +21,11 @@ import {
   pinWidget,
   reorderWidgets,
   searchWorkspace,
-  visibleWidgets,
+  visibleWidgets
 } from '../src/core/layers.js';
 
-function tmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-layers-test-'));
-}
-function make(dir) {
-  return new SoulEngine({
-    store: new JsonStore({ dataDir: dir }),
-    provider: new OfflineProvider(),
-  });
-}
+function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'soul-layers-test-')); }
+function make(dir) { return new SoulEngine({ store: new JsonStore({ dataDir: dir }), provider: new OfflineProvider() }); }
 
 test('palette routing jumps to views, legal, settings, and enabled modules', () => {
   assert.equal(classifyWorkspaceIntent('Open the command palette'), 'palette');
@@ -43,14 +36,9 @@ test('palette routing jumps to views, legal, settings, and enabled modules', () 
   assert.ok(palette.actions.some(item => item.type === 'open-palette' && item.auto === true));
   const items = builtinPaletteItems({ modules: palette.modules || undefined });
   const settings = filterPalette('settings', items);
-  assert.ok(
-    settings.some(item => item.action?.type === 'open-view' && item.action.view === 'settings'),
-    JSON.stringify(settings.map(i => i.id))
-  );
+  assert.ok(settings.some(item => item.action?.type === 'open-view' && item.action.view === 'settings'), JSON.stringify(settings.map(i => i.id)));
   const legal = filterPalette('terms', items);
-  assert.ok(
-    legal.some(item => item.action?.type === 'open-legal' && item.action.legal === 'terms')
-  );
+  assert.ok(legal.some(item => item.action?.type === 'open-legal' && item.action.legal === 'terms'));
   const focus = filterPalette('focus session', items);
   assert.ok(focus.some(item => item.action?.type === 'start-focus' || item.id.includes('focus')));
   const help = routeKernel('keyboard shortcuts cheatsheet', state);
@@ -61,15 +49,13 @@ test('palette routing jumps to views, legal, settings, and enabled modules', () 
 test('unified local search filters apps, memories, settings labels, and knowledge intents', () => {
   const hits = searchWorkspace('memory', {
     apps: [{ id: 'notepad', name: 'Notepad', path: 'C:\\Windows\\notepad.exe' }],
-    memories: [
-      { id: 'm1', content: 'I prefer evening memory reviews', active: true, tags: ['preference'] },
-    ],
+    memories: [{ id: 'm1', content: 'I prefer evening memory reviews', active: true, tags: ['preference'] }]
   });
   assert.ok(hits.some(item => item.kind === 'memory' && /evening memory/.test(item.title)));
   assert.ok(hits.some(item => item.kind === 'view' && item.action?.view === 'memory'));
   const apps = searchWorkspace('notepad', {
     apps: [{ id: 'notepad', name: 'Notepad', path: 'C:\\Windows\\notepad.exe' }],
-    memories: [],
+    memories: []
   });
   assert.equal(apps[0].kind, 'app');
   assert.equal(apps[0].action.type, 'confirm-launch-app');
@@ -127,12 +113,7 @@ test('focus session start/stop tracks remaining time and does not claim process 
   const stopped = s.stopFocusSession({ at: new Date(startMs + 12 * 60 * 1000).toISOString() });
   assert.equal(stopped.workspace.focus.active, false);
   const live = s.startFocusSession({ minutes: 5, at: new Date().toISOString() });
-  assert.match(
-    JSON.stringify(
-      s.snapshot().audit.filter(item => String(item.type || '').startsWith('workspace.focus'))
-    ),
-    /killsOtherProcesses":false/
-  );
+  assert.match(JSON.stringify(s.snapshot().audit.filter(item => String(item.type || '').startsWith('workspace.focus'))), /killsOtherProcesses":false/);
   assert.equal(live.workspace.focus.quiet, true);
 });
 
@@ -155,10 +136,7 @@ test('scratch capture writes a local memory note', () => {
 });
 
 test('workspace layers do not POST /v1/assist unless existing opt-in flags are set', async () => {
-  assert.equal(
-    canCallAssist({ optIn: false, serviceUrl: 'https://api.example.test' }).reason,
-    'opt-in-off'
-  );
+  assert.equal(canCallAssist({ optIn: false, serviceUrl: 'https://api.example.test' }).reason, 'opt-in-off');
   const dir = tmp();
   const s = make(dir);
   let called = 0;
@@ -173,10 +151,7 @@ test('workspace layers do not POST /v1/assist unless existing opt-in flags are s
   s.saveScratchpad('local only');
   s.captureScratchpad();
   s.stopFocusSession();
-  const blocked = await s.assistQuery('Is Eidovara 18+?', {
-    base: 'https://api.example.test',
-    fetchImpl,
-  });
+  const blocked = await s.assistQuery('Is Eidovara 18+?', { base: 'https://api.example.test', fetchImpl });
   assert.equal(blocked.reason, 'opt-in-off');
   assert.equal(called, 0);
   s.configureKernel({ assistOptIn: true });
@@ -187,7 +162,7 @@ test('workspace layers do not POST /v1/assist unless existing opt-in flags are s
     base: 'https://api.example.test',
     query: 'hello',
     optIn: false,
-    fetchImpl,
+    fetchImpl
   });
   assert.equal(skipped.skipped, true);
   assert.equal(called, 0);
@@ -198,13 +173,8 @@ test('workspace layers do not POST /v1/assist unless existing opt-in flags are s
       assert.match(String(url), /\/v1\/assist$/);
       assert.equal(init.method, 'POST');
       const body = Buffer.from(JSON.stringify({ reply: 'Adults 18+.', soul: false }));
-      return {
-        ok: true,
-        status: 200,
-        headers: { get: () => String(body.length) },
-        arrayBuffer: async () => body,
-      };
-    },
+      return { ok: true, status: 200, headers: { get: () => String(body.length) }, arrayBuffer: async () => body };
+    }
   });
   assert.equal(called, 1);
 });

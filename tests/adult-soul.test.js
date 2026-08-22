@@ -14,12 +14,8 @@ import { buildAdultMesh, FIGURE_QUALITY } from '../src/core/adult-mesh.js';
 import { applyPolicyCommand } from '../src/core/policy.js';
 import { defaultProfile } from '../src/core/schema.js';
 
-function tmp() {
-  return fs.mkdtempSync(path.join(os.tmpdir(), 'eidovara-adult-soul-'));
-}
-function make() {
-  return new SoulEngine({ store: new JsonStore({ dataDir: tmp() }) });
-}
+function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'eidovara-adult-soul-')); }
+function make() { return new SoulEngine({ store: new JsonStore({ dataDir: tmp() }) }); }
 async function enableAdult(engine) {
   await engine.respond('adult status confirmed', { adminAuthorized: true });
   await engine.respond('enable adult soul', { adminAuthorized: true });
@@ -92,15 +88,7 @@ test('hydrate keeps adultSoul schema 3', () => {
   const soul = migrateAdultSoul(undefined);
   assert.equal(soul.schema, 3);
   assert.equal(soul.kind, 'adult-soul-studio');
-  const view = adultSoulView({
-    policy: {
-      mode: 'standard',
-      adultSoulEnabled: false,
-      adultStatusConfirmed: false,
-      currentConsent: false,
-    },
-    adultSoul: soul,
-  });
+  const view = adultSoulView({ policy: { mode: 'standard', adultSoulEnabled: false, adultStatusConfirmed: false, currentConsent: false }, adultSoul: soul });
   assert.equal(view.open, false);
   assert.match(view.reason, /administrator panel/i);
   assert.equal(view.neuralTts, false);
@@ -108,3 +96,4 @@ test('hydrate keeps adultSoul schema 3', () => {
   assert.equal(view.ambientEngine.neuralTts, false);
   assert.equal(view.engines.find(item => item.id === 'neural-tts').bundled, false);
 });
+

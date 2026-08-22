@@ -3,79 +3,32 @@
 
 export const LOCAL_MEDIA_SCHEME = 'eidovara-media';
 export const LYRICS_UNAVAILABLE = 'No licensed lyrics in-app';
-export const HANDOFF_CONFIRM =
-  'Opens in the browser. Eidovara does not play Spotify or YouTube in-app.';
-export const MEDIA_SESSION_ACTIONS = [
-  'play',
-  'pause',
-  'previoustrack',
-  'nexttrack',
-  'seekto',
-  'stop',
-];
+export const HANDOFF_CONFIRM = 'Opens in the browser. Eidovara does not play Spotify or YouTube in-app.';
+export const MEDIA_SESSION_ACTIONS = ['play', 'pause', 'previoustrack', 'nexttrack', 'seekto', 'stop'];
 export const PLAYBACK_RATES = [0.5, 0.75, 1, 1.25, 1.5, 2];
 export const LOOP_MODES = ['off', 'one', 'all'];
 export const SLEEP_MINUTES = [0, 15, 30, 45, 60, 90];
 
 const BLOCKED_HOST_SUFFIXES = [
-  '.youtube.com',
-  '.youtu.be',
-  '.youtube-nocookie.com',
-  '.googlevideo.com',
-  '.spotify.com',
-  '.spotifycdn.com',
-  '.scdn.co',
-  '.pornhub.com',
-  '.xvideos.com',
-  '.xhamster.com',
-  '.spankbang.com',
-  '.redgifs.com',
-  '.xnxx.com',
-  '.chaturbate.com',
-  '.stripchat.com',
-  '.onlyfans.com',
-  '.fansly.com',
-  '.youporn.com',
+  '.youtube.com', '.youtu.be', '.youtube-nocookie.com', '.googlevideo.com',
+  '.spotify.com', '.spotifycdn.com', '.scdn.co',
+  '.pornhub.com', '.xvideos.com', '.xhamster.com', '.spankbang.com', '.redgifs.com',
+  '.xnxx.com', '.chaturbate.com', '.stripchat.com', '.onlyfans.com', '.fansly.com',
+  '.youporn.com'
 ];
 const BLOCKED_HOSTS = new Set([
-  'youtube.com',
-  'www.youtube.com',
-  'm.youtube.com',
-  'youtu.be',
-  'youtube-nocookie.com',
-  'www.youtube-nocookie.com',
-  'googlevideo.com',
-  'open.spotify.com',
-  'embed.spotify.com',
-  'play.spotify.com',
-  'api.spotify.com',
-  'accounts.spotify.com',
-  'spotify.com',
-  'www.spotify.com',
-  'spotifycdn.com',
-  'sdk.scdn.co',
-  'pornhub.com',
-  'www.pornhub.com',
-  'xvideos.com',
-  'www.xvideos.com',
-  'xhamster.com',
-  'spankbang.com',
-  'redgifs.com',
-  'www.redgifs.com',
-  'xnxx.com',
-  'chaturbate.com',
-  'onlyfans.com',
-  'fansly.com',
+  'youtube.com', 'www.youtube.com', 'm.youtube.com', 'youtu.be',
+  'youtube-nocookie.com', 'www.youtube-nocookie.com', 'googlevideo.com',
+  'open.spotify.com', 'embed.spotify.com', 'play.spotify.com', 'api.spotify.com',
+  'accounts.spotify.com', 'spotify.com', 'www.spotify.com', 'spotifycdn.com', 'sdk.scdn.co',
+  'pornhub.com', 'www.pornhub.com', 'xvideos.com', 'www.xvideos.com',
+  'xhamster.com', 'spankbang.com', 'redgifs.com', 'www.redgifs.com',
+  'xnxx.com', 'chaturbate.com', 'onlyfans.com', 'fansly.com'
 ]);
-const BLOCKED_EMBED =
-  /youtube\.com\/embed|youtube-nocookie|\/\/youtu\.be\/|spotify\.com\/embed|open\.spotify\.com\/embed|sdk\.scdn\.co|spotify-web-playback|iframe_api|www\.youtube\.com\/iframe_api|pornhub\.com\/embed|xvideos\.com\/embedframe|xhamster\.com\/xembed|redgifs\.com\/ifr|spankbang\.com\/embed|chaturbate\.com\/embed|xnxx\.com\/embedframe/i;
+const BLOCKED_EMBED = /youtube\.com\/embed|youtube-nocookie|\/\/youtu\.be\/|spotify\.com\/embed|open\.spotify\.com\/embed|sdk\.scdn\.co|spotify-web-playback|iframe_api|www\.youtube\.com\/iframe_api|pornhub\.com\/embed|xvideos\.com\/embedframe|xhamster\.com\/xembed|redgifs\.com\/ifr|spankbang\.com\/embed|chaturbate\.com\/embed|xnxx\.com\/embedframe/i;
 
 function hostnameOf(value) {
-  try {
-    return new URL(String(value || '')).hostname.toLowerCase();
-  } catch {
-    return '';
-  }
+  try { return new URL(String(value || '')).hostname.toLowerCase(); } catch { return ''; }
 }
 
 export function prefersReducedMotion(flag) {
@@ -95,10 +48,7 @@ export function clampVolume(value) {
 export function clampRate(value) {
   const n = Number(value);
   if (!Number.isFinite(n)) return 1;
-  const nearest = PLAYBACK_RATES.reduce(
-    (best, rate) => (Math.abs(rate - n) < Math.abs(best - n) ? rate : best),
-    1
-  );
+  const nearest = PLAYBACK_RATES.reduce((best, rate) => Math.abs(rate - n) < Math.abs(best - n) ? rate : best, 1);
   return nearest;
 }
 
@@ -121,7 +71,7 @@ export function createNowPlayingState(input = {}) {
     qualityId: String(input.qualityId || 'native'),
     captionsOn: input.captionsOn === true,
     adultMode: input.adultMode === true,
-    ageGated: input.ageGated === true,
+    ageGated: input.ageGated === true
   };
 }
 
@@ -155,11 +105,7 @@ export function isBlockedEmbedUrl(value) {
 
 export function isAllowedPlaybackUrl(value) {
   let parsed;
-  try {
-    parsed = new URL(String(value || ''));
-  } catch {
-    return false;
-  }
+  try { parsed = new URL(String(value || '')); } catch { return false; }
   if (parsed.protocol === `${LOCAL_MEDIA_SCHEME}:`) return true;
   if (parsed.protocol !== 'https:') return false;
   if (isBlockedEmbedUrl(parsed.href)) return false;
@@ -167,11 +113,7 @@ export function isAllowedPlaybackUrl(value) {
 }
 
 export function officialSearchUrl(platform, query) {
-  const q = encodeURIComponent(
-    String(query || '')
-      .trim()
-      .slice(0, 200)
-  );
+  const q = encodeURIComponent(String(query || '').trim().slice(0, 200));
   if (!q) return '';
   if (platform === 'spotify') return `https://open.spotify.com/search/${q}`;
   if (platform === 'youtube') return `https://www.youtube.com/results?search_query=${q}`;
@@ -180,11 +122,7 @@ export function officialSearchUrl(platform, query) {
 }
 
 function cleanText(value, max) {
-  return String(value || '')
-    .replace(/[\u0000-\u001f]/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, max);
+  return String(value || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, max);
 }
 
 export function nativePlaybackUrl(item = {}) {
@@ -210,7 +148,7 @@ export function qualityChoices(item = {}) {
       id: String(rendition.id || `r${out.length}`),
       label: cleanText(rendition.label, 40) || 'Rendition',
       url,
-      native: rendition.native === true,
+      native: rendition.native === true
     });
   };
   if (native) push({ id: 'native', label: 'Native', url: native, native: true });
@@ -221,11 +159,7 @@ export function qualityChoices(item = {}) {
 export function selectedQualityUrl(item, qualityId = 'native') {
   const choices = qualityChoices(item);
   if (!choices.length) return nativePlaybackUrl(item);
-  return (
-    choices.find(item => item.id === qualityId) ||
-    choices.find(item => item.native) ||
-    choices[0]
-  ).url;
+  return (choices.find(item => item.id === qualityId) || choices.find(item => item.native) || choices[0]).url;
 }
 
 export function normalizePlaybackItem(input = {}) {
@@ -236,21 +170,18 @@ export function normalizePlaybackItem(input = {}) {
   let sourceUrl = '';
   try {
     const parsed = new URL(String(input.sourceUrl || ''));
-    if (parsed.protocol === 'https:' && !isBlockedEmbedUrl(parsed.href))
-      sourceUrl = parsed.toString().slice(0, 1000);
+    if (parsed.protocol === 'https:' && !isBlockedEmbedUrl(parsed.href)) sourceUrl = parsed.toString().slice(0, 1000);
   } catch {}
-  const captions = (Array.isArray(input.captions) ? input.captions : [])
-    .map(track => {
-      const href = String(track?.url || '');
-      if (!isAllowedPlaybackUrl(href)) return null;
-      return {
-        url: href,
-        label: cleanText(track.label, 80) || 'Captions',
-        srclang: cleanText(track.srclang, 12) || 'und',
-        kind: track.kind === 'captions' ? 'captions' : 'subtitles',
-      };
-    })
-    .filter(Boolean);
+  const captions = (Array.isArray(input.captions) ? input.captions : []).map(track => {
+    const href = String(track?.url || '');
+    if (!isAllowedPlaybackUrl(href)) return null;
+    return {
+      url: href,
+      label: cleanText(track.label, 80) || 'Captions',
+      srclang: cleanText(track.srclang, 12) || 'und',
+      kind: track.kind === 'captions' ? 'captions' : 'subtitles'
+    };
+  }).filter(Boolean);
   return {
     type,
     url,
@@ -263,24 +194,14 @@ export function normalizePlaybackItem(input = {}) {
     height: Number.isFinite(Number(input.height)) ? Number(input.height) : 0,
     renditions: Array.isArray(input.renditions) ? input.renditions : [],
     captions,
-    hardwareDecode: input.hardwareDecode !== false,
+    hardwareDecode: input.hardwareDecode !== false
   };
 }
 
 export function setQueue(state, items, index = 0) {
   const queue = (Array.isArray(items) ? items : []).map(normalizePlaybackItem).filter(Boolean);
-  if (!queue.length)
-    return {
-      ...state,
-      queue: [],
-      index: -1,
-      active: false,
-      expanded: false,
-      playing: false,
-      poppedOut: false,
-      pictureInPicture: false,
-    };
-  const idx = (((Number(index) || 0) % queue.length) + queue.length) % queue.length;
+  if (!queue.length) return { ...state, queue: [], index: -1, active: false, expanded: false, playing: false, poppedOut: false, pictureInPicture: false };
+  const idx = ((Number(index) || 0) % queue.length + queue.length) % queue.length;
   return { ...state, queue, index: idx, active: true };
 }
 
@@ -288,12 +209,7 @@ export function appendQueue(state, items) {
   const extra = (Array.isArray(items) ? items : []).map(normalizePlaybackItem).filter(Boolean);
   if (!extra.length) return state;
   const queue = [...(state.queue || []), ...extra];
-  return {
-    ...state,
-    queue,
-    index: state.active ? state.index : (state.queue || []).length,
-    active: true,
-  };
+  return { ...state, queue, index: state.active ? state.index : (state.queue || []).length, active: true };
 }
 
 export function nextIndex(state = {}) {
@@ -390,7 +306,7 @@ export function videoPresentationFlags() {
     controls: false,
     defaultMuted: false,
     objectFit: 'contain',
-    noDownscale: true,
+    noDownscale: true
   };
 }
 
@@ -425,3 +341,4 @@ export function formatClock(seconds) {
   const s = Math.floor(n % 60);
   return `${m}:${String(s).padStart(2, '0')}`;
 }
+

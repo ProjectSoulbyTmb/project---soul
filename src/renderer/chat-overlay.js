@@ -40,9 +40,7 @@ form.addEventListener('submit', async e => {
 void (async () => {
   try {
     const snap = await window.soul.snapshot();
-    const conv =
-      (snap.conversations || []).find(c => c.id === snap.activeConversationId) ||
-      (snap.conversations || [])[0];
+    const conv = (snap.conversations || []).find(c => c.id === snap.activeConversationId) || (snap.conversations || [])[0];
     const msgs = (conv?.messages || []).slice(-8);
     if (!msgs.length) line('soul', 'Ask from this overlay. Local kernel only. Assist is not Soul.');
     for (const m of msgs) line(m.role === 'user' ? 'user' : 'soul', m.content);
@@ -50,3 +48,4 @@ void (async () => {
     line('soul', String(err?.message || err));
   }
 })();
+

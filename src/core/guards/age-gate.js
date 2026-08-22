@@ -4,7 +4,7 @@
  * AGE GATE STRUCTURAL GUARD
  * Enforces 18+ age restriction at multiple levels
  * Cannot be removed without owner involvement
- *
+ * 
  * @module core/guards/age-gate
  * @version 1.0.0
  */
@@ -31,11 +31,10 @@ export const AGE_GATE = {
    * @throws {Error} If age gate not accepted
    */
   enforce: (context = 'runtime') => {
-    const accepted =
-      typeof window !== 'undefined'
-        ? localStorage.getItem('eidovara_age_gate_accepted') === 'true'
-        : process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
-
+    const accepted = typeof window !== 'undefined' 
+      ? localStorage.getItem('eidovara_age_gate_accepted') === 'true'
+      : process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
+    
     if (!accepted && globalThis.eidovaraAgeGateAccepted !== true) {
       const error = new Error('AGE_GATE_REQUIRED: 18+ age gate required for Eidovara access');
       error.code = 'AGE_GATE_REQUIRED';
@@ -52,15 +51,11 @@ export const AGE_GATE = {
   validateCliArgs: (args = process.argv) => {
     const hasFlag = args.includes('--i-am-18-or-older');
     const hasEnv = process.env.EIDOVARA_AGE_GATE_ACCEPTED === 'true';
-
+    
     if (!hasFlag && !hasEnv) {
-      const error = new Error(
-        'AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1'
-      );
+      const error = new Error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
       error.code = 'AGE_GATE_REQUIRED_CLI';
-      console.error(
-        'AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1'
-      );
+      console.error('AGE_GATE_REQUIRED: Use --i-am-18-or-older flag or set EIDOVARA_AGE_GATE_ACCEPTED=1');
       process.exitCode = 1;
       throw new Error('AGE_GATE_REQUIRED_CLI');
     }
@@ -72,9 +67,9 @@ export const AGE_GATE = {
    * @returns {Promise<boolean>} Resolves when age gate accepted
    */
   showAgeGateModal: () => {
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       if (typeof window === 'undefined') return resolve(false);
-
+      
       const accepted = localStorage.getItem('eidovara_age_gate_accepted') === 'true';
       if (accepted) return resolve(true);
 
@@ -122,7 +117,7 @@ export const AGE_GATE = {
       });
 
       // Prevent closing with Escape
-      modal.addEventListener('keydown', e => {
+      modal.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') e.preventDefault();
       });
     });
@@ -167,7 +162,7 @@ export const AGE_GATE = {
         throw new Error('AGE_GATE_REQUIRED: Set EIDOVARA_AGE_GATE_ACCEPTED=1');
       }
     }
-  },
+  }
 };
 
 export default AGE_GATE;

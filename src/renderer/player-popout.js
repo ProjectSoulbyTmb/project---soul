@@ -28,7 +28,7 @@ function load(payload) {
     return;
   }
   $('popTitle').textContent = item.title || 'Eidovara';
-  $('popKind').textContent = item.local ? `Local ${item.type}` : item.type || '';
+  $('popKind').textContent = item.local ? `Local ${item.type}` : (item.type || '');
   const player = item.type === 'video' ? video : audio;
   video.classList.toggle('hidden', item.type !== 'video');
   audio.classList.toggle('hidden', item.type === 'video');
@@ -49,3 +49,4 @@ $('popPrev').addEventListener('click', () => window.soul?.playerCommand?.('previ
 $('popNext').addEventListener('click', () => window.soul?.playerCommand?.('next'));
 $('popDock').addEventListener('click', () => window.soul?.dockPlayer?.());
 if (window.soul?.onPlayerPopout) window.soul.onPlayerPopout(load);
+

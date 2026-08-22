@@ -1,52 +1,32 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import worker, {
-  httpsUrl,
-  LIVE_INSTALLER_VERSION,
-  LIVE_INSTALLER,
-  LIVE_INSTALLER_SHA256,
-} from '../server/worker.js';
+import worker, { httpsUrl, LIVE_INSTALLER_VERSION, LIVE_INSTALLER, LIVE_INSTALLER_SHA256 } from '../server/worker.js';
 import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 test('server accepts only HTTPS public configuration', async () => {
-  const env = {
-    WEBSITE_URL: 'https://example.test/',
-    STRIPE_PAYMENT_URL: 'http://unsafe.test',
-    PAYPAL_PAYMENT_URL: 'https://paypal.test/buy',
-  };
+  const env = { WEBSITE_URL: 'https://example.test/', STRIPE_PAYMENT_URL: 'http://unsafe.test', PAYPAL_PAYMENT_URL: 'https://paypal.test/buy' };
   const res = await worker.fetch(new Request('https://api.example.test/v1/config'), env);
   const body = await res.json();
-  assert.equal(res.status, 200);
-  assert.equal(body.store.stripe, '');
-  assert.equal(body.store.paypal, 'https://paypal.test/buy');
+  assert.equal(res.status, 200); assert.equal(body.store.stripe, ''); assert.equal(body.store.paypal, 'https://paypal.test/buy');
   assert.equal(httpsUrl('javascript:alert(1)'), '');
 });
 
 test('server fails closed for writes and unknown paths', async () => {
-  assert.equal(
-    (await worker.fetch(new Request('https://api.test/health', { method: 'POST' }), {})).status,
-    405
-  );
+  assert.equal((await worker.fetch(new Request('https://api.test/health', { method: 'POST' }), {})).status, 405);
   assert.equal((await worker.fetch(new Request('https://api.test/private'), {})).status, 404);
 });
 
 test('Worker health/status support HEAD, CORS, honesty flags, and private status cache', async () => {
-  const healthHead = await worker.fetch(
-    new Request('https://api.example.test/health', { method: 'HEAD' }),
-    {}
-  );
+  const healthHead = await worker.fetch(new Request('https://api.example.test/health', { method: 'HEAD' }), {});
   assert.equal(healthHead.status, 200);
   assert.equal(await healthHead.text(), '');
   assert.match(healthHead.headers.get('access-control-allow-origin'), /\*/);
   assert.match(healthHead.headers.get('access-control-allow-methods'), /HEAD/);
 
-  const preflight = await worker.fetch(
-    new Request('https://api.example.test/v1/status', {
-      method: 'OPTIONS',
-      headers: { origin: 'https://eidovara.org', 'access-control-request-method': 'GET' },
-    }),
-    {}
-  );
+  const preflight = await worker.fetch(new Request('https://api.example.test/v1/status', {
+    method: 'OPTIONS',
+    headers: { origin: 'https://eidovara.org', 'access-control-request-method': 'GET' }
+  }), {});
   assert.equal(preflight.status, 204);
   assert.equal(preflight.headers.get('access-control-allow-origin'), '*');
   assert.match(preflight.headers.get('access-control-allow-methods'), /GET/);
@@ -75,10 +55,7 @@ test('Worker health/status support HEAD, CORS, honesty flags, and private status
   assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER_SHA256));
   assert.doesNotMatch(JSON.stringify(status), /workers\.dev/i);
 
-  const statusHead = await worker.fetch(
-    new Request('https://api.example.test/v1/status', { method: 'HEAD' }),
-    {}
-  );
+  const statusHead = await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'HEAD' }), {});
   assert.equal(statusHead.status, 200);
   assert.equal(await statusHead.text(), '');
 });

@@ -30,42 +30,29 @@
   display: grid;
   place-items: center;
 }
-.soul-presence[data-look='orb'] {
+.soul-presence[data-look="orb"] {
   background: radial-gradient(circle at 34% 28%, #fff 0 6%, var(--accent) 40%, #12233f 78%);
 }
-.soul-presence[data-look='hologram'] {
-  background: repeating-linear-gradient(
-      180deg,
-      transparent 0 6px,
-      color-mix(in srgb, var(--accent) 22%, transparent) 7px
-    ),
+.soul-presence[data-look="hologram"] {
+  background:
+    repeating-linear-gradient(180deg, transparent 0 6px, color-mix(in srgb, var(--accent) 22%, transparent) 7px),
     linear-gradient(180deg, color-mix(in srgb, var(--accent) 35%, #000), #041018);
-  background-size:
-    100% 120px,
-    100% 100%;
+  background-size: 100% 120px, 100% 100%;
   animation: soul-scan 4.5s linear infinite;
 }
 @keyframes soul-scan {
-  to {
-    background-position:
-      0 120px,
-      0 0;
-  }
+  to { background-position: 0 120px, 0 0; }
 }
-.soul-presence[data-look='ambient'] {
-  background: radial-gradient(
-    circle at 50% 70%,
-    color-mix(in srgb, var(--accent) 55%, transparent),
-    var(--panel) 70%
-  );
+.soul-presence[data-look="ambient"] {
+  background: radial-gradient(circle at 50% 70%, color-mix(in srgb, var(--accent) 55%, transparent), var(--panel) 70%);
 }
-.soul-presence[data-look='silhouette'] {
+.soul-presence[data-look="silhouette"] {
   background: linear-gradient(180deg, var(--panel2), var(--panel));
 }
-.soul-presence[data-look='pulse'] {
+.soul-presence[data-look="pulse"] {
   background: #05070c;
 }
-.soul-presence[data-look='local-image'] {
+.soul-presence[data-look="local-image"] {
   background: var(--fill);
 }
 .soul-presence-figure {
@@ -76,12 +63,12 @@
   opacity: 0.85;
   pointer-events: none;
 }
-.soul-presence[data-look='silhouette'] .soul-presence-figure {
+.soul-presence[data-look="silhouette"] .soul-presence-figure {
   background: #111;
   opacity: 0.88;
   border-radius: 48% 48% 40% 40%;
 }
-.soul-presence[data-look='hologram'] .soul-presence-figure {
+.soul-presence[data-look="hologram"] .soul-presence-figure {
   background: color-mix(in srgb, var(--accent) 40%, transparent);
   box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 50%, transparent);
 }
@@ -128,9 +115,7 @@
   background: var(--fill);
   font-size: 12px;
 }
-.soul-module-list button[aria-pressed='false'] {
-  opacity: 0.45;
-}
+.soul-module-list button[aria-pressed="false"] { opacity: 0.45; }
 .soul-dock-empty {
   margin: 0;
   font-size: 12px;
@@ -234,21 +219,15 @@
   white-space: nowrap;
   border: 0;
 }
-.soul-presence[data-look='ribbon'] {
-  background: linear-gradient(
-      115deg,
-      transparent 18%,
-      color-mix(in srgb, var(--accent) 55%, transparent) 42%,
-      transparent 66%
-    ),
+.soul-presence[data-look="ribbon"] {
+  background:
+    linear-gradient(115deg, transparent 18%, color-mix(in srgb, var(--accent) 55%, transparent) 42%, transparent 66%),
     linear-gradient(180deg, var(--panel2), var(--panel));
 }
-.soul-presence[data-look='hidden'] {
+.soul-presence[data-look="hidden"] {
   display: none;
 }
-.soul-presence[hidden] {
-  display: none;
-}
+.soul-presence[hidden] { display: none; }
 .kernel-customize {
   display: grid;
   gap: 12px;
@@ -284,18 +263,11 @@
     flex-wrap: wrap;
     align-items: center;
   }
-  .soul-presence {
-    width: 88px;
-    height: 88px;
-    max-height: 88px;
-    aspect-ratio: auto;
-  }
+  .soul-presence { width: 88px; height: 88px; max-height: 88px; aspect-ratio: auto; }
 }
 @media (prefers-reduced-motion: reduce) {
   .soul-presence-figure,
-  .soul-presence[data-look='hologram'] {
-    animation: none !important;
-  }
+  .soul-presence[data-look="hologram"] { animation: none !important; }
 }
 .companion-log .companion-turn {
   margin: 0;
@@ -333,6 +305,5 @@
 .kernel-chips button:hover {
   background: color-mix(in srgb, var(--accent) 18%, var(--fill));
 }
-.message .kernel-chips {
-  margin: 8px 0 0;
-}
+.message .kernel-chips { margin: 8px 0 0; }
+

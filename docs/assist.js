@@ -5,20 +5,14 @@ import { answerAssist, STORAGE_KEY, DEFAULT_SERVICE_BASE, safePublicHref } from 
 const suffixes = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
 
 function readBase() {
-  try {
-    return String(localStorage.getItem(STORAGE_KEY) || '').trim();
-  } catch {
-    return '';
-  }
+  try { return String(localStorage.getItem(STORAGE_KEY) || '').trim(); } catch { return ''; }
 }
 
 function writeBase(value) {
   try {
     if (value) localStorage.setItem(STORAGE_KEY, value);
     else localStorage.removeItem(STORAGE_KEY);
-  } catch {
-    /* private mode */
-  }
+  } catch { /* private mode */ }
 }
 
 function trimSlash(value) {
@@ -50,18 +44,14 @@ async function onlineAnswer(base, query, mode) {
       headers: { 'content-type': 'application/json', accept: 'application/json' },
       body: JSON.stringify({ query, mode }),
       signal: controller.signal,
-      redirect: 'error',
+      redirect: 'error'
     });
     const declared = Number(res.headers.get('content-length') || 0);
     if (declared > maxBytes) return null;
     const raw = await res.text();
     if (raw.length > maxBytes) return null;
     let body;
-    try {
-      body = JSON.parse(raw);
-    } catch {
-      return null;
-    }
+    try { body = JSON.parse(raw); } catch { return null; }
     if (!body || typeof body.reply !== 'string') return null;
     return body;
   } catch {
@@ -76,8 +66,7 @@ function el(tag, attrs = {}, children = []) {
   for (const [key, value] of Object.entries(attrs)) {
     if (key === 'className') node.className = value;
     else if (key === 'text') node.textContent = value;
-    else if (key.startsWith('on') && typeof value === 'function')
-      node.addEventListener(key.slice(2).toLowerCase(), value);
+    else if (key.startsWith('on') && typeof value === 'function') node.addEventListener(key.slice(2).toLowerCase(), value);
     else if (value === true) node.setAttribute(key, '');
     else if (value !== false && value != null) node.setAttribute(key, String(value));
   }
@@ -91,9 +80,7 @@ function renderLinks(target, links) {
   for (const link of links) {
     if (!link) continue;
     const href = safePublicHref(link.href);
-    const label = String(link.label || '')
-      .trim()
-      .slice(0, 80);
+    const label = String(link.label || '').trim().slice(0, 80);
     if (!href || !label) continue;
     const a = el('a', { href, text: label });
     list.append(a, document.createTextNode(' '));
@@ -119,7 +106,7 @@ function mount() {
     type: 'button',
     'aria-haspopup': 'dialog',
     'aria-controls': 'assistSheet',
-    text: 'Ask Eidovara',
+    text: 'Ask Eidovara'
   });
   const sheet = el('div', {
     className: 'assist-sheet',
@@ -127,28 +114,16 @@ function mount() {
     role: 'dialog',
     'aria-modal': 'true',
     'aria-labelledby': 'assistTitle',
-    hidden: true,
+    hidden: true
   });
   const title = el('h2', { id: 'assistTitle', className: 'assist-title', text: 'Website helper' });
-  const sub = el('p', {
-    className: 'assist-sub',
-    text: 'Ask Eidovara answers from a fixed v1.0.0 knowledge pack. Not Soul, not conscious, not legal advice. Adults 18+.',
-  });
-  const close = el('button', {
-    className: 'assist-close',
-    type: 'button',
-    text: 'Close',
-    'aria-label': 'Close assistant',
-  });
-  const modes = el(
-    'div',
-    { className: 'assist-modes', role: 'radiogroup', 'aria-label': 'Helper mode' },
-    [
-      modeRadio('help', 'Help', true),
-      modeRadio('download', 'Download help'),
-      modeRadio('legal', 'Legal pointers'),
-    ]
-  );
+  const sub = el('p', { className: 'assist-sub', text: 'Ask Eidovara answers from a fixed v1.0.0 knowledge pack. Not Soul, not conscious, not legal advice. Adults 18+.' });
+  const close = el('button', { className: 'assist-close', type: 'button', text: 'Close', 'aria-label': 'Close assistant' });
+  const modes = el('div', { className: 'assist-modes', role: 'radiogroup', 'aria-label': 'Helper mode' }, [
+    modeRadio('help', 'Help', true),
+    modeRadio('download', 'Download help'),
+    modeRadio('legal', 'Legal pointers')
+  ]);
   const log = el('div', { className: 'assist-log', 'aria-live': 'polite' });
   const form = el('form', { className: 'assist-form' });
   const input = el('textarea', {
@@ -157,17 +132,14 @@ function mount() {
     rows: '2',
     maxlength: '800',
     required: true,
-    placeholder: 'Ask about download, 18+, or what Eidovara is???????',
+    placeholder: 'Ask about download, 18+, or what Eidovara is???????'
   });
   const send = el('button', { className: 'assist-send', type: 'submit', text: 'Send' });
   const tools = el('details', { className: 'assist-service' });
   tools.append(
     el('summary', { text: 'Optional online service (paste HTTPS base)' }),
-    el('p', {
-      className: 'assist-hint',
-      text: 'Leave empty to stay on this page. Saving a base may POST /v1/assist for this question only. Desktop chat is never sent. Official default for desktop health/status is https://api.eidovara.org. No workers.dev host is built in.',
-    }),
-    el('label', { className: 'assist-label', text: 'Service base' })
+    el('p', { className: 'assist-hint', text: 'Leave empty to stay on this page. Saving a base may POST /v1/assist for this question only. Desktop chat is never sent. Official default for desktop health/status is https://api.eidovara.org. No workers.dev host is built in.' }),
+    el('label', { className: 'assist-label', text: 'Service base' }),
   );
   const serviceInput = el('input', {
     id: 'assistService',
@@ -175,18 +147,10 @@ function mount() {
     maxlength: '200',
     autocomplete: 'off',
     placeholder: DEFAULT_SERVICE_BASE,
-    spellcheck: 'false',
+    spellcheck: 'false'
   });
-  const serviceSave = el('button', {
-    className: 'btn-gray assist-service-save',
-    type: 'button',
-    text: 'Save locally',
-  });
-  const sourceNote = el('p', {
-    className: 'assist-source',
-    id: 'assistSource',
-    text: 'Answering on this page (no cloud).',
-  });
+  const serviceSave = el('button', { className: 'btn-gray assist-service-save', type: 'button', text: 'Save locally' });
+  const sourceNote = el('p', { className: 'assist-source', id: 'assistSource', text: 'Answering on this page (no cloud).' });
   tools.append(serviceInput, serviceSave);
   form.append(input, send);
   const header = el('div', { className: 'assist-sheet-head' }, [title, close]);
@@ -196,11 +160,7 @@ function mount() {
 
   const stored = readBase();
   if (stored) serviceInput.value = stored;
-  addMessage(
-    log,
-    'assistant',
-    'I am a website helper for Eidovara v1.0.0, not Soul. Ask about the Windows desktop app, download, age 18+, payments, or legal pointers. Conversations are not stored.'
-  );
+  addMessage(log, 'assistant', 'I am a website helper for Eidovara v1.0.0, not Soul. Ask about the Windows desktop app, download, age 18+, payments, or legal pointers. Conversations are not stored.');
 
   function selectedMode() {
     const picked = modes.querySelector('input[name="assistMode"]:checked');
@@ -243,11 +203,7 @@ function mount() {
     let result = answerAssist(query, { mode });
     let via = 'this page';
     let base = '';
-    try {
-      base = normalizeBase(serviceInput.value || readBase());
-    } catch {
-      base = '';
-    }
+    try { base = normalizeBase(serviceInput.value || readBase()); } catch { base = ''; }
     if (base) {
       sourceNote.textContent = 'Trying optional online assist???????';
       const remote = await onlineAnswer(base, query, mode);
@@ -273,3 +229,5 @@ function modeRadio(value, label, checked = false) {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
 else mount();
+
+

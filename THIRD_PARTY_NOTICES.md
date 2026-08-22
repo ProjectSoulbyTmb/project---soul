@@ -13,3 +13,4 @@ Optional runtime destinations (not redistributed in the installer) include Wikip
 Speech output uses voices already installed on Windows. Neural TTS packs, VRM, MakeHuman, and OBS websocket clients are not redistributed or enabled in v0.19.1; they remain documented future adapters only. Live payments stay fail-closed. YouTube and Spotify controls open official HTTPS searches and do not download protected streams.
 
 Eidovara does not redistribute commercial media catalogs or bypass platform access controls. Users and distributors must comply with third-party licenses, API terms, media rights, and service policies.
+

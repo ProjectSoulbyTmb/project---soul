@@ -42,7 +42,9 @@ src/core/plugins/         # Plugin runtime (core)
   },
   "entrypoints": {
     "main": "src/index.js",
-    "commands": [{ "id": "your-plugin.action", "name": "Do Something", "action": "action" }]
+    "commands": [
+      { "id": "your-plugin.action", "name": "Do Something", "action": "action" }
+    ]
   }
 }
 ```
@@ -54,40 +56,34 @@ export default {
   name: 'Your Plugin',
   version: '1.0.0',
 
-  async init() {
-    /* called on load */
-  },
-  async cleanup() {
-    /* called on unload */
-  },
-  async action(params) {
-    return { result: 'done' };
-  },
+  async init() { /* called on load */ },
+  async cleanup() { /* called on unload */ },
+  async action(params) { return { result: 'done' }; }
 };
 ```
 
 ### Permissions
 
-| Permission      | Type                      | Description                      |
-| --------------- | ------------------------- | -------------------------------- |
-| `memory`        | `boolean`                 | Read/write Soul durable memories |
-| `filesystem`    | `string[]`                | Glob patterns for allowed paths  |
-| `network`       | `string[]`                | Allowed hostnames                |
-| `shell`         | `string[]`                | Allowed executable names         |
-| `notifications` | `boolean`                 | Desktop notifications            |
-| `clipboard`     | `"read"\|"write"\|"both"` | Clipboard access                 |
+| Permission | Type | Description |
+|------------|------|-------------|
+| `memory` | `boolean` | Read/write Soul durable memories |
+| `filesystem` | `string[]` | Glob patterns for allowed paths |
+| `network` | `string[]` | Allowed hostnames |
+| `shell` | `string[]` | Allowed executable names |
+| `notifications` | `boolean` | Desktop notifications |
+| `clipboard` | `"read"\|"write"\|"both"` | Clipboard access |
 
 ### Hooks
 
 Plugins can subscribe to kernel events:
 
-| Event                        | Payload                   |
-| ---------------------------- | ------------------------- |
-| `memory.created`             | The new memory object     |
-| `memory.updated`             | The updated memory object |
-| `memory.deleted`             | The deleted memory ID     |
-| `pomodoro.session.completed` | Session stats             |
-| `github.pr.opened`           | PR payload                |
+| Event | Payload |
+|-------|---------|
+| `memory.created` | The new memory object |
+| `memory.updated` | The updated memory object |
+| `memory.deleted` | The deleted memory ID |
+| `pomodoro.session.completed` | Session stats |
+| `github.pr.opened` | PR payload |
 
 ## License
 

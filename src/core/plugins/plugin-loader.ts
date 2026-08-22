@@ -29,31 +29,21 @@ export class PluginLoader {
     const warnings: string[] = [];
 
     if (manifest.manifest_version !== 1) errors.push('Unsupported manifest version');
-    if (!manifest.id || !/^[a-z0-9][a-z0-9.-]*$/.test(manifest.id))
-      errors.push('Invalid plugin ID');
+    if (!manifest.id || !/^[a-z0-9][a-z0-9.-]*$/.test(manifest.id)) errors.push('Invalid plugin ID');
     if (!manifest.name || manifest.name.length > 100) errors.push('Invalid plugin name');
-    if (!manifest.version || !/^\d+\.\d+\.\d+/.test(manifest.version))
-      errors.push('Invalid version format');
-    if (!manifest.entrypoints?.main && !manifest.entrypoints?.commands?.length)
-      errors.push('At least one entrypoint required');
+    if (!manifest.version || !/^\d+\.\d+\.\d+/.test(manifest.version)) errors.push('Invalid version format');
+    if (!manifest.entrypoints?.main && !manifest.entrypoints?.commands?.length) errors.push('At least one entrypoint required');
     if (!manifest.author) warnings.push('Missing author field');
     if (!manifest.permissions) warnings.push('No permissions declared');
 
-    return {
-      valid: errors.length === 0,
-      errors,
-      warnings,
-      manifest: errors.length === 0 ? manifest : undefined,
-    };
+    return { valid: errors.length === 0, errors, warnings, manifest: errors.length === 0 ? manifest : undefined };
   }
 
   async loadPlugin(pluginPath: string): Promise<LoadedPlugin> {
     if (this.loaded.size >= this.maxPlugins) throw new Error('Maximum plugin limit reached');
 
     // In production this reads manifest.json from disk; here we accept the caller-provided object
-    const manifestOrRaw = await import(/* @vite-ignore */ `${pluginPath}/manifest.json`).catch(
-      () => null
-    );
+    const manifestOrRaw = await import(/* @vite-ignore */ `${pluginPath}/manifest.json`).catch(() => null);
     const raw = manifestOrRaw?.default ?? manifestOrRaw;
     if (!raw) throw new Error(`Cannot read manifest at ${pluginPath}`);
 
@@ -63,9 +53,7 @@ export class PluginLoader {
 
     const permMap = new Map(Object.entries(manifest.permissions ?? {}));
     const sandbox = createPluginSandbox(manifest, permMap);
-    const mod = await import(
-      /* @vite-ignore */ `${pluginPath}/${manifest.entrypoints.main ?? 'index.js'}`
-    );
+    const mod = await import(/* @vite-ignore */ `${pluginPath}/${manifest.entrypoints.main ?? 'index.js'}`);
     const exports = mod?.default ?? mod ?? {};
 
     const plugin: LoadedPlugin = { manifest, sandbox, exports, initialized: false };
@@ -91,16 +79,8 @@ export class PluginLoader {
     if (idx !== -1) this.loadOrder.splice(idx, 1);
   }
 
-  getPlugin(id: string): LoadedPlugin | undefined {
-    return this.loaded.get(id);
-  }
-  getAll(): LoadedPlugin[] {
-    return this.loadOrder.map(id => this.loaded.get(id)!).filter(Boolean);
-  }
-  isLoaded(id: string): boolean {
-    return this.loaded.has(id);
-  }
-  get count(): number {
-    return this.loaded.size;
-  }
+  getPlugin(id: string): LoadedPlugin | undefined { return this.loaded.get(id); }
+  getAll(): LoadedPlugin[] { return this.loadOrder.map(id => this.loaded.get(id)!).filter(Boolean); }
+  isLoaded(id: string): boolean { return this.loaded.has(id); }
+  get count(): number { return this.loaded.size; }
 }

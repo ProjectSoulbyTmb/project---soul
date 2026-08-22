@@ -1,11 +1,12 @@
 ﻿cff-version: 1.2.0
 title: Eidovara
-message: 'Citation does not grant a software license. Copyright (c) 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source.'
+message: "Citation does not grant a software license. Copyright (c) 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source."
 type: software
 authors:
   - family-names: Bosworth
     given-names: Tyler Michael
 version: 0.22.2
 date-released: 2026-08-21
-repository-code: 'https://github.com/ProjectSoulbyTmb/project---soul'
+repository-code: "https://github.com/ProjectSoulbyTmb/project---soul"
 license: LicenseRef-Eidovara-Source-Available-1.0
+

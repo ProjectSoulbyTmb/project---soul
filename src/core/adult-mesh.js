@@ -11,15 +11,9 @@ import { normalizeAdultAvatar } from './adult-soul.js';
 import { clothingTint, frameworkRadii } from './adult-show.js';
 
 export const FIGURE_QUALITY = Object.freeze({
-  ultra: {
-    slices: 72,
-    stacks: 112,
-    hairShells: 3,
-    hairStacks: 28,
-    label: 'Ultra (highest first-party mesh)',
-  },
+  ultra: { slices: 72, stacks: 112, hairShells: 3, hairStacks: 28, label: 'Ultra (highest first-party mesh)' },
   high: { slices: 56, stacks: 88, hairShells: 2, hairStacks: 20, label: 'High' },
-  performance: { slices: 32, stacks: 48, hairShells: 1, hairStacks: 12, label: 'Performance' },
+  performance: { slices: 32, stacks: 48, hairShells: 1, hairStacks: 12, label: 'Performance' }
 });
 
 export const FIGURE_BACKEND = Object.freeze({
@@ -32,7 +26,7 @@ export const FIGURE_BACKEND = Object.freeze({
   maxStacks: FIGURE_QUALITY.ultra.stacks,
   hair: true,
   facePaint: true,
-  note: 'Highest quality is a first-party WebGL lathe with painted face, hair shells, clothing pigment, and studio lighting. Eidovara does not bundle VRM or MakeHuman.',
+  note: 'Highest quality is a first-party WebGL lathe with painted face, hair shells, clothing pigment, and studio lighting. Eidovara does not bundle VRM or MakeHuman.'
 });
 
 const clamp01 = value => Math.max(0, Math.min(1, Number(value) || 0));
@@ -45,15 +39,7 @@ const mix3 = (a, b, c, t, u) => lerp(lerp(a, b, t), c, u);
 
 export function hexRgb(hex) {
   const raw = String(hex || '#c99578').replace('#', '');
-  const n = parseInt(
-    raw.length === 3
-      ? raw
-          .split('')
-          .map(ch => ch + ch)
-          .join('')
-      : raw.padEnd(6, '0').slice(0, 6),
-    16
-  );
+  const n = parseInt(raw.length === 3 ? raw.split('').map(ch => ch + ch).join('') : raw.padEnd(6, '0').slice(0, 6), 16);
   if (!Number.isFinite(n)) return { r: 0.79, g: 0.58, b: 0.47 };
   return { r: ((n >> 16) & 255) / 255, g: ((n >> 8) & 255) / 255, b: (n & 255) / 255 };
 }
@@ -69,21 +55,20 @@ function gauss(x, mu, sigma) {
 
 export function hairCoverage(style, length) {
   const L = clamp01((Number(length) || 50) / 100);
-  const base =
-    {
-      pixie: 0.07,
-      crop: 0.09,
-      fade: 0.1,
-      'shaved-sides': 0.1,
-      undercut: 0.16,
-      'loose-bun': 0.15,
-      'curly-crown': 0.18,
-      'high-tail': 0.22,
-      shoulder: 0.26,
-      braids: 0.34,
-      'long-wave': 0.4,
-      'long-straight': 0.46,
-    }[style] || 0.22;
+  const base = {
+    pixie: 0.07,
+    crop: 0.09,
+    fade: 0.1,
+    'shaved-sides': 0.1,
+    undercut: 0.16,
+    'loose-bun': 0.15,
+    'curly-crown': 0.18,
+    'high-tail': 0.22,
+    shoulder: 0.26,
+    braids: 0.34,
+    'long-wave': 0.4,
+    'long-straight': 0.46
+  }[style] || 0.22;
   return base * (0.55 + L * 0.75);
 }
 
@@ -193,8 +178,7 @@ function paintSkin(avatar, t, theta, skin, tan, blush) {
   g = lerp(g, 0.08, brow);
   b = lerp(b, 0.06, brow);
 
-  const cheek =
-    gauss(t, 0.072, 0.02) * gauss(side, 0.55, 0.22) * front * (cheekAmt * 0.5 + blush * 0.25);
+  const cheek = gauss(t, 0.072, 0.02) * gauss(side, 0.55, 0.22) * front * (cheekAmt * 0.5 + blush * 0.25);
   r = Math.min(1, r + cheek * 0.18);
   g = Math.max(0, g - cheek * 0.04);
 
@@ -279,41 +263,21 @@ function appendLathe(target, avatar, spec, opts) {
 function computeNormals(positions, indices) {
   const normals = new Array(positions.length).fill(0);
   for (let i = 0; i < indices.length; i += 3) {
-    const ia = indices[i] * 3,
-      ib = indices[i + 1] * 3,
-      ic = indices[i + 2] * 3;
-    const ax = positions[ia],
-      ay = positions[ia + 1],
-      az = positions[ia + 2];
-    const bx = positions[ib],
-      by = positions[ib + 1],
-      bz = positions[ib + 2];
-    const cx = positions[ic],
-      cy = positions[ic + 1],
-      cz = positions[ic + 2];
-    const ux = bx - ax,
-      uy = by - ay,
-      uz = bz - az;
-    const vx = cx - ax,
-      vy = cy - ay,
-      vz = cz - az;
+    const ia = indices[i] * 3, ib = indices[i + 1] * 3, ic = indices[i + 2] * 3;
+    const ax = positions[ia], ay = positions[ia + 1], az = positions[ia + 2];
+    const bx = positions[ib], by = positions[ib + 1], bz = positions[ib + 2];
+    const cx = positions[ic], cy = positions[ic + 1], cz = positions[ic + 2];
+    const ux = bx - ax, uy = by - ay, uz = bz - az;
+    const vx = cx - ax, vy = cy - ay, vz = cz - az;
     const nx = uy * vz - uz * vy;
     const ny = uz * vx - ux * vz;
     const nz = ux * vy - uy * vx;
-    normals[ia] += nx;
-    normals[ia + 1] += ny;
-    normals[ia + 2] += nz;
-    normals[ib] += nx;
-    normals[ib + 1] += ny;
-    normals[ib + 2] += nz;
-    normals[ic] += nx;
-    normals[ic + 1] += ny;
-    normals[ic + 2] += nz;
+    normals[ia] += nx; normals[ia + 1] += ny; normals[ia + 2] += nz;
+    normals[ib] += nx; normals[ib + 1] += ny; normals[ib + 2] += nz;
+    normals[ic] += nx; normals[ic + 1] += ny; normals[ic + 2] += nz;
   }
   for (let i = 0; i < normals.length; i += 3) {
-    const nx = normals[i],
-      ny = normals[i + 1],
-      nz = normals[i + 2];
+    const nx = normals[i], ny = normals[i + 1], nz = normals[i + 2];
     const len = Math.hypot(nx, ny, nz) || 1;
     normals[i] = nx / len;
     normals[i + 1] = ny / len;
@@ -337,7 +301,7 @@ export function buildAdultMesh(avatarInput = {}, quality = 'ultra') {
     kind: 'body',
     stacks: spec.stacks,
     height,
-    posture,
+    posture
   });
 
   const coverage = hairCoverage(avatar.hair.style, avatar.hair.length);
@@ -353,7 +317,7 @@ export function buildAdultMesh(avatarInput = {}, quality = 'ultra') {
         radiusAdd: 0.012 + shell * 0.01,
         yShift: 0.02 + shell * 0.006,
         wave: avatar.hair.style === 'curly-crown' || avatar.hair.style === 'long-wave' ? 5 : 3,
-        bodyT: t => t * coverage,
+        bodyT: t => t * coverage
       });
     }
   }
@@ -370,7 +334,7 @@ export function buildAdultMesh(avatarInput = {}, quality = 'ultra') {
     indices: vertexCountToIndex(positions.length / 3, indices),
     vrm: false,
     makeHuman: false,
-    artwork: { facePaint: true, hairShells: spec.hairShells, clothing: true },
+    artwork: { facePaint: true, hairShells: spec.hairShells, clothing: true }
   };
 }
 
@@ -382,9 +346,7 @@ export function meshQualityScore(mesh) {
   if (!mesh) return 0;
   const verts = mesh.vertexCount || 0;
   const tris = mesh.triangleCount || 0;
-  const ultra =
-    FIGURE_QUALITY.ultra.slices *
-    (FIGURE_QUALITY.ultra.stacks +
-      FIGURE_QUALITY.ultra.hairStacks * FIGURE_QUALITY.ultra.hairShells);
+  const ultra = FIGURE_QUALITY.ultra.slices * (FIGURE_QUALITY.ultra.stacks + FIGURE_QUALITY.ultra.hairStacks * FIGURE_QUALITY.ultra.hairShells);
   return Math.min(100, Math.round((verts / Math.max(1, ultra)) * 70 + Math.min(30, tris / 2500)));
 }
+

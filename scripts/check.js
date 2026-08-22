@@ -12,8 +12,7 @@ function walk(dir) {
     const full = path.join(dir, entry.name);
     if (entry.isDirectory()) {
       if (!skipDirs.has(entry.name)) walk(full);
-    } else if (/\.(?:js|cjs)$/.test(entry.name) && full !== path.join('scripts', 'check.js'))
-      files.push(full);
+    } else if (/\.(?:js|cjs)$/.test(entry.name) && full !== path.join('scripts', 'check.js')) files.push(full);
   }
 }
 for (const root of roots) walk(root);
@@ -22,3 +21,4 @@ for (const file of files) {
   if (result.status !== 0) process.exit(result.status || 1);
 }
 console.log(`Syntax check OK (${files.length} files)`);
+
