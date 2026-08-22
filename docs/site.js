@@ -197,8 +197,8 @@ try {
     select.setAttribute('aria-label', 'Language');
     const langs = [
       { code: 'en', name: 'English' },
-      { code: 'es', name: 'Espa????ol' },
-      { code: 'fr', name: 'Fran????ais' },
+      { code: 'es', name: 'EspaÃ±ol' },
+      { code: 'fr', name: 'FranÃ§ais' },
       { code: 'de', name: 'Deutsch' }
     ];
     select.innerHTML = langs.map(l => `<option value="${l.code}" ${getStoredLang() === l.code ? 'selected' : ''}>${l.name}</option>`).join('');
@@ -220,14 +220,14 @@ try {
         const text = el.textContent.trim();
         try {
           await navigator.clipboard.writeText(text);
-          btn.textContent = '???????';
+          btn.textContent = 'âœ“';
           btn.classList.add('copied');
           setTimeout(() => {
             btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
             btn.classList.remove('copied');
           }, 2000);
         } catch (e) {
-          btn.textContent = '???????';
+          btn.textContent = 'âœ“';
           setTimeout(() => btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>', 2000);
         }
       });
@@ -247,7 +247,7 @@ try {
     fileInput.addEventListener('change', async e => {
       const file = e.target.files[0];
       if (!file) return;
-      resultEl.textContent = 'Computing SHA-256???????';
+      resultEl.textContent = 'Computing SHA-256â€¦';
       resultEl.className = 'verify-result verifying';
       try {
         const buffer = await file.arrayBuffer();
@@ -256,8 +256,8 @@ try {
         const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
         const match = hashHex === EXPECTED_SHA256;
         resultEl.innerHTML = match
-          ? `<span class="verify-ok">??????? Verified</span> SHA-256 matches: <code>${hashHex}</code>`
-          : `<span class="verify-fail">??????? Mismatch</span> Expected: <code>${EXPECTED_SHA256}</code>, Got: <code>${hashHex}</code>`;
+          ? `<span class="verify-ok">âœ“ Verified</span> SHA-256 matches: <code>${hashHex}</code>`
+          : `<span class="verify-fail">âœ— Mismatch</span> Expected: <code>${EXPECTED_SHA256}</code>, Got: <code>${hashHex}</code>`;
         resultEl.className = 'verify-result ' + (match ? 'verified' : 'failed');
       } catch (e) {
         resultEl.textContent = 'Error computing hash: ' + e.message;
@@ -453,10 +453,10 @@ try {
       }
       if (!base) {
         stopStatusPoll();
-        failClosed('No valid HTTPS service base. Fail closed ???????? nothing was fetched.');
+        failClosed('No valid HTTPS service base. Fail closed â€” nothing was fetched.');
         return;
       }
-      if (!fromPoll) failClosed(`Checking ${base} ???????`);
+      if (!fromPoll) failClosed(`Checking ${base} â€¦`);
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 8000);
       const boundedJson = async res => {
@@ -473,6 +473,30 @@ try {
           fetch(`${base}/v1/status`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } })
         ]);
         const health = await boundedJson(healthRes);
+        const status = await boundedJson(statusRes);
+        const online = healthRes.ok && statusRes.ok && (health.status === 'ok' || health.online === true) && (status.status === 'ok' || status.online === true);
+        if (online) statusFailCount = 0;
+        else statusFailCount += 1;
+        const presence = presenceOf(online, !online);
+        const lines = [
+          `Presence: ${presence}`,
+          `Base: ${base}`,
+          `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
+          `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
+          'This website never sends desktop conversations. v1.0.0 payments stay off. Check keeps polling; Clear stops.'
+        ];
+        failClosed(lines.join('\n'));
+        stopStatusPoll();
+        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(!online));
+      } catch (error) {
+        statusFailCount += 1;
+        failClosed(`Presence: Reconnecting\nUnreachable (${error.name === 'AbortError' ? 'timeout' : (error.message || 'fetch failed')}). Fail closed. Offline Soul and this website still work.`);
+        stopStatusPoll();
+        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(true));
+      } finally {
+        clearTimeout(timer);
+      }
+    };
     probe?.addEventListener('click', async event => {
       event.preventDefault();
       statusFailCount = 0;
@@ -480,84 +504,10 @@ try {
     });
   }
 
-  async function boundedJson(res) {
-    const maxBytes = 32768;
-    const declared = Number(res.headers.get('content-length') || 0);
-    if (declared > maxBytes) return {};
-    const raw = await res.text();
-    if (raw.length > maxBytes) return {};
-    try { return JSON.parse(raw); } catch { return {}; }
-  };
 
-  function normalizeBase(value) {
-    let raw = String(value || '').trim();
-    if (!raw) return '';
-    if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) raw = `https://${raw}`;
-    const url = new URL(raw);
-    if (url.username || url.password) throw new Error('Service URL must not include credentials.');
-    if (url.protocol !== 'https:') throw new Error('Service URL must use HTTPS.');
-    const suffixes = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
-    let path = String(url.pathname || '').replace(/\/+$/, '');
-    for (const suffix of suffixes) {
-      const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      path = path.replace(new RegExp(`${escaped}$`, 'i'), '').replace(/\/+$/, '');
-    }
-    return `${url.origin}${path}`.replace(/\/+$/, '');
-  }
 
-  function readStoredBase() {
-    try { return String(localStorage.getItem('eidovara.serviceBase') || '').trim(); } catch { return ''; }
-  }
 
-  function writeStoredBase(value) {
-    try {
-      if (value) localStorage.setItem('eidovara.serviceBase', value);
-      else localStorage.removeItem('eidovara.serviceBase');
-    } catch { /* private mode */ }
-  }
-
-  function nextPollDelay(failed) {
-    if (!failed) return 25000 + Math.floor(Math.random() * 5000);
-    let backoff = 4000;
-    for (let i = 0; i < statusFailCount; i += 1) {
-      if (backoff >= 64000) { backoff = 64000; break; }
-      backoff *= 2;
-    }
-    return backoff + Math.floor(Math.random() * 5000);
-  }
-
-  function presenceOf(online, failed) {
-    if (online) return 'Online';
-    if (failed) return 'Reconnecting';
-    return 'Offline';
-  }
-
-  function saveBase(event) {
-    event.preventDefault();
-    try {
-      const base = normalizeBase(input?.value || '');
-      writeStoredBase(base);
-      failClosed(base
-        ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent. Ask Eidovara may use this base for /v1/assist.`
-        : 'Cleared. Default https://api.eidovara.org. Ask Eidovara stays on this page until you save a base.');
-    } catch (error) {
-      failClosed(error.message || 'Invalid service URL.');
-    }
-  }
-
-  const failClosed = message => {
-    if (out) out.textContent = message;
-  };
-
-  const stopStatusPoll = () => {
-    if (statusPollTimer) {
-      clearTimeout(statusPollTimer);
-      statusPollTimer = 0;
-    }
-  };
 })();
-
-
 // Service worker registration (moved out of inline HTML to keep CSP script-src 'self').
 if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
 
