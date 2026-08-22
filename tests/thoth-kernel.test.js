@@ -221,3 +221,139 @@ test('help listing stays honest about what THOTH is', async () => {
   assert.match(res.reply, /THOTH tools on this device/);
   assert.doesNotMatch(res.reply, /alive|sentient|self-aware|feelings/i);
 });
+
+/* ------------------------------ failsafes ------------------------------ */
+
+test('L2 cannot be held as a standing grant (elevation is per-call only)', () => {
+  const s = defaultThothState();
+  assert.throws(() => setStandingGrant(s, 'e.f', 'L2'), /per-call/);
+  assert.ok(s.log.some((e) => e.type === 'thoth.grant.refused'));
+});
+
+test('emergency stop disables the kernel and clears every standing grant', async () => {
+  const k = createThothKernel({});
+  k.grant('note.append', 'L1');
+  const out = k.stop('drill');
+  assert.equal(out.revoked >= 1, true);
+  assert.equal(k.state.masterEnabled, false);
+  assert.ok(!Object.values(k.state.tools).some((t) => t.standingClass));
+  const res = await k.runTool('time.now', {});
+  assert.equal(res.error, 'permission-denied'); // broker rejects via master flag
+  assert.equal(res.reason, 'thoth-disabled');
+});
+
+test('env kill switch forces masterEnabled off regardless of stored state', () => {
+  const s = defaultThothState();
+  s.masterEnabled = true;
+  const prev = process.env.EIDOVARA_THOTH_DISABLED;
+  process.env.EIDOVARA_THOTH_DISABLED = '1';
+  try {
+    const k = createThothKernel({ state: s });
+    assert.equal(k.state.masterEnabled, false);
+  } finally {
+    if (prev === undefined) delete process.env.EIDOVARA_THOTH_DISABLED;
+    else process.env.EIDOVARA_THOTH_DISABLED = prev;
+  }
+});
+
+test('bus enforces per-tool rate limits', async () => {
+  const state = defaultThothState();
+  const bus = createBus({ registry: makeRegistry(), state, limits: { toolRate: 2, globalRate: 100 } });
+  assert.equal((await bus.dispatch('time.now', {})).ok, true);
+  assert.equal((await bus.dispatch('time.now', {})).ok, true);
+  assert.equal((await bus.dispatch('time.now', {})).error, 'rate-limited');
+  // A different tool still passes under its own bucket.
+  assert.equal((await bus.dispatch('system.info', {})).ok, true);
+});
+
+test('circuit breaker opens after consecutive failures and logs the trip', async () => {
+  const state = defaultThothState();
+  const flaky = normalizeTool({
+    id: 'x.flaky',
+    permissionClass: 'L0',
+    handler: () => {
+      throw new Error('boom');
+    },
+  });
+  const bus = createBus({ registry: makeRegistry([flaky]), state });
+  for (let i = 0; i < 5; i += 1) await bus.dispatch('x.flaky', {});
+  const out = await bus.dispatch('x.flaky', {});
+  assert.equal(out.error, 'circuit-open');
+  assert.ok(state.log.some((e) => e.type === 'thoth.breaker.open'));
+});
+
+test('oversized or non-serializable arguments fail closed before handlers run', async () => {
+  let ran = false;
+  const spy = normalizeTool({
+    id: 'x.spy',
+    permissionClass: 'L0',
+    handler: () => {
+      ran = true;
+      return { ok: 1 };
+    },
+  });
+  const bus = createBus({ registry: makeRegistry([spy]), state: defaultThothState() });
+
+  const big = await bus.dispatch('x.spy', { blob: 'y'.repeat(9000) });
+  assert.equal(big.error, 'args-too-large');
+  assert.equal(ran, false);
+
+  const circular = {};
+  circular.self = circular;
+  assert.equal((await bus.dispatch('x.spy', circular)).error, 'invalid-args');
+  assert.equal(ran, false);
+});
+
+test('returned data is JSON-normalized: functions and prototypes are stripped', async () => {
+  const dirty = normalizeTool({
+    id: 'x.dirty',
+    permissionClass: 'L0',
+    handler: () => {
+      const o = { safe: 1 };
+      o.fn = () => 'nope';
+      return o;
+    },
+  });
+  const bus = createBus({ registry: makeRegistry([dirty]), state: defaultThothState() });
+  const out = await bus.dispatch('x.dirty', {});
+  assert.equal(out.ok, true);
+  assert.deepEqual(Object.keys(out.data), ['safe']);
+});
+
+test('reentrant dispatch of a running tool is rejected as busy', async () => {
+  let release;
+  const gate = new Promise((r) => {
+    release = r;
+  });
+  const holds = normalizeTool({
+    id: 'x.hold',
+    permissionClass: 'L0',
+    handler: () => gate,
+  });
+  const bus = createBus({ registry: makeRegistry([holds]), state: defaultThothState() });
+  const first = bus.dispatch('x.hold', {});
+  await sleep(5);
+  const second = await bus.dispatch('x.hold', {});
+  assert.equal(second.error, 'tool-busy');
+  release();
+  assert.equal((await first).ok, true);
+});
+
+test('routine preflight refuses unknown tools and unelevated L2 steps up front', async () => {
+  const k = createThothKernel({});
+  assert.throws(() => k.defineRoutine('bad1', [{ tool: 'ghost.tool' }]));
+
+  const adminTool = k.register({
+    id: 'z.elevated',
+    title: 'Elevated demo',
+    permissionClass: 'L2',
+    intents: [],
+    handler: () => ({ ok: true }),
+  });
+  k.defineRoutine('needs-admin', [{ tool: adminTool }]);
+  const refused = await k.runRoutine('needs-admin', { dryRun: false });
+  assert.equal(refused.error, 'admin-required');
+
+  const allowed = await k.runRoutine('needs-admin', { dryRun: false, adminAuthorized: true });
+  assert.equal(allowed.ok, true);
+});

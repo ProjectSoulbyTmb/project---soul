@@ -19,6 +19,7 @@ import {
   setToolEnabled,
   defineRoutine,
   runRoutine as runRoutineCore,
+  emergencyStop,
 } from './kernel.js';
 
 export { PERMISSION_CLASSES, CLASS_ORDER };
@@ -32,6 +33,8 @@ const HONESTY_NOTE =
  */
 export function createThothKernel(opts = {}) {
   const state = migrateThothState(opts.state);
+  // Ops kill switch: environment always wins over stored state.
+  if (process.env.EIDOVARA_THOTH_DISABLED === '1') state.masterEnabled = false;
   const registry = new Map();
 
   for (const def of BUILTIN_TOOLS) {
@@ -47,6 +50,15 @@ export function createThothKernel(opts = {}) {
     if (!state.tools[tool.id]) state.tools[tool.id] = {};
     pushEvent(state, 'thoth.tool.registered', { tool: tool.id });
     return tool.id;
+  }
+
+  /**
+   * EMERGENCY STOP passthrough: disables the kernel and revokes every standing
+   * grant in one atomic action. Recovery requires explicitly setting
+   * kernel.state.masterEnabled = true; grants are never auto-restored.
+   */
+  function stop(reason) {
+    return emergencyStop(state, reason);
   }
 
   const bus = createBus({
@@ -134,17 +146,27 @@ export function createThothKernel(opts = {}) {
     registry,
     listTools,
     register,
+    stop,
     resolveIntent,
     matchInvocation,
     runTool,
     handleCommand,
     grant: (id, klass, o) => setStandingGrant(state, id, klass, o),
     enableTool: (id, on) => setToolEnabled(state, id, on),
-    defineRoutine: (id, steps) => defineRoutine(state, id, steps),
-    runRoutine: (id, o) => runRoutineCore(state, id, (tool, args, meta) => bus.dispatch(tool, args, meta), {
-      dryRun: true,
-      ...(o || {}),
-    }),
+    defineRoutine: (id, steps) =>
+      defineRoutine(state, id, steps, { hasTool: (tid) => registry.has(tid) }),
+    runRoutine: (id, o) =>
+      runRoutineCore(
+        state,
+        id,
+        (tool, args, meta) => bus.dispatch(tool, args, meta),
+        {
+          dryRun: true,
+          adminAuthorized: false,
+          toolClassOf: (tid) => registry.get(tid)?.permissionClass || null,
+          ...(o || {}),
+        }
+      ),
   };
 }
 
@@ -172,12 +194,27 @@ export function attachToEngine(engine, opts = {}) {
 
   engine.respond = async function thothAwareRespond(input, extra = {}) {
     const probeText = typeof input === 'string' ? input : String(input?.text ?? '');
-    const parsed = kernel.matchInvocation(probeText);
+    let parsed;
+    try {
+      parsed = kernel.matchInvocation(probeText);
+    } catch {
+      parsed = null; // parsing must never break the engine
+    }
     if (!parsed) return baseRespond(input, extra);
 
-    const result = await kernel.handleCommand(parsed, {
-      adminAuthorized: extra?.adminAuthorized === true,
-    });
+    // Failsafe: a THOTH failure becomes an honest error reply, never a crash.
+    let result;
+    try {
+      result = await kernel.handleCommand(parsed, {
+        adminAuthorized: extra?.adminAuthorized === true,
+      });
+    } catch (err) {
+      result = {
+        ok: false,
+        error: 'kernel-error',
+        reply: `THOTH failed safely (${String(err?.message || err).slice(0, 120)}).\n${HONESTY_NOTE}`,
+      };
+    }
 
     const now = new Date().toISOString();
     const conv =

@@ -24,7 +24,10 @@ export const PERMISSION_CLASSES = Object.freeze({
 export const CLASS_ORDER = Object.freeze(['L0', 'L1', 'L2']);
 const MAX_LOG = 1000;
 const MAX_ROUTINE_STEPS = 24;
-const GRANT_TTL_MS = 30 * 24 * 60 * 60 * 1000; // 30 days for standing L1 grants
+const MAX_ROUTINES = 64;
+// Standing grants are capped at 30 days; callers may request less, never more.
+const GRANT_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const MAX_GRANT_TTL_MS = GRANT_TTL_MS;
 
 export function defaultThothState() {
   return {
@@ -78,13 +81,14 @@ export function migrateThothState(input) {
   return next;
 }
 
-/** Append-only, capped event log entry. */
+/** Append-only, capped event log entry. Frozen to prevent tampering. */
 export function pushEvent(state, type, details) {
-  state.log.push({
+  const entry = Object.freeze({
     at: new Date().toISOString(),
     type: String(type).slice(0, 60),
-    details: details && typeof details === 'object' ? details : {},
+    details: Object.freeze(details && typeof details === 'object' ? { ...details } : {}),
   });
+  state.log.push(entry);
   if (state.log.length > MAX_LOG) state.log.splice(0, state.log.length - MAX_LOG);
 }
 
@@ -138,12 +142,23 @@ export function checkPermission(state, tool, ctx = {}) {
   return { allowed: false, reason: 'no-grant' };
 }
 
-/** Grant/revoke standing permission. Returns updated record or null on revoke. */
+/**
+ * Grant/revoke standing permission.
+ *
+ * Safeguards:
+ *  - L2 can NEVER be held as a standing grant. Elevated scope is per-call only
+ *    (live admin gate at dispatch); refusing here closes a persistence hole.
+ *  - TTL is clamped to MAX_GRANT_TTL_MS; callers get shorter, never longer.
+ */
 export function setStandingGrant(state, toolId, klass, { ttlMs = GRANT_TTL_MS } = {}) {
   const key = clampId(toolId);
   if (!key) throw new Error('THOTH grant requires a valid tool id.');
   if (klass !== null && !CLASS_ORDER.includes(klass))
     throw new Error(`Unknown THOTH permission class: ${klass}`);
+  if (klass === 'L2') {
+    pushEvent(state, 'thoth.grant.refused', { tool: key, class: klass, why: 'elevation-is-per-call-only' });
+    throw new Error('L2 cannot be granted as standing permission; elevation is per-call.');
+  }
 
   if (klass === null) {
     delete state.tools[key];
@@ -156,11 +171,32 @@ export function setStandingGrant(state, toolId, klass, { ttlMs = GRANT_TTL_MS } 
     enabled: state.tools[key]?.enabled !== false,
     standingClass: klass,
     grantedAt: new Date(now).toISOString(),
-    expiresAt: klass === 'L0' ? null : now + Math.max(1000, Number(ttlMs) || GRANT_TTL_MS),
+    expiresAt: now + Math.min(Math.max(1000, Number(ttlMs) || GRANT_TTL_MS), MAX_GRANT_TTL_MS),
   };
   state.tools[key] = rec;
   pushEvent(state, 'thoth.grant', { tool: key, class: klass });
   return rec;
+}
+
+/**
+ * EMERGENCY STOP. Failsafes the whole kernel in one call:
+ *  - masterEnabled = false (broker rejects every dispatch immediately)
+ *  - all standing grants revoked (nothing survives to silently re-arm)
+ * Idempotent. Recovery is an explicit operator action:
+ *   state.masterEnabled = true (grants stay cleared).
+ */
+export function emergencyStop(state, reason = 'operator') {
+  state.masterEnabled = false;
+  let revoked = 0;
+  for (const key of Object.keys(state.tools)) {
+    if (state.tools[key].standingClass) {
+      delete state.tools[key].standingClass;
+      delete state.tools[key].expiresAt;
+      revoked += 1;
+    }
+  }
+  pushEvent(state, 'thoth.emergency-stop', { reason: String(reason).slice(0, 80), revoked });
+  return { revoked };
 }
 
 export function setToolEnabled(state, toolId, enabled) {
@@ -177,16 +213,22 @@ export function setToolEnabled(state, toolId, enabled) {
  * Routines (bounded deterministic sequences)
  * ------------------------------------------------------------------ */
 
-export function defineRoutine(state, id, definition) {
+export function defineRoutine(state, id, definition, { hasTool } = {}) {
   const key = clampId(id);
   if (!key) throw new Error('Routine id is required.');
   if (!Array.isArray(definition) || definition.length === 0)
     throw new Error('Routine definition must be a non-empty array of steps.');
   if (definition.length > MAX_ROUTINE_STEPS)
     throw new Error(`Routines are limited to ${MAX_ROUTINE_STEPS} steps.`);
+  if (!state.routines[key] && Object.keys(state.routines).length >= MAX_ROUTINES)
+    throw new Error(`Routine storage is limited to ${MAX_ROUTINES} definitions.`);
   for (const step of definition) {
     if (!step || typeof step !== 'object' || typeof step.tool !== 'string')
       throw new Error('Each routine step must reference a tool by name.');
+    // Fail at definition time when a registry is supplied: unknown tools must
+    // never be discovered mid-run.
+    if (typeof hasTool === 'function' && !hasTool(clampId(step.tool)))
+      throw new Error(`Routine references unknown tool: ${step.tool}`);
   }
   const prev = state.routines[key];
   state.routines[key] = {
@@ -202,10 +244,25 @@ export function defineRoutine(state, id, definition) {
  * Dry-run or execute a routine step-by-step through `dispatch`.
  * Execution stops at the first failed step unless `continueOnError`.
  */
-export async function runRoutine(state, id, dispatch, { dryRun = true, continueOnError = false } = {}) {
+export async function runRoutine(
+  state,
+  id,
+  dispatch,
+  { dryRun = true, continueOnError = false, adminAuthorized = false, toolClassOf } = {}
+) {
   const key = clampId(id);
   const rec = state.routines[key];
   if (!rec) return { ok: false, error: 'routine-not-found' };
+
+  // Preflight: refuse the WHOLE run up front if any step needs elevation that
+  // is not present, or any tool is unknown. Never half-execute a routine.
+  for (const step of rec.definition) {
+    if (typeof toolClassOf === 'function') {
+      if (!toolClassOf(step.tool)) return { ok: false, error: 'unknown-tool-in-routine', tool: step.tool };
+      if (toolClassOf(step.tool) === 'L2' && !adminAuthorized)
+        return { ok: false, error: 'admin-required', tool: step.tool };
+    }
+  }
 
   const results = [];
   let stoppedAt = null;
@@ -216,7 +273,11 @@ export async function runRoutine(state, id, dispatch, { dryRun = true, continueO
       results.push({ step: i, tool: step.tool, dryRun: true });
       continue;
     }
-    const out = await dispatch(step.tool, step.args, { routine: key, step: i });
+    const out = await dispatch(step.tool, step.args, {
+      routine: key,
+      step: i,
+      adminAuthorized: adminAuthorized === true,
+    });
     results.push({ step: i, tool: step.tool, ok: out.ok, error: out.error || null });
     if (!out.ok && !continueOnError) {
       stoppedAt = i;
