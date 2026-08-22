@@ -1,29 +1,93 @@
-# Intellectual-property notices and takedowns
-
-This is a project record, **not legal advice**. It does not create extra rights beyond applicable law, GitHub’s terms, and LICENSE.
-
-## Reporting suspected infringement of Eidovara first-party material
-
-If you believe someone is copying first-party Eidovara source, marks, or brand assets in a way that violates LICENSE or trademark law, open a GitHub issue with the **Intellectual property notice** template or email the repository owner through GitHub. Include:
-
-- the URL or product name of the copy
-- which first-party files or marks you believe are involved
-- your relationship to the project (owner, licensee, or unaffiliated reporter)
-
-Do not attach exploits, credentials, private keys, or personal data.
-
-Official DMCA takedown notices aimed at GitHub-hosted content must follow [GitHub’s DMCA process](https://docs.github.com/en/site-policy/content-removal-policies/dmca-takedown-policy). A GitHub issue is not a substitute for that process. This project has **not** designated a registered DMCA agent with the U.S. Copyright Office; do not invent an agent number. Use GitHub’s published process for GitHub-hosted content.
-
-## Third-party claims against this repository
-
-If you are a rights holder and believe this repository infringes **your** copyright, send a complete DMCA notice through GitHub’s published process. Do not paste malware, credentials, or non-public personal information into a public issue.
-
-Nominative references to Windows, Electron, Chromium, GitHub, Cloudflare, Wikipedia/Wikimedia, Spotify, YouTube, and similar names describe compatibility or optional user-directed links. They are not a claim that Eidovara owns those marks or ships those products.
-
-## What this project will not do here
-
-- Host executed settlements, government certificates, or private correspondence
-- Claim ®, a USPTO serial, a Copyright Office registration number, or “patent pending” unless those become true
-- Accept inbound copyrightable patches in lieu of a privately executed assignment ([CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) is an unsigned template)
-
-See [IP_CERTIFICATION.md](IP_CERTIFICATION.md), [OWNERSHIP.md](../OWNERSHIP.md), and [TRADEMARKS.md](../TRADEMARKS.md).
+{
+  "kind": "repository-self-attestation",
+  "schemaVersion": 1,
+  "recordDate": "2026-08-21",
+  "claimant": "Soul Consciousness Studios",
+  "intendedPublisherName": "Soul Consciousness Studios",
+  "licenseSpdx": "LicenseRef-Eidovara-Source-Available-1.0",
+  "notLegalAdvice": true,
+  "thisFileIsNot": [
+    "copyright-office-registration",
+    "uspto-registration",
+    "uspto-serial",
+    "patent",
+    "patent-pending",
+    "authenticode-certificate",
+    "pci-dss-certification",
+    "court-judgment",
+    "executed-cla",
+    "executed-entity-assignment",
+    "formed-company",
+    "counsel-opinion"
+  ],
+  "product": {
+    "name": "Eidovara",
+    "version": "1.0.0",
+    "sourceVersion": "1.0.0",
+    "liveInstallerVersion": "1.0.0",
+    "appId": "com.soulconsciousnessstudios.eidovara",
+    "platform": "Windows 10/11 x64",
+    "installer": "Eidovara-v1.0.0-Windows-x64-Setup.exe",
+    "sha256": null,
+    "tag": "v1.0.0",
+    "authenticode": "unsigned",
+    "age": "18+",
+    "payments": "fail-closed",
+    "serviceDefault": "https://api.eidovara.org"
+  },
+  "allowedStatuses": [
+    "in-repo",
+    "unsigned-template",
+    "not-filed",
+    "owner-action-required"
+  ],
+  "instruments": [
+    { "id": "license", "path": "LICENSE", "status": "in-repo" },
+    { "id": "eula", "path": "installer/EULA.txt", "status": "in-repo" },
+    { "id": "terms", "path": "TERMS.md", "status": "in-repo" },
+    { "id": "privacy", "path": "PRIVACY.md", "status": "in-repo" },
+    { "id": "age", "path": "AGE.md", "status": "in-repo" },
+    { "id": "legal-notices", "path": "LEGAL_NOTICES.md", "status": "in-repo" },
+    { "id": "security", "path": "SECURITY.md", "status": "in-repo" },
+    { "id": "copyright-one-page", "path": "COPYRIGHT.txt", "status": "in-repo" },
+    { "id": "notice", "path": "NOTICE.md", "status": "in-repo" },
+    { "id": "ownership", "path": "OWNERSHIP.md", "status": "in-repo" },
+    { "id": "authors", "path": "AUTHORS.md", "status": "in-repo" },
+    { "id": "trademarks", "path": "TRADEMARKS.md", "status": "in-repo" },
+    { "id": "third-party", "path": "THIRD_PARTY_NOTICES.md", "status": "in-repo" },
+    { "id": "contributing", "path": "CONTRIBUTING.md", "status": "in-repo" },
+    { "id": "citation", "path": "CITATION.cff", "status": "in-repo" },
+    { "id": "copyright-checklist", "path": "docs/COPYRIGHT.md", "status": "in-repo" },
+    { "id": "asset-register", "path": "docs/COPYRIGHT_ASSET_REGISTER.md", "status": "in-repo" },
+    { "id": "copyright-deposit", "path": "docs/COPYRIGHT_DEPOSIT.md", "status": "in-repo" },
+    { "id": "trademark-filing", "path": "docs/TRADEMARK_FILING.md", "status": "not-filed" },
+    { "id": "trademark-clearance", "path": "docs/TRADEMARK_CLEARANCE_LOG.md", "status": "in-repo" },
+    { "id": "name-clearance", "path": "docs/NAME_CLEARANCE.md", "status": "in-repo" },
+    { "id": "chain-of-title", "path": "docs/CHAIN_OF_TITLE.md", "status": "in-repo" },
+    { "id": "ip-protection", "path": "docs/IP_PROTECTION.md", "status": "in-repo" },
+    { "id": "ip-certification", "path": "docs/IP_CERTIFICATION.md", "status": "in-repo" },
+    { "id": "public-repo-policy", "path": "docs/PUBLIC_REPOSITORY_POLICY.md", "status": "in-repo" },
+    { "id": "infringement", "path": "docs/INFRINGEMENT.md", "status": "in-repo" },
+    { "id": "cla", "path": "docs/CONTRIBUTOR_ASSIGNMENT.md", "status": "unsigned-template" },
+    { "id": "entity-assignment", "path": "docs/ENTITY_IP_ASSIGNMENT.md", "status": "unsigned-template" },
+    { "id": "company-formation", "path": "docs/COMPANY_FORMATION.md", "status": "not-filed" },
+    { "id": "codeowners", "path": ".github/CODEOWNERS", "status": "in-repo" },
+    { "id": "security-txt", "path": "docs/.well-known/security.txt", "status": "in-repo" },
+    { "id": "dependabot", "path": ".github/dependabot.yml", "status": "in-repo" },
+    { "id": "security-workflow", "path": ".github/workflows/security.yml", "status": "in-repo" },
+    { "id": "codeql-workflow", "path": ".github/workflows/codeql.yml", "status": "in-repo" },
+    { "id": "scorecards-workflow", "path": ".github/workflows/scorecards.yml", "status": "in-repo" },
+    { "id": "dependency-review-workflow", "path": ".github/workflows/dependency-review.yml", "status": "in-repo" }
+  ],
+  "ownerActionRequired": [
+    "copyright-office-registration",
+    "uspto-trademark-application",
+    "patent-counsel-before-patent-pending",
+    "authenticode-certificate",
+    "executed-cla-before-inbound-code",
+    "entity-formation-plus-signed-assignment",
+    "github-dependency-graph",
+    "github-private-vulnerability-reporting",
+    "www-dns-cname"
+  ]
+}
