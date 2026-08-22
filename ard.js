@@ -1,33 +1,28 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { clamp01 } from './schema.js';
+/**
+ * Canonical source/product and published Windows installer metadata.
+ * Values below must come from a real built and published release artifact.
+ * Every consumer (worker, site helper, desktop kernel, certification JSON,
+ * tests) derives from these constants — change them here, nowhere else, and
+ * tests/release-consistency.test.js fails if any other surface drifts.
+ */
 
-export function updateRelationship(state, text) {
-  const t = text.toLowerCase();
-  const now = new Date().toISOString();
-  const changes = [];
-
-  if (/\b(indecisive|you decide|take the lead|choose for me)\b/.test(t)) {
-    state.relationship.temporaryInitiative = true;
-    state.relationship.initiativeReason = 'user requested initiative or expressed indecision';
-    state.personality.assertiveness = clamp01(state.personality.assertiveness + 0.07);
-    changes.push('temporary initiative enabled');
-  }
-  if (/\b(i prefer|my preference is|i want you to be)\b/.test(t)) {
-    state.relationship.establishedPreference = text;
-    state.relationship.temporaryInitiative = false;
-    changes.push('relationship preference stored');
-  }
-  if (/\b(reassurance|reassure|comfort|struggling|anxious|pressure|overwhelmed)\b/.test(t)) {
-    state.personality.reassurance = clamp01(state.personality.reassurance + 0.05);
-    state.relationship.comfort = clamp01(state.relationship.comfort + 0.03);
-    changes.push('regulation/reassurance stance activated');
-  }
-  if (changes.length) {
-    state.relationship.auditTrail.push({ at: now, changes });
-    if (state.relationship.auditTrail.length > 500) state.relationship.auditTrail = state.relationship.auditTrail.slice(-500);
-    state.audit.push({ at: now, type: 'relationship.updated', details: { changes } });
-  }
-  return changes;
-}
+export const SOURCE_VERSION = '1.0.0';
+export const LIVE_INSTALLER_VERSION = '1.0.0';
+export const INSTALLER_NAME = `Eidovara-v${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`;
+/**
+ * Measured installer facts exist only for real tagged builds.
+ * v1.0.0 has not been tagged yet, so no measured SHA-256 or size exists.
+ * These stay null until Release Windows CI publishes the artifact; the
+ * authoritative checksums then live in that release's SHA256SUMS.txt and
+ * latest.yml. Do NOT copy another build's digest here (the F29A52F0… digest
+ * belongs to the published v0.22.2 Setup.exe).
+ */
+export const INSTALLER_MEASURED = false;
+export const INSTALLER_SHA256 = null;
+export const INSTALLER_SIZE_BYTES = null;
+export const INSTALLER_SIZE = 'measured when tag v1.0.0 is built';
+export const INSTALLER_LATEST_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`;
+export const INSTALLER_PINNED_URL = `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`;
 
