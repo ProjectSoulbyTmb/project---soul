@@ -177,12 +177,12 @@
       unpin.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); window.eidovaraLayers.unpin(id); });
       const up = document.createElement('button');
       up.type = 'button';
-      up.textContent = 'â†‘';
+      up.textContent = '↑';
       up.setAttribute('aria-label', t('moveUp', 'Move tile up'));
       up.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); window.eidovaraLayers.move(id, -1); });
       const down = document.createElement('button');
       down.type = 'button';
-      down.textContent = 'â†“';
+      down.textContent = '↓';
       down.setAttribute('aria-label', t('moveDown', 'Move tile down'));
       down.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); window.eidovaraLayers.move(id, 1); });
       controls.append(up, down, unpin);
@@ -235,7 +235,7 @@
       b.setAttribute('role', 'option');
       b.setAttribute('aria-selected', String(index === paletteIndex));
       b.append(Object.assign(document.createElement('strong'), { textContent: item.title || item.label || item.id }));
-      b.append(Object.assign(document.createElement('small'), { textContent: `${item.kind || 'command'}${item.summary ? ' Â· ' + item.summary : ''}` }));
+      b.append(Object.assign(document.createElement('small'), { textContent: `${item.kind || 'command'}${item.summary ? ' · ' + item.summary : ''}` }));
       b.addEventListener('click', () => runPaletteItem(item));
       li.append(b);
       box.append(li);
@@ -400,14 +400,14 @@
   function cheatsheetRows() {
     const voice = Boolean($('#voiceInputBtn') && !$('#voiceInputBtn').classList.contains('hidden'));
     const rows = [
-      { keys: 'Ctrl+K', detail: t('shortcutPalette', 'Command palette â€” jump to views, intents, settings, legal, modules, and linked apps. Ctrl+P does the same.') },
+      { keys: 'Ctrl+K', detail: t('shortcutPalette', 'Command palette — jump to views, intents, settings, legal, modules, and linked apps. Ctrl+P does the same.') },
       { keys: 'Ctrl+/', detail: t('shortcutCheatsheet', 'This cheatsheet. ? also opens it when you are not in a text field.') },
       { keys: 'Ctrl+Shift+O', detail: t('shortcutOverlays', 'Jump to workspace overlays (chat, browse, Discord guest). In-app only.') },
       { keys: 'Ctrl+A', detail: t('shortcutAdmin', 'Private administrator panel. Does not steal select-all from input, textarea, or select fields.') },
       { keys: 'Esc', detail: t('shortcutEsc', 'Close palette, cheatsheet, legal, admin, or cancelable setup overlays.') },
       { keys: 'Enter', detail: t('shortcutSend', 'Send the conversation. Shift+Enter inserts a new line.') }
     ];
-    if (voice) rows.push({ keys: 'Hold ðŸŽ™', detail: t('shortcutDictate', 'Hold the dictation control to talk; release to stop. Uses OS speech recognition. Eidovara does not ship a neural TTS engine.') });
+    if (voice) rows.push({ keys: 'Hold 🎙', detail: t('shortcutDictate', 'Hold the dictation control to talk; release to stop. Uses OS speech recognition. Eidovara does not ship a neural TTS engine.') });
     return rows;
   }
 
