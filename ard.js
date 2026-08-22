@@ -1,399 +1,503 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
- * Adult Soul life layer — first-party vertex animation, not VRM / Mixamo / mocap.
- *
- * After 18+ and Adult Mode, the lathe figure breathes, looks, presents, and
- * performs sexual behaviors in lockstep with guided session beats. This is
- * software posing a mesh the user built. It is not a person and it is not
- * a licensed character pack.
+ * Adult Media desk — tube/creator UX patterns on Eidovara’s own library and
+ * official HTTPS handoff. Inspired by popular adult platforms (category rails,
+ * continue watching, related, watch later, creator bookmarks, theater cards)
+ * without scraping those sites, embedding their players, capturing logins, or
+ * ripping streams. Guest overlays stay closed in Adult Mode; handoff uses the
+ * system browser. Appearance and queries stay 21+. Not Pornhub/OnlyFans/etc.
  */
+import { adultAllowed } from './policy.js';
+import { adultTextForbidden } from './adult-soul.js';
+import { uid } from './schema.js';
+import { WELLNESS_CARDS, FEEL_HONESTY, BOOKMARK_FOLDERS } from './adult-feel.js';
 
-import { SESSION_KINDS } from "./adult-soul.js";
+export const ADULT_MEDIA_HONESTY = 'Adult Media is a local tube-style desk plus official HTTPS searches in your system browser. Eidovara does not embed Pornhub, XVideos, OnlyFans, or cam sites, does not fetch their HTML, does not capture logins, and does not rip streams. Guest overlays stay closed in Adult Mode so Discord/browse cannot sit on top of adult media. PIN stealth, bookmark folders, and Feel Sync follow VibeMate/Vibease-style settings without pairing toys or recording the screen. Revoke Adult Mode anytime.';
 
-export const FIGURE_LIFE = Object.freeze({
-  backend: "eidovara-first-party-deform",
-  vrm: false,
-  mixamo: false,
-  mocap: false,
-  note: "CPU vertex deform of the first-party lathe (~8k verts at ultra). Sexual behaviors follow session beats. prefers-reduced-motion damps motion to a faint breath.",
-});
+const FORBIDDEN = /\b(?:child|children|minor|minors|underage|under[\s-]?age|loli|lolita|shota|shotacon|jailbait|preteen|pre-teen|toddler|infant|baby|pedophil|hebephil|schoolgirl|schoolboy|young[\s-]?teen)\b/i;
 
-export const BEHAVIOR_IDS = Object.freeze([
-  "idle-breathe",
-  "eye-contact",
-  "hip-sway",
-  "present-body",
-  "slow-undulate",
-  "grind",
-  "stroke-pose",
-  "edge-hold",
-  "climax",
-  "aftercare",
-  "on-back-present",
-  "all-fours",
-  "ride",
-  "worship-pose",
-  "hands-free",
-  "striptease",
-  "chest-bounce",
-  "ass-present",
-  "spread",
-  "kiss-lean",
+export const ADULT_MEDIA_CATEGORIES = Object.freeze([
+  { id: 'for-you', title: 'For you', hint: 'Ranked from local taste, the way tubes rank a home feed' },
+  { id: 'continue', title: 'Continue', hint: 'Resume what you already started on this PC' },
+  { id: 'new', title: 'Newest', hint: 'Latest files opened this session' },
+  { id: 'watch-later', title: 'Watch later', hint: 'Your save-for-later shelf' },
+  { id: 'video', title: 'Video', hint: 'Local video through eidovara-media' },
+  { id: 'audio', title: 'Audio', hint: 'Moans, beds, music you imported' },
+  { id: 'favorites', title: 'Favorites', hint: 'Hearted titles' },
+  { id: 'guided', title: 'Guided', hint: 'Adult Soul sessions alongside media' },
+  { id: 'amateur', title: 'Amateur', hint: 'Tag inferred from titles you gave' },
+  { id: 'couple', title: 'Couple', hint: 'Title-tag rail' },
+  { id: 'solo', title: 'Solo', hint: 'Title-tag rail' },
+  { id: 'toys', title: 'Toys', hint: 'Title-tag rail — no hardware is driven' },
+  { id: 'aftercare', title: 'Aftercare', hint: 'Softer local mix' }
 ]);
 
-const BEHAVIOR_SET = new Set(BEHAVIOR_IDS);
-
-export function normalizeBehavior(id) {
-  const key = String(id || "").trim();
-  return BEHAVIOR_SET.has(key) ? key : "idle-breathe";
-}
-
-/**
- * Map a guided session + beat tempo onto a sexual pose id.
- */
-function unit(value, fallback = 0) {
-  const n = Number(value);
-  if (!Number.isFinite(n)) return fallback;
-  return n > 1 ? Math.max(0, Math.min(1, n / 100)) : Math.max(0, Math.min(1, n));
-}
-
-export function behaviorFromSession(kind, pace = "medium", heat = 0.5) {
-  const k = SESSION_KINDS.includes(kind) ? kind : "slow-burn";
-  const p = pace === "stop" ? "stop" : pace === "fast" ? "fast" : pace === "slow" ? "slow" : "medium";
-  const h = unit(heat, 0);
-  if (k === "aftercare" || k === "pillow-talk") return k === "pillow-talk" && h > 0.4 ? "kiss-lean" : "aftercare";
-  if (k === "countdown-finish") return h > 0.85 ? "climax" : p === "fast" ? "grind" : "stroke-pose";
-  if (k === "edge-hold" || k === "tease-deny") return p === "stop" || h > 0.7 ? "edge-hold" : "stroke-pose";
-  if (k === "stroke-guide" || k === "mutual-guide") {
-    if (p === "stop") return "edge-hold";
-    if (p === "fast") return k === "mutual-guide" ? "ride" : "grind";
-    if (p === "slow") return "slow-undulate";
-    return k === "mutual-guide" ? "grind" : "stroke-pose";
+export const ADULT_PLATFORMS = Object.freeze([
+  {
+    id: 'pornhub',
+    title: 'Pornhub',
+    host: 'pornhub.com',
+    kind: 'tube',
+    home: 'https://www.pornhub.com/',
+    search: query => `https://www.pornhub.com/video/search?search=${encodeURIComponent(query)}`
+  },
+  {
+    id: 'xvideos',
+    title: 'XVideos',
+    host: 'xvideos.com',
+    kind: 'tube',
+    home: 'https://www.xvideos.com/',
+    search: query => `https://www.xvideos.com/?k=${encodeURIComponent(query)}`
+  },
+  {
+    id: 'xhamster',
+    title: 'xHamster',
+    host: 'xhamster.com',
+    kind: 'tube',
+    home: 'https://xhamster.com/',
+    search: query => `https://xhamster.com/search/${encodeURIComponent(query).replace(/%20/g, '+')}`
+  },
+  {
+    id: 'spankbang',
+    title: 'SpankBang',
+    host: 'spankbang.com',
+    kind: 'tube',
+    home: 'https://spankbang.com/',
+    search: query => `https://spankbang.com/s/${encodeURIComponent(query)}/`
+  },
+  {
+    id: 'redgifs',
+    title: 'RedGifs',
+    host: 'redgifs.com',
+    kind: 'short',
+    home: 'https://www.redgifs.com/',
+    search: query => `https://www.redgifs.com/browse?query=${encodeURIComponent(query)}`
+  },
+  {
+    id: 'xnxx',
+    title: 'XNXX',
+    host: 'xnxx.com',
+    kind: 'tube',
+    home: 'https://www.xnxx.com/',
+    search: query => `https://www.xnxx.com/search/${encodeURIComponent(query)}`
+  },
+  {
+    id: 'chaturbate',
+    title: 'Chaturbate',
+    host: 'chaturbate.com',
+    kind: 'live',
+    home: 'https://chaturbate.com/',
+    search: query => `https://chaturbate.com/?keywords=${encodeURIComponent(query)}`
+  },
+  {
+    id: 'reddit',
+    title: 'Reddit',
+    host: 'reddit.com',
+    kind: 'feed',
+    home: 'https://www.reddit.com/',
+    search: query => `https://www.reddit.com/search/?q=${encodeURIComponent(query)}&type=link`
+  },
+  {
+    id: 'x',
+    title: 'X',
+    host: 'x.com',
+    kind: 'feed',
+    home: 'https://x.com/',
+    search: query => `https://x.com/search?q=${encodeURIComponent(query)}&src=typed_query&f=media`
+  },
+  {
+    id: 'manyvids',
+    title: 'ManyVids',
+    host: 'manyvids.com',
+    kind: 'store',
+    home: 'https://www.manyvids.com/',
+    search: query => `https://www.manyvids.com/MVSearch/?keywords=${encodeURIComponent(query)}`
+  },
+  {
+    id: 'onlyfans',
+    title: 'OnlyFans',
+    host: 'onlyfans.com',
+    kind: 'creator',
+    home: 'https://onlyfans.com/',
+    search: null
+  },
+  {
+    id: 'fansly',
+    title: 'Fansly',
+    host: 'fansly.com',
+    kind: 'creator',
+    home: 'https://fansly.com/',
+    search: null
   }
-  if (k === "filthy-talk") return h > 0.65 ? "grind" : "present-body";
-  if (k === "worship" || k === "praise-kink") return k === "praise-kink" ? "eye-contact" : "worship-pose";
-  if (k === "hands-free-audio" || k === "toy-pace") return h > 0.6 ? "hands-free" : "slow-undulate";
-  if (k === "striptease") return "striptease";
-  if (k === "ass-focus") return p === "fast" ? "grind" : "ass-present";
-  if (k === "chest-focus") return "chest-bounce";
-  if (k === "eye-lock") return "eye-contact";
-  if (k === "pose-play" || k === "random-mix") return p === "fast" ? "grind" : "present-body";
-  if (k === "slow-burn") {
-    if (h > 0.75) return "grind";
-    if (h > 0.4) return "hip-sway";
-    return "eye-contact";
+]);
+
+export const ADULT_HANDOFF_HOSTS = Object.freeze([
+  'pornhub.com', 'xvideos.com', 'xhamster.com', 'spankbang.com', 'redgifs.com',
+  'xnxx.com', 'chaturbate.com', 'stripchat.com', 'onlyfans.com', 'fansly.com',
+  'manyvids.com', 'loyalfans.com', 'youporn.com', 'redtube.com', 'tube8.com',
+  'x.com', 'twitter.com', 'reddit.com'
+]);
+
+export const ADULT_EMBED_BLOCK = /pornhub\.com\/embed|xvideos\.com\/embedframe|xhamster\.com\/xembed|redgifs\.com\/ifr|spankbang\.com\/embed|chaturbate\.com\/embed|xnxx\.com\/embedframe|youporn\.com\/embed|stripchat\.com\/embed/i;
+
+const TAG_RULES = [
+  ['amateur', /\bamateur|homemade|phone\b/i],
+  ['couple', /\bcouple|together|two\b/i],
+  ['solo', /\bsolo|only me|just me\b/i],
+  ['toys', /\btoy|vibrator|dildo|wand\b/i],
+  ['aftercare', /\baftercare|soft|cuddle|pillow\b/i],
+  ['guided', /\bguide|coach|joi|instruction\b/i],
+  ['audio', /\bmoan|audio|asmr|voice\b/i]
+];
+
+const clean = (value, limit = 200) => String(value || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, limit);
+
+export function adultMediaQueryForbidden(value) {
+  return FORBIDDEN.test(String(value || '')) || adultTextForbidden(value);
+}
+
+export function isAdultHandoffHost(href) {
+  try {
+    const host = new URL(String(href || '')).hostname.toLowerCase();
+    return ADULT_HANDOFF_HOSTS.some(suffix => host === suffix || host.endsWith(`.${suffix}`));
+  } catch {
+    return false;
   }
-  return "idle-breathe";
 }
 
-function paceHz(pace) {
-  if (pace === "stop") return 0.15;
-  if (pace === "slow") return 0.55;
-  if (pace === "fast") return 1.85;
-  return 1.05;
+export function isAdultEmbedUrl(value) {
+  const raw = String(value || '');
+  if (!raw) return false;
+  if (ADULT_EMBED_BLOCK.test(raw)) return true;
+  return isAdultHandoffHost(raw) && /\/embed/i.test(raw);
 }
 
-function clonePositions(src) {
-  return new Float32Array(src);
+function httpsUrl(value, host) {
+  try {
+    const url = new URL(String(value || '').trim());
+    if (url.protocol !== 'https:' || url.username || url.password) return '';
+    const h = url.hostname.toLowerCase();
+    if (host && h !== host && !h.endsWith(`.${host}`)) return '';
+    return url.toString().slice(0, 1000);
+  } catch {
+    return '';
+  }
 }
 
-/**
- * Deform a lathe mesh in place-copy. Original mesh is not mutated.
- */
-export function deformAdultMesh(mesh, options = {}) {
-  if (!mesh?.positions) return mesh;
-  const timeMs = Number(options.timeMs) || 0;
-  const t = timeMs / 1000;
-  const behavior = normalizeBehavior(options.behavior);
-  const pace = options.pace === "stop" || options.pace === "slow" || options.pace === "fast" ? options.pace : "medium";
-  const heat = unit(options.heat, 0.45);
-  const motion = options.motion && typeof options.motion === "object" ? options.motion : { breath: 0.45, sway: 0.4 };
-  const reduced = Boolean(options.reducedMotion);
-  const amp = reduced ? 0.12 : 1;
-  const breathAmt = unit(motion.breath, 0.45) * amp;
-  const swayAmt = unit(motion.sway, 0.4) * amp;
-  const hz = paceHz(pace);
-  const out = {
-    ...mesh,
-    positions: clonePositions(mesh.positions),
-    normals: mesh.normals ? clonePositions(mesh.normals) : mesh.normals,
-    extraYaw: 0,
-    extraPitch: 0,
-    extraRoll: 0,
-    behavior,
+export function adultOfficialHandoffs(query) {
+  const q = clean(query, 160);
+  if (!q) return [];
+  if (adultMediaQueryForbidden(q)) return [];
+  const encodedOk = q.length >= 2;
+  const items = [];
+  for (const platform of ADULT_PLATFORMS) {
+    const url = encodedOk && typeof platform.search === 'function'
+      ? httpsUrl(platform.search(q), platform.host)
+      : httpsUrl(platform.home, platform.host);
+    if (!url) continue;
+    items.push({
+      provider: platform.title,
+      id: platform.id,
+      kind: platform.kind,
+      title: platform.search && encodedOk ? `${platform.title} search: ${q}` : `Open ${platform.title}`,
+      url,
+      adult: true,
+      embed: false
+    });
+  }
+  return items;
+}
+
+export { classifyAdultMediaIntent } from './adult-intents.js';
+
+export function defaultAdultEntertainment() {
+  return {
+    watchLater: [],
+    playlists: [],
+    creators: [],
+    continueWatching: [],
+    lastCategory: 'for-you',
+    folders: BOOKMARK_FOLDERS.map(folder => ({ id: folder.id, title: folder.title, items: [] }))
   };
-  const p = out.positions;
-  const n = p.length / 3;
-  const phase = t * Math.PI * 2;
+}
 
-  for (let i = 0; i < n; i++) {
-    const i3 = i * 3;
-    let x = p[i3];
-    let y = p[i3 + 1];
-    let z = p[i3 + 2];
-    const yn = (y + 1.05) / 2.1;
-  1;
-    const ang = Math.atan2(x, z);
+function normalizeClip(item) {
+  if (!item || typeof item !== 'object') return null;
+  const title = clean(item.title, 200);
+  if (!title || adultMediaQueryForbidden(title)) return null;
+  const url = String(item.url || '');
+  const local = /^eidovara-media:/i.test(url);
+  const sourceUrl = httpsUrl(item.sourceUrl) || '';
+  if (!local && !sourceUrl) return null;
+  return {
+    id: String(item.id || uid('clip')).slice(0, 40),
+    title,
+    type: item.type === 'video' ? 'video' : 'audio',
+    url: local ? url.slice(0, 400) : '',
+    sourceUrl,
+    playable: local,
+    tags: Array.isArray(item.tags) ? item.tags.map(tag => clean(tag, 32)).filter(Boolean).slice(0, 8) : tagFromTitle(title),
+    at: String(item.at || new Date().toISOString()).slice(0, 40)
+  };
+}
 
-    const chest = yn > 0.52 && yn < 0.78;
-    const belly = yn > 0.38 && yn < 0.55;
-    const hips = yn > 0.22 && yn < 0.48;
-    const ass = hips && z < 0;
-    const thighs = yn > 0.05 && yn < 0.28;
-    const groin = yn > 0.28 && yn < 0.42 && Math.abs(x) < 0.18 && z > -0.05;
-    const head = yn > 0.88;
+export function normalizeAdultEntertainment(input = {}, prior = defaultAdultEntertainment()) {
+  const base = { ...defaultAdultEntertainment(), ...(prior && typeof prior === 'object' ? prior : {}) };
+  const incoming = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
+  const creators = (Array.isArray(incoming.creators) ? incoming.creators : base.creators).slice(0, 40).map(item => {
+    if (!item || typeof item !== 'object') return null;
+    const title = clean(item.title || item.name, 80);
+    const url = httpsUrl(item.url);
+    if (!title || !url || adultMediaQueryForbidden(title) || adultMediaQueryForbidden(url)) return null;
+    return { id: String(item.id || uid('creator')).slice(0, 40), title, url };
+  }).filter(Boolean);
+  return {
+    watchLater: (Array.isArray(incoming.watchLater) ? incoming.watchLater : base.watchLater).map(normalizeClip).filter(Boolean).slice(0, 80),
+    playlists: (Array.isArray(incoming.playlists) ? incoming.playlists : base.playlists).slice(0, 12).map(list => ({
+      id: String(list?.id || uid('list')).slice(0, 40),
+      title: clean(list?.title, 80) || 'Collection',
+      items: Array.isArray(list?.items) ? list.items.map(normalizeClip).filter(Boolean).slice(0, 40) : []
+    })).filter(list => !adultMediaQueryForbidden(list.title)),
+    creators,
+    continueWatching: (Array.isArray(incoming.continueWatching) ? incoming.continueWatching : base.continueWatching).map(normalizeClip).filter(Boolean).slice(0, 24),
+    lastCategory: ADULT_MEDIA_CATEGORIES.some(item => item.id === incoming.lastCategory) ? incoming.lastCategory : (base.lastCategory || 'for-you'),
+    folders: BOOKMARK_FOLDERS.map(meta => {
+      const found = (Array.isArray(incoming.folders) ? incoming.folders : base.folders).find(folder => folder && folder.id === meta.id) || {};
+      const items = Array.isArray(found.items) ? found.items.map(normalizeClip).filter(Boolean).slice(0, 40) : [];
+      return { id: meta.id, title: meta.title, items };
+    })
+  };
+}
 
-    // Always breathe.
-    const breath = Math.sin(phase * 0.35) * 0.028 * breathAmt;
-    if (chest) {
-      x *= 1 + breath * 0.9;
-      z += breath * 0.55 * (z >= 0 ? 1 : 0.35);
-    }
-    if (belly) z += breath * 0.22;
+export function migrateAdultEntertainment(input) {
+  return normalizeAdultEntertainment(input);
+}
 
-    const sway = Math.sin(phase * 0.42) * 0.055 * swayAmt;
-    if (!head) {
-      x += sway * (1 - yn * 0.45);
-      z += Math.sin(phase * 0.21) * 0.012 * swayAmt;
-    }
-
-    if (behavior === "eye-contact") {
-      out.extraYaw = Math.sin(phase * 0.12) * 0.08;
-      if (head) {
-        z += 0.02;
-        y += 0.008 * Math.sin(phase * 0.5);
-      }
-    }
-
-    if (behavior === "hip-sway" || behavior === "slow-undulate") {
-      const w = Math.sin(phase * hz * 0.55) * (0.07 + heat * 0.05);
-      if (hips || thighs) {
-        x += w * (hips ? 1.15 : 0.7);
-        z += Math.cos(phase * hz * 0.55) * 0.03 * (ass ? 1.3 : 0.6);
-      }
-      if (behavior === "slow-undulate" && chest) {
-        z += Math.sin(phase * 0.7) * 0.035 * heat;
-      }
-    }
-
-    if (behavior === "present-body" || behavior === "worship-pose") {
-      if (chest) {
-        z += 0.07 + Math.sin(phase * 0.8) * 0.02;
-        y += 0.01;
-      }
-      if (ass) z -= 0.05;
-      if (behavior === "worship-pose" && yn > 0.15 && yn < 0.5) {
-        y -= 0.04;
-        z += 0.04;
-      }
-      out.extraPitch = -0.12;
-    }
-
-    if (behavior === "grind" || behavior === "ride" || behavior === "hands-free") {
-      const g = Math.sin(phase * hz) * (0.08 + heat * 0.07);
-      const g2 = Math.cos(phase * hz * 2) * 0.025 * heat;
-      if (hips || groin || ass) {
-        z += g * (ass ? 1.25 : 0.85);
-        y += Math.abs(g) * 0.035;
-        x += g2 * 0.4;
-      }
-      if (thighs) {
-        x += Math.sin(ang + phase * hz) * 0.02;
-        y += g * 0.02;
-      }
-      if (behavior === "ride") {
-        y += Math.abs(Math.sin(phase * hz)) * 0.09;
-        if (chest) z += Math.sin(phase * hz) * 0.04;
-      }
-      if (behavior === "hands-free" && chest) {
-        z += Math.sin(phase * hz * 0.5) * 0.05;
-      }
-      out.extraPitch = 0.06 * Math.sin(phase * hz);
-    }
-
-    if (behavior === "stroke-pose") {
-      const s = Math.sin(phase * hz) * (0.055 + heat * 0.04);
-      if (groin || hips) {
-        z += s * 0.7;
-        y += s * 0.03;
-      }
-      if (chest) z += Math.sin(phase * 0.9) * 0.025;
-      if (head) y += Math.sin(phase * hz) * 0.012;
-      out.extraPitch = 0.08;
-    }
-
-    if (behavior === "edge-hold") {
-      const tremor = Math.sin(phase * 9.5) * 0.012 * heat * amp;
-      const hold = Math.sin(phase * 0.4) * 0.02;
-      if (hips || groin || thighs) {
-        x += tremor;
-        z += hold + tremor * 0.4;
-        y += Math.abs(tremor) * 0.4;
-      }
-      if (chest) z += 0.03 + tremor * 0.3;
-      out.extraPitch = 0.1;
-    }
-
-    if (behavior === "climax") {
-      const burst = Math.sin(phase * 7.2) * (0.05 + heat * 0.06) * amp;
-      const lift = Math.abs(Math.sin(phase * 3.6)) * 0.045;
-      x += burst * (1 - yn * 0.3);
-      y += lift;
-      if (chest || hips) z += burst * 0.8;
-      if (head) {
-        y += 0.03;
-        z -= 0.02;
-      }
-      out.extraPitch = -0.18;
-      out.extraYaw = burst * 0.8;
-    }
-
-    if (behavior === "aftercare") {
-      const rest = Math.sin(phase * 0.22) * 0.018 * breathAmt;
-      y += rest * 0.3;
-      if (head) z += 0.03;
-      x *= 0.99;
-      out.extraPitch = 0.16;
-    }
-
-    if (behavior === "on-back-present") {
-      // Rotate the figure toward supine presentation via extra pitch + flatten hips up.
-      out.extraPitch = 1.05;
-      out.extraRoll = 0.04 * Math.sin(phase * 0.5);
-      if (hips || ass) {
-        z += 0.12;
-        y += 0.06;
-      }
-      if (chest) z += 0.08 + Math.sin(phase * 0.7) * 0.02;
-      if (thighs) {
-        x *= 1.08;
-        y -= 0.04;
-      }
-    }
-
-    if (behavior === "all-fours") {
-      out.extraPitch = 0.72;
-      y -= 0.18 * (1 - yn);
-      if (ass) {
-        z -= 0.14;
-        y += 0.08;
-      }
-      if (chest) {
-        z += 0.1;
-        y -= 0.06;
-      }
-      if (head) {
-        y -= 0.12;
-        z += 0.08;
-      }
-      if (hips) z += Math.sin(phase * hz) * 0.05 * heat;
-    }
-
-    if (behavior === "striptease") {
-      const s = Math.sin(phase * 0.55) * 0.04;
-      if (hips) x += s;
-      if (chest) z += 0.05 + Math.sin(phase * 0.9) * 0.03;
-      out.extraYaw = s * 0.8;
-    }
-
-    if (behavior === "chest-bounce") {
-      if (chest) {
-        z += 0.06 + Math.sin(phase * hz * 1.4) * (0.04 + heat * 0.04);
-        y += Math.sin(phase * hz * 1.4) * 0.012;
-      }
-      out.extraPitch = -0.08;
-    }
-
-    if (behavior === "ass-present") {
-      if (ass) {
-        z -= 0.1 + Math.sin(phase * hz) * 0.04 * heat;
-        y += 0.03;
-      }
-      if (hips) x += Math.sin(phase * 0.5) * 0.03;
-      out.extraYaw = Math.PI * 0.12;
-      out.extraPitch = 0.18;
-    }
-
-    if (behavior === "spread") {
-      if (thighs) x += Math.sign(x || 1) * (0.05 + heat * 0.03);
-      if (groin) z += 0.04;
-      out.extraPitch = 0.2;
-    }
-
-    if (behavior === "kiss-lean") {
-      if (head) {
-        z += 0.06;
-        y -= 0.02;
-      }
-      if (chest) z += 0.03;
-      out.extraPitch = -0.22;
-    }
-
-    p[i3] = x;
-    p[i3 + 1] = y;
-    p[i3 + 2] = z;
+export function tagFromTitle(title) {
+  const text = String(title || '');
+  const tags = [];
+  for (const [id, re] of TAG_RULES) {
+    if (re.test(text)) tags.push(id);
   }
+  return tags.slice(0, 6);
+}
 
-  // Cheap normal refresh from deformed positions (flat-ish).
-  if (out.normals && mesh.indices) {
-    out.normals.fill(0);
-    const idx = mesh.indices;
-    for (let t = 0; t < idx.length; t += 3) {
-      const a = idx[t] * 3;
-      const b = idx[t + 1] * 3;
-      const c = idx[t + 2] * 3;
-      const ax = p[a];
-      const ay = p[a + 1];
-      const az = p[a + 2];
-      const e1x = p[b] - ax;
-      const e1y = p[b + 1] - ay;
-      const e1z = p[b + 2] - az;
-      const e2x = p[c] - ax;
-      const e2y = p[c + 1] - ay;
-      const e2z = p[c + 2] - az;
-      const nx = e1y * e2z - e1z * e2y;
-      const ny = e1z * e2x - e1x * e2z;
-      const nz = e1x * e2y - e1y * e2x;
-      out.normals[a] += nx;
-      out.normals[a + 1] += ny;
-      out.normals[a + 2] += nz;
-      out.normals[b] += nx;
-      out.normals[b + 1] += ny;
-      out.normals[b + 2] += nz;
-      out.normals[c] += nx;
-      out.normals[c + 1] += ny;
-      out.normals[c + 2] += nz;
-    }
-    for (let i = 0; i < out.normals.length; i += 3) {
-      const lx = out.normals[i];
-      const ly = out.normals[i + 1];
-      const lz = out.normals[i + 2];
-      const len = Math.hypot(lx, ly, lz) || 1;
-      out.normals[i] = lx / len;
-      out.normals[i + 1] = ly / len;
-      out.normals[i + 2] = lz / len;
-    }
-  }
+export function cardArtwork(title) {
+  const s = String(title || 'adult');
+  let hash = 0;
+  for (let i = 0; i < s.length; i += 1) hash = ((hash << 5) - hash + s.charCodeAt(i)) | 0;
+  const hue = Math.abs(hash) % 360;
+  const hue2 = (hue + 48) % 360;
+  return {
+    from: `hsl(${hue} 42% 18%)`,
+    to: `hsl(${hue2} 38% 8%)`,
+    label: s.slice(0, 2).toUpperCase()
+  };
+}
 
+function libraryFrom(state, extras = []) {
+  const entertainment = state?.entertainment || {};
+  const adult = normalizeAdultEntertainment(entertainment.adult);
+  const seen = new Set();
+  const out = [];
+  const push = item => {
+    const clip = normalizeClip(item);
+    if (!clip) return;
+    const key = (clip.url || clip.title).toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push(clip);
+  };
+  for (const item of extras) push(item);
+  for (const item of adult.watchLater) push(item);
+  for (const item of adult.continueWatching) push(item);
+  for (const item of entertainment.favorites || []) push(item);
+  for (const item of entertainment.history || []) push(item);
   return out;
 }
 
-export function adultLifeStatus(profile) {
-  const soul = profile?.adultSoul;
-  const session = soul?.session;
-  const kind = session?.active && session.kind ? session.kind : null;
-  const pace = session?.pace || session?.beats?.[session.beatIndex]?.pace || "medium";
-  const heat = session?.heat ?? session?.beats?.[session.beatIndex]?.heat ?? 0.45;
-  const override = soul?.stage?.behaviorOverride;
+function scoreTitle(state, title) {
+  const key = String(title || '').toLowerCase();
+  return Number(state?.entertainment?.taste?.[key] || 0);
+}
+
+export function relatedLocalMedia(item, library, limit = 8) {
+  const seed = normalizeClip(item);
+  if (!seed) return [];
+  const tags = new Set(seed.tags || tagFromTitle(seed.title));
+  const tokens = seed.title.toLowerCase().split(/[^\p{L}\p{N}]+/u).filter(t => t.length > 2);
+  return library
+    .filter(other => other.title.toLowerCase() !== seed.title.toLowerCase())
+    .map(other => {
+      const ot = new Set(other.tags || tagFromTitle(other.title));
+      let score = 0;
+      for (const tag of tags) if (ot.has(tag)) score += 3;
+      if (other.type === seed.type) score += 1;
+      const title = other.title.toLowerCase();
+      for (const token of tokens) if (title.includes(token)) score += 1;
+      return { item: other, score };
+    })
+    .filter(row => row.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(row => row.item);
+}
+
+export function railsForLibrary(state, library) {
+  const adult = normalizeAdultEntertainment(state?.entertainment?.adult);
+  const ranked = [...library].sort((a, b) => scoreTitle(state, b.title) - scoreTitle(state, a.title));
+  const newest = [...library].sort((a, b) => String(b.at).localeCompare(String(a.at)));
+  const byTag = id => library.filter(item => (item.tags || tagFromTitle(item.title)).includes(id) || item.type === id);
+  return [
+    { id: 'continue', title: 'Continue watching', items: adult.continueWatching.filter(item => item.playable).slice(0, 12) },
+    { id: 'for-you', title: 'For you', items: ranked.filter(item => item.playable && scoreTitle(state, item.title) > 0).slice(0, 12) },
+    { id: 'new', title: 'Newest', items: newest.filter(item => item.playable).slice(0, 12) },
+    { id: 'watch-later', title: 'Watch later', items: adult.watchLater.filter(item => item.playable).slice(0, 12) },
+    { id: 'video', title: 'Video', items: library.filter(item => item.type === 'video' && item.playable).slice(0, 12) },
+    { id: 'audio', title: 'Audio', items: library.filter(item => item.type === 'audio' && item.playable).slice(0, 12) },
+    { id: 'amateur', title: 'Amateur', items: byTag('amateur').slice(0, 12) },
+    { id: 'couple', title: 'Couple', items: byTag('couple').slice(0, 12) },
+    { id: 'solo', title: 'Solo', items: byTag('solo').slice(0, 12) },
+    { id: 'toys', title: 'Toys', items: byTag('toys').slice(0, 12) },
+    { id: 'aftercare', title: 'Aftercare', items: byTag('aftercare').slice(0, 12) },
+    { id: 'videos-folder', title: 'Videos folder', items: (adult.folders || []).find(folder => folder.id === 'videos')?.items || [] },
+    { id: 'audio-folder', title: 'Audio folder', items: (adult.folders || []).find(folder => folder.id === 'audio')?.items || [] }
+  ].filter(rail => rail.items.length);
+}
+
+export function rememberContinue(state, item) {
+  const adult = normalizeAdultEntertainment(state.entertainment?.adult);
+  const clip = normalizeClip({ ...item, at: new Date().toISOString() });
+  if (!clip || !clip.playable) return adult;
+  const rest = adult.continueWatching.filter(row => row.title.toLowerCase() !== clip.title.toLowerCase());
+  return { ...adult, continueWatching: [clip, ...rest].slice(0, 24) };
+}
+
+export function toggleWatchLater(state, item) {
+  const adult = normalizeAdultEntertainment(state.entertainment?.adult);
+  const clip = normalizeClip(item);
+  if (!clip) return adult;
+  const exists = adult.watchLater.some(row => row.title.toLowerCase() === clip.title.toLowerCase());
+  const watchLater = exists
+    ? adult.watchLater.filter(row => row.title.toLowerCase() !== clip.title.toLowerCase())
+    : [clip, ...adult.watchLater].slice(0, 80);
+  return { ...adult, watchLater };
+}
+
+export function addAdultCreator(state, input = {}) {
+  const adult = normalizeAdultEntertainment(state.entertainment?.adult);
+  const title = clean(input.title || input.name, 80);
+  const url = httpsUrl(input.url);
+  if (!title || !url) throw new Error('Creator bookmarks need a name and an https:// page.');
+  if (adultMediaQueryForbidden(title) || adultMediaQueryForbidden(url)) {
+    throw new Error('Creator bookmarks cannot describe minors or prohibited sexualization.');
+  }
+  if (!isAdultHandoffHost(url) && !/^https:\/\//i.test(url)) throw new Error('Only HTTPS creator pages.');
+  const next = { id: uid('creator'), title, url };
+  const creators = [next, ...adult.creators.filter(row => row.url !== url)].slice(0, 40);
+  return { ...adult, creators };
+}
+
+export function configureAdultMedia(state, input = {}) {
+  if (!adultAllowed(state)) {
+    throw new Error('Adult Media stays locked until legal-adult status, Adult Soul enablement, and current consent are on.');
+  }
+  const incoming = input && typeof input === 'object' ? input : {};
+  state.entertainment ||= { favorites: [], history: [], taste: {} };
+  if (incoming.watchLaterItem) {
+    state.entertainment.adult = toggleWatchLater(state, incoming.watchLaterItem);
+  } else if (incoming.creator) {
+    state.entertainment.adult = addAdultCreator(state, incoming.creator);
+  } else if (incoming.continueItem) {
+    state.entertainment.adult = rememberContinue(state, incoming.continueItem);
+  } else if (incoming.adult) {
+    state.entertainment.adult = normalizeAdultEntertainment(incoming.adult, state.entertainment.adult);
+  } else {
+    state.entertainment.adult = normalizeAdultEntertainment(state.entertainment.adult);
+  }
+  return buildAdultMediaDesk(state, { library: incoming.library || [], query: incoming.query || '' });
+}
+
+export function buildAdultMediaDesk(state, { library = [], query = '' } = {}) {
+  const open = adultAllowed(state) === true;
+  const q = clean(query, 160);
+  if (!open) {
+    return {
+      open: false,
+      locked: true,
+      reason: 'Adult Media stays locked until legal-adult status, Adult Soul enablement, and current consent are on.',
+      honesty: ADULT_MEDIA_HONESTY,
+      categories: ADULT_MEDIA_CATEGORIES,
+      platforms: [],
+      rails: [],
+      handoffs: [],
+      embed: false,
+      scrape: false
+    };
+  }
+  if (q && adultMediaQueryForbidden(q)) {
+    return {
+      open: true,
+      locked: false,
+      blocked: true,
+      reason: 'That search is refused. Adult Media will not look up minors or prohibited terms on any platform.',
+      honesty: ADULT_MEDIA_HONESTY,
+      categories: ADULT_MEDIA_CATEGORIES,
+      platforms: ADULT_PLATFORMS.map(({ id, title, kind, home }) => ({ id, title, kind, home })),
+      rails: [],
+      handoffs: [],
+      embed: false,
+      scrape: false
+    };
+  }
+  const clips = libraryFrom(state, library);
+  const filtered = q
+    ? clips.filter(item => item.title.toLowerCase().includes(q.toLowerCase()) || (item.tags || []).some(tag => tag.includes(q.toLowerCase())))
+    : clips;
+  const adult = normalizeAdultEntertainment(state.entertainment?.adult);
   return {
-    backend: FIGURE_LIFE.backend,
-    vrm: false,
-    live: Boolean(soul?.active && kind),
-    behavior: override || (kind ? behaviorFromSession(kind, pace, heat) : "idle-breathe"),
-    sessionKind: kind,
-    pace,
-    heat: unit(heat, 0.45),
+    open: true,
+    locked: false,
+    blocked: false,
+    honesty: ADULT_MEDIA_HONESTY,
+    query: q,
+    categories: ADULT_MEDIA_CATEGORIES,
+    platforms: ADULT_PLATFORMS.map(({ id, title, kind, home }) => ({ id, title, kind, home })),
+    rails: railsForLibrary(state, filtered.length ? filtered : clips),
+    library: filtered.slice(0, 48).map(item => ({ ...item, art: cardArtwork(item.title) })),
+    watchLater: adult.watchLater,
+    creators: adult.creators,
+    playlists: adult.playlists,
+    folders: adult.folders,
+    wellness: WELLNESS_CARDS,
+    feelHonesty: FEEL_HONESTY,
+    handoffs: q ? adultOfficialHandoffs(q) : ADULT_PLATFORMS.map(platform => ({
+      provider: platform.title,
+      id: platform.id,
+      kind: platform.kind,
+      title: `Open ${platform.title}`,
+      url: platform.home,
+      adult: true,
+      embed: false
+    })).filter(item => httpsUrl(item.url)),
+    embed: false,
+    scrape: false,
+    guestOverlay: false,
+    related: filtered[0] ? relatedLocalMedia(filtered[0], clips) : []
   };
+}
+
+export function adultMediaReply(input, state, desk) {
+  const view = desk || buildAdultMediaDesk(state, {});
+  if (!view.open) {
+    return 'Adult Media stays locked. Confirm legal-adult status, enable Adult Soul, and grant current consent on Identity. Then the tube-style desk and official HTTPS searches unlock. Guest overlays stay closed in Adult Mode. This is not an in-app Pornhub player.';
+  }
+  if (view.blocked) {
+    return 'No. Adult Media will not search for minors or prohibited terms on any site.';
+  }
+  const names = (view.handoffs || []).slice(0, 6).map(item => item.provider).join(', ');
+  const local = (view.library || []).filter(item => item.playable).length;
+  return `Adult Media is on. ${local} local playable title${local === 1 ? '' : 's'} on this PC. Official searches (${names || 'tube/creator sites'}) open in your system browser after you confirm — Eidovara does not embed those players or fetch their HTML. ${ADULT_MEDIA_HONESTY}`;
 }
 
