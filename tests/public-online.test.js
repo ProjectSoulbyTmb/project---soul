@@ -75,7 +75,7 @@ test('Windows release workflow remains tag-published, dispatch-safe, and unsigne
   assert.match(workflow, /eidovara-windows-unsigned/);
   assert.match(read('.github/workflows/pages.yml'), /path: docs\b/);
   assert.match(read('.github/workflows/pages.yml'), /branches: \[main\]/);
-  assert.match(read('.github/workflows/pages.yml'), /deploy-pages@v4/);
+  assert.match(read('.github/workflows/pages.yml'), /actions\/deploy-pages@[0-9a-f]{40}/);
 });
 
 test('desktop service remains fail-closed and uses the official HTTPS host', () => {
