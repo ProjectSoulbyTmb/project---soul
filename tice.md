@@ -1,26 +1,119 @@
----
-name: Intellectual property notice
-about: Report suspected copying of Eidovara first-party material, or a third-party rights claim against this repository
-title: "[IP] "
-labels: []
----
+name: CI
 
-This template is for intellectual-property **notices**, not vulnerability exploits.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
-- Do not paste credentials, private keys, personal data, or exploit code.
-- Official DMCA takedowns aimed at GitHub-hosted content must follow GitHub’s DMCA process. An issue is not a substitute.
-- Inbound copyrightable patches still require a privately executed assignment. Posting this issue does not transfer ownership.
+permissions:
+  contents: read
+  security-events: write
 
-## What you are reporting
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - name: Lockfile sync guard
+        run: |
+          pnpm install --lockfile-only
+          git diff --exit-code pnpm-lock.yaml
+      - run: pnpm run check
+      - run: pnpm run lint
+      - run: pnpm run format:check
+      - run: pnpm run smoke
+      - run: pnpm run test:gate
 
-- [ ] Suspected copying of first-party Eidovara source, docs, or brand assets
-- [ ] A third-party copyright or trademark claim against this repository
-- [ ] Something else (explain)
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm run format:check
 
-## URLs or product names involved
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm audit --prod --audit-level=high
 
-## Which first-party files or marks (if known)
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - run: npx tsc --noEmit
 
-## Your relationship to the project
+  perf:
+    runs-on: windows-latest
+    needs: test
+    if: always()
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run dist:win:installer
+      - run: pnpm run perf:check
 
-Owner / licensee / unaffiliated reporter / rights holder (pick one and explain).
+  e2e:
+    runs-on: windows-latest
+    needs: test
+    if: always()
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:e2e
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+  a11y:
+    runs-on: windows-latest
+    needs: test
+    if: always()
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm run test:a11y
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: a11y-report
+          path: playwright-report/
+          retention-days: 7
