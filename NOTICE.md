@@ -3,7 +3,7 @@
 SPDX-FileCopyrightText: 2026 Soul Consciousness Studios  
 SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 
-Copyright Â© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
+Copyright © 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
 
 **Tyler M. Bosworth is the sole creator and owner of Soul Consciousness Studios and all associated products.** Soul Consciousness Studios is the business name under which Tyler M. Bosworth publishes and commercializes his work.
 
@@ -23,15 +23,15 @@ Declared dependencies in `package.json` (v0.19.1) that this project actually inv
 
 | Component | Version in package.json | Role | License family (as published by that project) | Redistributed in the Windows app? |
 | --- | --- | --- | --- | --- |
-| Electron | 43.4.1 | Desktop runtime | MIT (Electron); Chromium/Node.js keep their own notices | Yes â€” runtime |
-| Chromium | bundled by Electron 43.4.1 | Rendering engine | Chromium authors; see `LICENSES.chromium.html` in Windows builds | Yes â€” via Electron |
-| Node.js | bundled by Electron 43.4.1 | JavaScript runtime | OpenJS Foundation and contributors; see Electron notices | Yes â€” via Electron |
-| electron-updater | 6.8.9 | Official GitHub Releases updater | MIT | Yes â€” application dependency |
-| electron-builder | 26.15.3 | Windows/Linux packaging | As published by electron-builder | No â€” build-time only |
-| rcedit | 5.0.2 | Applies the approved `.ico` during Windows `afterPack` | As published by rcedit | No â€” build-time only |
-| @electron/packager | 20.3.0 | macOS packaging scripts (not an official signed product) | As published by @electron/packager | No â€” build-time only |
-| @noble/hashes | 1.4.0 | Development helper | As published by @noble/hashes | No â€” development only |
-| yallist | 4.0.0 | Development helper | As published by yallist | No â€” development only |
+| Electron | 43.4.1 | Desktop runtime | MIT (Electron); Chromium/Node.js keep their own notices | Yes — runtime |
+| Chromium | bundled by Electron 43.4.1 | Rendering engine | Chromium authors; see `LICENSES.chromium.html` in Windows builds | Yes — via Electron |
+| Node.js | bundled by Electron 43.4.1 | JavaScript runtime | OpenJS Foundation and contributors; see Electron notices | Yes — via Electron |
+| electron-updater | 6.8.9 | Official GitHub Releases updater | MIT | Yes — application dependency |
+| electron-builder | 26.15.3 | Windows/Linux packaging | As published by electron-builder | No — build-time only |
+| rcedit | 5.0.2 | Applies the approved `.ico` during Windows `afterPack` | As published by rcedit | No — build-time only |
+| @electron/packager | 20.3.0 | macOS packaging scripts (not an official signed product) | As published by @electron/packager | No — build-time only |
+| @noble/hashes | 1.4.0 | Development helper | As published by @noble/hashes | No — development only |
+| yallist | 4.0.0 | Development helper | As published by yallist | No — development only |
 
 Windows builds must keep Electron's `LICENSE.electron.txt` and `LICENSES.chromium.html` with redistributed copies. This repository does not paste those third-party license texts into LICENSE (Eidovara is not MIT/Apache/GPL). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
