@@ -1,4 +1,4 @@
-﻿# Third-party notices
+# Third-party notices
 
 Copyright in qualifying original first-party Eidovara expression is claimed by Soul Consciousness Studios. That claim does **not** extend to third-party software.
 
