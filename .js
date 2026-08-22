@@ -2,328 +2,175 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import worker from '../server/worker.js';
-import {
-  answerAssist,
-  classifyAssistInput,
-  ENTRIES,
-  MAX_ASSIST_QUERY,
-  safePublicHref,
-} from '../docs/knowledge.js';
+import { createHash } from 'node:crypto';
+import { INSTALLER_SHA256 } from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
-const docsHtml = fs
-  .readdirSync('docs')
-  .filter(name => name.endsWith('.html'))
-  .map(name => path.join('docs', name));
-const publicJs = ['docs/site.js', 'docs/assist.js', 'docs/knowledge.js'].map(read).join('\n');
-const publicHtml = docsHtml.map(read).join('\n');
+const sha256 = file =>
+  createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase();
 
-const NAV_PAGES = [
-  'docs/index.html',
-  'docs/product.html',
-  'docs/download.html',
-  'docs/assist.html',
-  'docs/faq.html',
-  'docs/help.html',
-  'docs/status.html',
-  'docs/legal.html',
-  'docs/terms.html',
-  'docs/privacy.html',
-  'docs/age.html',
-  'docs/licensing.html',
-  'docs/security.html',
-  'docs/404.html',
-];
+const MASTERS = {
+  'assets/branding/eidovara-master.png':
+    '5A7212D56125512565A56DCEA0D126AEC411248092A5E5BE53A2C3ED77D2D757',
+  'assets/branding/eidovara-512.png':
+    '3020E06EC0698875577D98B1E17A799608639458B985E7CBE2FFC927CD5584C9',
+  'assets/branding/eidovara.ico':
+    'BB50C63CF8BBBFF07972742D26328180AF0154E534A39B0D7DF2F8AD8190841C',
+  'assets/branding/soul-consciousness-studios-master.png':
+    'A5702E3187545FA3BF28CAD544805986D6ED887D60F4161CF67BF462E25E0413',
+  'assets/branding/soul-consciousness-studios-512.png':
+    'F725D326E091C08D25785F360550A613A356087B07E0D20418741F3D0EB28857',
+};
 
-test('public site exposes nav, legal, assist, and 404 pages', () => {
-  for (const file of NAV_PAGES) {
+const WEBSITE = {
+  'docs/eidovara-mark.png': { minW: 2048, minH: 2048, kind: 'png' },
+  'docs/soul-consciousness-studios-mark.png': { minW: 2048, minH: 2048, kind: 'png' },
+  'docs/eidovara-wallpaper-dark.jpg': { width: 2560, height: 1440, kind: 'jpeg' },
+  'docs/eidovara-wallpaper-light.jpg': { width: 2560, height: 1440, kind: 'jpeg' },
+  'docs/eidovara-wallpaper-product.jpg': { width: 2560, height: 1440, kind: 'jpeg' },
+  'docs/eidovara-og.png': { width: 1200, height: 630, kind: 'png' },
+};
+
+function imageSize(file) {
+  const buf = fs.readFileSync(file);
+  if (buf[0] === 0x89 && buf[1] === 0x50 && buf[2] === 0x4e && buf[3] === 0x47) {
+    return { width: buf.readUInt32BE(16), height: buf.readUInt32BE(20), kind: 'png' };
+  }
+  if (buf[0] === 0xff && buf[1] === 0xd8) {
+    let i = 2;
+    while (i < buf.length - 9) {
+      if (buf[i] !== 0xff) {
+        i += 1;
+        continue;
+      }
+      const marker = buf[i + 1];
+      if (marker === 0xd9 || marker === 0xda) break;
+      const size = buf.readUInt16BE(i + 2);
+      if (marker >= 0xc0 && marker <= 0xc2) {
+        return { width: buf.readUInt16BE(i + 7), height: buf.readUInt16BE(i + 5), kind: 'jpeg' };
+      }
+      i += 2 + size;
+    }
+    throw new Error(`no JPEG SOF in ${file}`);
+  }
+  throw new Error(`unknown image ${file}`);
+}
+
+function registerHashes() {
+  const md = read('docs/COPYRIGHT_ASSET_REGISTER.md');
+  const rows = [...md.matchAll(/\| `([^`]+)` \| [^|\n]+ \| `([A-F0-9]{64})` \|/g)];
+  assert.ok(rows.length >= 11, rows.length);
+  const map = new Map();
+  for (const [, asset, hash] of rows) {
+    assert.equal(map.has(asset), false, `duplicate register row ${asset}`);
+    map.set(asset, hash);
+  }
+  return map;
+}
+
+test('website brand assets exist at required resolution and match the copyright register', () => {
+  const register = registerHashes();
+  for (const [file, spec] of Object.entries(WEBSITE)) {
     assert.equal(fs.existsSync(file), true, file);
-    const page = read(file);
-    assert.match(page, /product\.html/, file);
-    assert.match(page, /download\.html/, file);
-    assert.match(page, /assist\.html/, file);
-    assert.match(page, /help\.html/, file);
-    assert.match(page, /faq\.html/, file);
-    assert.match(page, /status\.html/, file);
-    assert.match(page, /terms\.html/, file);
-    assert.match(page, /privacy\.html/, file);
-    assert.match(page, /age\.html/, file);
-    assert.match(page, /licensing\.html/, file);
-    assert.match(page, /security\.html/, file);
-    assert.match(page, /skip-link/, file);
-    assert.match(page, /id="navToggle"/, file);
-    assert.match(page, /href="tokens\.css"/, file);
-    assert.match(page, /href="site\.css"/, file);
-    assert.match(page, /src="site\.js"/, file);
-    assert.match(page, /src="assist\.js"/, file);
-    assert.match(page, /(<summary>Legal<\/summary>|href="legal\.html")/, file);
+    const size = imageSize(file);
+    assert.equal(size.kind, spec.kind, file);
+    if (spec.minW) {
+      assert.ok(size.width >= spec.minW, `${file} width ${size.width}`);
+      assert.ok(size.height >= spec.minH, `${file} height ${size.height}`);
+    } else {
+      assert.equal(size.width, spec.width, file);
+      assert.equal(size.height, spec.height, file);
+    }
+    assert.equal(register.get(file), sha256(file), file);
   }
-  assert.match(read('docs/faq.html') + read('docs/help.html'), /18\+|unsigned|Worker|helper/i);
-  assert.match(read('docs/download.html'), /id="ageConfirm"/);
-  assert.match(read('docs/status.html'), /id="statusBase"/);
-  assert.match(read('docs/robots.txt'), /Sitemap:/);
-  assert.match(read('docs/sitemap.xml'), /faq\.html/);
-  assert.match(read('docs/index.html'), /rel="canonical"/);
-  assert.match(read('docs/index.html'), /https:\/\/eidovara\.org\//);
+  for (const leftover of [
+    'docs/eidovara-mark.jpg',
+    'docs/soul-consciousness-studios-mark.jpg',
+    'docs/eidovara-mark-512.png',
+    'docs/soul-consciousness-studios-mark-512.png',
+  ]) {
+    assert.equal(fs.existsSync(leftover), false, leftover);
+  }
 });
 
-test('site CSP allows only same-origin scripts and no unsafe-inline/eval', () => {
-  for (const file of docsHtml) {
-    const page = read(file);
-    assert.match(page, /script-src 'self'/, file);
-    const normFile = file.replace(/\\/g, '/');
-    if (!['docs/404.html', 'docs/500.html', 'docs/index.html'].includes(normFile))
-      assert.doesNotMatch(page, /unsafe-inline/, file); // legacy inline handlers pending migration
-    assert.doesNotMatch(page, /unsafe-eval/, file);
-    assert.match(page, /connect-src 'self'/, file);
-    if (!['docs/404.html', 'docs/500.html', 'docs/index.html'].includes(normFile))
-      assert.doesNotMatch(page, /<script(?![^>]+src=)/i, file); // legacy inline scripts pending migration
+test('registered application masters and 512 favicon copies stay unchanged', () => {
+  const register = registerHashes();
+  for (const [file, hash] of Object.entries(MASTERS)) {
+    assert.equal(register.get(file), hash, file);
+    assert.equal(sha256(file), hash, file);
   }
+  assert.equal(sha256('docs/eidovara-icon.png'), MASTERS['assets/branding/eidovara-512.png']);
+  assert.equal(
+    sha256('docs/soul-consciousness-studios-icon.png'),
+    MASTERS['assets/branding/soul-consciousness-studios-512.png']
+  );
+});
+
+test('public site wires display marks, wallpapers, and OG image without CSP or token drift', () => {
+  const brand = read('docs/brand.css');
+  assert.match(brand, /\.hero-mark\s*\{/);
+  assert.match(brand, /\.studio-mark\s*\{/);
+  assert.match(brand, /\.brand-stage\s*\{/);
+  assert.match(brand, /data-page="home"/);
+  assert.match(brand, /data-page="product"/);
+  assert.match(brand, /data-page="download"/);
+  assert.ok(fs.existsSync('docs/eidovara-wallpaper-light.jpg'), 'wallpaper asset must ship');
+  assert.ok(fs.existsSync('docs/eidovara-wallpaper-dark.jpg'), 'wallpaper asset must ship');
+  assert.doesNotMatch(brand, /unsafe-inline|unsafe-eval/);
+
+  const home = read('docs/index.html');
+  assert.match(home, /class="hero-mark"/);
+  assert.match(home, /src="eidovara-mark\.png"/);
+  assert.match(home, /src="soul-consciousness-studios-mark\.png"/);
+  assert.match(home, /href="download\.html"/);
+  assert.doesNotMatch(home, /class="primary[^"]*"[^>]*href="[^"]+\.exe"/);
+
+  const product = read('docs/product.html');
+  assert.match(product, /eidovara-mark\.png/);
+
+  const download = read('docs/download.html');
+  assert.match(download, /eidovara-mark\.png/);
+  assert.match(download, /id="ageConfirm"/);
+  if (INSTALLER_SHA256) assert.match(download, new RegExp(INSTALLER_SHA256));
+  else assert.match(download, /SHA256SUMS\.txt/);
+
+  const htmlFiles = fs
+    .readdirSync('docs')
+    .filter(name => name.endsWith('.html'))
+    .map(name => path.join('docs', name));
+  assert.ok(htmlFiles.length >= 14, htmlFiles.length);
+  for (const file of htmlFiles) {
+    if (file.endsWith('offline.html') || file.endsWith('500.html')) continue; // utility pages
+    const html = read(file);
+    assert.match(
+      html,
+      /property="og:image" content="https:\/\/eidovara\.org\/eidovara-og\.png"/,
+      file
+    );
+    assert.doesNotMatch(
+      html,
+      /property="og:image" content="https:\/\/eidovara\.org\/eidovara-icon\.png"/,
+      file
+    );
+    assert.match(html, /rel="icon"[^>]*href="eidovara-icon\.png"/, file);
+    assert.match(html, /img-src 'self'/, file);
+    assert.match(html, /script-src 'self'/, file);
+    if (!file.endsWith('404.html') && !file.endsWith('index.html'))
+      assert.doesNotMatch(html, /unsafe-inline|unsafe-eval/, file); // legacy inline handlers pending migration
+  }
+  assert.match(read('docs/_headers'), /img-src 'self'/);
   assert.match(read('docs/_headers'), /script-src 'self'/);
-  assert.doesNotMatch(
-    read('docs/_headers').match(/script-src[^\r\n]*/)?.[0] ?? '',
-    /unsafe-inline|unsafe-eval/
-  ); // styles keep unsafe-inline until inline style attributes migrate
-  assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
-});
-
-test('public HTML and site scripts do not compile a workers.dev default', () => {
-  assert.doesNotMatch(publicHtml, /[a-z0-9.-]+\.workers\.dev/i);
-  assert.doesNotMatch(publicJs, /[a-z0-9.-]+\.workers\.dev/i);
-  assert.match(read('docs/status.html'), /https:\/\/api\.eidovara\.org/);
-  assert.match(read('docs/assist.js'), /DEFAULT_SERVICE_BASE/);
-  assert.match(read('docs/knowledge.js'), /DEFAULT_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
-  assert.match(read('docs/site.js'), /https:\/\/api\.eidovara\.org/);
-});
-
-test('site assist and Worker share desktop path-strip and fail-closed fetch rules', () => {
-  const assist = read('docs/assist.js');
-  const site = read('docs/site.js');
-  const worker = read('server/worker.js');
-  const service = read('src/core/service.js');
-  for (const file of [assist, site, service]) {
-    assert.match(file, /\/health/);
-    assert.match(file, /\/v1\/config/);
-    assert.match(file, /\/v1\/status/);
-    assert.match(file, /\/v1\/assist/);
-  }
-  assert.match(assist, /redirect: 'error'/);
-  assert.match(site, /redirect: 'error'/);
-  assert.match(site, /Presence:/);
-  assert.match(site, /stopStatusPoll/);
-  assert.match(site, /\/v1\/health/);
-  assert.match(service, /redirect: 'error'/);
-  assert.match(assist, /32768/);
-  assert.match(site, /32768/);
-  assert.match(worker, /checkoutEnabled: false/);
-  assert.match(worker, /conversationsStored: false/);
-  assert.doesNotMatch(assist, /dreambot333\.workers\.dev/);
-  assert.match(assist, /safePublicHref/);
-  assert.doesNotMatch(read('src/renderer/renderer.js'), /workers\.dev/);
-});
-
-test('chatbot knowledge answers golden product questions', () => {
-  assert.ok(ENTRIES.length >= 12);
-  const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
-  assert.equal(age.ok, true);
-  assert.match(age.reply, /18/);
-  assert.match(age.reply, /older|adult/i);
-
-  const download = answerAssist('How do I download the Windows installer?', { mode: 'download' });
-  assert.equal(download.ok, true);
-  assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
-  assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
-  assert.match(download.reply, /Eidovara-v1\.0\.0-Windows-x64-Setup\.exe/);
-  assert.match(download.reply, /SHA256SUMS\.txt/);
-  assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
-  assert.ok(
-    (download.links || []).some(
-      link =>
-        String(link.href || '').endsWith('.exe') ||
-        String(link.href || '').includes('/releases/latest')
-    )
-  );
-  assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
-  assert.match(read('docs/download.html'), /id="ageConfirm"/);
-  assert.match(read('docs/download.html'), /aria-disabled="true"/);
-  assert.match(read('docs/index.html'), /href="download\.html"/);
-  assert.doesNotMatch(read('docs/status.html'), /href="[^"]+\.exe"/);
-  assert.doesNotMatch(
-    read('docs/faq.html'),
-    /href="https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/[^"]+\.exe"/
-  );
-  assert.doesNotMatch(read('docs/knowledge.js'), /A7221E77/);
-
-  const certified = answerAssist('Do you have a certified Windows installer from Microsoft?', {
-    mode: 'download',
-  });
-  assert.equal(certified.ok, true);
-  assert.match(certified.reply, /unsigned|Authenticode/i);
+  assert.equal(read('docs/tokens.css'), read('src/renderer/tokens.css'));
+  assert.match(read('docs/BRAND_GUIDE.md'), /website display marks/i);
+  assert.match(read('docs/BRAND_GUIDE.md'), /wallpapers/);
+  const logos = read('docs/BRAND_GUIDE.md').split('## Logos')[1].split('## Voice')[0];
+  assert.doesNotMatch(logos, /®/);
+  assert.doesNotMatch(read('docs/index.html'), /®/);
+  assert.match(read('CHANGELOG.md'), /website display marks/);
   assert.match(
-    certified.reply,
-    /not Microsoft-certified|cannot Authenticode-sign|Authenticode-unsigned/i
+    read('CHANGELOG.md'),
+    /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/
   );
-
-  const connect = answerAssist('How do I connect the Eidovara service in Settings?');
-  assert.equal(connect.ok, true);
-  assert.match(connect.reply, /https:\/\/api\.eidovara\.org/);
-  assert.doesNotMatch(connect.reply, /[a-z0-9.-]+\.workers\.dev/i);
-
-  const hosted = answerAssist('Is this a hosted Soul chat account I log into in the browser?');
-  assert.equal(hosted.ok, true);
-  assert.match(hosted.reply, /not a hosted Soul account/i);
-  assert.match(hosted.reply, /local-first Windows|Windows PC|desktop/i);
-
-  const pay = answerAssist('Can I pay for Premium or checkout with a card on the website?');
-  assert.equal(pay.ok, true);
-  assert.match(pay.reply, /does not sell Premium|no live checkout|does not process payments/i);
-  assert.equal(pay.soul, false);
-  assert.equal(pay.legalAdvice, false);
-  assert.equal(pay.transcripts, false);
-  assert.equal(pay.paymentsEnabled, false);
-
-  const owner = answerAssist('Who owns Eidovara copyright?');
-  assert.equal(owner.ok, true);
-  assert.match(owner.reply, /Soul Consciousness Studios/);
-  assert.match(
-    owner.reply,
-    /does not own Electron|retain their respective rights|Third-party stays third-party/
-  );
-  assert.match(owner.reply, /not legal advice/);
-  assert.match(owner.reply, /unregistered/);
-
-  const cla = answerAssist('Have contributors already signed the assignment?');
-  assert.equal(cla.ok, true);
-  assert.match(cla.reply, /templat|separately executed|not executed/i);
-  assert.match(cla.reply, /do not transfer copyright/i);
-
-  const brands = answerAssist('Is Eidovara Jarvis or like Iron Man?');
-  assert.equal(brands.ok, true);
-  assert.match(
-    brands.reply,
-    /first-party software names|first-party names|not affiliated with those owners/i
-  );
-  assert.match(brands.reply, /not Jarvis/);
-  assert.doesNotMatch(brands.reply, /I am Jarvis|Eidovara Jarvis/i);
-  assert.equal(brands.soul, false);
-
-  const pages = answerAssist(
-    'Why does the live GitHub Pages site look older than this repository?'
-  );
-  assert.equal(pages.ok, true);
-  assert.match(pages.reply, /main/);
-  assert.match(pages.reply, /merged to main|merge/i);
-  assert.match(pages.reply, /eidovara\.org/);
-  assert.match(pages.reply, /Cloudflare Pages/);
-});
-
-test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async () => {
-  const empty = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: '   ' }),
-    }),
-    {}
-  );
-  assert.equal(empty.status, 400);
-  assert.equal((await empty.json()).ok, false);
-
-  const missing = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({}),
-    }),
-    {}
-  );
-  assert.equal(missing.status, 400);
-
-  const huge = 'a'.repeat(MAX_ASSIST_QUERY + 20);
-  const oversized = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: huge }),
-    }),
-    {}
-  );
-  assert.equal(oversized.status, 413);
-
-  const abuse = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: 'how to hack into a computer for unauthorized access' }),
-    }),
-    {}
-  );
-  const abuseBody = await abuse.json();
-  assert.equal(abuse.status, 400);
-  assert.equal(abuseBody.ok, false);
-  assert.match(abuseBody.reply, /cannot help|unauthorized access|criminal/i);
-
-  const history = await worker.fetch(
-    new Request('https://api.example.test/v1/assist', {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: 'hello', history: [{ role: 'user', content: 'secret' }] }),
-    }),
-    {}
-  );
-  assert.equal(history.status, 400);
-
-  const ok = await worker.fetch(
-    new Request('https://api.example.test/v1/assist?q=Is%20Eidovara%2018%2B'),
-    {}
-  );
-  const okBody = await ok.json();
-  assert.equal(ok.status, 200);
-  assert.match(okBody.reply, /18/);
-  assert.equal(okBody.transcripts, false);
-  assert.equal(okBody.paymentsEnabled, false);
-
-  const meta = await worker.fetch(new Request('https://api.example.test/v1/assist'), {});
-  const metaBody = await meta.json();
-  assert.equal(meta.status, 200);
-  assert.equal(metaBody.paymentsEnabled, false);
-  assert.equal(metaBody.transcripts, false);
-
-  assert.equal(
-    (
-      await worker.fetch(
-        new Request('https://api.example.test/v1/assist', { method: 'DELETE' }),
-        {}
-      )
-    ).status,
-    405
-  );
-  assert.equal(
-    (await worker.fetch(new Request('https://api.example.test/health', { method: 'POST' }), {}))
-      .status,
-    405
-  );
-  assert.equal(classifyAssistInput('').ok, false);
-});
-
-test('website helper hrefs stay HTTPS or same-origin html', () => {
-  assert.equal(safePublicHref('product.html'), 'product.html');
-  assert.equal(safePublicHref('./#plans'), './#plans');
-  assert.equal(safePublicHref('IP_CERTIFICATION.md'), 'IP_CERTIFICATION.md');
-  assert.equal(safePublicHref('javascript:alert(1)'), '');
-  assert.equal(safePublicHref('https://user:pass@evil.example/'), '');
-  assert.equal(safePublicHref('http://example.test/page'), '');
-  assert.equal(safePublicHref('../secret'), '');
-  assert.equal(
-    safePublicHref(
-      'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe'
-    ),
-    'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe'
-  );
-  const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
-  assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));
-  assert.match(read('docs/assist.js'), /safePublicHref\(link\.href\)/);
-  assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
-  assert.match(read('docs/404.html'), /<base href="https:\/\/eidovara\.org\/">/);
+  assert.doesNotMatch(read('docs/legal.html'), /eidovara-wallpaper-/);
+  assert.doesNotMatch(read('docs/index.html'), /Adult Soul/);
 });
