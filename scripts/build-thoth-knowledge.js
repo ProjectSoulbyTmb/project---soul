@@ -131,6 +131,30 @@ const entries = [
     patterns: ['how\\s+many\\s+tests', 'test\\s+suites?', 'what\\s+is\\s+tested'],
     reply: `The suite is ${coreTestFiles.length} runnable files under tests/, executed by the Node built-in runner (\`npm test\`). Coverage areas include the Soul kernel, legal surfaces, release consistency, runtime engines, and this Thoth index itself.`,
   },
+  {
+    id: 'thoth:maintenance',
+    title: 'Service maintenance commands',
+    patterns: ['maintain(?:ance)?', 'service\\s+maintenance', 'health\\s+check', 'keep\\s+(?:the\\s+)?services?\\s+healthy'],
+    reply:
+      'Maintenance runs through exact operator commands only: "run diagnostics" opens local diagnostics; "service status" shows the Eidovara service panel (health/config/status); "check for updates" verifies GitHub Releases with mandatory checksum verification and an optional Defender scan before install; "open backups" reaches the backup panel for durable local state. There is no remote control path: every command runs on this device behind the admin gate.',
+    actions: [{ type: 'open-diagnostics', label: 'Show diagnostics' }],
+  },
+  {
+    id: 'thoth:security',
+    title: 'Security posture',
+    patterns: ['secure\\s+(?:the\\s+)?services?', 'security\\s+posture', 'protect\\s+against', 'hardening'],
+    reply:
+      'Standing protections: sandboxed renderer with nodeIntegration off, strict CSP with connect-src none, deny-by-default navigation, fuses enabled (no runAsNode, ASAR integrity), scrypt-hashed admin gate, safeStorage-encrypted secrets when Windows protection is available, checksum-mandatory updates downloaded only over HTTPS from official releases with Mark-of-the-Web plus optional Defender scan, secret redaction in logs, and zero telemetry. Thoth adds a frozen operator catalog: default-deny against anything that is not an exact operator command.',
+    actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }],
+  },
+  {
+    id: 'thoth:authorization',
+    title: 'Operator-only command policy',
+    patterns: ['only\\s+(?:follow|my)\\s+commands?', 'who\\s+can\\s+command', 'operator\\s+commands?', 'authorization\\s+policy', 'permission\\s+policy'],
+    reply:
+      'Thoth follows only your specific commands. Authorization is exact-match against a frozen catalog of read-class actions ("run diagnostics", "service status", "check for updates", "open settings", "open backups", "open privacy notice"), bound to an active operator session from the scrypt admin gate. Anything else - rephrased, injected, escalated, or unknown - is refused by default and written to the audit trail. There is no fuzzy matching and no way for conversation content to mint new permissions.',
+    actions: [{ type: 'open-view', view: 'identity', label: 'Identity & consent' }],
+  },
 ];
 
 // --- emit ------------------------------------------------------------------
