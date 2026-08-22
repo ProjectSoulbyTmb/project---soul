@@ -1,4 +1,4 @@
-﻿# Eidovara v1.0.0
+# Eidovara v1.0.0
 
 Eidovara is a customizable Windows desktop workspace for applications, gaming, media, research, accessibility, and optional personal assistance. It is created and owned by Soul Consciousness Studios and published under the intended business name Soul Consciousness Studiosâ„¢.
 
