@@ -26,9 +26,9 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.claimant, 'Tyler Michael Bosworth');
   assert.equal(cert.licenseSpdx, 'LicenseRef-Eidovara-Source-Available-1.0');
   assert.equal(cert.notLegalAdvice, true);
-  assert.equal(cert.product.version, '0.22.2');
-  assert.equal(cert.product.sourceVersion, '0.22.2');
-  assert.equal(cert.product.liveInstallerVersion, '0.22.2');
+  assert.equal(cert.product.version, '1.0.0');
+  assert.equal(cert.product.sourceVersion, '1.0.0');
+  assert.equal(cert.product.liveInstallerVersion, '1.0.0');
   assert.equal(cert.product.installer, INSTALLER_NAME);
   assert.equal(cert.product.sha256, INSTALLER_SHA256);
   assert.equal(cert.product.authenticode, 'unsigned');
@@ -54,7 +54,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.instruments.find(row => row.id === 'trademark-filing').status, 'not-filed');
   assert.match(md, /not a U\.S\. Copyright Office registration/i);
   assert.match(md, /repository self-attestation/i);
-  assert.match(md, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
+  assert.match(md, new RegExp(INSTALLER_SHA256));
   assert.match(md, /unsigned-template/);
   assert.match(md, /owner-action-required/);
   assert.match(md, /LicenseRef-Eidovara-Source-Available-1\.0/);
