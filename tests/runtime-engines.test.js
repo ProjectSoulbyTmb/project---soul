@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -113,7 +113,7 @@ test('blocked engines are not imported and stay-awake uses Electron powerSaveBlo
   assert.match(read('src/electron/preload.cjs'), /stayAwake:/);
   assert.match(read('src/renderer/index.html'), /id="adultAmbientHeartbeat"/);
   assert.match(read('src/renderer/index.html'), /id="adultGamepadStatus"/);
-  assert.match(pkg, /"version": "0\.22\.2"/);
+  assert.match(pkg, /"version": "1\.0\.0"/);
   assert.doesNotMatch(pkg, /"react"|"vue"|"three"|"babylonjs"/);
 });
 
