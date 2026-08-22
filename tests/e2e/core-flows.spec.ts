@@ -2,16 +2,37 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { test, expect } from '@playwright/test';
 import { injectAxe, checkA11y } from '@axe-core/playwright';
+import { _electron as electron } from '@playwright/test';
+
+let electronApp: Awaited<ReturnType<typeof electron.launch>>;
+
+test.beforeAll(async () => {
+  electronApp = await electron.launch({
+    executablePath: require('electron'),
+    args: ['.', '--no-sandbox', '--disable-gpu'],
+    env: {
+      EIDOVARA_AGE_GATE_ACCEPTED: 'true',
+      NODE_ENV: 'test',
+    },
+  });
+});
+
+test.afterAll(async () => {
+  await electronApp?.close();
+});
 
 test.describe('Eidovara Core User Flows', () => {
-  test.beforeEach(async ({ page }) => {
-    await page.goto('/');
+  let page: Awaited<ReturnType<typeof electronApp.firstWindow>>;
+
+  test.beforeEach(async () => {
+    page = await electronApp.firstWindow();
+    await page.waitForLoadState('domcontentloaded');
     await injectAxe(page);
   });
 
-  test('Age gate appears and can be accepted', async ({ page }) => {
+  test('Age gate appears and can be accepted', async () => {
     // Check age gate modal is present
-    await expect(page.locator('#eidovara-age-gate-modal, [data-testid="age-gate"]')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('#eidovara-age-gate-modal, [data-testid="age-gate"]')).toBeVisible({ timeout: 15000 });
     
     // Accept age gate
     await page.click('button:has-text("I confirm I am 18+")');
@@ -20,9 +41,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=Your Eidovara workspace')).toBeVisible({ timeout: 10000 });
   });
 
-  test('Dashboard loads with all navigation elements', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Dashboard loads with all navigation elements', async () => {
     // Accept age gate if needed
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
@@ -39,9 +58,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=Settings')).toBeVisible();
   });
 
-  test('Soul companion dock is present and functional', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Soul companion dock is present and functional', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -54,9 +71,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('#companionSendBtn')).toBeVisible();
   });
 
-  test('Settings page accessible and has all sections', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Settings page accessible and has all sections', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -76,9 +91,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=Desktop')).toBeVisible();
   });
 
-  test('Apps & Gaming page loads with discover button', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Apps & Gaming page loads with discover button', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -90,9 +103,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=Choose file')).toBeVisible();
   });
 
-  test('Entertainment page loads with mood mix button', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Entertainment page loads with mood mix button', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -104,9 +115,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=From favorites')).toBeVisible();
   });
 
-  test('Memory page accessible', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Memory page accessible', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -117,9 +126,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=Add something Soul should remember')).toBeVisible();
   });
 
-  test('Research page loads with query input', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Research page loads with query input', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -131,9 +138,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=Look up')).toBeVisible();
   });
 
-  test('Identity page shows protected identity section', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Identity page shows protected identity section', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -145,9 +150,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('text=Adaptive personality')).toBeVisible();
   });
 
-  test('Command palette opens with Ctrl+K', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Command palette opens with Ctrl+K', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();
@@ -160,9 +163,7 @@ test.describe('Eidovara Core User Flows', () => {
     await expect(page.locator('[data-testid="command-palette"], .palette-overlay')).toBeVisible({ timeout: 5000 });
   });
 
-  test('Accessibility: no critical violations on main pages', async ({ page }) => {
-    await page.goto('/');
-    
+  test('Accessibility: no critical violations on main pages', async () => {
     const ageGate = page.locator('button:has-text("I confirm I am 18+")');
     if (await ageGate.isVisible({ timeout: 2000 })) {
       await ageGate.click();

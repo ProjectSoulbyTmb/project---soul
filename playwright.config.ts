@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import path from 'node:path';
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -12,7 +13,6 @@ export default defineConfig({
     ['junit', { outputFile: 'test-results/results.xml' }]
   ],
   use: {
-    baseURL: 'http://localhost:3000',
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
@@ -21,20 +21,17 @@ export default defineConfig({
   },
   projects: [
     {
-      name: 'chromium',
-      use: { ...devices['Desktop Chrome'] },
+      name: 'electron',
+      use: {
+        ...devices['Desktop Chrome'],
+        // Electron-specific launch options
+        launchOptions: {
+          executablePath: path.resolve('node_modules/.bin/electron'),
+          args: ['.', '--no-sandbox', '--disable-gpu'],
+        },
+      },
     },
   ],
-  webServer: {
-    command: 'npm run start:test',
-    url: 'http://localhost:3000',
-    reuseExistingServer: !process.env.CI,
-    timeout: 120000,
-    env: {
-      EIDOVARA_AGE_GATE_ACCEPTED: 'true',
-      NODE_ENV: 'test',
-    },
-  },
   expect: {
     toHaveScreenshot: {
       maxDiffPixels: 100,
