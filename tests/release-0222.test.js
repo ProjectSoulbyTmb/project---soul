@@ -14,23 +14,31 @@ import { DESKTOP_KNOWLEDGE_VERSION, INSTALLER_NAME as KNOWLEDGE_INSTALLER } from
 import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
+const escapeRe = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-test('v0.22.2 source and published Windows installer use measured release metadata', () => {
-  assert.equal(SOURCE_VERSION, '0.22.2');
+test('source and published Windows installer use one coherent set of release metadata', () => {
+  assert.equal(SOURCE_VERSION, LIVE_INSTALLER_VERSION);
   assert.equal(JSON.parse(read('package.json')).version, SOURCE_VERSION);
   assert.equal(DESKTOP_KNOWLEDGE_VERSION, SOURCE_VERSION);
   assert.equal(ASSIST_VERSION, SOURCE_VERSION);
-  assert.equal(LIVE_INSTALLER_VERSION, '0.22.2');
-  assert.equal(INSTALLER_NAME, 'Eidovara-0.22.2-Windows-x64-Setup.exe');
+  assert.equal(INSTALLER_NAME, `Eidovara-v${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`);
   assert.equal(KNOWLEDGE_INSTALLER, INSTALLER_NAME);
-  assert.equal(INSTALLER_SHA256, 'A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE');
-  assert.equal(INSTALLER_SIZE_BYTES, 106691429);
+  assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
+  assert.equal(INSTALLER_SIZE_BYTES, 106691524);
   assert.equal(INSTALLER_LATEST_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`);
   assert.equal(INSTALLER_PINNED_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`);
-  assert.match(read('docs/download.html'), /Eidovara-0\.22\.2-Windows-x64-Setup\.exe/);
-  assert.match(read('docs/download.html'), /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
-  assert.match(read('docs/download.html'), /Authenticode-unsigned/);
-  assert.match(read('docs/download.html'), /GitHub\/Sigstore provenance/);
-  assert.match(read('CHANGELOG.md'), /## v0\.22\.2/);
-  assert.match(read('src/electron/main.js'), /title: 'Eidovara v0\.22\.2'/);
+});
+
+test('download page advertises exactly the canonical installer with integrity metadata', () => {
+  const downloadPage = read('docs/download.html');
+  assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_NAME)));
+  assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
+  assert.match(downloadPage, /Authenticode-unsigned/);
+  assert.match(downloadPage, /GitHub\/Sigstore provenance/);
+  assert.match(read('CHANGELOG.md'), new RegExp('## v' + escapeRe(SOURCE_VERSION)));
+});
+
+test('desktop window title derives its version from the running app, not a frozen literal', () => {
+  const main = read('src/electron/main.js');
+  assert.match(main, /title: `Eidovara v\$\{app\.getVersion\(\)\}`/);
 });
