@@ -1,0 +1,172 @@
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
+<!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta
+      name="description"
+      content="Eidovara v1.0.0 status: release version, build information, SHA-256 verification, provenance records, and release pipeline status."
+    />
+    <meta property="og:title" content="Status · Eidovara" />
+    <meta
+      property="og:description"
+      content="Eidovara v1.0.0 status: v1.0.0 release, build provenance, SHA-256 checksums, and pipeline health."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://eidovara.org/status.html" />
+    <meta property="og:image" content="https://eidovara.org/eidovara-og.png" />
+    <link rel="canonical" href="https://eidovara.org/status.html" />
+    <title>Status · Eidovara</title>
+    <link rel="stylesheet" href="tokens.css" />
+    <link rel="stylesheet" href="site.css" />
+    <link rel="stylesheet" href="brand.css" />
+    <link rel="icon" type="image/png" href="eidovara-icon.png" />
+  </head>
+  <body class="site" data-page="status">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header site-chrome">
+      <div class="site-header-inner">
+        <a class="brand" href="./"
+          ><img class="brand-icon" src="eidovara-icon.png" alt="" />Eidovara</a
+        ><button
+          class="nav-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="site-nav"
+          id="navToggle"
+        >
+          Menu
+        </button>
+        <nav id="site-nav" aria-label="Primary">
+          <a href="./" data-nav="home">Home</a
+          ><a class="nav-cta" href="download.html" data-nav="download">Download</a
+          ><a href="product.html" data-nav="product">Product</a
+          ><a href="assist.html" data-nav="assist">Assist</a
+          ><a href="faq.html" data-nav="faq">FAQ</a><a href="terms.html" data-nav="terms">Terms</a
+          ><a href="age.html" data-nav="age">Age 18+</a>
+          <details class="nav-legal">
+            <summary>Legal</summary>
+            <div class="nav-legal-menu">
+              <a href="legal.html">Overview</a><a href="terms.html">Terms</a
+              ><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a
+              ><a href="licensing.html">Licensing</a><a href="security.html">Security</a>
+            </div>
+          </details>
+        </nav>
+        <div class="header-controls"></div>
+      </div>
+    </header>
+    <main id="main" class="site-main">
+      <p class="eyebrow download-studio-line">
+        <img class="download-mark" src="eidovara-mark.png" width="48" height="48" alt="" />Windows
+        10/11 x64 — v1.0.0 Stable Alpha — 18+
+      </p>
+      <h1 class="section-title">Release status</h1>
+      <section class="status-item">
+        <h2>Live endpoint</h2>
+        <p>
+          Official service base: <code id="apiBase">https://api.eidovara.org</code>. The desktop app
+          defaults to this host after the 18+ gate; conversations are never sent.
+        </p>
+        <form id="statusForm">
+          <label for="statusBase">Service base (HTTPS only)</label>
+          <input
+            id="statusBase"
+            name="statusBase"
+            type="url"
+            placeholder="https://api.eidovara.org"
+          />
+          <button id="statusSave" type="submit">Save &amp; check</button>
+          <button id="statusProbe" type="button">Probe once</button>
+          <button id="statusClear" type="button">Clear</button>
+          <output id="statusOut" aria-live="polite"></output>
+        </form>
+      </section>
+      <section class="status-item">
+        <h2>Live endpoint</h2>
+        <p>
+          Official service base: <code id="apiBase">https://api.eidovara.org</code>. The desktop app
+          defaults to this host after the 18+ gate; conversations are never sent.
+        </p>
+        <form id="statusForm">
+          <label for="statusBase">Service base (HTTPS only)</label>
+          <input
+            id="statusBase"
+            name="statusBase"
+            type="url"
+            placeholder="https://api.eidovara.org"
+          />
+          <button id="statusSave" type="submit">Save &amp; check</button>
+          <button id="statusProbe" type="button">Probe once</button>
+          <button id="statusClear" type="button">Clear</button>
+          <output id="statusOut" aria-live="polite"></output>
+        </form>
+      </section>
+      <section class="status-item">
+        <h2>Current release</h2>
+        <p>
+          Eidovara v1.0.0 is the current stable Alpha release. It is a source-available, 18+
+          restricted Windows desktop workspace.
+        </p>
+      </section>
+      <section class="status-item">
+        <h2>Build provenance</h2>
+        <p>
+          GitHub/Sigstore provenance records the build origin for v1.0.0. SHA-256 checksums and SBOM
+          are available for verification. Installer: Eidovara-v1.0.0-Windows-x64-Setup.exe (about
+          101.75 MiB).
+        </p>
+      </section>
+      <section class="status-item">
+        <h2>SHA-256 verification</h2>
+        <p>
+          Measured SHA-256: see the release's
+          <a
+            href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/SHA256SUMS.txt"
+            >SHA256SUMS.txt</a
+          >.
+        </p>
+        <p>Verified against: <code>SHA256SUMS.txt</code> from GitHub Releases.</p>
+      </section>
+      <section class="status-item">
+        <h2>Code verification</h2>
+        <p>
+          GitHub CodeQL analysis, dependency-review, and security workflows are active for v1.0.0.
+          See .github/workflows/ for the full CI/CD pipeline.
+        </p>
+      </section>
+      <section class="status-item">
+        <h2>Update pipeline</h2>
+        <p>
+          The updater infrastructure checks for v1.0.0 releases and provides SHA-256 verification.
+          Updates are distributed via GitHub Releases with provenance records.
+          Authenticode-unsigned: Windows SmartScreen may warn.
+        </p>
+      </section>
+    </main>
+    <footer class="site-footer site-end">
+      <div class="site-footer-inner">
+        <span class="studio-line"
+          ><img class="studio-mark" src="soul-consciousness-studios-mark.png" alt="" />© 2026 Soul
+          Consciousness Studios. All rights reserved. Source-available, not open source. Soul
+          Consciousness Studios is the intended publisher only. 18+.</span
+        ><span
+          ><a href="help.html">Help</a> · <a href="download.html">Download</a> ·
+          <a href="product.html">Product</a> · <a href="assist.html">Assist</a> ·
+          <a href="faq.html">FAQ</a> · <a href="terms.html">Terms</a> ·
+          <a href="age.html">Age 18+</a></span
+        >
+      </div>
+    </footer>
+    <script src="site.js" defer></script>
+    <script type="module" src="assist.js"></script>
+  </body>
+</html>

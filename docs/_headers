@@ -1,0 +1,75 @@
+/*
+  # Security Headers for Cloudflare Pages
+  # https://developer.cloudflare.com/pages/platform/headers/
+
+  # Content Security Policy - Strict but functional
+  Content-Security-Policy: default-src 'self'; img-src 'self' data: https:; style-src 'self' script-src 'self'; connect-src 'self' https:; font-src 'self' data:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests; block-all-mixed-content
+
+  # Referrer Policy
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # Prevent MIME type sniffing
+  X-Content-Type-Options: nosniff
+
+  # Prevent clickjacking
+  X-Frame-Options: DENY
+
+  # XSS Protection (legacy but harmless)
+  X-XSS-Protection: 1; mode=block
+
+  # Permissions Policy (Feature Policy)
+  Permissions-Policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), interest-cohort=()
+
+  # Cross-Origin Policies
+  Cross-Origin-Opener-Policy: same-origin
+  Cross-Origin-Resource-Policy: same-origin
+  Cross-Origin-Embedder-Policy: require-corp
+
+  # HSTS (Cloudflare handles this automatically with "Always Use HTTPS")
+  Strict-Transport-Security: max-age=63115200; includeSubDomains
+
+  # Cache Control for static assets
+  /assets/*
+    Cache-Control: public, max-age=31536000, immutable
+
+  /eidovara-*.png
+    Cache-Control: public, max-age=31536000, immutable
+
+  /eidovara-*.jpg
+    Cache-Control: public, max-age=31536000, immutable
+
+  /eidovara-og.png
+    Cache-Control: public, max-age=31536000, immutable
+
+  /soul-consciousness-*.png
+    Cache-Control: public, max-age=31536000, immutable
+
+  /manifest.json
+    Cache-Control: public, max-age=86400, must-revalidate
+
+  /sw.js
+    Cache-Control: public, max-age=0, must-revalidate
+    Service-Worker-Allowed: /
+
+  /*.css
+    Cache-Control: public, max-age=31536000, immutable
+
+  /*.js
+    Cache-Control: public, max-age=31536000, immutable
+
+  # HTML pages - no cache, always revalidate
+  /*.html
+    Cache-Control: public, max-age=0, must-revalidate
+    Vary: Accept-Encoding
+
+  # Security.txt well-known
+  /.well-known/security.txt
+    Cache-Control: public, max-age=86400
+
+  # Robots.txt
+  /robots.txt
+    Cache-Control: public, max-age=86400
+
+  # Sitemap
+  /sitemap.xml
+    Cache-Control: public, max-age=86400

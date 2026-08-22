@@ -1,0 +1,186 @@
+{
+  "name": "eidovara",
+  "version": "1.0.0",
+  "description": "Eidovara privacy-focused desktop assistant and media workspace.",
+  "author": "Soul Consciousness Studios, project creator and product director. Soul Consciousness Studios is the intended publisher name, not a formed IP-owning entity.",
+  "license": "SEE LICENSE IN LICENSE",
+  "copyright": "Copyright (c) 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ProjectSoulbyTmb/project---soul.git"
+  },
+  "main": "src/electron/main.js",
+  "type": "module",
+  "scripts": {
+    "start": "electron .",
+    "start:test": "EIDOVARA_AGE_GATE_ACCEPTED=true electron . --no-sandbox --disable-gpu",
+    "cli": "node src/cli.js",
+    "postinstall": "node scripts/install-electron.js",
+    "test": "node --test tests/*.test.js",
+    "test:coverage": "node --experimental-test-coverage --test-reporter=spec tests/*.test.js",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:ui": "playwright test --ui",
+    "test:a11y": "playwright test --project=chromium --grep @a11y",
+    "check": "node scripts/check.js",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"**/*.{js,cjs,mjs,json,md,html,css}\"",
+    "format:check": "prettier --check \"**/*.{js,cjs,mjs,json,md,html,css}\"",
+    "perf:check": "node scripts/perf-check.js",
+    "smoke": "node scripts/smoke.js",
+    "server:test": "node --test tests/server.test.js",
+    "release:configure": "node scripts/configure-release-channel.js",
+    "release:manifest": "node scripts/create-update-manifest.js",
+    "release:evidence": "node scripts/create-release-evidence.js",
+    "ip:deposit": "node scripts/prepare-copyright-deposit.js",
+    "dist:win": "electron-builder --win nsis portable --x64 --publish never",
+    "dist:win:installer": "electron-builder --win nsis --x64 --publish never",
+    "dist": "npm run dist:win",
+    "dist:linux": "electron-builder --linux AppImage deb --x64",
+    "dist:mac:x64": "electron-packager . 'Eidovara' --platform=darwin --arch=x64 --out=dist-mac --overwrite --asar --prune=true",
+    "dist:mac:arm64": "electron-packager . 'Eidovara' --platform=darwin --arch=arm64 --out=dist-mac --overwrite --asar --prune=true",
+    "dist:dir": "electron-builder --dir",
+    "prepare": "husky install",
+    "test:gate": "node scripts/quality-gate.mjs",
+    "prepush": "node scripts/prepush-gate.mjs"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.9"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@electron/packager": "20.3.0",
+    "@eslint/js": "9.17.0",
+    "@playwright/test": "^1.49.0",
+    "@types/node": "22.10.2",
+    "electron": "43.4.1",
+    "electron-builder": "26.15.3",
+    "eslint": "9.17.0",
+    "globals": "^15.15.0",
+    "husky": "9.1.7",
+    "lint-staged": "15.2.11",
+    "prettier": "3.4.2",
+    "rcedit": "5.0.2",
+    "typescript": "^5.7.0",
+    "yallist": "4.0.0"
+  },
+  "build": {
+    "appId": "com.soulconsciousnessstudios.eidovara",
+    "productName": "Eidovara",
+    "asar": true,
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "assets/branding/**/*",
+      "package.json",
+      "README.md",
+      "LICENSE",
+      "NOTICE.md",
+      "COPYRIGHT.txt",
+      "PRIVACY.md",
+      "TERMS.md",
+      "AGE.md",
+      "LEGAL_NOTICES.md",
+      "SECURITY.md",
+      "THIRD_PARTY_NOTICES.md",
+      "AUTHORS.md",
+      "TRADEMARKS.md",
+      "OWNERSHIP.md",
+      "NETWORK-USAGE.md",
+      "docs/IP_CERTIFICATION.md"
+    ],
+    "win": {
+      "icon": "assets/branding/eidovara.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "signExecutable": false
+    },
+    "publish": {
+      "provider": "github",
+      "owner": "ProjectSoulbyTmb",
+      "repo": "project---soul",
+      "private": false,
+      "releaseType": "release"
+    },
+    "nsis": {
+      "artifactName": "Eidovara-v${version}-Windows-${arch}-Setup.${ext}",
+      "license": "installer/EULA.txt",
+      "installerIcon": "assets/branding/eidovara.ico",
+      "uninstallerIcon": "assets/branding/eidovara.ico",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    },
+    "portable": {
+      "artifactName": "Eidovara-v${version}-Windows-${arch}-Portable.${ext}"
+    },
+    "electronFuses": {
+      "runAsNode": false,
+      "enableCookieEncryption": true,
+      "enableNodeOptionsEnvironmentVariable": false,
+      "enableNodeCliInspectArguments": false,
+      "enableEmbeddedAsarIntegrityValidation": true,
+      "onlyLoadAppFromAsar": true,
+      "loadBrowserProcessSpecificV8Snapshot": false,
+      "grantFileProtocolExtraPrivileges": false
+    },
+    "afterPack": "scripts/after-pack.cjs",
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "deb",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "category": "Utility",
+      "artifactName": "Eidovara-${version}-Linux-${arch}.${ext}"
+    },
+    "extraResources": [
+      {
+        "from": "src/renderer",
+        "to": "renderer",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,html,css}": [
+      "prettier --write"
+    ]
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=10.0.0"
+  },
+  "packageManager": "pnpm@10.33.3"
+}

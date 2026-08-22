@@ -1,0 +1,69 @@
+/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
+
+.adult-media-desk {
+  margin-top: 16px;
+}
+body:not(.adult-mode) #adultMediaDesk,
+body:not(.admin-session) #adultMediaDesk {
+  display: none !important;
+}
+.adult-media-search {
+  display: flex;
+  gap: 8px;
+  margin: 10px 0 14px;
+}
+.adult-media-search input {
+  flex: 1;
+}
+.adult-handoff-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.adult-handoff-row button {
+  font-size: 12px;
+}
+.adult-rail {
+  margin-bottom: 16px;
+}
+.adult-rail h4 {
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+.adult-rail-row {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(140px, 180px);
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 6px;
+}
+.adult-card {
+  border: 0;
+  border-radius: 16px;
+  min-height: 96px;
+  padding: 14px;
+  text-align: left;
+  color: #f5f5f7;
+  background: linear-gradient(160deg, var(--art-from, #3a2030), var(--art-to, #12080c));
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+}
+.adult-card small {
+  display: block;
+  opacity: 0.72;
+  margin-top: 6px;
+}
+.adult-wellness article {
+  margin-bottom: 10px;
+}
+.adult-wellness h5 {
+  margin: 0 0 4px;
+}
+.adult-folder-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 6px;
+}

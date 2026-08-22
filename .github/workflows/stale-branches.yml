@@ -1,0 +1,83 @@
+name: Stale Branch Hygiene
+
+# ERROR_PREVENTION_ROADMAP 4.2: merged branches are deleted automatically;
+# unmerged branches older than 45 days get a warning issue for the owner.
+on:
+  schedule:
+    - cron: '0 6 * * 1' # Mondays 06:00 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  delete-merged:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete branches whose PRs merged into main
+        uses: actions/github-script@60a0d830c09dc08a4b1b0ecfc2406bb88a3b8e52 # v7
+        with:
+          script: |
+            const merged = await github.rest.repos.listBranches({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+            let deleted = [];
+            for (const b of merged.data) {
+              if (b.name === context.payload.repository.default_branch || b.name.startsWith('backup/')) continue;
+              try {
+                const cmp = await github.rest.repos.compareCommits({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  base: context.payload.repository.default_branch,
+                  head: b.commit.sha,
+                });
+                if (cmp.data.status === 'behind' || cmp.data.status === 'identical') {
+                  await github.rest.git.deleteRef({
+                    owner: context.repo.owner,
+                    repo: context.repo.repo,
+                    ref: `heads/${b.name}`,
+                  });
+                  deleted.push(b.name);
+                }
+              } catch (e) { /* branch may have diverged; leave it */ }
+            }
+            console.log(`Deleted fully-merged branches: ${deleted.join(', ') || 'none'}`);
+
+  warn-stale-unmerged:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@60a0d830c09dc08a4b1b0ecfc2406bb88a3b8e52 # v7
+        with:
+          script: |
+            const cutoff = Date.now() - 45 * 24 * 60 * 60 * 1000;
+            const branches = await github.rest.repos.listBranches({
+              owner: context.repo.owner, repo: context.repo.repo, per_page: 100,
+            });
+            const stale = [];
+            for (const b of branches.data) {
+              if (b.name === context.payload.repository.default_branch) continue;
+              const c = await github.rest.repos.getCommit({
+                owner: context.repo.owner, repo: context.repo.repo, ref: b.commit.sha,
+              });
+              if (new Date(c.data.commit.author.date) < cutoff) stale.push(b.name);
+            }
+            if (!stale.length) { console.log('No stale unmerged branches.'); return; }
+            const body = `Stale unmerged branches (no commits in 45+ days):\n\n${stale.map(s => `- \`${s}\``).join('\n')}\n\nDelete or revive.`;
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner, repo: context.repo.repo,
+              state: 'open', labels: 'stale-branches', per_page: 1,
+            });
+            if (issues.data.length) {
+              await github.rest.issues.update({
+                owner: context.repo.owner, repo: context.repo.repo,
+                issue_number: issues.data[0].number, body,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner, repo: context.repo.repo,
+                title: 'Stale branch report', body, labels: ['stale-branches'],
+              });
+            }

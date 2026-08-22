@@ -1,0 +1,24 @@
+# Weekly internal link integrity check for the website in docs/.
+# Verifies every local href/src reference resolves to a real file, and that
+# on-page #anchors exist. Catches churn damage like broken navs early.
+name: Docs Link Check
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+  pull_request:
+    paths: ['docs/**']
+
+permissions:
+  contents: read
+
+jobs:
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+      - run: node scripts/check-links.mjs

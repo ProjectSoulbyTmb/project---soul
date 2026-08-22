@@ -1,0 +1,45 @@
+# Advanced CodeQL for javascript-typescript.
+# GitHub's current template uses major-version tags for github/codeql-action
+# so this repo follows that (v4), with least-privilege permissions and SARIF
+# upload via analyze. This workflow does not enable Dependency graph; that
+# remains an owner click (see SECURITY.md).
+name: CodeQL
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '31 8 * * 2'
+permissions:
+  contents: read
+  actions: read
+  packages: read
+  security-events: write
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: javascript-typescript
+            build-mode: none
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+      - uses: github/codeql-action/analyze@db488ddef3bf6cb639b32c2e9a7c0a7ea8271d28 # v4
+        with:
+          category: '/language:${{ matrix.language }}'

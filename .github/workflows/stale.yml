@@ -1,0 +1,29 @@
+# Keeps the automated-issue queue healthy: flags inactive issues/PRs, then
+# closes them after a grace period. Never touches issues labeled keep.
+name: Stale Queue Hygiene
+
+on:
+  schedule:
+    - cron: '0 5 * * 1' # Mondays 05:00 UTC
+  workflow_dispatch:
+
+permissions:
+  issues: write
+  pull-requests: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9
+        with:
+          days-before-stale: 30
+          days-before-close: 14
+          exempt-issue-labels: keep,pinned
+          exempt-pr-labels: keep,pinned
+          stale-issue-message: 'This issue has been inactive for 30 days. It will close in 14 days unless updated or labeled `keep`.'
+          stale-pr-message: 'This PR has been inactive for 30 days. It will close in 14 days unless updated or labeled `keep`.'
+          stale-issue-label: stale
+          stale-pr-label: stale
+          close-issue-message: 'Closed after prolonged inactivity. Reopen if still relevant.'
+          operations-per-run: 60

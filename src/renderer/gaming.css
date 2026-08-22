@@ -1,0 +1,34 @@
+/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
+/* Low-overhead mode affects Eidovara only; it never changes a game's process. */
+body.gaming-mode *,
+body.gaming-mode *::before,
+body.gaming-mode *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+body.gaming-mode .workspace {
+  background: var(--grouped);
+}
+body.gaming-mode .topbar,
+body.gaming-mode .card,
+body.gaming-mode .settings-card,
+body.gaming-mode .sidebar,
+body.gaming-mode .media-dock,
+body.gaming-mode .eidovara-player,
+body.gaming-mode .now-playing-bar,
+body.gaming-mode .now-playing-stage,
+body.gaming-mode .setup-dialog {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  box-shadow: none !important;
+  background: var(--panel);
+}
+body.gaming-mode .sidebar {
+  background: var(--side);
+}
+body.gaming-mode .soul-mark,
+body.gaming-mode .companion-avatar {
+  box-shadow: none !important;
+}

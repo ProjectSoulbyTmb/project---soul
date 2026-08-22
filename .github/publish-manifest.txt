@@ -1,0 +1,46 @@
+# Public-site allowlist for eidovara.org + GitHub Pages deploys.
+# Only these docs/ entries are published. Everything else in docs/
+# (internal business, IP, and operations records) stays out of the websites.
+# Trailing slash = copied recursively.
+404.html
+500.html
+age.html
+assist.html
+assist.js
+brand.css
+COPYRIGHT.md
+download.html
+eidovara-icon.png
+eidovara-mark.png
+eidovara-og.png
+eidovara-wallpaper-dark.jpg
+eidovara-wallpaper-light.jpg
+eidovara-wallpaper-product.jpg
+faq.html
+help.html
+index.html
+INFRINGEMENT.md
+IP_CERTIFICATION.md
+knowledge.js
+legal.html
+licensing.html
+manifest.json
+offline.html
+privacy.html
+product.html
+robots.txt
+roadmap.html
+security.html
+site.css
+site.js
+sitemap.xml
+soul-consciousness-studios-icon.png
+soul-consciousness-studios-mark.png
+status.html
+sw.js
+terms.html
+tokens.css
+version-history.html
+_headers
+_redirects
+.well-known/

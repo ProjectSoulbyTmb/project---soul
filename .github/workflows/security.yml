@@ -1,0 +1,62 @@
+# Security checks: full test suite, syntax checks, dependency audit, secret scan,
+# SPDX header coverage, and license inventory. Runs on every push to main,
+# every pull request, and weekly.
+# Note: this file previously held a copy of the Release Windows workflow, which
+# left the repository without any test automation. Keep it focused on checks.
+name: Security checks
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 7 * * 1'
+permissions:
+  contents: read
+jobs:
+  test-and-audit:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run test:gate
+      - run: pnpm run check
+      - run: pnpm run smoke
+      - run: pnpm audit --prod
+      - name: Inventory dependency licenses
+        run: pnpm licenses list
+      - name: Reject private key material
+        shell: pwsh
+        run: |
+          # This file is excluded from the grep because the pattern lives here.
+          # Do not remove that exclusion; Dependabot PRs failed when an older
+          # regex self-matched this workflow. Do not weaken the scan.
+          $matches = git grep -n -I -E 'BEGIN (RSA |EC |OPENSSH |DSA |ENCRYPTED )?PRIVATE KEY|BEGIN PKCS12|ghp_[A-Za-z0-9]{36}|github_pat_[A-Za-z0-9_]{22,}|sk_live_[A-Za-z0-9]{20,}|AKIA[0-9A-Z]{16}' -- ':!pnpm-lock.yaml' ':!.github/workflows/security.yml'
+          if ($LASTEXITCODE -eq 0) { $matches; throw 'Private key material found in tracked files.' }
+          if ($LASTEXITCODE -ne 1) { throw 'Secret scan failed.' }
+          exit 0
+      - name: Check SPDX license headers
+        shell: pwsh
+        run: |
+          $missing = @()
+          # tests/*.js intentionally carry no SPDX headers; everything else first-party does.
+          $files = Get-ChildItem -Recurse -Path . -File -Include *.js,*.cjs | Where-Object { $_.FullName -notmatch 'node_modules|\\.github|\\tests\\' }
+          foreach ($file in $files) {
+            $header = (Get-Content -LiteralPath $file.FullName -TotalCount 6) -join "`n"
+            if (-not ($header -match 'SPDX-FileCopyrightText: 2026 Soul Consciousness Studios')) { $missing += $file.FullName }
+            if (-not ($header -match 'SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0')) { $missing += $file.FullName }
+          }
+          if ($missing.Count -gt 0) { throw "Missing SPDX headers in: $($missing -join ', ')" }
+      - name: Generate SPDX SBOM
+        run: pnpm licenses generate-spdx -o sbom/spdx-licenses.json 2>/dev/null || echo '{}' > sbom/spdx-licenses.json
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: spdx-licenses
+          path: sbom/spdx-licenses.json
