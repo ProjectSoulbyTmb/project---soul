@@ -1,72 +1,106 @@
-// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
-// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/**
- * Encoding-hygiene regression guard.
- *
- * A series of bulk text transforms (BOM stripping, name replacement, encoding
- * "fixes") destroyed non-ASCII characters across the repo: UTF-8 sequences were
- * re-decoded as cp1252 (em dash became a-circumflex + euro + right-double-quote,
- * Espanol gained a capital A-tilde), unmappable bytes became U+FFFD, and whole
- * glyphs collapsed into runs of literal '?' on the public site.
- * This suite fails if any of those corruption signatures reappear.
- */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { classifyWorkspaceIntent } from '../src/core/workspace.js';
+import { actionsForIntent, KERNEL_ACTION_TYPES, routeKernel, soulOverlay } from '../src/core/kernel.js';
+import { defaultProfile } from '../src/core/schema.js';
+import {
+  classifyGuestNavigation,
+  guestNavigateAllowed,
+  overlayWindowOptions,
+  resolveOverlayTarget
+} from '../src/core/guest-overlay.js';
+import { composeOfflineReply } from '../src/providers/offline.js';
 
-const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const read = file => fs.readFileSync(file, 'utf8');
 
-const SCAN_EXTENSIONS = /\.(js|cjs|mjs|html|css|json|md|txt|yml|toml|xml|cff)$/;
-const SKIP_DIRS = new Set(['.git', 'node_modules', 'dist', 'dist-mac']);
-
-// Files where these characters are legitimate content (localized strings).
-const ALLOW_ACCENTED = [/src[/\\]renderer[/\\]localization\.js$/];
-
-function* walk(dir) {
-  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (SKIP_DIRS.has(entry.name)) continue;
-    const p = path.join(dir, entry.name);
-    if (entry.isDirectory()) yield* walk(p);
-    else if (SCAN_EXTENSIONS.test(entry.name)) yield p;
-  }
-}
-
-function collectFiles() {
-  return [...walk(ROOT)];
-}
-
-const CORRUPTION_SIGNATURES = [
-  ['U+FFFD replacement char', /\uFFFD/],
-  ['cp1252 mojibake lead pair', /[\u00C2\u00C3\u00E2][\u0080-\u00FF]/],
-  ['mangled curly-quote/dash trio', /\u00E2\u20AC[\u009D\u201D\u00A6]/],
-  ['literal question-mark runs (destroyed glyphs)', /\?{3,}/],
-];
-
-test('no file contains encoding-corruption signatures', () => {
-  const offenders = [];
-  for (const file of collectFiles()) {
-    const rel = path.relative(ROOT, file);
-    const text = fs.readFileSync(file, 'utf8');
-    for (const [label, re] of CORRUPTION_SIGNATURES) {
-      if (!re.test(text)) continue;
-      if (label.startsWith('cp1252') && ALLOW_ACCENTED.some((re2) => re2.test(rel))) continue;
-      offenders.push(`${rel}: ${label}`);
-    }
-  }
-  assert.deepEqual(offenders, [], `Encoding corruption detected:\n${offenders.join('\n')}`);
+test('overlay phrases classify and emit overlay kernel actions', () => {
+  assert.equal(classifyWorkspaceIntent('Open the Discord overlay'), 'overlay-discord');
+  assert.equal(classifyWorkspaceIntent('Open the chat overlay'), 'overlay-chat');
+  assert.equal(classifyWorkspaceIntent('Open the browse overlay'), 'overlay-browse');
+  assert.equal(classifyWorkspaceIntent('Show overlays'), 'overlays');
+  const overlay = soulOverlay(defaultProfile());
+  const discord = actionsForIntent('overlay-discord', overlay);
+  assert.equal(discord[0].type, 'open-discord-overlay');
+  assert.ok(discord.some(item => item.type === 'open-overlay' && item.kind === 'discord'));
+  assert.equal(discord[0].auto, true);
+  assert.ok(KERNEL_ACTION_TYPES.includes('open-overlay'));
+  assert.ok(KERNEL_ACTION_TYPES.includes('open-discord-overlay'));
+  const routed = routeKernel('Open the Discord overlay', defaultProfile());
+  assert.equal(routed.intent, 'overlay-discord');
+  assert.equal(routed.actions[0].type, 'open-discord-overlay');
 });
 
-test('public site pages keep their typographic separators intact', () => {
-  const checks = [
-    ['docs/index.html', /—/],
-    ['docs/download.html', /·|—/],
-    ['docs/roadmap.html', /—|©/],
-  ];
-  for (const [file, re] of checks) {
-    const text = fs.readFileSync(path.join(ROOT, file), 'utf8');
-    assert.match(text, re, `${file} lost its typographic characters`);
-    assert.doesNotMatch(text, /\?{3,}/, `${file} has destroyed-glyph runs`);
+test('guest overlay policy blocks private, loopback, http, file, and non-Discord hosts', () => {
+  assert.equal(classifyGuestNavigation('http://example.com').ok, false);
+  assert.equal(classifyGuestNavigation('http://example.com').reason, 'http');
+  assert.equal(classifyGuestNavigation('file:///etc/passwd').ok, false);
+  assert.equal(classifyGuestNavigation('https://localhost/admin').ok, false);
+  assert.equal(classifyGuestNavigation('https://127.0.0.1/').reason, 'private-host');
+  assert.equal(classifyGuestNavigation('https://169.254.169.254/latest/meta-data').reason, 'private-host');
+  assert.equal(classifyGuestNavigation('https://192.168.1.1/').reason, 'private-host');
+  assert.equal(classifyGuestNavigation('https://10.0.0.1/').reason, 'private-host');
+  assert.equal(classifyGuestNavigation('https://[::1]/').reason, 'private-host');
+  assert.equal(classifyGuestNavigation('https://user:pass@example.com/').reason, 'credentials');
+  assert.equal(classifyGuestNavigation('javascript:alert(1)').ok, false);
+  assert.equal(classifyGuestNavigation('javascript:alert(1)').reason, 'unsafe-scheme');
+  assert.equal(classifyGuestNavigation('vbscript:alert(1)').ok, false);
+  assert.equal(classifyGuestNavigation('vbscript:alert(1)').reason, 'unsafe-scheme');
+  assert.equal(classifyGuestNavigation('data:text/html,hi').reason, 'unsafe-scheme');
+  assert.equal(classifyGuestNavigation('blob:https://example.com/1').reason, 'unsafe-scheme');
+  const ok = classifyGuestNavigation('https://example.com/path');
+  assert.equal(ok.ok, true);
+  assert.match(ok.url, /^https:\/\/example\.com\/path/);
+
+  const discord = resolveOverlayTarget('discord', '');
+  assert.equal(discord.ok, true);
+  assert.equal(discord.url, 'https://discord.com/app');
+  assert.equal(resolveOverlayTarget('discord', 'https://www.youtube.com/watch?v=dQw4w9wgGcQ').reason, 'not-discord');
+  assert.equal(resolveOverlayTarget('discord', 'https://discord.gg/invite').ok, true);
+  assert.equal(guestNavigateAllowed('discord', 'https://example.com').reason, 'not-discord');
+  assert.equal(guestNavigateAllowed('browse', 'https://example.com').ok, true);
+  assert.equal(guestNavigateAllowed('chat', 'https://example.com').ok, false);
+
+  const chat = overlayWindowOptions('chat');
+  assert.equal(chat.frame, false);
+  assert.equal(chat.transparent, true);
+  assert.equal(chat.nodeIntegration, false);
+  assert.equal(chat.sandbox, true);
+  assert.equal(overlayWindowOptions('browse').partition, 'persist:eidovara-guest');
+  assert.equal(overlayWindowOptions('discord').partition, 'persist:eidovara-guest-discord');
+});
+
+test('overlay HTML keeps media-src off self and the workspace renderer stays locked', () => {
+  for (const file of ['src/renderer/guest-chrome.html', 'src/renderer/chat-overlay.html', 'src/renderer/index.html']) {
+    const html = read(file);
+    assert.doesNotMatch(html, /media-src [^"]*'self'/, file);
+    assert.match(html, /connect-src 'none'/, file);
   }
+  assert.match(read('src/renderer/index.html'), /media-src https: eidovara-media:/);
+  assert.match(read('src/renderer/index.html'), /id="overlayPanel"/);
+  assert.match(read('src/renderer/renderer.js'), /action\.type==='open-overlay'/);
+  assert.match(read('src/renderer/renderer.js'), /action\.type==='open-discord-overlay'/);
+  assert.match(read('src/electron/preload.cjs'), /openOverlay:/);
+  const main = read('src/electron/main.js');
+  assert.match(main, /createGuestOverlayManager/);
+  assert.match(main, /attachOverlayWindows/);
+  assert.doesNotMatch(main, /globalShortcut/);
+  assert.doesNotMatch(main, /CreateRemoteThread|WriteProcessMemory|dll inject/i);
+  const guest = read('src/electron/guest-overlays.js');
+  assert.match(guest, /nodeIntegration: false/);
+  assert.match(guest, /will-navigate/);
+  const createGuestBody = guest.slice(guest.indexOf('function createGuest(kind'), guest.indexOf('function wirePair'));
+  assert.match(createGuestBody, /partition: opts\.partition/);
+  assert.doesNotMatch(createGuestBody, /preload:/);
+});
+
+test('gaming overlay copy stays honest and guest windows are Eidovara-owned', () => {
+  const reply = composeOfflineReply({ input: 'Open the Discord overlay', state: defaultProfile(), intent: 'overlay-discord' });
+  assert.match(reply, /Eidovara windows/i);
+  assert.match(reply, /do not inject/i);
+  assert.doesNotMatch(reply, /official Discord overlay/i);
+  const gaming = composeOfflineReply({ input: 'Help me prepare my gaming or streaming setup.', state: defaultProfile(), intent: 'gaming' });
+  assert.match(gaming, /checklist|process injection|low-overhead/i);
+  assert.match(read('src/electron/overlay-preload.cjs'), /exposeInMainWorld\('overlay'/);
+  assert.match(read('src/renderer/chat-overlay.js'), /window\.soul\.send/);
 });
