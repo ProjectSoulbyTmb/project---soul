@@ -43,7 +43,6 @@
   "devDependencies": {
     "@electron/packager": "20.3.0",
     "@eslint/js": "9.17.0",
-    "@types/electron": "1.6.12",
     "@types/node": "22.10.2",
     "electron": "43.4.1",
     "electron-builder": "26.15.3",

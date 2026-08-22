@@ -20,4 +20,34 @@ export default [
       'no-console': 'off',
     },
   },
+  {
+    files: ['**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      ecmaVersion: 2024,
+      globals: {
+        node: 'readonly',
+        electron: 'readonly',
+        require: 'readonly',
+        module: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['tests/**/*.test.js'],
+    languageOptions: {
+      globals: {
+        test: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        before: 'readonly',
+        after: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        assert: 'readonly',
+      },
+    },
+  },
 ];
