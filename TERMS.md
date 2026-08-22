@@ -1,4 +1,4 @@
-﻿# Eidovara terms of use
+# Eidovara terms of use
 
 Last updated: August 21, 2026
 
