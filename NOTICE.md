@@ -1,4 +1,4 @@
-﻿# Ownership and provenance
+# Ownership and provenance
 
 SPDX-FileCopyrightText: 2026 Soul Consciousness Studios  
 SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
