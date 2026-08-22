@@ -1,4 +1,4 @@
-# Monthly npm and GitHub Actions updates. Future Dependabot PRs should pass
+#  Covers npm dependencies and github actions ecosystems.Monthly npm and GitHub Actions updates. Future Dependabot PRs should pass
 # test-and-audit: the secret-scan regex lives in security.yml, which is
 # excluded from that grep (do not weaken the scan to make PRs green).
 # Dependency graph remains owner-action-required for dependency-review.yml.
