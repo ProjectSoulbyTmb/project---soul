@@ -36,6 +36,8 @@ contextBridge.exposeInMainWorld('soul', {
   launchApplication: id => ipcRenderer.invoke('soul:launchApplication', id),
   removeApplication: id => ipcRenderer.invoke('soul:removeApplication', id),
   openExternal: url => ipcRenderer.invoke('soul:openExternal', url),
+  explainLastReply: id => ipcRenderer.invoke('soul:explainLastReply', id),
+  moodMix: (mood, limit) => ipcRenderer.invoke('soul:moodMix', mood, limit),
   exportConversation: (id, opts) => ipcRenderer.invoke('soul:exportConversation', id, opts),
   checkForUpdates: () => ipcRenderer.invoke('soul:checkForUpdates'),
   installUpdate: () => ipcRenderer.invoke('soul:installUpdate'),

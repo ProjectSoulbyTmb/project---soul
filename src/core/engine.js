@@ -21,6 +21,7 @@ import {
   recordMediaEvent,
   discoverMedia,
   mergeMediaDiscovery,
+  moodMix as computeMoodMix,
 } from './entertainment.js';
 import { isExplicitInternetRequest, isMediaDiscoveryRequest } from './workspace.js';
 import {
@@ -211,6 +212,23 @@ export class SoulEngine {
     this.store.save(this.state);
     return this.snapshot();
   }
+  markFunnel(stage) {
+    if (!this.state || !this.state.funnel) return;
+    const key = String(stage);
+    if (!(key in this.state.funnel)) return;
+    if (this.state.funnel[key]) return;
+    this.state.funnel[key] = new Date().toISOString();
+    this.store.save(this.state);
+  }
+  explainLastReply(id = this.state.activeConversationId) {
+    const conv = this.state.conversations.find(c => c.id === id);
+    const last = [...(conv?.messages || [])].reverse().find(m => m.role === 'assistant');
+    if (!last) throw new Error('No explained assistant reply yet.');
+    return { messageId: last.id, at: last.at, why: last.why || null };
+  }
+  moodMix(mood = 'focus', limit = 6) {
+    return computeMoodMix(this.state, mood, limit);
+  }
   snapshot() {
     const copy = JSON.parse(JSON.stringify(this.state));
     if (copy.adultSoul?.feel?.stealth) {
@@ -254,6 +272,8 @@ export class SoulEngine {
     return entertainmentSummary(this.state);
   }
   configureSetup(input = {}) {
+    if (!this.state.funnel) this.state.funnel = {};
+    if (!this.state.funnel.setupCompletedAt) this.state.funnel.setupCompletedAt = new Date().toISOString();
     const allowed = [
       'gaming-editing',
       'stream-helper',
@@ -809,7 +829,14 @@ export class SoulEngine {
       mediaDiscovery: webResearch ? null : mediaDiscovery,
       actions: kernel.actions,
       kernelIntent: route.intent,
+      why: {
+        policyEvents: policyEvents.map(([type]) => type),
+        safetyBlocked: Boolean(policyReply && safetyReport),
+        learningCount: Array.isArray(learning) ? learning.length : 0,
+        providerFallback: Boolean(providerError),
+      },
     });
+    this.markFunnel('firstReplyAt');
     conv.updatedAt = done;
     const companion = companionPublicMeta(companionTurn);
     this.state.audit.push({

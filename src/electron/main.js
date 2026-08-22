@@ -1475,6 +1475,14 @@ ipcMain.handle('soul:exportConversation', (_e, id, opts) => {
   log(`Exported conversation (${out.messageCount} messages) as ${out.filename}.`);
   return out;
 });
+ipcMain.handle('soul:explainLastReply', () => {
+  requireAgeGate();
+  return ensureEngine().explainLastReply();
+});
+ipcMain.handle('soul:moodMix', (_e, mood, limit) => {
+  requireAgeGate();
+  return ensureEngine().moodMix(mood, limit);
+});
 ipcMain.handle('soul:addApplication', async () => {
   requireAgeGate();
   if (entitlement() === 'free' && (config.apps || []).length >= 3)

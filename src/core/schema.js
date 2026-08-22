@@ -122,6 +122,7 @@ export function defaultProfile(profileId = 'default') {
     activeConversationId: 'main',
     kernel: defaultKernelState(),
     audit: [{ at: now, type: 'profile.created', details: { profileId } }],
+    funnel: { installedAt: now, ageGateAcceptedAt: null, setupCompletedAt: null, firstReplyAt: null },
   };
 }
 
@@ -160,6 +161,7 @@ export function migrateProfile(input, profileId = 'default') {
   if (!Array.isArray(merged.memories)) merged.memories = [];
   if (!Array.isArray(merged.feedback)) merged.feedback = [];
   if (!Array.isArray(merged.audit)) merged.audit = [];
+  if (!merged.funnel || typeof merged.funnel !== 'object') merged.funnel = { ...base.funnel };
   if (!Array.isArray(merged.conversations) || merged.conversations.length === 0)
     merged.conversations = base.conversations;
   merged.conversations = merged.conversations
