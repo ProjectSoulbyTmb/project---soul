@@ -213,21 +213,33 @@ const PRODUCT_RULES = [
   },
 ];
 
+// THOTH merge: generated project-knowledge entries join the hand-written pack.
+// Hand-written entries and rules keep precedence; Thoth ids are namespaced
+// ("thoth:") so collisions are impossible by construction.
+import { THOTH_ENTRIES, THOTH_RULES } from './thoth-knowledge.js';
+
+const ALL_KNOWLEDGE_ENTRIES = { ...ENTRIES };
+for (const entry of THOTH_ENTRIES) {
+  if (!(entry.id in ALL_KNOWLEDGE_ENTRIES)) ALL_KNOWLEDGE_ENTRIES[entry.id] = entry;
+}
+const ALL_KNOWLEDGE_RULES = [...PRODUCT_RULES, ...THOTH_RULES];
+const ALL_KNOWLEDGE_INTENTS = new Set([...KNOWLEDGE_INTENTS, ...Object.keys(ALL_KNOWLEDGE_ENTRIES)]);
+
 export function matchProductIntent(input) {
   const text = String(input || '');
   if (!text.trim()) return null;
-  for (const rule of PRODUCT_RULES) {
+  for (const rule of ALL_KNOWLEDGE_RULES) {
     if (rule.re.test(text)) return rule.id;
   }
   return null;
 }
 
 export function knowledgeEntry(id) {
-  return ENTRIES[id] || null;
+  return ALL_KNOWLEDGE_ENTRIES[id] || null;
 }
 
 export function shouldUseKnowledgeReply(intent) {
-  return KNOWLEDGE_INTENTS.has(intent);
+  return ALL_KNOWLEDGE_INTENTS.has(intent);
 }
 
-export { ENTRIES as DESKTOP_KNOWLEDGE_ENTRIES };
+export { ALL_KNOWLEDGE_ENTRIES as DESKTOP_KNOWLEDGE_ENTRIES };
