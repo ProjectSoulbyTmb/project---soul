@@ -1,0 +1,53 @@
+# AI-Assisted Review Session Audit - 2026-08-21
+
+Record of an AI-assisted code-and-security review conversation held on
+2026-08-21 against this repository (`ProjectSoulbyTmb/project---soul`).
+This document is informational only. It does not modify any runtime code,
+workflows, or legal documents, and it makes no new product or security
+claims beyond what existing repository documents already state.
+
+## Scope reviewed
+
+- Repository structure: `src/`, `.github/`, `scripts/`, `tests/`, root legal set.
+- Existing automation: Dependabot config, GitHub Actions workflows,
+  root `SECURITY.md`, `AGE.md`, `CONTRIBUTING.md`, `.gitignore`.
+- Packaging/update posture as described in `README.md` and `SECURITY.md`.
+
+## Findings
+
+1. The repository already implements, in working form, the controls that were
+   discussed during the session:
+   - `.github/dependabot.yml` (npm + github-actions ecosystems, grouped
+     updates, labels, commit-message prefixes).
+   - Workflow suite including CodeQL analysis, OpenSSF Scorecards,
+     dependency-review, prohibited-secret scanning, Cloudflare Pages deploy,
+     pages mirror, and Windows release packaging.
+   - Root `SECURITY.md` describing checksum verification, SBOM, provenance
+     attestations, updater integrity metadata, and Authenticode status.
+   - Age-restriction surfaces (`AGE.md`, adult-mode modules under `src/core/`)
+     consistent with the 18+ restriction described in the README.
+2. Because those implementations already exist, none of the generic templates
+   produced during the session were applied to protected paths
+   (`package.json`, `src/**`, `.github/workflows/**`). This branch adds only
+   this document.
+3. Several code blocks generated during the chat session contained defects
+   (JSON containing comment syntax, YAML using semicolon separators,
+   JavaScript using shell-style comments). Those blocks are recorded here as
+   **not suitable for direct use**. If any are revisited later, they must be
+   rewritten and validated (`node --check`, JSON/YAML parse, test run)
+   before consideration.
+
+## Outstanding owner actions (unchanged by this document)
+
+These repeat items already tracked in `SECURITY.md`; nothing here changes them:
+
+- Enable Dependency graph so `.github/workflows/dependency-review.yml` can run.
+- Obtain an Authenticode code-signing identity for Windows installers.
+- Consider enabling private vulnerability reporting when ready.
+
+## Verification note
+
+The session environment used for this audit had Git available but did not have
+Node.js installed, so the repository test suite was not executed during the
+session. Standard pre-merge checks (`pnpm install`, `pnpm test`,
+`pnpm run check`) remain the authority for validating this branch.
