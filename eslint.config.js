@@ -1,23 +1,26 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import js from '@eslint/js';
+import globals from 'globals';
 
 export default [
+  {
+    ignores: ['node_modules/', 'dist/', 'dist-mac/', '.wrangler/'],
+  },
   js.configs.recommended,
   {
     languageOptions: {
       ecmaVersion: 2024,
       sourceType: 'module',
       globals: {
-        node: 'readonly',
-        browser: 'readonly',
-        electron: 'readonly',
+        ...globals.node,
+        ...globals.browser,
       },
     },
-    ignores: ['node_modules/', 'dist/', 'dist-mac/', '.wrangler/'],
     rules: {
       'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       'no-console': 'off',
+      'no-empty': ['error', { allowEmptyCatch: true }],
     },
   },
   {
@@ -26,8 +29,7 @@ export default [
       sourceType: 'commonjs',
       ecmaVersion: 2024,
       globals: {
-        node: 'readonly',
-        electron: 'readonly',
+        ...globals.node,
         require: 'readonly',
         module: 'readonly',
         __dirname: 'readonly',
@@ -39,6 +41,7 @@ export default [
     files: ['tests/**/*.test.js'],
     languageOptions: {
       globals: {
+        ...globals.node,
         test: 'readonly',
         describe: 'readonly',
         it: 'readonly',
@@ -46,7 +49,6 @@ export default [
         after: 'readonly',
         beforeEach: 'readonly',
         afterEach: 'readonly',
-        assert: 'readonly',
       },
     },
   },

@@ -11,6 +11,8 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "noEmit": true,
+    "allowJs": true,
+    "checkJs": false,
     "types": ["node"],
     "baseUrl": ".",
     "paths": {

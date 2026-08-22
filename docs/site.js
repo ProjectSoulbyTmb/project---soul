@@ -504,7 +504,7 @@ try {
     });
   }
 
-  function boundedJson = async res => {
+  async function boundedJson(res) {
     const maxBytes = 32768;
     const declared = Number(res.headers.get('content-length') || 0);
     if (declared > maxBytes) return {};

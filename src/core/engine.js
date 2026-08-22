@@ -70,6 +70,7 @@ import {
   toggleFavorite,
   unpinWidget
 } from './layers.js';
+import { setTelemetryEnabled, providerTelemetry, storeTelemetry, ipcTelemetry, getTelemetrySnapshot } from './telemetry.js';
 
 export class SoulEngine {
   constructor({ store, provider = new OfflineProvider(), internetOptions = {} } = {}) {
@@ -77,9 +78,15 @@ export class SoulEngine {
     this.provider = provider;
     this.internetOptions = internetOptions;
     this.modules = createRuntimeRegistry();
-    this.state = this.store.load();
+    this.state = storeTelemetry.op('load', () => this.store.load());
+    
+    // Enable telemetry if explicitly configured
+    const telemetryEnabled = process.env.EIDOVARA_TELEMETRY === '1' || 
+      this.state?.assistant?.capabilities?.telemetry === 'enabled';
+    setTelemetryEnabled(telemetryEnabled);
+    
     startKernelSession(this.state);
-    this.store.save(this.state);
+    storeTelemetry.op('save', () => this.store.save(this.state));
   }
   setProvider(provider) { this.provider = provider || new OfflineProvider(); }
   setInternetOptions(options = {}) { this.internetOptions = { ...(this.internetOptions || {}), ...options }; }
@@ -480,11 +487,27 @@ export class SoulEngine {
       try {
         const researchContext = webResearch ? `\n\nCurrent internet research (cite the numbered source links and do not invent missing facts):\n${webResearch.context}` : '';
         const discoveryContext = !webResearch && mediaDiscovery ? `\n\nLocal library and official search links (cite these; do not invent streams or inject into other players):\n${mediaDiscovery.context}` : '';
-        reply = await this.provider.reply({ input: text, state: this.state, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, view, intent: route.intent, messages: [{ role: 'system', content: buildSystemContext(this.state) + researchContext + discoveryContext }, ...history] });
+        const providerName = this.provider?.constructor?.name || 'unknown';
+        reply = await providerTelemetry.call(providerName, () => this.provider.reply({ 
+          input: text, 
+          state: this.state, 
+          webResearch, 
+          mediaDiscovery: webResearch ? null : mediaDiscovery, 
+          view, 
+          intent: route.intent, 
+          messages: [{ role: 'system', content: buildSystemContext(this.state) + researchContext + discoveryContext }, ...history] 
+        }));
       } catch (err) {
         providerError = String(err?.message || err);
+        providerTelemetry.record(providerName, 0, false);
         const fallback = new OfflineProvider();
-        reply = await fallback.reply({ input: text, state: this.state, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, messages: history });
+        reply = await providerTelemetry.call('offline-fallback', () => fallback.reply({ 
+          input: text, 
+          state: this.state, 
+          webResearch, 
+          mediaDiscovery: webResearch ? null : mediaDiscovery, 
+          messages: history 
+        }));
         reply += `\n\n(Model connection unavailable; continuing in offline mode.)`;
       }
     }
