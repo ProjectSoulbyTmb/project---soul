@@ -59,12 +59,25 @@ Download `Eidovara-v1.0.0-Windows-x64-Setup.exe` (106,691,524 bytes; about 101.7
 ```powershell
 npm install
 npm test
+npm run test:coverage
 npm run check
+npm run lint
+npm run format:check
 npm run smoke
 npm run dist:win:installer
 ```
 
 `npm install` works. The repository also ships `pnpm-lock.yaml` (`packageManager` `pnpm@10.33.3`). Node 20+ runs CLI, tests, and checks. Electron 43 desktop/Windows packaging uses a supported current Node runtime. The Windows installer is generated in `dist/`. Linux and macOS packaging scripts are development targets and are not represented as signed official releases.
+
+## Development quality
+
+```powershell
+npm run lint:fix     # Auto-fix ESLint issues
+npm run format       # Format with Prettier
+npm run prepare      # Install Husky pre-commit hooks
+```
+
+CI runs on push/PR to `main`: typecheck (tsc), lint (eslint), format check (prettier), audit (pnpm), and full test suite. Release builds on `v*` tags publish GitHub Releases with SLSA provenance and SBOM.
 
 ## Rights and project records
 
