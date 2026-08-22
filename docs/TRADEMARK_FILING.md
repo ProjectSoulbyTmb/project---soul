@@ -1,4 +1,4 @@
-﻿# Trademark filing checklist (not filed)
+# Trademark filing checklist (not filed)
 
 This is an **owner checklist** for a possible later filing at the [United States Patent and Trademark Office](https://www.uspto.gov) and, if relevant, other offices. It is **not legal advice**, not a clearance opinion, and **not a trademark application**.
 
