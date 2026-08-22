@@ -1,96 +1,79 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { normalizeServiceUrl, serviceRequestUrl, SERVICE_ASSIST_PATH } from './service.js';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { defaultProfile, migrateProfile } from './schema.js';
+import { migrateAdultSoul } from './adult-soul.js';
+import { migrateAdultEntertainment } from './adult-media.js';
 
-export const ASSIST_MAX_BYTES = 32768;
-export const ASSIST_MAX_QUERY = 800;
-
-export function defaultSoulOnline() {
-  return { assistOptIn: false };
+function hydrateAdult(state) {
+  if (!state || typeof state !== 'object') return state;
+  state.adultSoul = migrateAdultSoul(state.adultSoul);
+  state.entertainment = state.entertainment && typeof state.entertainment === 'object'
+    ? state.entertainment
+    : { favorites: [], history: [], taste: {} };
+  state.entertainment.adult = migrateAdultEntertainment(state.entertainment.adult);
+  return state;
 }
 
-export function normalizeSoulOnline(input = {}, prev = defaultSoulOnline()) {
-  const prior = { ...defaultSoulOnline(), ...(prev && typeof prev === 'object' ? prev : {}) };
-  return {
-    assistOptIn: input.assistOptIn === undefined ? prior.assistOptIn === true : Boolean(input.assistOptIn)
-  };
-}
-
-export function canCallAssist({ optIn, serviceUrl } = {}) {
-  if (optIn !== true) return { ok: false, reason: 'opt-in-off' };
-  if (!String(serviceUrl || '').trim()) return { ok: false, reason: 'no-service' };
-  try {
-    normalizeServiceUrl(serviceUrl);
-  } catch (err) {
-    return { ok: false, reason: String(err?.message || err) };
+export class JsonStore {
+  constructor({ dataDir, profileId = 'default', codec } = {}) {
+    this.dataDir = dataDir || path.join(os.homedir(), '.project-soul');
+    this.profileId = sanitize(profileId);
+    this.filePath = path.join(this.dataDir, `${this.profileId}.json`);
+    this.backupDir = path.join(this.dataDir, 'backups');
+    this.codec = codec || { encode: value => value, decode: value => value, encrypted: false };
   }
-  return { ok: true };
-}
-
-async function boundedJson(res, maxBytes = ASSIST_MAX_BYTES) {
-  const declared = Number(res.headers?.get?.('content-length') || 0);
-  if (declared > maxBytes) throw new Error('Assist response is too large.');
-  const bytes = Buffer.from(await res.arrayBuffer());
-  if (bytes.length > maxBytes) throw new Error('Assist response is too large.');
-  try { return JSON.parse(bytes.toString('utf8')); } catch { throw new Error('Assist response was not JSON.'); }
-}
-
-export async function requestSoulAssist({
-  base,
-  query,
-  optIn = false,
-  fetchImpl = globalThis.fetch,
-  timeoutMs = 8000
-} = {}) {
-  const gate = canCallAssist({ optIn, serviceUrl: base });
-  if (!gate.ok) {
-    return { ok: false, skipped: true, reason: gate.reason, assist: true, soul: false, conversationsSent: false };
+  load() {
+    fs.mkdirSync(this.dataDir, { recursive: true });
+    try { for (const stale of fs.readdirSync(this.dataDir)) if (stale.startsWith(`${this.profileId}.json.`) && stale.endsWith('.tmp')) fs.rmSync(path.join(this.dataDir, stale), { force: true }); } catch {}
+    if (!fs.existsSync(this.filePath)) { const state = hydrateAdult(defaultProfile(this.profileId)); this.save(state); return state; }
+    try {
+      const state = hydrateAdult(migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(this.filePath, 'utf8'))), this.profileId));
+      this.save(state); return state;
+    } catch (err) {
+      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const backup = `${this.filePath}.corrupt-${stamp}.bak`;
+      try { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(backup, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } catch {}
+      const state = hydrateAdult(defaultProfile(this.profileId));
+      state.audit.push({ at: new Date().toISOString(), type: 'storage.recovered_from_corrupt_state', details: { backup: path.basename(backup), error: String(err?.message || err) } });
+      this.save(state); return state;
+    }
   }
-  const q = String(query || '').trim().slice(0, ASSIST_MAX_QUERY);
-  if (!q) return { ok: false, skipped: false, reason: 'empty', assist: true, soul: false, conversationsSent: false };
-  let url;
-  try { url = serviceRequestUrl(base, SERVICE_ASSIST_PATH); }
-  catch (err) {
-    return { ok: false, skipped: false, reason: String(err?.message || err), assist: true, soul: false, conversationsSent: false };
+  save(state) {
+    fs.mkdirSync(this.dataDir, { recursive: true });
+    state.updatedAt = new Date().toISOString();
+    const tmp = `${this.filePath}.${process.pid}.tmp`;
+    fs.writeFileSync(tmp, this.codec.encode(JSON.stringify(state, null, 2)), { encoding: 'utf8', mode: 0o600 });
+    const previous = `${this.filePath}.previous`;
+    try { if (fs.existsSync(this.filePath)) { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(previous, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } fs.renameSync(tmp, this.filePath); }
+    catch (err) { try { fs.rmSync(this.filePath, { force: true }); fs.renameSync(tmp, this.filePath); } catch (inner) { if (fs.existsSync(previous)) fs.copyFileSync(previous, this.filePath); throw inner; } }
   }
-  const payload = JSON.stringify({ query: q, mode: 'help' });
-  if (payload.length > ASSIST_MAX_BYTES) {
-    return { ok: false, skipped: false, reason: 'too_large', assist: true, soul: false, conversationsSent: false };
+  reset() { const state = hydrateAdult(defaultProfile(this.profileId)); this.save(state); return state; }
+  createBackup(state) {
+    fs.mkdirSync(this.backupDir, { recursive: true });
+    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const name = `${this.profileId}-${stamp}.${this.codec.encrypted ? 'soulbackup' : 'json'}`;
+    const target = path.join(this.backupDir, name);
+    const payload = hydrateAdult(migrateProfile(state || this.load(), this.profileId));
+    fs.writeFileSync(target, this.codec.encode(JSON.stringify(payload, null, 2)), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
+    return { name, createdAt: payload.updatedAt, bytes: fs.statSync(target).size };
   }
-  if (!fetchImpl) return { ok: false, skipped: false, reason: 'no-fetch', assist: true, soul: false, conversationsSent: false };
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    const res = await fetchImpl(url, {
-      method: 'POST',
-      signal: controller.signal,
-      redirect: 'error',
-      headers: { accept: 'application/json', 'content-type': 'application/json' },
-      body: payload
-    });
-    if (!res.ok) throw new Error(`Assist returned HTTP ${res.status}.`);
-    const body = await boundedJson(res);
-    return {
-      ok: true,
-      skipped: false,
-      reply: String(body?.reply || '').slice(0, 8000),
-      assist: true,
-      soul: false,
-      conversationsSent: false,
-      warning: 'This is your Worker helper — not Soul, not a cloud mind, and not this conversation.'
-    };
-  } catch (err) {
-    const timeout = err?.name === 'AbortError';
-    return {
-      ok: false,
-      skipped: false,
-      reason: String(timeout ? 'Eidovara assist timed out. Local Soul continues on this PC.' : (err?.message || err)).slice(0, 300),
-      assist: true,
-      soul: false,
-      conversationsSent: false
-    };
-  } finally {
-    clearTimeout(timer);
+  listBackups() {
+    fs.mkdirSync(this.backupDir, { recursive: true });
+    return fs.readdirSync(this.backupDir, { withFileTypes: true })
+      .filter(e => e.isFile() && e.name.startsWith(`${this.profileId}-`) && (e.name.endsWith('.json') || e.name.endsWith('.soulbackup')))
+      .map(e => { const stat = fs.statSync(path.join(this.backupDir, e.name)); return { name: e.name, createdAt: stat.mtime.toISOString(), bytes: stat.size }; })
+      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  }
+  restoreBackup(name) {
+    const safeName = path.basename(String(name || ''));
+    if (safeName !== name || !safeName.startsWith(`${this.profileId}-`) || (!safeName.endsWith('.json') && !safeName.endsWith('.soulbackup'))) throw new Error('Invalid backup name.');
+    const restored = hydrateAdult(migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(path.join(this.backupDir, safeName), 'utf8'))), this.profileId));
+    restored.audit.push({ at: new Date().toISOString(), type: 'storage.backup_restored', details: { name: safeName } });
+    this.save(restored); return restored;
   }
 }
+function sanitize(value) { return String(value || 'default').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64) || 'default'; }
 
