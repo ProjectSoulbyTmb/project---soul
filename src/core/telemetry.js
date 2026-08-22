@@ -281,12 +281,24 @@ export const providerTelemetry = {
  */
 export const storeTelemetry = {
   /**
+   * Times a synchronous store operation and returns its result.
+   * The engine consumes load()/reset()/restoreBackup() synchronously, so this
+   * wrapper MUST stay synchronous — returning a Promise here silently replaces
+   * engine state with telemetry metadata.
    * @param {string} op - Operation (load, save, backup, restore)
-   * @param {() => Promise<any>} fn
-   * @returns {Promise<any>}
+   * @param {() => any} fn
+   * @returns {any} the result of fn()
    */
-  async op(op, fn) {
-    return timeAsync(`store.${op}`, fn, { 'store.op': op });
+  op(op, fn) {
+    const startedAt = Date.now();
+    try {
+      const result = fn();
+      this.record(op, Date.now() - startedAt, true);
+      return result;
+    } catch (error) {
+      this.record(op, Date.now() - startedAt, false);
+      throw error;
+    }
   },
   
   record(op, durationMs, success = true, size) {
