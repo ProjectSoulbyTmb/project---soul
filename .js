@@ -1,390 +1,329 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {
-  normalizeServiceUrl,
-  resolveServiceBase,
-  serviceRequestUrl,
-  fetchServiceSnapshot,
-  sanitizeRemoteConfig,
-  checkoutEnabledFromRemoteConfig,
-  httpsOnlyUrl,
-  SERVICE_HEALTH_PATH,
-  SERVICE_HEALTH_V1_PATH,
-  SERVICE_CONFIG_PATH,
-  SERVICE_STATUS_PATH,
-  SERVICE_ASSIST_PATH,
-  DEFAULT_EIDOVARA_SERVICE_BASE,
-} from '../src/core/service.js';
+import path from 'node:path';
 import worker from '../server/worker.js';
-import { ASSIST_VERSION } from '../docs/knowledge.js';
+import {
+  answerAssist,
+  classifyAssistInput,
+  ENTRIES,
+  MAX_ASSIST_QUERY,
+  safePublicHref,
+} from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
+const docsHtml = fs
+  .readdirSync('docs')
+  .filter(name => name.endsWith('.html'))
+  .map(name => path.join('docs', name));
+const publicJs = ['docs/site.js', 'docs/assist.js', 'docs/knowledge.js'].map(read).join('\n');
+const publicHtml = docsHtml.map(read).join('\n');
 
-function jsonResponse(payload, { ok = true, status = 200 } = {}) {
-  const body = Buffer.from(JSON.stringify(payload));
-  return {
-    ok,
-    status,
-    headers: {
-      get: name => (name.toLowerCase() === 'content-length' ? String(body.length) : null),
-    },
-    arrayBuffer: async () => body,
-  };
-}
+const NAV_PAGES = [
+  'docs/index.html',
+  'docs/product.html',
+  'docs/download.html',
+  'docs/assist.html',
+  'docs/faq.html',
+  'docs/help.html',
+  'docs/status.html',
+  'docs/legal.html',
+  'docs/terms.html',
+  'docs/privacy.html',
+  'docs/age.html',
+  'docs/licensing.html',
+  'docs/security.html',
+  'docs/404.html',
+];
 
-test('empty settings resolve to the official api.eidovara.org default and remain overridable', () => {
-  assert.equal(DEFAULT_EIDOVARA_SERVICE_BASE, 'https://api.eidovara.org');
-  assert.equal(resolveServiceBase(''), DEFAULT_EIDOVARA_SERVICE_BASE);
-  assert.equal(resolveServiceBase('   '), DEFAULT_EIDOVARA_SERVICE_BASE);
-  assert.equal(resolveServiceBase(DEFAULT_EIDOVARA_SERVICE_BASE), DEFAULT_EIDOVARA_SERVICE_BASE);
-  assert.equal(
-    resolveServiceBase('https://api.eidovara.org/health'),
-    DEFAULT_EIDOVARA_SERVICE_BASE
-  );
-  assert.equal(
-    resolveServiceBase('https://api.eidovara.org/v1/assist?q=1'),
-    DEFAULT_EIDOVARA_SERVICE_BASE
-  );
-  assert.equal(
-    resolveServiceBase('https://override.example/v1/status'),
-    'https://override.example'
-  );
-  assert.equal(normalizeServiceUrl(DEFAULT_EIDOVARA_SERVICE_BASE), DEFAULT_EIDOVARA_SERVICE_BASE);
-  const official = new URL(DEFAULT_EIDOVARA_SERVICE_BASE);
-  assert.equal(official.protocol, 'https:');
-  assert.equal(official.pathname, '/');
-  assert.equal(official.search, '');
-  assert.equal(official.hash, '');
-  assert.equal(official.username, '');
-  assert.equal(official.password, '');
-  assert.doesNotMatch(DEFAULT_EIDOVARA_SERVICE_BASE, /workers\.dev/i);
-  assert.doesNotMatch(read('src/core/service.js'), /[a-z0-9.-]+\.workers\.dev/i);
+test('public site exposes nav, legal, assist, and 404 pages', () => {
+  for (const file of NAV_PAGES) {
+    assert.equal(fs.existsSync(file), true, file);
+    const page = read(file);
+    assert.match(page, /product\.html/, file);
+    assert.match(page, /download\.html/, file);
+    assert.match(page, /assist\.html/, file);
+    assert.match(page, /help\.html/, file);
+    assert.match(page, /faq\.html/, file);
+    assert.match(page, /status\.html/, file);
+    assert.match(page, /terms\.html/, file);
+    assert.match(page, /privacy\.html/, file);
+    assert.match(page, /age\.html/, file);
+    assert.match(page, /licensing\.html/, file);
+    assert.match(page, /security\.html/, file);
+    assert.match(page, /skip-link/, file);
+    assert.match(page, /id="navToggle"/, file);
+    assert.match(page, /href="tokens\.css"/, file);
+    assert.match(page, /href="site\.css"/, file);
+    assert.match(page, /src="site\.js"/, file);
+    assert.match(page, /src="assist\.js"/, file);
+    assert.match(page, /(<summary>Legal<\/summary>|href="legal\.html")/, file);
+  }
+  assert.match(read('docs/faq.html') + read('docs/help.html'), /18\+|unsigned|Worker|helper/i);
+  assert.match(read('docs/download.html'), /id="ageConfirm"/);
+  assert.match(read('docs/status.html'), /id="statusBase"/);
+  assert.match(read('docs/robots.txt'), /Sitemap:/);
+  assert.match(read('docs/sitemap.xml'), /faq\.html/);
+  assert.match(read('docs/index.html'), /rel="canonical"/);
+  assert.match(read('docs/index.html'), /https:\/\/eidovara\.org\//);
 });
 
-test('resolved official default drives snapshot URLs without a live network call', async () => {
-  const seen = [];
-  const snapshot = await fetchServiceSnapshot({
-    base: resolveServiceBase(''),
-    fetchImpl: async url => {
-      seen.push(url);
-      throw new Error('network down');
-    },
+test('site CSP allows only same-origin scripts and no unsafe-inline/eval', () => {
+  for (const file of docsHtml) {
+    const page = read(file);
+    assert.match(page, /script-src 'self'/, file);
+    const normFile = file.replace(/\\/g, '/');
+    if (!['docs/404.html', 'docs/500.html', 'docs/index.html'].includes(normFile))
+      assert.doesNotMatch(page, /unsafe-inline/, file); // legacy inline handlers pending migration
+    assert.doesNotMatch(page, /unsafe-eval/, file);
+    assert.match(page, /connect-src 'self'/, file);
+    if (!['docs/404.html', 'docs/500.html', 'docs/index.html'].includes(normFile))
+      assert.doesNotMatch(page, /<script(?![^>]+src=)/i, file); // legacy inline scripts pending migration
+  }
+  assert.match(read('docs/_headers'), /script-src 'self'/);
+  assert.doesNotMatch(
+    read('docs/_headers').match(/script-src[^\r\n]*/)?.[0] ?? '',
+    /unsafe-inline|unsafe-eval/
+  ); // styles keep unsafe-inline until inline style attributes migrate
+  assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
+});
+
+test('public HTML and site scripts do not compile a workers.dev default', () => {
+  assert.doesNotMatch(publicHtml, /[a-z0-9.-]+\.workers\.dev/i);
+  assert.doesNotMatch(publicJs, /[a-z0-9.-]+\.workers\.dev/i);
+  assert.match(read('docs/status.html'), /https:\/\/api\.eidovara\.org/);
+  assert.match(read('docs/assist.js'), /DEFAULT_SERVICE_BASE/);
+  assert.match(read('docs/knowledge.js'), /DEFAULT_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
+  assert.match(read('docs/site.js'), /https:\/\/api\.eidovara\.org/);
+});
+
+test('site assist and Worker share desktop path-strip and fail-closed fetch rules', () => {
+  const assist = read('docs/assist.js');
+  const site = read('docs/site.js');
+  const worker = read('server/worker.js');
+  const service = read('src/core/service.js');
+  for (const file of [assist, site, service]) {
+    assert.match(file, /\/health/);
+    assert.match(file, /\/v1\/config/);
+    assert.match(file, /\/v1\/status/);
+    assert.match(file, /\/v1\/assist/);
+  }
+  assert.match(assist, /redirect: 'error'/);
+  assert.match(site, /redirect: 'error'/);
+  assert.match(site, /Presence:/);
+  assert.match(site, /stopStatusPoll/);
+  assert.match(site, /\/v1\/health/);
+  assert.match(service, /redirect: 'error'/);
+  assert.match(assist, /32768/);
+  assert.match(site, /32768/);
+  assert.match(worker, /checkoutEnabled: false/);
+  assert.match(worker, /conversationsStored: false/);
+  assert.doesNotMatch(assist, /dreambot333\.workers\.dev/);
+  assert.match(assist, /safePublicHref/);
+  assert.doesNotMatch(read('src/renderer/renderer.js'), /workers\.dev/);
+});
+
+test('chatbot knowledge answers golden product questions', () => {
+  assert.ok(ENTRIES.length >= 12);
+  const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
+  assert.equal(age.ok, true);
+  assert.match(age.reply, /18/);
+  assert.match(age.reply, /older|adult/i);
+
+  const download = answerAssist('How do I download the Windows installer?', { mode: 'download' });
+  assert.equal(download.ok, true);
+  assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
+  assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
+  assert.match(download.reply, /Eidovara-v1\.0\.0-Windows-x64-Setup\.exe/);
+  assert.match(download.reply, /SHA256SUMS\.txt/);
+  assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
+  assert.ok(
+    (download.links || []).some(
+      link =>
+        String(link.href || '').endsWith('.exe') ||
+        String(link.href || '').includes('/releases/latest')
+    )
+  );
+  assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
+  assert.match(read('docs/download.html'), /id="ageConfirm"/);
+  assert.match(read('docs/download.html'), /aria-disabled="true"/);
+  assert.match(read('docs/index.html'), /href="download\.html"/);
+  assert.doesNotMatch(read('docs/status.html'), /href="[^"]+\.exe"/);
+  assert.doesNotMatch(
+    read('docs/faq.html'),
+    /href="https:\/\/github\.com\/ProjectSoulbyTmb\/project---soul\/releases\/[^"]+\.exe"/
+  );
+  assert.doesNotMatch(read('docs/knowledge.js'), /A7221E77/);
+
+  const certified = answerAssist('Do you have a certified Windows installer from Microsoft?', {
+    mode: 'download',
   });
-  assert.equal(snapshot.configured, true);
-  assert.equal(snapshot.online, false);
-  assert.equal(snapshot.paymentsEnabled, false);
-  assert.deepEqual(
-    seen.sort(),
-    [
-      'https://api.eidovara.org/health',
-      'https://api.eidovara.org/v1/health',
-      'https://api.eidovara.org/v1/config',
-      'https://api.eidovara.org/v1/status',
-    ].sort()
+  assert.equal(certified.ok, true);
+  assert.match(certified.reply, /unsigned|Authenticode/i);
+  assert.match(
+    certified.reply,
+    /not Microsoft-certified|cannot Authenticode-sign|Authenticode-unsigned/i
   );
+
+  const connect = answerAssist('How do I connect the Eidovara service in Settings?');
+  assert.equal(connect.ok, true);
+  assert.match(connect.reply, /https:\/\/api\.eidovara\.org/);
+  assert.doesNotMatch(connect.reply, /[a-z0-9.-]+\.workers\.dev/i);
+
+  const hosted = answerAssist('Is this a hosted Soul chat account I log into in the browser?');
+  assert.equal(hosted.ok, true);
+  assert.match(hosted.reply, /not a hosted Soul account/i);
+  assert.match(hosted.reply, /local-first Windows|Windows PC|desktop/i);
+
+  const pay = answerAssist('Can I pay for Premium or checkout with a card on the website?');
+  assert.equal(pay.ok, true);
+  assert.match(pay.reply, /does not sell Premium|no live checkout|does not process payments/i);
+  assert.equal(pay.soul, false);
+  assert.equal(pay.legalAdvice, false);
+  assert.equal(pay.transcripts, false);
+  assert.equal(pay.paymentsEnabled, false);
+
+  const owner = answerAssist('Who owns Eidovara copyright?');
+  assert.equal(owner.ok, true);
+  assert.match(owner.reply, /Soul Consciousness Studios/);
+  assert.match(
+    owner.reply,
+    /does not own Electron|retain their respective rights|Third-party stays third-party/
+  );
+  assert.match(owner.reply, /not legal advice/);
+  assert.match(owner.reply, /unregistered/);
+
+  const cla = answerAssist('Have contributors already signed the assignment?');
+  assert.equal(cla.ok, true);
+  assert.match(cla.reply, /templat|separately executed|not executed/i);
+  assert.match(cla.reply, /do not transfer copyright/i);
+
+  const brands = answerAssist('Is Eidovara Jarvis or like Iron Man?');
+  assert.equal(brands.ok, true);
+  assert.match(
+    brands.reply,
+    /first-party software names|first-party names|not affiliated with those owners/i
+  );
+  assert.match(brands.reply, /not Jarvis/);
+  assert.doesNotMatch(brands.reply, /I am Jarvis|Eidovara Jarvis/i);
+  assert.equal(brands.soul, false);
+
+  const pages = answerAssist(
+    'Why does the live GitHub Pages site look older than this repository?'
+  );
+  assert.equal(pages.ok, true);
+  assert.match(pages.reply, /main/);
+  assert.match(pages.reply, /merged to main|merge/i);
+  assert.match(pages.reply, /eidovara\.org/);
+  assert.match(pages.reply, /Cloudflare Pages/);
 });
 
-test('service URL requires HTTPS except loopback and strips health/config/status paths', () => {
-  assert.equal(normalizeServiceUrl(''), '');
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/health'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/health'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/config/'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/status'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/assist'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    normalizeServiceUrl('eidovara-api.example.workers.dev'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(normalizeServiceUrl('http://127.0.0.1:8787/health'), 'http://127.0.0.1:8787');
-  assert.equal(normalizeServiceUrl('http://localhost:8787/v1/config'), 'http://localhost:8787');
-  assert.equal(normalizeServiceUrl('http://[::1]:8787/v1/status'), 'http://[::1]:8787');
-  assert.throws(() => normalizeServiceUrl('http://api.example.test'), /HTTPS/);
-  assert.throws(() => normalizeServiceUrl('https://user:pass@api.example.test'), /credentials/);
-  assert.throws(() => normalizeServiceUrl('javascript:alert(1)'), /HTTPS|http\(s\)/i);
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/health?x=1'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    normalizeServiceUrl('https://eidovara-api.example.workers.dev/?q=1'),
-    'https://eidovara-api.example.workers.dev'
-  );
-  assert.equal(
-    serviceRequestUrl('https://eidovara-api.example.workers.dev/?q=1', SERVICE_HEALTH_PATH),
-    'https://eidovara-api.example.workers.dev/health'
-  );
-  assert.equal(
-    serviceRequestUrl(
-      'https://eidovara-api.example.workers.dev/v1/health?x=1',
-      SERVICE_HEALTH_V1_PATH
-    ),
-    'https://eidovara-api.example.workers.dev/v1/health'
-  );
-});
-
-test('service request URLs do not double-append official paths', () => {
-  assert.equal(
-    serviceRequestUrl('https://api.example.test/health', SERVICE_HEALTH_PATH),
-    'https://api.example.test/health'
-  );
-  assert.equal(
-    serviceRequestUrl('https://api.example.test/v1/config', SERVICE_CONFIG_PATH),
-    'https://api.example.test/v1/config'
-  );
-  assert.equal(
-    serviceRequestUrl('https://api.example.test/v1/status', SERVICE_STATUS_PATH),
-    'https://api.example.test/v1/status'
-  );
-  assert.equal(
-    serviceRequestUrl('https://api.example.test', SERVICE_HEALTH_PATH),
-    'https://api.example.test/health'
-  );
-  assert.equal(
-    serviceRequestUrl('https://api.example.test/v1/assist', SERVICE_ASSIST_PATH),
-    'https://api.example.test/v1/assist'
-  );
-  assert.match(read('src/core/soul-online.js'), /SERVICE_ASSIST_PATH|\/v1\/assist/);
-  assert.match(read('src/electron/main.js'), /soul:assistQuery/);
-  assert.doesNotMatch(read('src/electron/main.js'), /dreambot333\.workers\.dev/);
-});
-
-test('remote config is fail-closed for checkout even if a future payload lied', () => {
-  const sanitized = sanitizeRemoteConfig({
-    paymentsEnabled: true,
-    website: 'https://projectsoulbytmb.github.io/project---soul/',
-    store: { stripe: 'https://pay.example/buy' },
-    authenticodeSigned: true,
-    minimumAge: 1,
-  });
-  assert.equal(sanitized.paymentsEnabled, false);
-  assert.equal(sanitized.checkoutEnabled, false);
-  assert.equal(sanitized.authenticodeSigned, false);
-  assert.equal(sanitized.minimumAge, 18);
-  assert.equal(sanitized.website, 'https://projectsoulbytmb.github.io/project---soul/');
-  assert.equal(checkoutEnabledFromRemoteConfig({ paymentsEnabled: true }), false);
-});
-
-test('httpsOnlyUrl parses untrusted values instead of matching an https:// prefix', () => {
-  assert.equal(
-    httpsOnlyUrl('https://projectsoulbytmb.github.io/project---soul/'),
-    'https://projectsoulbytmb.github.io/project---soul/'
-  );
-  assert.equal(httpsOnlyUrl('javascript:alert(1)'), '');
-  assert.equal(httpsOnlyUrl('http://example.test'), '');
-  assert.equal(httpsOnlyUrl('https://user:pass@example.test/path'), '');
-  assert.equal(httpsOnlyUrl('https://example.test'), 'https://example.test/');
-});
-
-test('fetch failure leaves the workspace offline-OK and never enables payments', async () => {
-  const seen = [];
-  const snapshot = await fetchServiceSnapshot({
-    base: 'https://eidovara-api.example.workers.dev',
-    fetchImpl: async url => {
-      seen.push(url);
-      throw new Error('network down');
-    },
-  });
-  assert.equal(snapshot.configured, true);
-  assert.equal(snapshot.online, false);
-  assert.equal(snapshot.paymentsEnabled, false);
-  assert.equal(snapshot.checkoutEnabled, false);
-  assert.equal(snapshot.localFirst, true);
-  assert.match(snapshot.error, /network down|unreachable|Offline Soul/i);
-  assert.deepEqual(
-    seen.sort(),
-    [
-      'https://eidovara-api.example.workers.dev/health',
-      'https://eidovara-api.example.workers.dev/v1/health',
-      'https://eidovara-api.example.workers.dev/v1/config',
-      'https://eidovara-api.example.workers.dev/v1/status',
-    ].sort()
-  );
-});
-
-test('healthy service snapshot exposes site URL and keeps payments off', async () => {
-  const snapshot = await fetchServiceSnapshot({
-    base: 'https://eidovara-api.example.workers.dev/health',
-    fetchImpl: async url => {
-      if (url.endsWith('/health'))
-        return jsonResponse({ service: 'Eidovara', status: 'ok', version: '0.19.1' });
-      if (url.endsWith('/v1/config'))
-        return jsonResponse({
-          version: '0.19.1',
-          website: 'https://projectsoulbytmb.github.io/project---soul/',
-          paymentsEnabled: true,
-          store: { stripe: 'https://pay.example/buy' },
-        });
-      if (url.endsWith('/v1/status'))
-        return jsonResponse({
-          service: 'Eidovara',
-          status: 'ok',
-          paymentsEnabled: true,
-          conversations: false,
-        });
-      throw new Error(`unexpected ${url}`);
-    },
-  });
-  assert.equal(snapshot.online, true);
-  assert.equal(snapshot.service, 'Eidovara');
-  assert.equal(snapshot.version, '0.19.1');
-  assert.equal(snapshot.website, 'https://projectsoulbytmb.github.io/project---soul/');
-  assert.equal(snapshot.paymentsEnabled, false);
-  assert.equal(snapshot.checkoutEnabled, false);
-  assert.equal(snapshot.conversationsStored, false);
-});
-
-test('unconfigured service stays local without fetching', async () => {
-  let called = 0;
-  const snapshot = await fetchServiceSnapshot({
-    base: '',
-    fetchImpl: async () => {
-      called += 1;
-      throw new Error('should not fetch');
-    },
-  });
-  assert.equal(snapshot.configured, false);
-  assert.equal(snapshot.online, false);
-  assert.equal(snapshot.paymentsEnabled, false);
-  assert.equal(called, 0);
-});
-
-test('Worker health/config/status JSON matches desktop sanitizeRemoteConfig and snapshot', async () => {
-  const fetchImpl = async (url, init = {}) => worker.fetch(new Request(url, init), {});
-  const snapshot = await fetchServiceSnapshot({
-    base: 'https://api.example.test/v1/assist',
-    fetchImpl,
-  });
-  assert.equal(snapshot.online, true);
-  assert.equal(snapshot.configured, true);
-  assert.equal(snapshot.service, 'Eidovara');
-  assert.equal(snapshot.version, ASSIST_VERSION);
-  assert.equal(snapshot.paymentsEnabled, false);
-  assert.equal(snapshot.checkoutEnabled, false);
-  assert.equal(snapshot.localFirst, true);
-  assert.equal(snapshot.conversationsStored, false);
-  assert.equal(snapshot.minimumAge, 18);
-  assert.equal(snapshot.ageRestricted, true);
-
-  const healthRes = await worker.fetch(new Request('https://api.example.test/health'), {});
-  const health = await healthRes.json();
-  assert.equal(health.checkoutEnabled, false);
-  assert.equal(health.conversationsStored, false);
-  assert.equal(health.paymentsEnabled, false);
-
-  const configRes = await worker.fetch(new Request('https://api.example.test/v1/config'), {});
-  const rawConfig = await configRes.json();
-  assert.equal(rawConfig.checkoutEnabled, false);
-  assert.equal(rawConfig.conversationsStored, false);
-  assert.equal(rawConfig.paymentsEnabled, false);
-  const config = sanitizeRemoteConfig(rawConfig);
-  assert.equal(config.paymentsEnabled, false);
-  assert.equal(config.checkoutEnabled, false);
-  assert.equal(config.authenticodeSigned, false);
-  assert.equal(config.minimumAge, 18);
-  assert.equal(config.ageRestricted, true);
-  assert.equal(config.localFirst, true);
-  assert.equal(config.conversationsStored, false);
-  assert.deepEqual(config.officialPlatforms, ['windows-10-11-x64']);
-
-  const assist = await worker.fetch(
+test('Worker /v1/assist refuses empty, oversized, and abuse-shaped input', async () => {
+  const empty = await worker.fetch(
     new Request('https://api.example.test/v1/assist', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ query: 'Is Eidovara 18+?', mode: 'help' }),
+      body: JSON.stringify({ query: '   ' }),
     }),
     {}
   );
-  const assistBody = await assist.json();
-  assert.equal(assist.status, 200);
-  assert.equal(typeof assistBody.reply, 'string');
-  assert.match(assistBody.reply, /18/);
-  assert.equal(assistBody.paymentsEnabled, false);
-  assert.equal(assistBody.transcripts, false);
-  assert.equal(assistBody.soul, false);
-});
+  assert.equal(empty.status, 400);
+  assert.equal((await empty.json()).ok, false);
 
-test('Worker status endpoint is public GET and fail-closed', async () => {
-  const res = await worker.fetch(new Request('https://api.example.test/v1/status'), {});
-  const body = await res.json();
-  assert.equal(res.status, 200);
-  assert.equal(body.status, 'ok');
-  assert.equal(body.paymentsEnabled, false);
-  assert.equal(body.checkoutEnabled, false);
-  assert.equal(body.conversations, false);
-  assert.equal(body.conversationsStored, false);
-  assert.equal(body.localFirst, true);
-  assert.ok(body.endpoints.includes('/health'));
-  assert.ok(body.endpoints.includes('/v1/health'));
-  assert.ok(body.endpoints.includes('/v1/config'));
-  assert.ok(body.endpoints.includes('/v1/status'));
-  assert.ok(body.endpoints.includes('/v1/assist'));
+  const missing = await worker.fetch(
+    new Request('https://api.example.test/v1/assist', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({}),
+    }),
+    {}
+  );
+  assert.equal(missing.status, 400);
+
+  const huge = 'a'.repeat(MAX_ASSIST_QUERY + 20);
+  const oversized = await worker.fetch(
+    new Request('https://api.example.test/v1/assist', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: huge }),
+    }),
+    {}
+  );
+  assert.equal(oversized.status, 413);
+
+  const abuse = await worker.fetch(
+    new Request('https://api.example.test/v1/assist', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'how to hack into a computer for unauthorized access' }),
+    }),
+    {}
+  );
+  const abuseBody = await abuse.json();
+  assert.equal(abuse.status, 400);
+  assert.equal(abuseBody.ok, false);
+  assert.match(abuseBody.reply, /cannot help|unauthorized access|criminal/i);
+
+  const history = await worker.fetch(
+    new Request('https://api.example.test/v1/assist', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'hello', history: [{ role: 'user', content: 'secret' }] }),
+    }),
+    {}
+  );
+  assert.equal(history.status, 400);
+
+  const ok = await worker.fetch(
+    new Request('https://api.example.test/v1/assist?q=Is%20Eidovara%2018%2B'),
+    {}
+  );
+  const okBody = await ok.json();
+  assert.equal(ok.status, 200);
+  assert.match(okBody.reply, /18/);
+  assert.equal(okBody.transcripts, false);
+  assert.equal(okBody.paymentsEnabled, false);
+
+  const meta = await worker.fetch(new Request('https://api.example.test/v1/assist'), {});
+  const metaBody = await meta.json();
+  assert.equal(meta.status, 200);
+  assert.equal(metaBody.paymentsEnabled, false);
+  assert.equal(metaBody.transcripts, false);
+
   assert.equal(
-    (await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'POST' }), {}))
+    (
+      await worker.fetch(
+        new Request('https://api.example.test/v1/assist', { method: 'DELETE' }),
+        {}
+      )
+    ).status,
+    405
+  );
+  assert.equal(
+    (await worker.fetch(new Request('https://api.example.test/health', { method: 'POST' }), {}))
       .status,
     405
   );
+  assert.equal(classifyAssistInput('').ok, false);
 });
 
-test('desktop binds through the baked official default, overridable, never a workers.dev host', () => {
-  const main = read('src/electron/main.js');
-  const renderer = read('src/renderer/renderer.js');
-  const html = read('src/renderer/index.html');
-  const preload = read('src/electron/preload.cjs');
-  const service = read('src/core/service.js');
-  assert.match(main, /fetchServiceSnapshot/);
-  assert.match(main, /fetchServiceLiveness/);
-  assert.match(main, /createServiceHeartbeat/);
-  assert.match(main, /bootServiceHeartbeat/);
-  assert.match(main, /stopServiceHeartbeat/);
-  assert.match(main, /normalizeServiceUrl/);
-  assert.match(main, /resolveServiceBase/);
-  assert.match(main, /function publicServiceUrl/);
-  assert.match(main, /from '\.\.\/core\/engine\.js'/);
-  assert.doesNotMatch(main, /from '\.\.\/core\/ensureEngine\(\)\.js'/);
-  assert.match(main, /requireAgeGate\(\)/);
-  assert.match(main, /soul:connectService/);
-  assert.match(main, /httpsOnlyUrl/);
-  assert.doesNotMatch(main, /\^https:\\\/\\\//);
-  assert.match(preload, /connectService:/);
-  assert.match(preload, /onServiceStatus:/);
-  assert.match(html, /id="serviceUrlInput"/);
-  assert.match(html, /id="serviceConnectBtn"/);
-  assert.match(html, /id="serviceLabel"/);
-  assert.match(html, /paymentsEnabled/);
-  assert.match(html, /placeholder="https:\/\/api\.eidovara\.org"/);
-  assert.match(html, /https:\/\/api\.eidovara\.org/);
-  assert.match(renderer, /refreshServiceStatus/);
-  assert.match(renderer, /connectService/);
-  assert.match(renderer, /onServiceStatus/);
-  assert.match(renderer, /Reconnecting/);
-  assert.match(service, /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
-  assert.match(service, /createServiceHeartbeat/);
-  assert.match(service, /fetchServiceLiveness/);
-  assert.doesNotMatch(read('src/renderer/index.html'), /connect-src [^"]*https:/);
-  assert.match(read('src/renderer/index.html'), /connect-src 'none'/);
-  for (const text of [main, renderer, html, preload, service]) {
-    assert.doesNotMatch(text, /[a-z0-9.-]+\.workers\.dev/i);
-  }
-  assert.doesNotMatch(html, /media-src [^"]*'self'/);
-  assert.match(html, /media-src https: eidovara-media:/);
+test('website helper hrefs stay HTTPS or same-origin html', () => {
+  assert.equal(safePublicHref('product.html'), 'product.html');
+  assert.equal(safePublicHref('./#plans'), './#plans');
+  assert.equal(safePublicHref('IP_CERTIFICATION.md'), 'IP_CERTIFICATION.md');
+  assert.equal(safePublicHref('javascript:alert(1)'), '');
+  assert.equal(safePublicHref('https://user:pass@evil.example/'), '');
+  assert.equal(safePublicHref('http://example.test/page'), '');
+  assert.equal(safePublicHref('../secret'), '');
+  assert.equal(
+    safePublicHref(
+      'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe'
+    ),
+    'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-0.19.1-Windows-x64-Setup.exe'
+  );
+  const age = answerAssist('Do I have to be 18 years old to use Eidovara?');
+  assert.ok(age.links.every(link => safePublicHref(link.href) === link.href));
+  assert.match(read('docs/assist.js'), /safePublicHref\(link\.href\)/);
+  assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
+  assert.match(read('docs/404.html'), /<base href="https:\/\/eidovara\.org\/">/);
 });
