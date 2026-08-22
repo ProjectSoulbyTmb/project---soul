@@ -120,7 +120,8 @@ test('chatbot knowledge answers golden product questions', () => {
   assert.match(download.reply, /GitHub Releases|Setup\.exe|unsigned/i);
   assert.match(download.reply, /dist:win:installer|Windows 10\/11/i);
   assert.match(download.reply, /Eidovara-v1\.0\.0-Windows-x64-Setup\.exe/);
-  assert.match(download.reply, /SHA256SUMS\.txt/);
+  assert.match(download.reply, /F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675/);
+  assert.match(download.reply, /101\.75 MiB/);
   assert.ok((download.links || []).some(link => String(link.href || '') === 'download.html'));
   assert.ok((download.links || []).some(link => String(link.href || '').endsWith('.exe') || String(link.href || '').includes('/releases/latest')));
   assert.match(download.reply, /Authenticode-unsigned|not Microsoft-certified/i);
@@ -157,7 +158,7 @@ test('chatbot knowledge answers golden product questions', () => {
   const owner = answerAssist('Who owns Eidovara copyright?');
   assert.equal(owner.ok, true);
   assert.match(owner.reply, /Soul Consciousness Studios/);
-  assert.match(owner.reply, /does not own Electron|Third-party stays third-party/);
+  assert.match(owner.reply, /does not own Electron|retain their respective rights|Third-party stays third-party/);
   assert.match(owner.reply, /not legal advice/);
   assert.match(owner.reply, /unregistered/);
 
