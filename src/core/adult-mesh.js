@@ -3,9 +3,9 @@
 /**
  * First-party Adult Soul figure mesh. Not VRM, not MakeHuman, not a scanned person.
  *
- * Highest quality is the ultra lathe (72Ã—112) plus painted face/makeup, clothing
+ * Highest quality is the ultra lathe (72×112) plus painted face/makeup, clothing
  * pigment, fantasy silhouette tweaks, and hair volume shells. Artwork is generated
- * from the user's sliders â€” no stock character pack and no photo of a real person.
+ * from the user's sliders — no stock character pack and no photo of a real person.
  */
 import { normalizeAdultAvatar } from './adult-soul.js';
 import { clothingTint, frameworkRadii } from './adult-show.js';

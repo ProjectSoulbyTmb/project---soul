@@ -7,7 +7,7 @@ const LIVE_INSTALLER = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
 // No tagged v1.0.0 build exists yet: measured facts stay null until the
 // Release Windows workflow publishes the artifact with SHA256SUMS.txt.
 // The deploy may override both via wrangler vars LIVE_INSTALLER_SHA256 / LIVE_INSTALLER_SIZE.
-// Do not hardcode a placeholder digest here: the previous F29A52F0â€¦ value belonged to v0.22.2.
+// Do not hardcode a placeholder digest here: the previous F29A52F0… value belonged to v0.22.2.
 const FALLBACK_INSTALLER_SHA256 = null;
 const FALLBACK_INSTALLER_SIZE = null;
 const LIVE_INSTALLER_URL =

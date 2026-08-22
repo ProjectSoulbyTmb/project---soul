@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * Honest inventory of engines and frameworks Eidovara actually ships versus
- * adapters that stay document-only. Vanilla Electron ESM â€” no React/Vue/Three.js.
+ * adapters that stay document-only. Vanilla Electron ESM — no React/Vue/Three.js.
  */
 
 export const ENGINE_RESEARCH_DATE = '2026-08-21';

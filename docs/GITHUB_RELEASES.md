@@ -8,8 +8,8 @@ Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x
 
 - Version/tag: `v1.0.0`
 - Installer: `Eidovara-v1.0.0-Windows-x64-Setup.exe`
-- Size: 106,691,524 bytes (about 101.75 MiB)
-- SHA-256: `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`
+- Size: measured from the tagged build; see the release’s SHA256SUMS.txt
+- SHA-256: measured from the tagged build; see the release’s SHA256SUMS.txt
 - Latest asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe`
 - Pinned asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v1.0.0/Eidovara-v1.0.0-Windows-x64-Setup.exe`
 - Signing: Authenticode-unsigned; Windows SmartScreen may warn.

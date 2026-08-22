@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * Procedural Adult Soul beds: heartbeat, breath, and a quiet drone.
- * Oscillator math only â€” not Kokoro/Piper and not imported porn audio.
+ * Oscillator math only — not Kokoro/Piper and not imported porn audio.
  */
 
 function clamp01(value) {

@@ -111,7 +111,7 @@ export function mixBriefing(state, intent = 'mood') {
       : 'Name a topic in Research, or open YouTube as an official HTTPS search. Eidovara does not bypass platform playback rules.',
     gaming: seeds.length
       ? `Keep the mix energetic and instrumental-leaning around ${seedText}. Enable low-overhead mode in Apps & Gaming so Eidovara does not add motion while you play.`
-      : 'Add a local soundtrack file, or search public audio. Low-overhead mode only reduces Eidovaraâ€™s own effects; it does not change another gameâ€™s process.',
+      : 'Add a local soundtrack file, or search public audio. Low-overhead mode only reduces Eidovara’s own effects; it does not change another game’s process.',
     study: seeds.length
       ? `Prefer calm, lyric-light audio near ${seedText}. Keep the player visible and pause from the dock when you need silence.`
       : 'Pick one calm local track or a public-domain recording. Soul will not auto-download protected catalogs.',
@@ -255,7 +255,7 @@ export function discoverMedia(
     local.length
       ? `Local library matches:\n${local.map((item, index) => `${index + 1}. ${item.title}${item.playable ? ' (play in Eidovara)' : ' (taste title; open the local file to play in Eidovara)'}`).join('\n')}`
       : "No local library titles matched. Open a local audio or video file in Entertainment to play it in Eidovara (eidovara-media, never media-src 'self').",
-    `Official search links (browser handoff â€” not Spotify/iTunes/VLC/Windows Media Player injection, not stream ripping):\n${handoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`,
+    `Official search links (browser handoff — not Spotify/iTunes/VLC/Windows Media Player injection, not stream ripping):\n${handoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`,
     adultHandoffs.length
       ? `Adult official searches (system browser after confirm; not embeds, not HTML scrape):\n${adultHandoffs.map(item => `${item.provider}: ${item.url}`).join('\n')}`
       : '',

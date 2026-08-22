@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
- * Adult Media desk â€” tube/creator UX patterns on Eidovaraâ€™s own library and
+ * Adult Media desk — tube/creator UX patterns on Eidovara’s own library and
  * official HTTPS handoff. Inspired by popular adult platforms (category rails,
  * continue watching, related, watch later, creator bookmarks, theater cards)
  * without scraping those sites, embedding their players, capturing logins, or
@@ -35,7 +35,7 @@ export const ADULT_MEDIA_CATEGORIES = Object.freeze([
   { id: 'amateur', title: 'Amateur', hint: 'Tag inferred from titles you gave' },
   { id: 'couple', title: 'Couple', hint: 'Title-tag rail' },
   { id: 'solo', title: 'Solo', hint: 'Title-tag rail' },
-  { id: 'toys', title: 'Toys', hint: 'Title-tag rail â€” no hardware is driven' },
+  { id: 'toys', title: 'Toys', hint: 'Title-tag rail — no hardware is driven' },
   { id: 'aftercare', title: 'Aftercare', hint: 'Softer local mix' },
 ]);
 
@@ -618,5 +618,5 @@ export function adultMediaReply(input, state, desk) {
     .map(item => item.provider)
     .join(', ');
   const local = (view.library || []).filter(item => item.playable).length;
-  return `Adult Media is on. ${local} local playable title${local === 1 ? '' : 's'} on this PC. Official searches (${names || 'tube/creator sites'}) open in your system browser after you confirm â€” Eidovara does not embed those players or fetch their HTML. ${ADULT_MEDIA_HONESTY}`;
+  return `Adult Media is on. ${local} local playable title${local === 1 ? '' : 's'} on this PC. Official searches (${names || 'tube/creator sites'}) open in your system browser after you confirm — Eidovara does not embed those players or fetch their HTML. ${ADULT_MEDIA_HONESTY}`;
 }

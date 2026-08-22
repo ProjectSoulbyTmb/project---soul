@@ -7,7 +7,7 @@
  * silently drifted apart (worker advertising installers that no longer exist,
  * stale test literals, mismatched certification JSON). This file makes drift
  * impossible to merge: every surface must agree with src/core/release.js.
- * To ship a new version, change release.js (+ package.json) â€” this suite then
+ * To ship a new version, change release.js (+ package.json) — this suite then
  * forces every other surface to follow before CI goes green.
  */
 import test from 'node:test';

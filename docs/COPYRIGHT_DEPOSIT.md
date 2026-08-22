@@ -11,7 +11,7 @@ Follow Circular 61 and the current Copyright Office instructions at filing time.
 - Include **first-party** Eidovara source, tests, documentation, and first-party UI assets that you actually claim.
 - **Exclude** Electron, Chromium, Node.js, `node_modules/`, secrets, `.env`, private keys, unpublished patent drafts, executed assignments, customer data, and user content.
 - Do not claim Wikipedia/Wikimedia text, third-party marks, or Windows/OS components as yours.
-- Identifying material rules (how many pages of source, trade-secret redaction) change; read the Officeâ€™s current circular before uploading.
+- Identifying material rules (how many pages of source, trade-secret redaction) change; read the Office’s current circular before uploading.
 
 ## Local helper
 
@@ -27,4 +27,4 @@ Never commit `copyright-deposit/`, registration certificates, applicant addresse
 
 ## After a certificate issues
 
-You may then state that **that specific work** is registered and cite the real registration number. Until then, say â€œcopyright claimed,â€ not â€œregistered.â€ Update [IP_CERTIFICATION.md](IP_CERTIFICATION.md) only with true numbers.
+You may then state that **that specific work** is registered and cite the real registration number. Until then, say “copyright claimed,” not “registered.” Update [IP_CERTIFICATION.md](IP_CERTIFICATION.md) only with true numbers.
