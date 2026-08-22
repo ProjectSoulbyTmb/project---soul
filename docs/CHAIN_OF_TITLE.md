@@ -8,7 +8,7 @@ Soul Consciousness Studios claims ownership of qualifying original first-party c
 - Preserve commit history, release tags, checksums, build attestations, dated design records, and source archives.
 - Record the source, author, license, version, integrity hash, and required notices for every third-party dependency or asset.
 - Keep unpublished inventions, credentials, private keys, customer records, contracts, assignment documents, and patent drafts outside the public repository.
-- Use `â„¢` for claimed marks; never use `Â®` before registration issues for the applicable goods or services.
+- Use `™` for claimed marks; never use `®` before registration issues for the applicable goods or services.
 - Do not describe a copyright notice, repository history, license, trademark claim, provenance attestation, or self-declaration as a government certificate.
 
 ## Boundaries of the claim
@@ -41,7 +41,7 @@ Record date: 21 August 2026. Claimant: Soul Consciousness Studios. This schedule
 | --- | --- | --- |
 | Qualifying original Eidovara source, tests, and product documentation authored by Soul Consciousness Studios | `src/`, `scripts/`, `tests/`, `server/`, root legal Markdown, `docs/` product pages | First-party copyright claim |
 | Approved brand assets | [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md) | First-party copyright claim in those files; hashes are provenance, not registration |
-| Claimed unregistered marks Eidovara, Soul (feature name), and Soul Consciousness Studios | [TRADEMARKS.md](../TRADEMARKS.md) | Common-law unregistered claim; â„¢ only; no Â® |
+| Claimed unregistered marks Eidovara, Soul (feature name), and Soul Consciousness Studios | [TRADEMARKS.md](../TRADEMARKS.md) | Common-law unregistered claim; ™ only; no ® |
 
 Excluded from this schedule: Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user content, and every other third-party or public-domain layer listed above.
 
@@ -52,13 +52,13 @@ LICENSE is the source-available evaluation text. The assignment forms are **unsi
 | Instrument | File | Status in git |
 | --- | --- | --- |
 | Source-available evaluation license | [LICENSE](../LICENSE) | In force as a license text; not OSI open source |
-| One-page copyright claim | [COPYRIGHT.txt](../COPYRIGHT.txt) | Notice only â€” not a Copyright Office registration |
+| One-page copyright claim | [COPYRIGHT.txt](../COPYRIGHT.txt) | Notice only — not a Copyright Office registration |
 | Copyright notice + registration checklist | [COPYRIGHT.md](COPYRIGHT.md) | Checklist; **not registered** by this repository |
 | Trademark usage policy | [TRADEMARKS.md](../TRADEMARKS.md) | Unregistered common-law claim; **not filed** |
 | USPTO / office filing checklist | [TRADEMARK_FILING.md](TRADEMARK_FILING.md) | Checklist; **no application filed by this commit** |
 | Brand use (names, fonts, no third-party logos) | [BRAND_GUIDE.md](BRAND_GUIDE.md) | Internal usage note |
-| Contributor copyright assignment (CLA) | [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) | Template only â€” not executed |
-| Assignment of pre-formation IP to a future entity | [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md) | Template only â€” not executed |
+| Contributor copyright assignment (CLA) | [CONTRIBUTOR_ASSIGNMENT.md](CONTRIBUTOR_ASSIGNMENT.md) | Template only — not executed |
+| Assignment of pre-formation IP to a future entity | [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md) | Template only — not executed |
 
 Publishing these templates does **not** mean any contributor or entity has signed them. Do not commit completed copies here.
 
