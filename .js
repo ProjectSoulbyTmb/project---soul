@@ -1,40 +1,55 @@
-# Ownership and provenance
+# First-party ownership (honest limits)
 
-SPDX-FileCopyrightText: 2026 Soul Consciousness Studios  
-SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+Copyright © 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party.
 
-Copyright © 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
+This file is a **project record**, not a court judgment, signed assignment, government registration, or counsel opinion. **It is not legal advice.** A GitHub commit cannot make someone “safely” the owner of another party’s software or of user content.
 
-**Tyler M. Bosworth is the sole creator and owner of Soul Consciousness Studios and all associated products.** Soul Consciousness Studios is the business name under which Tyler M. Bosworth publishes and commercializes his work.
+See [docs/IP_CERTIFICATION.md](docs/IP_CERTIFICATION.md) for the dated repository self-attestation (instrument inventory, v1.0.0 installer SHA, owner-only leftovers). That file is not a Copyright Office or USPTO registration.
 
-Soul Consciousness Studios is identified as Eidovara's owner, creator, and product director and claims qualifying original first-party expression. Soul Consciousness Studios is an intended publisher name, not a formed entity that owns this IP unless a signed assignment by Tyler M. Bosworth exists. Ideas, methods, facts, public-domain material, and third-party material (including Electron, Chromium, Node.js, Windows, and Wikimedia content) are excluded. Patent inventorship is determined claim by claim in an actual filing.
+## Sole Creator and Owner
 
-Preserve repository history, release checksums, SBOMs, and build provenance as development evidence. This notice is not a registration, patent grant, court judgment, or legal opinion. See OWNERSHIP.md and COPYRIGHT.txt.
+**Tyler M. Bosworth** is the **sole creator and owner** of Soul Consciousness Studios and all associated products, including Eidovara. Soul Consciousness Studios is the business name under which Tyler M. Bosworth publishes and commercializes his work.
 
-## Copyright years
+## What is claimed
 
-First-party Eidovara expression in this repository is claimed for **2026**. Update the year only when new original first-party work is first published in a later calendar year. Do not backdate, and do not add years for work that was not created.
+Soul Consciousness Studios claims copyright in **qualifying original first-party expression** in Eidovara (source, documentation, first-party UI assets, and release materials authored by Tyler M. Bosworth). Soul Consciousness Studios™ is the **intended publisher name**. Until a formed legal entity exists **and** Tyler M. Bosworth executes a written assignment to it, that name does not own this IP. See [docs/COMPANY_FORMATION.md](docs/COMPANY_FORMATION.md) and the unsigned [docs/ENTITY_IP_ASSIGNMENT.md](docs/ENTITY_IP_ASSIGNMENT.md) template.
 
-## Third-party software actually used
+Eidovara is **source-available, not OSI open source**, and restricted to users **18 or older**. The Eidovara Source-Available Evaluation License (`LicenseRef-Eidovara-Source-Available-1.0`) is not MIT, Apache, or GPL. No copyleft license is applied to first-party code. Viewing or forking the repository does not permit relicensing first-party material as open source.
 
-Eidovara's advertised Windows runtime redistributes **Electron** and the **Chromium** and **Node.js** components Electron bundles. Those works stay under their own licenses. This NOTICE does not re-license them and does not invent packages that are not declared in `package.json`.
+Eidovara is a trademark of Soul Consciousness Studios (unregistered). Soul (the software self-model feature name) and Soul Consciousness Studios (intended publisher name) are likewise claimed **unregistered** marks (`™` only where used). This repository does **not** claim ®, a USPTO registration number, a U.S. Copyright Office registration, or any patent / “patent pending.” Enhancement of trademark or copyright protection requires qualified counsel and actual filings. See [TRADEMARKS.md](TRADEMARKS.md), [docs/TRADEMARK_FILING.md](docs/TRADEMARK_FILING.md) (not filed by this repository), and [docs/COPYRIGHT.md](docs/COPYRIGHT.md).
 
-Declared dependencies in `package.json` (v1.0.0) that this project actually invokes:
+## What is not claimed
 
-| Component          | Version in package.json    | Role                                                     | License family (as published by that project)                    | Redistributed in the Windows app? |
-| ------------------ | -------------------------- | -------------------------------------------------------- | ---------------------------------------------------------------- | --------------------------------- |
-| Electron           | 43.4.1                     | Desktop runtime                                          | MIT (Electron); Chromium/Node.js keep their own notices          | Yes — runtime                     |
-| Chromium           | bundled by Electron 43.4.1 | Rendering engine                                         | Chromium authors; see `LICENSES.chromium.html` in Windows builds | Yes — via Electron                |
-| Node.js            | bundled by Electron 43.4.1 | JavaScript runtime                                       | OpenJS Foundation and contributors; see Electron notices         | Yes — via Electron                |
-| electron-updater   | 6.8.9                      | Official GitHub Releases updater                         | MIT                                                              | Yes — application dependency      |
-| electron-builder   | 26.15.3                    | Windows/Linux packaging                                  | As published by electron-builder                                 | No — build-time only              |
-| rcedit             | 5.0.2                      | Applies the approved `.ico` during Windows `afterPack`   | As published by rcedit                                           | No — build-time only              |
-| @electron/packager | 20.3.0                     | macOS packaging scripts (not an official signed product) | As published by @electron/packager                               | No — build-time only              |
-| @noble/hashes      | 1.4.0                      | Development helper                                       | As published by @noble/hashes                                    | No — development only             |
-| yallist            | 4.0.0                      | Development helper                                       | As published by yallist                                          | No — development only             |
+Eidovara **cannot** own, and does not claim, among other things:
 
-Windows builds must keep Electron's `LICENSE.electron.txt` and `LICENSES.chromium.html` with redistributed copies. This repository does not paste those third-party license texts into LICENSE (Eidovara is not MIT/Apache/GPL). See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- Electron, Chromium, Node.js, electron-builder, rcedit, or other third-party packages;
+- Microsoft Windows, its APIs, installed voices, fonts, or other OS components;
+- Wikipedia/Wikimedia content (those projects’ licenses continue to apply);
+- Apple, iOS, iPhone, iPad, SF Pro, SF Mono, Siri, Microsoft Copilot, Cortana, Xbox, Game Bar, Spotify, YouTube, OBS, GitHub, Cloudflare, or other third-party marks, products, or services;
+- Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Alexa, Google Assistant, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, or other third-party assistant, launcher, or entertainment brands used as product or feature names;
+- user-created content, local media files, linked applications, and credentials the user supplies.
 
-Do not treat an unused or transitive listing as a grant of Eidovara rights.
+See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) and [docs/CHAIN_OF_TITLE.md](docs/CHAIN_OF_TITLE.md). Overbroad ownership claims would weaken, not strengthen, the first-party record.
 
-Microsoft Windows, GitHub, Cloudflare, Wikipedia/Wikimedia, Spotify, YouTube, Brave Search, and other named platforms are **not** redistributed as source in this repository; they remain their owners' software, services, and marks.
+## Hosting, forks, and inbound code
+
+Publishing this repository on GitHub is subject to [GitHub’s Terms of Service](https://docs.github.com/en/site-policy/github-terms/github-terms-of-service), including rights GitHub needs to host the service (for example viewing and forking through GitHub). LICENSE restricts additional use of first-party material; it cannot revoke rights already granted by law, third-party licenses, or the hosting platform.
+
+Unsolicited patches, issues, and pull requests **do not transfer copyright**. GitHub PRs are not incorporated until prior written approval **and** a privately executed assignment or other written agreement. The file [docs/CONTRIBUTOR_ASSIGNMENT.md](docs/CONTRIBUTOR_ASSIGNMENT.md) is an **unsigned template** the owner may use with counsel; this repository does not contain executed copies and does not assert that unknown contributors have signed.
+
+## Users’ own content
+
+Users retain whatever rights they already have in their own files, prompts, memories they type, linked applications, and media they supply. Using Eidovara does not assign that material to Soul Consciousness Studios or to Soul Consciousness Studios.
+
+## What still requires a lawyer and private paperwork
+
+Repository notices, LICENSE, TERMS, provenance hashes, and git history are evidence of a claim—not a substitute for:
+
+1. Qualified intellectual-property counsel reviewing license, marks, and filings;
+2. Privately executed contributor assignments before accepting inbound copyrightable work;
+3. Formation of an entity (if desired) **plus** a signed assignment of pre-formation IP;
+4. USPTO clearance/filing if federal trademark registration is desired;
+5. U.S. Copyright Office registration if statutory registration benefits are desired;
+6. Patent counsel before any “patent pending” statement.
+
+Contact for licensing: the official Eidovara GitHub repository owner.
