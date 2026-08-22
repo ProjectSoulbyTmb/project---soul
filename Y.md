@@ -1,73 +1,126 @@
-<!doctype html>
-<!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
-<!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
-  <meta name="referrer" content="no-referrer">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Eidovara v1.0.0 terms: 18+ age gate, source-available licensing, usage restrictions, liability limits, and community conduct.">
-  <meta property="og:title" content="Terms · Eidovara">
-  <meta property="og:description" content="Eidovara v1.0.0 terms: 18+ age restriction, source-available licensing, usage boundaries, liability, and conduct guidelines.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://eidovara.org/terms.html">
-  <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
-  <link rel="canonical" href="https://eidovara.org/terms.html">
-  <title>Terms · Eidovara</title>
-  <link rel="stylesheet" href="tokens.css">
-  <link rel="stylesheet" href="site.css">
-  <link rel="stylesheet" href="brand.css">
-  <link rel="icon" type="image/png" href="eidovara-icon.png">
-</head>
-<body class="site" data-page="terms">
-  <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header site-chrome"><div class="site-header-inner"><a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button><nav id="site-nav" aria-label="Primary"><a href="./" data-nav="home">Home</a><a class="nav-cta" href="download.html" data-nav="download">Download</a><a href="product.html" data-nav="product">Product</a><a href="assist.html" data-nav="assist">Assist</a><a href="faq.html" data-nav="faq">FAQ</a><a href="status.html" data-nav="status">Status</a><details class="nav-legal"><summary>Legal</summary><div class="nav-legal-menu"><a href="legal.html">Overview</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="security.html">Security</a></div></nav><div class="header-controls"></div></div></header>
-  <main id="main" class="site-main">
-    <p class="eyebrow download-studio-line"><img class="download-mark" src="eidovara-mark.png" width="48" height="48" alt="">Windows 10/11 x64 · v1.0.0 Stable Alpha · 18+</p>
-    <h1 class="section-title">Terms of use</h1>
-    <section class="terms-section">
-      <h2>18+ Age Restriction</h2>
-      <p>Eidovara v1.0.0 is restricted to users 18 years or older. By accessing or using this software, you confirm you are 18 or older. This gate is enforced across all touchpoints: desktop UI, CLI, kernel integration, and web presence. Age confirmation is required for download, Soul feature activation, and research features.</p>
-      <p>Local confirmation of age is not independent identity verification. Users are responsible for ensuring compliance with their local jurisdiction's age requirements for 18+ software.</p>
-    </section>
-    <section class="terms-section">
-      <h2>Source-Available License</h2>
-      <p>Eidovara v1.0.0 is published under LicenseRef-Eidovara-Source-Available-1.0. This is a source-available evaluation license, not an open-source license. You may view and study the source code, but the following are prohibited:</p>
-      <ul>
-        <li>Redistribution of modified or unmodified builds</li>
-        <li>Open-source relicensing (MIT, Apache, GPL, BSD, CC, or similar)</li>
-        <li>Commercial use without explicit written permission</li>
-        <li>Removal of 18+ age gates or legal notices</li>
-        <li>Reverse-engineering to bypass restrictions</li>
-      </ul>
-      <p>For commercial use, contact Soul Consciousness Studios directly.</p>
-    </section>
-    <section class="terms-section">
-      <h2>Usage Restrictions</h2>
-      <ul>
-        <li>Software must not be used to generate false consciousness claims or imply sentience</li>
-        <li>Adult Mode and Soul features require triple-gate compliance (age + enablement + consent)</li>
-        <li>Internet research is filtered and cites public sources only</li>
-        <li>Media playback is limited to user-selected, properly sourced content</li>
-        <li>Network usage follows the NETWORK_USAGE.md policy</li>
-      </ul>
-    </section>
-    <section class="terms-section">
-      <h2>Liability and Warranty</h2>
-      <p>Eidovara is provided "as is" without warranty of any kind, either expressed or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose, or non-infringement. In no event shall the author or copyright holders be liable for any claim, damages, or other liability, whether in an action of contract, tort, or otherwise, arising from, out of, or in connection with the software or the use or other dealings in the software.</p>
-      <p>The Authenticode-unsigned installer may trigger Windows SmartScreen warnings. Users download at their own risk. GitHub/Sigstore provenance records build origin but does not provide Authenticode signing.</p>
-    </section>
-    <section class="terms-section">
-      <div class="legal-card"><h2>Acceptable use</h2><p>Use Eidovara lawfully: no criminal use, no unauthorized access, no ripping protected media. Research is user-directed public retrieval; launching is limited to local Windows apps you already have the right to use. Built-in research cites public sources such as Wikipedia/Wikimedia after you ask.</p></div>
-    <h2>Community Conduct</h2>
-      <p>Users must adhere to the 18+ community standards. Harassment, hate speech, or exploitation of the 18+ framework will result in access revocation. All conduct is subject to the source-available license terms.</p>
-    </section>
-  </main>
-  <footer class="site-footer site-end"><div class="site-footer-inner"><span class="studio-line"><img class="studio-mark" src="soul-consciousness-studios-mark.png" alt="">© 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. 18+.</span><span><a href="download.html">Download</a> · <a href="product.html">Product</a> · <a href="assist.html">Assist</a> · <a href="help.html">Help</a> · <a href="faq.html">FAQ</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a></span></div></footer><script src="site.js" defer></script>
-<script type="module" src="assist.js"></script></body></html>
+/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
+/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
+/* Eidovara interface tokens — system-inspired visual language, not an Apple product.
+   System font stack only; do not ship or require licensed SF Pro or SF Mono files. */
+:root {
+  color-scheme: light dark;
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI Variable", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Code", "Cascadia Mono", "Segoe UI Mono", Menlo, Consolas, monospace;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 999px;
+  --hairline: 0.5px;
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-lg: 17px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 38px;
+  --text-5xl: 48px;
+  --text-6xl: 64px;
+  --title-1: 28px;
+  --title-2: 22px;
+  --title-3: 20px;
+  --headline: 17px;
+  --body: 17px;
+  --subhead: 15px;
+  --footnote: 13px;
+  --caption: 12px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 650;
+  --line-height-tight: 1.1;
+  --line-height-snug: 1.35;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.65;
+  --letter-spacing-tight: -0.04em;
+  --letter-spacing-normal: -0.014em;
+  --letter-spacing-wide: 0.02em;
+  --motion-fast: 120ms;
+  --motion-normal: 200ms;
+  --motion-slow: 320ms;
+  --motion-slower: 480ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --blur: saturate(180%) blur(24px);
+  --blur-strong: saturate(200%) blur(40px);
+  --tint: #007aff;
+  --tint-hover: #0066cc;
+  --tint-light: #d6eaff;
+  --accent2: #5856d6;
+  --accent3: #af52de;
+  --danger: #ff3b30;
+  --danger-light: #ffd6d6;
+  --good: #34c759;
+  --good-light: #d6f5dd;
+  --warning: #ff9f0a;
+  --warning-light: #fff4d6;
+  --bg: #f2f2f7;
+  --bg-secondary: #e8e8ed;
+  --grouped: #f2f2f7;
+  --side: #f2f2f7;
+  --panel: #ffffff;
+  --panel-hover: #fafafa;
+  --panel2: #f2f2f7;
+  --elevated: #ffffff;
+  --line: rgba(60, 60, 67, 0.18);
+  --line-strong: rgba(60, 60, 67, 0.28);
+  --separator: rgba(60, 60, 67, 0.1);
+  --text: #000000;
+  --text-primary: #1d1d1f;
+  --muted: rgba(60, 60, 67, 0.5);
+  --tertiary: rgba(60, 60, 67, 0.25);
+  --accent: var(--tint);
+  --on-accent: #ffffff;
+  --fill: rgba(120, 120, 128, 0.12);
+  --fill-secondary: rgba(120, 120, 128, 0.08);
+  --fill-tertiary: rgba(118, 118, 128, 0.05);
+  --btn-gray: rgba(120, 120, 128, 0.12);
+  --on-accent: #ffffff;
+  --nav-bar: rgba(249, 249, 249, 0.9);
+  --overlay: rgba(0, 0, 0, 0.25);
+  --overlay-strong: rgba(0, 0, 0, 0.5);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04), 0 1px 1px rgba(0, 0, 0, 0.02);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.03);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.08), 0 4px 8px rgba(0, 0, 0, 0.04);
+  --shadow-xl: 0 20px 48px rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.05);
+  --shadow-2xl: 0 32px 64px rgba(0, 0, 0, 0.12), 0 12px 24px rgba(0, 0, 0, 0.06);
+  --shadow-inner: inset 0 1px 0 rgba(255, 255, 255, 0.6), inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+  --aqua: var(--tint);
+  --surface-opacity: 96%;
+  --gradient-primary: linear-gradient(135deg, var(--tint) 0%, var(--accent2) 100%);
+  --gradient-secondary: linear-gradient(135deg, var(--accent2) 0%, var(--accent3) 100%);
+  --gradient-hero: radial-gradient(1200px 600px at 10% -20%, color-mix(in srgb, var(--tint) 18%, transparent), transparent 65%), radial-gradient(800px 500px at 90% 10%, color-mix(in srgb, var(--accent2) 14%, transparent), transparent 60%);
+  --focus-ring: 0 0 0 3px color-mix(in srgb, var(--tint) 40%, transparent);
+}
 
 
 
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
