@@ -1,4 +1,4 @@
-﻿# First-party ownership (honest limits)
+# First-party ownership (honest limits)
 
 Copyright Â© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party.
 
