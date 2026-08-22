@@ -2,9 +2,9 @@
 
 This file tells the owner how to **notice** first-party files and, separately, how to **register** a work at the U.S. Copyright Office. It is **not legal advice**, not a filing, and not a claim that Eidovara is registered.
 
-Copyright Â© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](../LICENSE) + [TERMS.md](../TERMS.md). Third-party stays third-party.
+Copyright © 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](../LICENSE) + [TERMS.md](../TERMS.md). Third-party stays third-party.
 
-**This repository is not a U.S. Copyright Office registration.** There is no registration number, certificate, or deposit receipt in git. A `Â©` line, LICENSE, git history, and SHA-256 hashes are evidence of a claim, not a registration.
+**This repository is not a U.S. Copyright Office registration.** There is no registration number, certificate, or deposit receipt in git. A `©` line, LICENSE, git history, and SHA-256 hashes are evidence of a claim, not a registration.
 
 ## Claimant
 
@@ -41,13 +41,13 @@ Rules:
 2. Do not add a second header to files that already carry the SPDX pair or an equivalent Soul Consciousness Studios copyright line.
 3. Absence of a header does **not** mean a first-party file is unlicensed or third-party; LICENSE still governs.
 4. First-party `src/`, `docs/` HTML/CSS/JS, `scripts/`, and `server/` already carry this SPDX pair as of the IP self-attestation. **Do not restamp** those files with a second header.
-5. Do not add Â®, a copyright-office registration number, or a patent number. Do not change the SPDX identifier to MIT or GPL.
+5. Do not add ®, a copyright-office registration number, or a patent number. Do not change the SPDX identifier to MIT or GPL.
 
 ## How to put a copyright notice on a work
 
 A notice is optional for works first published on or after 1 March 1989 under U.S. law, but it is useful. A conventional notice has three parts:
 
-1. The symbol Â©, the word "Copyright", or "Copr."
+1. The symbol ©, the word "Copyright", or "Copr."
 2. The year of first publication of this version
 3. The name of the copyright owner (here: Soul Consciousness Studios)
 
