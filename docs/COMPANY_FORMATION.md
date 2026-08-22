@@ -1,4 +1,4 @@
-﻿# Soul Consciousness Studios formation checklist
+# Soul Consciousness Studios formation checklist
 
 Soul Consciousness Studios is currently described in this repository as Soul Consciousness Studios's intended business name. This repository does not establish a corporation or LLC.
 
