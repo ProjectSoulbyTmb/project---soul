@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import worker, { httpsUrl } from '../server/worker.js';
+import worker, { httpsUrl, LIVE_INSTALLER_VERSION, LIVE_INSTALLER, LIVE_INSTALLER_SHA256 } from '../server/worker.js';
+import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 test('server accepts only HTTPS public configuration', async () => {
   const env = { WEBSITE_URL: 'https://example.test/', STRIPE_PAYMENT_URL: 'http://unsafe.test', PAYPAL_PAYMENT_URL: 'https://paypal.test/buy' };
@@ -45,11 +46,13 @@ test('Worker health/status support HEAD, CORS, honesty flags, and private status
   assert.equal(status.ageRestricted, true);
   assert.equal(status.minimumAge, 18);
   assert.equal(status.authenticodeSigned, false);
-  assert.equal(status.version, '0.22.2');
-  assert.equal(status.liveInstallerVersion, '0.19.1');
+  assert.equal(status.version, ASSIST_VERSION);
+  assert.equal(status.liveInstallerVersion, LIVE_INSTALLER_VERSION);
   assert.ok(!status.endpoints.includes('/v1/heartbeat'));
   assert.match(status.heartbeat, /No dedicated \/v1\/heartbeat/);
-  assert.doesNotMatch(JSON.stringify(status), /Eidovara-0\.22\.2-Windows/);
+  // The live installer must be advertised with its exact filename and checksum.
+  assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER.replaceAll('.', '\\.')));
+  assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER_SHA256));
   assert.doesNotMatch(JSON.stringify(status), /workers\.dev/i);
 
   const statusHead = await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'HEAD' }), {});
