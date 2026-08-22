@@ -114,7 +114,7 @@
 
     // Listen for system theme changes
     if (window.matchMedia) {
-      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', _e => {
         if (
           !getStorage(CONFIG.storageKeys.theme) ||
           getStorage(CONFIG.storageKeys.theme) === 'auto'
