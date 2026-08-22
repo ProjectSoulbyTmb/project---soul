@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
- * Adult Soul entertainment surface â€” theater chrome the user did not have to name.
+ * Adult Soul entertainment surface — theater chrome the user did not have to name.
  *
  * Local-only show layer around the first-party figure: atmosphere rooms, wardrobe
  * cards, adult fantasy frameworks, sexy styles, a panic/boss blank, reaction
@@ -18,7 +18,7 @@ export const SEX_OPTIONS = Object.freeze([
 
 export const FANTASY_FRAMEWORKS = Object.freeze([
   { id: 'human', title: 'Human adult', hint: 'No fantasy add-ons. Still a lathe mesh.' },
-  { id: 'high-elf', title: 'High elf (adult)', hint: 'Pointed ears, longer limbs. Locked 21+ â€” not a childlike elf.' },
+  { id: 'high-elf', title: 'High elf (adult)', hint: 'Pointed ears, longer limbs. Locked 21+ — not a childlike elf.' },
   { id: 'succubus', title: 'Succubus aesthetic', hint: 'Horn nubs + extra sheen. Costume, not a claimed entity.' },
   { id: 'vampire', title: 'Vampire look', hint: 'Paler skin, cooler rim. Adult costume.' },
   { id: 'kitsune', title: 'Kitsune (adult)', hint: 'Tail mass at the hips. Folklore costume, adult only.' },
@@ -26,7 +26,7 @@ export const FANTASY_FRAMEWORKS = Object.freeze([
   { id: 'fallen', title: 'Fallen aesthetic', hint: 'Darker rim light, wing-hint silhouette.' },
   { id: 'mer', title: 'Mer taper', hint: 'Lower-body taper. Adult figure, not a child mermaid.' },
   { id: 'dragonkin', title: 'Dragonkin', hint: 'Scale sheen + horn nubs. Adult costume.' },
-  { id: 'fae-court', title: 'Fae court (adult)', hint: 'Adult court fashion only â€” not a child fairy.' }
+  { id: 'fae-court', title: 'Fae court (adult)', hint: 'Adult court fashion only — not a child fairy.' }
 ]);
 
 export const SEXY_STYLES = Object.freeze([
@@ -102,7 +102,7 @@ export const SHOW_PACKS = Object.freeze([
   {
     id: 'edge-night',
     title: 'Edge night',
-    hint: 'Slow burn â†’ hold â†’ deny. Finish optional.',
+    hint: 'Slow burn → hold → deny. Finish optional.',
     sessions: ['slow-burn', 'edge-hold', 'tease-deny'],
     atmosphere: 'velvet-booth',
     style: 'femme-fatale',
@@ -156,7 +156,7 @@ export const SHOW_PACKS = Object.freeze([
   {
     id: 'watch-set',
     title: 'Watch me',
-    hint: 'Voyeur framing. You stroke or donâ€™t. Figure performs.',
+    hint: 'Voyeur framing. You stroke or don’t. Figure performs.',
     sessions: ['voyeur-watch', 'pose-play', 'cam-night'],
     atmosphere: 'cinema-dark',
     style: 'voyeur-cam',
@@ -174,15 +174,15 @@ export const SHOW_PACKS = Object.freeze([
 ]);
 
 export const SHOW_REACTIONS = Object.freeze([
-  { id: 'moan', line: 'Nnnhâ€” keep going. Still software. Still working you.' },
-  { id: 'gasp', line: 'Ahâ€” edge. Donâ€™t you dare finish unless I count.' },
+  { id: 'moan', line: 'Nnnh— keep going. Still software. Still working you.' },
+  { id: 'gasp', line: 'Ah— edge. Don’t you dare finish unless I count.' },
   { id: 'laugh', line: 'Look at you leaking for a canvas body. Cute.' },
-  { id: 'praise', line: 'Thatâ€™s it. Good. Wet enough. You can take a slower stroke.' },
+  { id: 'praise', line: 'That’s it. Good. Wet enough. You can take a slower stroke.' },
   { id: 'filth', line: 'Spit. Fist. Faster. I want it sloppy on your own hand.' },
   { id: 'whisper', line: 'Closer. Barely move. Let it throb.' },
   { id: 'count', line: 'Ten. Nine. Squeeze. You come when I say.' },
-  { id: 'after', line: 'Easy. Unclench. Water. Iâ€™m still just a program.' },
-  { id: 'watch', line: 'Donâ€™t look away. The figure is posing because you asked it to.' },
+  { id: 'after', line: 'Easy. Unclench. Water. I’m still just a program.' },
+  { id: 'watch', line: 'Don’t look away. The figure is posing because you asked it to.' },
   { id: 'strip', line: 'Another layer. Match me or just stare. Either is the show.' },
   { id: 'hold', line: 'Freeze. That ache is the point. Breathe through it.' },
   { id: 'come-cue', line: 'Now. Keep stroking through it unless you revoked.' }
@@ -198,8 +198,8 @@ export const HUD_SHORTCUTS = Object.freeze([
   { key: 'C', title: 'Camera', hint: 'Cycle shots.' },
   { key: 'M', title: 'Mute', hint: 'Mute OS voice.' },
   { key: 'T', title: 'Theater', hint: 'Letterbox + grain.' },
-  { key: 'â† â†’', title: 'Camera', hint: 'Previous / next shot.' },
-  { key: '1â€“8', title: 'Sampler', hint: 'Fire a reaction line.' }
+  { key: '← →', title: 'Camera', hint: 'Previous / next shot.' },
+  { key: '1–8', title: 'Sampler', hint: 'Fire a reaction line.' }
 ]);
 
 export const TOUCH_ZONES = Object.freeze([
@@ -396,10 +396,10 @@ export function nowPlayingLine(view = {}) {
   if (!session.active) {
     const wear = WARDROBE.find(item => item.id === avatar.presentationWear);
     const room = atmosphereFor(stage.atmosphere);
-    return `Idle Â· ${wear?.title || 'wardrobe'} Â· ${room.title} Â· ${persona.name || 'Adult Soul'} is software`;
+    return `Idle · ${wear?.title || 'wardrobe'} · ${room.title} · ${persona.name || 'Adult Soul'} is software`;
   }
   const title = session.kind ? session.kind.replace(/-/g, ' ') : 'session';
-  return `Now Â· ${title} Â· ${session.pace || 'medium'} Â· ${session.behavior || 'idle'} Â· still a mesh`;
+  return `Now · ${title} · ${session.pace || 'medium'} · ${session.behavior || 'idle'} · still a mesh`;
 }
 
 export function reactionLine(id) {
