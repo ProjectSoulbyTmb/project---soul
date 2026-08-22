@@ -1,4 +1,4 @@
-﻿# Contribution policy
+# Contribution policy
 
 Eidovara is not accepting source-code, documentation, artwork, model, voice, or asset contributions unless Soul Consciousness Studios first approves the work in writing and both parties sign an appropriate copyright assignment or other written agreement.
 
