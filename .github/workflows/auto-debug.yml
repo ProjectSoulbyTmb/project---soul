@@ -79,6 +79,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          gh label create auto-debug --color d73a4a --description 'Automated health-check failures' 2>/dev/null || true
           TITLE="🤖 Auto-Debug: failing gates (${GITHUB_SHA::7})"
           BODY="$(cat "$GITHUB_STEP_SUMMARY")
 
