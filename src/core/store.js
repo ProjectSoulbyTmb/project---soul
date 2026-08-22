@@ -27,6 +27,7 @@ export class JsonStore {
   }
   load() {
     fs.mkdirSync(this.dataDir, { recursive: true });
+    try { for (const stale of fs.readdirSync(this.dataDir)) if (stale.startsWith(`${this.profileId}.json.`) && stale.endsWith('.tmp')) fs.rmSync(path.join(this.dataDir, stale), { force: true }); } catch {}
     if (!fs.existsSync(this.filePath)) { const state = hydrateAdult(defaultProfile(this.profileId)); this.save(state); return state; }
     try {
       const state = hydrateAdult(migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(this.filePath, 'utf8'))), this.profileId));
