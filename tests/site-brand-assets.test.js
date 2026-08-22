@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { INSTALLER_SHA256 } from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 const sha256 = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase();
@@ -125,7 +126,7 @@ test('public site wires display marks, wallpapers, and OG image without CSP or t
   const download = read('docs/download.html');
   assert.match(download, /eidovara-mark\.png/);
   assert.match(download, /id="ageConfirm"/);
-  assert.match(download, /A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE/);
+  assert.match(download, new RegExp(INSTALLER_SHA256));
 
   const htmlFiles = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
   assert.ok(htmlFiles.length >= 14, htmlFiles.length);
