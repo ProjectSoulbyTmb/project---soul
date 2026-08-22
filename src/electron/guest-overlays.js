@@ -390,7 +390,7 @@ export function createGuestOverlayManager({
       overlays.set('chat', { kind: 'chat', chat, targetUrl: '' });
       return publicStatus('chat');
     }
-    const chrome = createChrome(target.kind, target.kind === 'discord' ? 'Eidovara Â· Discord guest' : 'Eidovara Â· Browse overlay');
+    const chrome = createChrome(target.kind, target.kind === 'discord' ? 'Eidovara · Discord guest' : 'Eidovara · Browse overlay');
     const guest = createGuest(target.kind, chrome);
     overlays.set(target.kind, { kind: target.kind, chrome, guest, targetUrl: target.url || '' });
     wirePair(target.kind, chrome, guest);
