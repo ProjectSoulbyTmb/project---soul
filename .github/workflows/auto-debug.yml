@@ -65,6 +65,8 @@ jobs:
           run_gate "tests"         pnpm test
           run_gate "smoke"         pnpm run smoke
           run_gate "audit"         pnpm audit --prod --audit-level moderate
+          run_gate "live-site"     curl -fsS --max-time 15 https://eidovara.org/ -o /dev/null
+          run_gate "live-api"      curl -fsS --max-time 15 https://api.eidovara.org/health -o /dev/null
           echo '```' >> "$GITHUB_STEP_SUMMARY"
           if [ -n "$FAILED" ]; then
             echo "failed_gates=$FAILED" >> "$GITHUB_OUTPUT"
