@@ -1,4 +1,4 @@
-﻿# Copyright Office deposit preparation (owner-only)
+# Copyright Office deposit preparation (owner-only)
 
 This file tells Soul Consciousness Studios how to assemble a **local** source-code deposit for a possible U.S. Copyright Office registration. It is **not legal advice**, not a filing, and not a claim that Eidovara is registered.
 
