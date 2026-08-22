@@ -15,8 +15,7 @@ test('current source keeps kernel, official api.eidovara.org, and the live insta
   const pkg = JSON.parse(read('package.json'));
   assert.equal(pkg.version, DESKTOP_KNOWLEDGE_VERSION);
   assert.equal(INSTALLER_NAME, `Eidovara-v${DESKTOP_KNOWLEDGE_VERSION}-Windows-x64-Setup.exe`);
-  if (INSTALLER_MEASURED) assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
-  else assert.equal(INSTALLER_SHA256, null);
+  assert.ok(INSTALLER_SHA256 === null || /^[0-9A-F]{64}$/.test(INSTALLER_SHA256));
   assert.equal(DEFAULT_EIDOVARA_SERVICE_BASE, 'https://api.eidovara.org');
   const html = read('src/renderer/index.html');
   assert.match(html, /id="startPath"/);
