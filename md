@@ -1,31 +1,94 @@
-# Soul Consciousness Studios formation checklist
+# Unsigned contributor assignment template
 
-Soul Consciousness Studios is currently described in this repository as Soul Consciousness Studios's intended business name. This repository does not establish a corporation or LLC.
+**Status: template only — not executed.**
 
-## Before filing
+This file is a blank form the first-party owner may print or copy and complete **privately** with a contributor after independent legal review. It is **not** a signed agreement. Publishing it does not mean any contributor has assigned rights. The repository does not store executed copies, wet-ink signatures, or a roster of unknown signers.
 
-1. Select the formation state based on where the business will actually operate. State choice affects fees, taxes, registered-agent duties, annual reports, and foreign qualification.
-2. Search the formation state's entity database for exact and confusingly similar names. Reserve the name if useful and available.
-3. Decide with a qualified tax/legal adviser whether to operate as a sole proprietor, single-member LLC, or corporation.
-4. Choose a registered agent and an address that satisfies state rules. Formation records may become public.
+**Sign privately; posting a PR is not assignment.** **Do not “sign” this by opening a GitHub pull request.** Eidovara does not accept copyrightable contributions through issues, suggestions, or PRs until Soul Consciousness Studios gives prior written approval **and** both parties execute a separate written agreement appropriate to that material. Platform terms that apply to material posted on GitHub remain independently applicable and are not a substitute for this assignment. See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
-## Formation and ownership
+This template is **not legal advice** and is not a court judgment. Have qualified counsel review it before use. Replace bracketed placeholders. Do not commit completed or signed copies to this public repository.
 
-1. File the state formation document and save the stamped acceptance and governing document.
-2. Obtain an EIN directly from the IRS after formation if needed. The IRS application is free; avoid websites that impersonate the IRS and charge unnecessary fees.
-3. Open a separate business bank account and keep business and personal funds separate.
-4. Execute a written intellectual-property assignment only if Soul Consciousness Studios decides the new entity—not him personally—should own pre-formation Eidovara rights. Record the effective date and excluded third-party material. An unsigned template is `docs/ENTITY_IP_ASSIGNMENT.md`; this repository does not contain an executed copy.
-5. Maintain a sole-member ledger, formation resolutions, licenses, contracts, tax records, annual reports, and renewal dates.
+---
 
-## Brand and product
+## Contributor Copyright Assignment (template)
 
-1. Conduct comprehensive federal, state, common-law, domain, app-store, and international clearance searches for Soul Consciousness Studios™ and Eidovara™.
-2. Consider federal applications in the appropriate classes only after the goods/services and filing basis are accurate. Use ™ now; never use ® unless registration issues for the relevant goods or services.
-3. Register qualifying source code and first-party visual/literary material with the U.S. Copyright Office. Names, titles, ideas, systems, and short phrases are not protected by copyright.
+**Effective date:** [YYYY-MM-DD]
 
-## Current federal note
+**Governing law / venue (complete with counsel):** [State / country], [courts]
 
-Verify requirements immediately before filing. As of August 20, 2026, FinCEN states that U.S.-created companies and U.S. persons are exempt from federal BOI reporting under its current final rule. State and other federal obligations still apply and can change.
+**Consideration:** Contributor acknowledges receipt of [describe: $1.00 / other bargained consideration / opportunity to have the Contribution considered for incorporation], the sufficiency of which Contributor acknowledges.
 
-This checklist is general information, not legal or tax advice, and cannot determine the correct state, entity, tax election, trademark class, or ownership transfer without the owner's facts.
+**Owner (assignee):** Soul Consciousness Studios, an individual, claiming first-party rights in the Eidovara project (“Owner”). Soul Consciousness Studios is an intended publisher name only and is not a party unless a formed entity is named in a separate signed writing.
+
+**Contributor (assignor):**
+
+| Field | Complete privately |
+| --- | --- |
+| Legal name | [Legal name] |
+| Address | [street, city, state/province, postal code, country] |
+| Email | [email] |
+| Age | Contributor is at least 18: [yes / no] |
+| GitHub username (optional, identification only) | [username — posting under this name is still not assignment] |
+
+### 1. Contribution
+
+“Contribution” means the copyrightable material described below, including source code, documentation, artwork, configuration, and related original expression, whether submitted privately or (after approval) incorporated into Eidovara:
+
+[Describe files, commit SHAs, or attach Exhibit A. Do not paste secrets.]
+
+### 2. Assignment
+
+Contributor hereby irrevocably assigns to Owner all right, title, and interest in and to the Contribution, including copyright and any registrations or applications covering it, throughout the world, for the full term of protection (including renewals and extensions). Contributor retains no ownership in the Contribution except any license Owner may grant in writing.
+
+To the extent a right cannot be assigned, Contributor hereby grants Owner an exclusive, irrevocable, royalty-free, worldwide, transferable license (with right to sublicense) to exercise all such rights, including reproduction, preparation of derivative works, distribution, public display, and public performance.
+
+If applicable law treats the Contribution as a work made for hire in favor of Owner, the parties intend that result; the assignment in this section is a backup if work-made-for-hire does not apply.
+
+### 3. Moral rights
+
+To the maximum extent permitted by applicable law, Contributor waives (and agrees not to assert) moral rights, rights of attribution or integrity, and similar rights in the Contribution, solely as needed for Owner to use, modify, license, and commercialize Eidovara. Where a waiver is not permitted, Contributor consents to Owner’s reasonable uses.
+
+### 4. Patents
+
+If Contributor owns or controls patent claims that would necessarily be infringed by the Contribution as incorporated into Eidovara, Contributor grants Owner a perpetual, irrevocable, worldwide, royalty-free license to those claims solely to make, use, sell, offer to sell, import, and otherwise exploit the Contribution as part of Eidovara and official unmodified releases. This clause does **not** represent that any patent exists or has been filed. It does not grant a patent license in Eidovara as a whole beyond the Contribution.
+
+### 5. Representations
+
+Contributor represents that: (a) the Contribution is original to Contributor or Contributor has authority to assign it; (b) it does not knowingly include confidential information, credentials, personal data of others, or third-party code Contributor lacks rights to assign; (c) Contributor is at least 18 years of age; and (d) executing this assignment does not violate another agreement.
+
+### 6. Third-party and public-domain material
+
+Material Contributor does not own (including Electron, Chromium, Node.js, Windows components, Wikimedia content, and other third-party or public-domain material) is **excluded** from this assignment. Contributor will identify any such material in writing before execution.
+
+### 7. No GitHub acceptance
+
+A pull request, issue, or uploaded patch is not acceptance of the Contribution and does not transfer ownership. **Sign privately; posting a PR is not assignment.** Owner may decline the Contribution. Only a fully executed copy of this form (or another written agreement Owner accepts) plus Owner’s written approval authorizes incorporation.
+
+### 8. Further assurances
+
+Contributor will execute documents reasonably requested to evidence or record this assignment, at Owner’s expense, without representing that any government office will accept them.
+
+### 9. Governing law; miscellaneous
+
+[Governing law and venue — to be completed with counsel.] This is the entire agreement for the Contribution. Amendments must be in writing and signed by both parties. If a provision is unenforceable, the remainder remains in effect. This template creates no obligation until both parties have signed a private original.
+
+### Signatures (leave blank in the repository)
+
+This public file has **no signatures**. Complete only on a private original.
+
+| | Owner | Contributor |
+| --- | --- | --- |
+| Name | Soul Consciousness Studios | [Legal name] |
+| Signature | ______________________________ | ______________________________ |
+| Date | [date] | [date] |
+
+Store executed originals in private storage controlled by the Owner. Do not commit them here.
+
+### Exhibit A — Contribution schedule (complete privately)
+
+Leave this exhibit blank in the public repository. On a private original, list files, commit SHAs, or attach a schedule. Do not paste secrets, credentials, or third-party code the Contributor does not own.
+
+| Item | Description / path / SHA | Notes |
+| --- | --- | --- |
+| [item] | [description] | [original to Contributor / third-party excluded] |
 
