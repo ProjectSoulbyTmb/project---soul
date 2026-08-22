@@ -5,8 +5,7 @@ import { DEFAULT_EIDOVARA_SERVICE_BASE } from '../src/core/service.js';
 import {
   DESKTOP_KNOWLEDGE_VERSION,
   INSTALLER_NAME,
-  INSTALLER_MEASURED,
-  INSTALLER_SHA256,
+    INSTALLER_SHA256,
 } from '../src/core/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
@@ -41,7 +40,7 @@ test('historical release hashes stay in CHANGELOG; live pages advertise only the
   const downloadPage = read('docs/download.html');
   assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_NAME)));
   if (INSTALLER_SHA256) assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
-  else assert.match(downloadPage, /SHA256SUMS\.txt/);
+  else assert.match(downloadPage, /SHA256SUMS\\.txt/);
   assert.doesNotMatch(
     downloadPage,
     /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/

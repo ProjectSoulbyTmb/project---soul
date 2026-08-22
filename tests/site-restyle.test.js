@@ -6,7 +6,6 @@ import fs from 'node:fs';
 import path from 'node:path';
 import {
   INSTALLER_NAME,
-  INSTALLER_MEASURED,
   INSTALLER_SHA256,
   SOURCE_VERSION,
 } from '../src/core/release.js';
@@ -60,8 +59,8 @@ test('public release pages advertise the real current installer', () => {
     const html = read(file);
     assert.match(html, new RegExp(escapeRe(INSTALLER_NAME)), file);
     // Pending tagged build: pages point at SHA256SUMS.txt instead of a digest.
-    if (INSTALLER_MEASURED) assert.match(html, new RegExp(INSTALLER_SHA256), file);
-    else assert.match(html, /SHA256SUMS\.txt/, file);
+    if (INSTALLER_SHA256) assert.match(html, new RegExp(INSTALLER_SHA256), file);
+    else assert.match(html, /SHA256SUMS\\.txt/, file);
   }
   assert.match(read('docs/site.css'), /--eidovara-visual:\s*modern-2026/);
   assert.match(read('docs/site.css'), /#site-nav > a\.nav-cta/);
