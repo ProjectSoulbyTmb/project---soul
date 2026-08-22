@@ -857,8 +857,7 @@ export function sessionCatalog() {
     {
       id: 'worship',
       title: 'Body worship',
-      summary:
-        'Attention on cock, chest, ass, mouth — still a first-party mesh, not a real model.',
+      summary: 'Attention on cock, chest, ass, mouth — still a first-party mesh, not a real model.',
     },
     {
       id: 'hands-free-audio',

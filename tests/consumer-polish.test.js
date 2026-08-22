@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { DEFAULT_EIDOVARA_SERVICE_BASE } from '../src/core/service.js';
 import {
-  INSTALLER_NAME,INSTALLER_SHA256,
+  INSTALLER_NAME,
+  INSTALLER_SHA256,
   DESKTOP_KNOWLEDGE_VERSION,
 } from '../src/core/knowledge.js';
 
@@ -80,5 +81,8 @@ test('confirm-launch and age gate tests remain in the shipped surface', () => {
   assert.match(main, /function requireAgeGate/);
   assert.equal(DESKTOP_KNOWLEDGE_VERSION, JSON.parse(read('package.json')).version);
   assert.equal(INSTALLER_NAME, `Eidovara-v${DESKTOP_KNOWLEDGE_VERSION}-Windows-x64-Setup.exe`);
-  assert.ok(INSTALLER_SHA256 === null || /^[0-9A-F]{64}$/.test(INSTALLER_SHA256), 'digest null until measured or well-formed');
+  assert.ok(
+    INSTALLER_SHA256 === null || /^[0-9A-F]{64}$/.test(INSTALLER_SHA256),
+    'digest null until measured or well-formed'
+  );
 });

@@ -5,7 +5,7 @@ import { DEFAULT_EIDOVARA_SERVICE_BASE } from '../src/core/service.js';
 import {
   DESKTOP_KNOWLEDGE_VERSION,
   INSTALLER_NAME,
-    INSTALLER_SHA256,
+  INSTALLER_SHA256,
 } from '../src/core/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');

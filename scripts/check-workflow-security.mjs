@@ -14,7 +14,7 @@ const dir = '.github/workflows';
 const ALLOW_FULL = new Set(['auto-fix.yml', 'release-windows.yml', 'stale.yml']);
 let problems = 0;
 
-for (const f of fs.readdirSync(dir).filter((n) => n.endsWith('.yml') || n.endsWith('.yaml'))) {
+for (const f of fs.readdirSync(dir).filter(n => n.endsWith('.yml') || n.endsWith('.yaml'))) {
   const t = fs.readFileSync(path.join(dir, f), 'utf8');
   if (!/^\s*permissions:/m.test(t) && !t.includes('permissions:')) {
     console.log(`FAIL ${f}: no explicit permissions block`);

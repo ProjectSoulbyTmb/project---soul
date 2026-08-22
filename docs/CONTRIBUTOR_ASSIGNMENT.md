@@ -22,12 +22,12 @@ This template is **not legal advice** and is not a court judgment. Have qualifie
 
 **Contributor (assignor):**
 
-| Field                                           | Complete privately                                             |
-| ----------------------------------------------- | -------------------------------------------------------------- |
-| Legal name                                      | [Legal name]                                                   |
-| Address                                         | [street, city, state/province, postal code, country]           |
-| Email                                           | [email]                                                        |
-| Age                                             | Contributor is at least 18: [yes / no]                         |
+| Field                                           | Complete privately                                           |
+| ----------------------------------------------- | ------------------------------------------------------------ |
+| Legal name                                      | [Legal name]                                                 |
+| Address                                         | [street, city, state/province, postal code, country]         |
+| Email                                           | [email]                                                      |
+| Age                                             | Contributor is at least 18: [yes / no]                       |
 | GitHub username (optional, identification only) | [username — posting under this name is still not assignment] |
 
 ### 1. Contribution

@@ -4,11 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
-import {
-  INSTALLER_NAME,
-  INSTALLER_SHA256,
-  SOURCE_VERSION,
-} from '../src/core/release.js';
+import { INSTALLER_NAME, INSTALLER_SHA256, SOURCE_VERSION } from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 const escapeRe = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

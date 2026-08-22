@@ -14,39 +14,39 @@ Machine-readable companion: [ip-certification.json](ip-certification.json).
 
 ## What this attestation covers
 
-| Layer                                                                              | Attested here                                                                                          | Not attested here                                             |
-| ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------- |
-| First-party copyright **claim** in qualifying original Eidovara expression         | Yes — claimant Soul Consciousness Studios; notice in LICENSE, COPYRIGHT.txt, NOTICE.md, SPDX headers | U.S. Copyright Office **registration**                        |
-| Source-available evaluation license                                                | Yes — `LicenseRef-Eidovara-Source-Available-1.0` in LICENSE; not MIT/Apache/GPL/OSI                  | A right to relicense forks as open source                     |
-| Unregistered marks Eidovara™, Soul (feature name), Soul Consciousness Studios™ | Yes — ™ usage and TRADEMARKS.md                                                                    | registered-mark symbol, USPTO serial, or federal registration |
-| Chain of title vs third-party layers                                               | Yes — Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded                         | Ownership of those third-party layers                         |
-| Contributor / entity assignments                                                   | Templates exist and are **unsigned**                                                                   | Any executed CLA or company assignment                        |
-| Advertised Windows installer v1.0.0                                                | Filename, measured SHA-256, Authenticode-**unsigned**, GitHub/Sigstore provenance                      | Microsoft certification, EV signing, SmartScreen pre-approval |
-| Source version 0.22.2                                                              | `package.json` / Worker health / website helper                                                        | A claim that provenance is Authenticode signing               |
-| Inbound GitHub patches                                                             | Policy: not accepted until private written assignment                                                  | Transfer of copyright by opening a PR                         |
+| Layer                                                                            | Attested here                                                                                        | Not attested here                                             |
+| -------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| First-party copyright **claim** in qualifying original Eidovara expression       | Yes — claimant Soul Consciousness Studios; notice in LICENSE, COPYRIGHT.txt, NOTICE.md, SPDX headers | U.S. Copyright Office **registration**                        |
+| Source-available evaluation license                                              | Yes — `LicenseRef-Eidovara-Source-Available-1.0` in LICENSE; not MIT/Apache/GPL/OSI                  | A right to relicense forks as open source                     |
+| Unregistered marks Eidovara™, Soul (feature name), Soul Consciousness Studios™ | Yes — ™ usage and TRADEMARKS.md                                                                     | registered-mark symbol, USPTO serial, or federal registration |
+| Chain of title vs third-party layers                                             | Yes — Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded                         | Ownership of those third-party layers                         |
+| Contributor / entity assignments                                                 | Templates exist and are **unsigned**                                                                 | Any executed CLA or company assignment                        |
+| Advertised Windows installer v1.0.0                                              | Filename, measured SHA-256, Authenticode-**unsigned**, GitHub/Sigstore provenance                    | Microsoft certification, EV signing, SmartScreen pre-approval |
+| Source version 0.22.2                                                            | `package.json` / Worker health / website helper                                                      | A claim that provenance is Authenticode signing               |
+| Inbound GitHub patches                                                           | Policy: not accepted until private written assignment                                                | Transfer of copyright by opening a PR                         |
 
 ## Certified product record (source v1.0.0; live installer v1.0.0)
 
 These facts match the published unsigned Windows installer plus this source cut. They are integrity facts, not a government certificate.
 
-| Field                             | Value                                                              |
-| --------------------------------- | ------------------------------------------------------------------ |
-| Product                           | Eidovara                                                           |
-| Source version                    | 1.0.0                                                              |
-| Live advertised installer version | 1.0.0                                                              |
-| App id                            | `com.soulconsciousnessstudios.eidovara`                            |
-| Official platform                 | Windows 10/11 x64                                                  |
-| Installer                         | `Eidovara-v1.0.0-Windows-x64-Setup.exe`                            |
-| Size                              | `null` until the tagged build; see release SHA256SUMS.txt |
-| SHA-256                           | `null` until the tagged build; see release SHA256SUMS.txt |
-| Release tag                       | `v1.0.0`                                                           |
-| Authenticode                      | unsigned                                                           |
-| Build provenance                  | GitHub/Sigstore provenance available; not Authenticode             |
-| Age                               | 18 or older                                                        |
-| License                           | Eidovara Source-Available Evaluation License 1.0                   |
-| Payments                          | fail-closed; no live checkout                                      |
-| Service default                   | `https://api.eidovara.org` (optional; conversations not sent)      |
-| Public site                       | `https://eidovara.org/`                                            |
+| Field                             | Value                                                         |
+| --------------------------------- | ------------------------------------------------------------- |
+| Product                           | Eidovara                                                      |
+| Source version                    | 1.0.0                                                         |
+| Live advertised installer version | 1.0.0                                                         |
+| App id                            | `com.soulconsciousnessstudios.eidovara`                       |
+| Official platform                 | Windows 10/11 x64                                             |
+| Installer                         | `Eidovara-v1.0.0-Windows-x64-Setup.exe`                       |
+| Size                              | `null` until the tagged build; see release SHA256SUMS.txt     |
+| SHA-256                           | `null` until the tagged build; see release SHA256SUMS.txt     |
+| Release tag                       | `v1.0.0`                                                      |
+| Authenticode                      | unsigned                                                      |
+| Build provenance                  | GitHub/Sigstore provenance available; not Authenticode        |
+| Age                               | 18 or older                                                   |
+| License                           | Eidovara Source-Available Evaluation License 1.0              |
+| Payments                          | fail-closed; no live checkout                                 |
+| Service default                   | `https://api.eidovara.org` (optional; conversations not sent) |
+| Public site                       | `https://eidovara.org/`                                       |
 
 ## Instrument inventory
 
@@ -95,11 +95,11 @@ Status values used below:
 | CodeQL workflow                            | [.github/workflows/codeql.yml](../.github/workflows/codeql.yml)                           | in-repo                                                                  |
 | OpenSSF Scorecards workflow                | [.github/workflows/scorecards.yml](../.github/workflows/scorecards.yml)                   | in-repo                                                                  |
 | Dependency review workflow                 | [.github/workflows/dependency-review.yml](../.github/workflows/dependency-review.yml)     | in-repo (needs Dependency graph owner click)                             |
-| U.S. Copyright Office registration         | —                                                                                       | owner-action-required                                                    |
-| USPTO trademark application                | —                                                                                       | owner-action-required                                                    |
-| Patent application                         | —                                                                                       | owner-action-required (do not claim a filing until one exists)           |
-| Authenticode code-signing identity         | —                                                                                       | owner-action-required                                                    |
-| Executed CLA or entity assignment          | —                                                                                       | owner-action-required (keep executed copies **out** of this public repo) |
+| U.S. Copyright Office registration         | —                                                                                         | owner-action-required                                                    |
+| USPTO trademark application                | —                                                                                         | owner-action-required                                                    |
+| Patent application                         | —                                                                                         | owner-action-required (do not claim a filing until one exists)           |
+| Authenticode code-signing identity         | —                                                                                         | owner-action-required                                                    |
+| Executed CLA or entity assignment          | —                                                                                         | owner-action-required (keep executed copies **out** of this public repo) |
 
 ## What automated tests certify
 

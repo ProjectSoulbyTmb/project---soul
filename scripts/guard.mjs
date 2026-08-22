@@ -17,18 +17,27 @@ const BAD = [
 let names = [];
 try {
   names = execSync('git diff --cached --name-only --diff-filter=ACM', { encoding: 'utf8' })
-    .split(/\r?\n/).filter(Boolean);
-} catch { process.exit(0); }
+    .split(/\r?\n/)
+    .filter(Boolean);
+} catch {
+  process.exit(0);
+}
 
 const exts = /\.(js|cjs|mjs|html|css|json|md|txt|yml|toml|xml|cff)$/;
 let bad = 0;
 for (const f of names) {
   if (!exts.test(f) || f.includes('localization.js')) continue;
   let t;
-  try { t = fs0(f); } catch { continue; }
+  try {
+    t = fs.readFileSync(f, 'utf8');
+  } catch {
+    continue;
+  }
   for (const [re, label] of BAD) {
-    if (re.test(t)) { console.error(`BLOCKED ${f}: ${label}`); bad++; }
+    if (re.test(t)) {
+      console.error(`BLOCKED ${f}: ${label}`);
+      bad++;
+    }
   }
 }
-function fs0(p) { return require('fs').readFileSync(p, 'utf8'); }
 process.exit(bad ? 1 : 0);

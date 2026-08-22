@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = 'docs';
-const files = fs.readdirSync(ROOT).filter((n) => n.endsWith('.html'));
+const files = fs.readdirSync(ROOT).filter(n => n.endsWith('.html'));
 let broken = 0;
 
 for (const f of files) {
@@ -27,8 +27,11 @@ for (const f of files) {
     }
     if (hash && path.basename(resolved) === f) {
       const id = hash.slice(1);
-      const ids = new Set([...t.matchAll(/id="([^"]+)"/g)].map((x) => x[1]));
-      if (!ids.has(id)) { broken++; console.log(`MISSING ANCHOR ${f} -> ${hash}`); }
+      const ids = new Set([...t.matchAll(/id="([^"]+)"/g)].map(x => x[1]));
+      if (!ids.has(id)) {
+        broken++;
+        console.log(`MISSING ANCHOR ${f} -> ${hash}`);
+      }
     }
   }
 }

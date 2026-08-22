@@ -24,16 +24,16 @@ See [COMPANY_FORMATION.md](COMPANY_FORMATION.md) and [CHAIN_OF_TITLE.md](CHAIN_O
 
 **Assignee (“Company”) — complete only after formation:**
 
-| Field                        | Complete privately                                                                          |
-| ---------------------------- | ------------------------------------------------------------------------------------------- |
+| Field                        | Complete privately                                                                     |
+| ---------------------------- | -------------------------------------------------------------------------------------- |
 | Legal entity name            | [Legal entity name — do not treat “Soul Consciousness Studios” as formed unless it is] |
-| Entity type                  | [LLC / corporation / other]                                                                 |
-| Formation jurisdiction       | [State / country]                                                                           |
-| Formation date               | [YYYY-MM-DD]                                                                                |
-| File / SOS number            | [if issued]                                                                                 |
-| EIN                          | [if issued; do not commit to git]                                                           |
-| Principal address            | [address]                                                                                   |
-| Authorized signatory / title | [name, title]                                                                               |
+| Entity type                  | [LLC / corporation / other]                                                            |
+| Formation jurisdiction       | [State / country]                                                                      |
+| Formation date               | [YYYY-MM-DD]                                                                           |
+| File / SOS number            | [if issued]                                                                            |
+| EIN                          | [if issued; do not commit to git]                                                      |
+| Principal address            | [address]                                                                              |
+| Authorized signatory / title | [name, title]                                                                          |
 
 **Excluded property:** Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created content, and all other third-party or public-domain material; any rights Assignor does not own; and [list other exclusions].
 
