@@ -1,94 +1,84 @@
-# Unsigned contributor assignment template
+# Copyright notices and U.S. registration (owner checklist)
 
-**Status: template only — not executed.**
+This file tells the owner how to **notice** first-party files and, separately, how to **register** a work at the U.S. Copyright Office. It is **not legal advice**, not a filing, and not a claim that Eidovara is registered.
 
-This file is a blank form the first-party owner may print or copy and complete **privately** with a contributor after independent legal review. It is **not** a signed agreement. Publishing it does not mean any contributor has assigned rights. The repository does not store executed copies, wet-ink signatures, or a roster of unknown signers.
+Copyright © 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](../LICENSE) + [TERMS.md](../TERMS.md). Third-party stays third-party.
 
-**Sign privately; posting a PR is not assignment.** **Do not “sign” this by opening a GitHub pull request.** Eidovara does not accept copyrightable contributions through issues, suggestions, or PRs until Soul Consciousness Studios gives prior written approval **and** both parties execute a separate written agreement appropriate to that material. Platform terms that apply to material posted on GitHub remain independently applicable and are not a substitute for this assignment. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+**This repository is not a U.S. Copyright Office registration.** There is no registration number, certificate, or deposit receipt in git. A `©` line, LICENSE, git history, and SHA-256 hashes are evidence of a claim, not a registration.
 
-This template is **not legal advice** and is not a court judgment. Have qualified counsel review it before use. Replace bracketed placeholders. Do not commit completed or signed copies to this public repository.
+## Claimant
 
----
+- **Copyright claimant:** Soul Consciousness Studios
+- **Intended publisher name:** Soul Consciousness Studios (does not own copyright unless a formed entity receives a signed assignment)
+- **Works claimed:** qualifying original first-party Eidovara expression (source, tests, first-party docs, first-party UI assets, release materials he authored)
+- **Not claimed:** ideas, methods, systems, facts, names, titles, short phrases; Electron, Chromium, Node.js, Windows; Wikipedia/Wikimedia content; user content; third-party marks and media
 
-## Contributor Copyright Assignment (template)
+See [OWNERSHIP.md](../OWNERSHIP.md), [NOTICE.md](../NOTICE.md), [COPYRIGHT.txt](../COPYRIGHT.txt), [COPYRIGHT_ASSET_REGISTER.md](COPYRIGHT_ASSET_REGISTER.md), and the dated repository self-attestation [IP_CERTIFICATION.md](IP_CERTIFICATION.md) (not a government registration).
 
-**Effective date:** [YYYY-MM-DD]
+## Standard file header (single block)
 
-**Governing law / venue (complete with counsel):** [State / country], [courts]
+Use **one** header. Do not stack multiple copyright blocks or paste third-party licenses into first-party files. JavaScript / CSS / CJS (first two lines):
 
-**Consideration:** Contributor acknowledges receipt of [describe: $1.00 / other bargained consideration / opportunity to have the Contribution considered for incorporation], the sufficiency of which Contributor acknowledges.
+```
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+```
 
-**Owner (assignee):** Soul Consciousness Studios, an individual, claiming first-party rights in the Eidovara project (“Owner”). Soul Consciousness Studios is an intended publisher name only and is not a party unless a formed entity is named in a separate signed writing.
+That SPDX identifier names the Eidovara Source-Available Evaluation License in LICENSE. It is **not** MIT, Apache, GPL, or an OSI-approved license.
 
-**Contributor (assignor):**
+HTML (comment after `<!doctype html>` on first-party pages):
 
-| Field | Complete privately |
-| --- | --- |
-| Legal name | [Legal name] |
-| Address | [street, city, state/province, postal code, country] |
-| Email | [email] |
-| Age | Contributor is at least 18: [yes / no] |
-| GitHub username (optional, identification only) | [username — posting under this name is still not assignment] |
+```
+<!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
+<!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
+```
 
-### 1. Contribution
+Markdown / text legal instruments already carry a copyright line in the body; do not add a second header to LICENSE, NOTICE, TERMS, or this file.
 
-“Contribution” means the copyrightable material described below, including source code, documentation, artwork, configuration, and related original expression, whether submitted privately or (after approval) incorporated into Eidovara:
+Rules:
 
-[Describe files, commit SHAs, or attach Exhibit A. Do not paste secrets.]
+1. Apply only to **first-party** files. Do not stamp Electron, Chromium, Node.js, or other third-party trees.
+2. Do not add a second header to files that already carry the SPDX pair or an equivalent Soul Consciousness Studios copyright line.
+3. Absence of a header does **not** mean a first-party file is unlicensed or third-party; LICENSE still governs.
+4. First-party `src/`, `docs/` HTML/CSS/JS, `scripts/`, and `server/` already carry this SPDX pair as of the IP self-attestation. **Do not restamp** those files with a second header.
+5. Do not add ®, a copyright-office registration number, or a patent number. Do not change the SPDX identifier to MIT or GPL.
 
-### 2. Assignment
+## How to put a copyright notice on a work
 
-Contributor hereby irrevocably assigns to Owner all right, title, and interest in and to the Contribution, including copyright and any registrations or applications covering it, throughout the world, for the full term of protection (including renewals and extensions). Contributor retains no ownership in the Contribution except any license Owner may grant in writing.
+A notice is optional for works first published on or after 1 March 1989 under U.S. law, but it is useful. A conventional notice has three parts:
 
-To the extent a right cannot be assigned, Contributor hereby grants Owner an exclusive, irrevocable, royalty-free, worldwide, transferable license (with right to sublicense) to exercise all such rights, including reproduction, preparation of derivative works, distribution, public display, and public performance.
+1. The symbol ©, the word "Copyright", or "Copr."
+2. The year of first publication of this version
+3. The name of the copyright owner (here: Soul Consciousness Studios)
 
-If applicable law treats the Contribution as a work made for hire in favor of Owner, the parties intend that result; the assignment in this section is a backup if work-made-for-hire does not apply.
+Place it on LICENSE, NOTICE, About screens, installer EULA, website footers, and (when adding new files) the standard header above.
 
-### 3. Moral rights
+Do **not** write "registered with the Copyright Office" unless a registration has issued.
 
-To the maximum extent permitted by applicable law, Contributor waives (and agrees not to assert) moral rights, rights of attribution or integrity, and similar rights in the Contribution, solely as needed for Owner to use, modify, license, and commercialize Eidovara. Where a waiver is not permitted, Contributor consents to Owner’s reasonable uses.
+## U.S. Copyright Office registration (owner-only)
 
-### 4. Patents
+Registration, if desired, is done by the **owner or the owner's agent** at [https://www.copyright.gov](https://www.copyright.gov) (electronic registration through the Copyright Office's eCO / current portal). **This commit does not register anything.** A Cloud Agent cannot log into copyright.gov as Soul Consciousness Studios, pay the fee, or upload a deposit.
 
-If Contributor owns or controls patent claims that would necessarily be infringed by the Contribution as incorporated into Eidovara, Contributor grants Owner a perpetual, irrevocable, worldwide, royalty-free license to those claims solely to make, use, sell, offer to sell, import, and otherwise exploit the Contribution as part of Eidovara and official unmodified releases. This clause does **not** represent that any patent exists or has been filed. It does not grant a patent license in Eidovara as a whole beyond the Contribution.
+### Checklist (complete privately with counsel)
 
-### 5. Representations
+1. Confirm you are the author or have a signed written assignment covering the deposit. Unsigned templates in this repo do not count.
+2. Decide **what** to register (for example a specific source-code version; first-party visual assets). Source code is typically registered as a literary work. Icons and original artwork may be visual-arts works. Do not register Electron or other third-party code as yours.
+3. Prepare a **deposit** that matches Copyright Office rules for the chosen category (often identifying portions of source, not secrets, credentials, or unpublished invention write-ups you intend to keep private).
+4. Create an account on copyright.gov. Complete the application **in your own name** (or the formed entity's name only after a signed assignment).
+5. Pay the **then-current** fee listed by the Copyright Office. Fees change; do not rely on a number written in this file.
+6. Keep the application, payment receipt, and any later certificate in **private** storage. Do not commit certificates, applicant addresses, or deposit packages to this public repository.
+7. After a certificate issues, you may state that *that specific work* is registered and cite the registration number. Until then, say "copyright claimed," not "registered."
 
-Contributor represents that: (a) the Contribution is original to Contributor or Contributor has authority to assign it; (b) it does not knowingly include confidential information, credentials, personal data of others, or third-party code Contributor lacks rights to assign; (c) Contributor is at least 18 years of age; and (d) executing this assignment does not violate another agreement.
+Registration can support statutory damages and attorney-fee eligibility for qualifying U.S. claims when the statutory timing rules are met. It is not automatic from putting a LICENSE in git. Foreign protection and Berne Convention points need counsel.
 
-### 6. Third-party and public-domain material
+### What copyright does not cover
 
-Material Contributor does not own (including Electron, Chromium, Node.js, Windows components, Wikimedia content, and other third-party or public-domain material) is **excluded** from this assignment. Contributor will identify any such material in writing before execution.
+Copyright does not protect ideas, procedures, processes, systems, methods of operation, concepts, principles, discoveries, names, titles, or short phrases. Trademark and patent, if any, are separate. See [TRADEMARKS.md](../TRADEMARKS.md) and [IP_PROTECTION.md](IP_PROTECTION.md).
 
-### 7. No GitHub acceptance
+## Honesty rules for this repository
 
-A pull request, issue, or uploaded patch is not acceptance of the Contribution and does not transfer ownership. **Sign privately; posting a PR is not assignment.** Owner may decline the Contribution. Only a fully executed copy of this form (or another written agreement Owner accepts) plus Owner’s written approval authorizes incorporation.
-
-### 8. Further assurances
-
-Contributor will execute documents reasonably requested to evidence or record this assignment, at Owner’s expense, without representing that any government office will accept them.
-
-### 9. Governing law; miscellaneous
-
-[Governing law and venue — to be completed with counsel.] This is the entire agreement for the Contribution. Amendments must be in writing and signed by both parties. If a provision is unenforceable, the remainder remains in effect. This template creates no obligation until both parties have signed a private original.
-
-### Signatures (leave blank in the repository)
-
-This public file has **no signatures**. Complete only on a private original.
-
-| | Owner | Contributor |
-| --- | --- | --- |
-| Name | Soul Consciousness Studios | [Legal name] |
-| Signature | ______________________________ | ______________________________ |
-| Date | [date] | [date] |
-
-Store executed originals in private storage controlled by the Owner. Do not commit them here.
-
-### Exhibit A — Contribution schedule (complete privately)
-
-Leave this exhibit blank in the public repository. On a private original, list files, commit SHAs, or attach a schedule. Do not paste secrets, credentials, or third-party code the Contributor does not own.
-
-| Item | Description / path / SHA | Notes |
-| --- | --- | --- |
-| [item] | [description] | [original to Contributor / third-party excluded] |
+- Do not create a fake "Certificate of Registration."
+- Do not invent a registration number or "Txu" / "VAu" identifier.
+- Do not apply GPL, MIT, Apache, or CC-BY to first-party Eidovara code; LICENSE is the Eidovara Source-Available Evaluation License.
+- Do not include other people's lyrics, novels, or copied product licenses as if they were first-party.
 
