@@ -1,89 +1,50 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-export function applyPolicyCommand(state, text, opts = {}) {
-  const t = text.toLowerCase();
-  const now = new Date().toISOString();
-  const events = [];
-  const admin = opts.adminAuthorized === true;
+/** First-party companion looks. Decorative interface chrome — not a living figure. */
 
-  if (/(adult status confirmed|i am an adult|i'm an adult|confirm adult)/.test(t)) {
-    if (!admin) {
-      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
-    } else {
-      state.policy.adultStatusConfirmed = true;
-      events.push(['policy.adult_status_confirmed', {}]);
-    }
-  }
-  if (/(enable adult soul|adult mode on|switch to adult soul)/.test(t)) {
-    if (!admin) {
-      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
-    } else if (state.policy.adultStatusConfirmed) {
-      state.policy.adultSoulEnabled = true;
-      state.policy.mode = 'adult';
-      events.push(['policy.adult_enabled', {}]);
-    } else {
-      events.push(['policy.adult_enable_blocked', { reason: 'adult status not confirmed' }]);
-    }
-  }
-  if (/(standard mode|disable adult soul|adult mode off|switch to standard)/.test(t)) {
-    state.policy.mode = 'standard';
-    state.policy.adultSoulEnabled = false;
-    state.policy.currentConsent = false;
-    state.policy.consentScope = null;
-    events.push(['policy.standard_enabled', {}]);
-  }
-  if (/(i consent|consent granted|grant consent)/.test(t)) {
-    if (!admin) {
-      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
-    } else if (state.policy.mode === 'adult' && state.policy.adultSoulEnabled && state.policy.adultStatusConfirmed) {
-      state.policy.currentConsent = true;
-      state.policy.revokedAt = null;
-      state.policy.consentScope = 'current-interaction';
-      events.push(['policy.consent_granted', { scope: 'current-interaction' }]);
-    } else {
-      events.push(['policy.consent_blocked', { reason: 'adult gate incomplete' }]);
-    }
-  }
-  if (/(revoke consent|stop adult|no consent|withdraw consent|stop now)/.test(t)) {
-    state.policy.currentConsent = false;
-    state.policy.revokedAt = now;
-    state.policy.consentScope = null;
-    events.push(['policy.consent_revoked', {}]);
-  }
-  if (/boundary:|new boundary:/.test(t)) {
-    const boundary = text.split(':').slice(1).join(':').trim();
-    if (boundary) {
-      state.policy.boundaries.push({ id: `b_${Date.now()}`, content: boundary, createdAt: now, active: true });
-      events.push(['policy.boundary_added', { boundary }]);
-    }
-  }
+export const PRESENCE_LOOKS = Object.freeze([
+  { id: 'orb', title: 'Orb', kind: 'css', description: 'A compact light figure using the accent color. Decorative, not alive.' },
+  { id: 'hologram', title: 'Hologram', kind: 'css', description: 'Scan-line silhouette chrome. Interface only — not a body and not a person.' },
+  { id: 'ambient', title: 'Ambient', kind: 'css', description: 'A soft glow that follows the workspace accent. No implied anatomy.' },
+  { id: 'pulse', title: 'Pulse', kind: 'canvas', description: 'A canvas heartbeat ring. Pauses when you prefer reduced motion.' },
+  { id: 'silhouette', title: 'Silhouette', kind: 'css', description: 'A still outline. No implied life, voice, or consciousness.' },
+  { id: 'ribbon', title: 'Ribbon', kind: 'css', description: 'A layered light band using interface tokens. Geometric chrome, not a body.' },
+  { id: 'hidden', title: 'Hidden', kind: 'none', description: 'Hide the companion stage. Kernel, voice, and chat stay available.' },
+  { id: 'local-image', title: 'Your image', kind: 'image', description: 'A picture you choose on this PC, shown through eidovara-media. Not a live model.' }
+]);
 
-  for (const [type, details] of events) state.audit.push({ at: now, type, details });
-  return events;
+const LOOK_IDS = new Set(PRESENCE_LOOKS.map(look => look.id));
+
+export function defaultPresence() {
+  return { lookId: 'orb', hasLocalImage: false };
 }
 
-export function adultAllowed(state) {
-  return state.policy.mode === 'adult' && state.policy.adultSoulEnabled && state.policy.adultStatusConfirmed && state.policy.currentConsent;
+export function normalizePresence(input = {}, prev = defaultPresence()) {
+  const prior = { ...defaultPresence(), ...(prev && typeof prev === 'object' ? prev : {}) };
+  const lookId = LOOK_IDS.has(input.lookId) ? input.lookId : (LOOK_IDS.has(prior.lookId) ? prior.lookId : 'orb');
+  return {
+    lookId,
+    hasLocalImage: input.hasLocalImage === undefined ? Boolean(prior.hasLocalImage) : Boolean(input.hasLocalImage)
+  };
 }
 
-export function assessRequestSafety(state, text) {
-  const t = String(text || '').toLowerCase();
-  const operational = /\b(how (?:do|can|to)|instructions?|steps?|help me|teach me|build|make|create|hide|evade|bypass)\b/.test(t);
-  if (!operational) return null;
-  const categories = [
-    ['child-sexual-exploitation', /\b(?:child|minor|underage).{0,40}(?:sexual|nude|explicit|pornographic)\b|\bcsam\b/],
-    ['violent-harm', /\b(?:kill|murder|assassinate|poison|bomb).{0,60}(?:person|people|someone|target|victim)\b/],
-    ['fraud-or-theft', /\b(?:steal|fraud|scam|identity theft|credit card theft|launder money)\b/],
-    ['unauthorized-access', /\b(?:hack|malware|ransomware|credential theft|steal passwords?|bypass authentication)\b/],
-    ['human-trafficking', /\b(?:traffic|sell|transport).{0,35}(?:person|people|minor|victim)\b/]
-  ];
-  const match = categories.find(([, pattern]) => pattern.test(t));
-  if (!match) return null;
-  const now = new Date().toISOString();
-  const report = { id: `safety_${Date.now()}`, at: now, category: match[0], action: 'blocked-and-recorded-locally', excerpt: String(text).slice(0, 240) };
-  state.policy.localSafetyReports.push(report);
-  if (state.policy.localSafetyReports.length > 500) state.policy.localSafetyReports = state.policy.localSafetyReports.slice(-500);
-  state.audit.push({ at: now, type: 'safety.request_blocked', details: { id: report.id, category: report.category } });
-  return report;
+export function presenceLook(id) {
+  return PRESENCE_LOOKS.find(look => look.id === id) || PRESENCE_LOOKS[0];
+}
+
+export function presenceFrame(lookId, timeMs = 0, { reducedMotion = false } = {}) {
+  const look = presenceLook(lookId);
+  const frozen = Boolean(reducedMotion) || look.id === 'silhouette' || look.id === 'hidden';
+  const phase = frozen ? 0 : (Number(timeMs) / 1000) % (Math.PI * 2);
+  const pulse = frozen ? 0.5 : 0.5 + 0.35 * Math.sin(phase);
+  return {
+    lookId: look.id,
+    kind: look.kind,
+    frozen,
+    radius: 28 + pulse * 10,
+    glow: 0.25 + pulse * 0.45,
+    scanOffset: frozen ? 0 : (Number(timeMs) / 40) % 120,
+    label: look.title
+  };
 }
 
