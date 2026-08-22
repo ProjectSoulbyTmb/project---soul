@@ -91,7 +91,7 @@
     const strong = document.createElement('strong');
     strong.textContent = live ? t('soulLive', 'Soul is live on this PC') : t('soulIdle', 'Soul kernel idle');
     const pulses = Number(kernel.pulseCount) > 0 ? ` Pulse ${kernel.pulseCount}.` : '';
-    beat.append(strong, document.createTextNode(` Â· ${relTime(kernel.heartbeatAt)}.${pulses} ${kernel.selfModel?.architecture ? 'Software self-model, not a mind.' : 'Confirm 18+ to start the local kernel.'}`));
+    beat.append(strong, document.createTextNode(` · ${relTime(kernel.heartbeatAt)}.${pulses} ${kernel.selfModel?.architecture ? 'Software self-model, not a mind.' : 'Confirm 18+ to start the local kernel.'}`));
     if (online) {
       const opted = kernel.assistOptIn === true;
       const configured = Boolean(window.eidovaraSettings?.serviceUrl);
@@ -149,7 +149,7 @@
       input.checked = mod.enabled !== false;
       input.dataset.moduleId = mod.id;
       const span = document.createElement('span');
-      span.textContent = `${mod.title} â€” ${mod.summary}`;
+      span.textContent = `${mod.title} — ${mod.summary}`;
       label.append(input, span);
       box.append(label);
     }
@@ -160,7 +160,7 @@
       for (const item of kernel.looks) {
         const o = document.createElement('option');
         o.value = item.id;
-        o.textContent = `${item.title} â€” ${item.description}`;
+        o.textContent = `${item.title} — ${item.description}`;
         look.append(o);
       }
       look.value = current;
@@ -351,7 +351,7 @@
       const log = $('#companionLog');
       if (log) {
         log.textContent = '';
-        log.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('companionEmptyHint', 'Type a next step, or ask â€œwhat can you do here?â€ Local kernel only. Assist is not Soul.') }));
+        log.append(Object.assign(document.createElement('p'), { className: 'soul-dock-empty', textContent: t('companionEmptyHint', 'Type a next step, or ask “what can you do here?” Local kernel only. Assist is not Soul.') }));
       }
       renderFollowups(view || currentView());
     },
@@ -383,7 +383,7 @@
         } else {
           const heading = document.createElement('p');
           heading.className = 'companion-research-note';
-          heading.textContent = research.disclaimer || t('companionResearchNote', 'Public lookup after you asked â€” not a full-internet index.');
+          heading.textContent = research.disclaimer || t('companionResearchNote', 'Public lookup after you asked — not a full-internet index.');
           log.append(heading);
           for (const source of [...(research.sources || []), ...(research.handoffs || [])].slice(0, 8)) {
             const row = document.createElement('div');
@@ -392,7 +392,7 @@
             btn.type = 'button';
             btn.className = 'kernel-chip';
             const host = source.hostname || source.provider || '';
-            btn.textContent = host ? `${source.title || host} Â· ${host}` : (source.title || 'Open source');
+            btn.textContent = host ? `${source.title || host} · ${host}` : (source.title || 'Open source');
             btn.addEventListener('click', () => {
               if (typeof window.eidovaraOpenResearch === 'function') window.eidovaraOpenResearch(source.url, source.title || source.provider);
               else window.eidovaraRunAction?.({ type: 'open-external', url: source.url, label: source.title });
@@ -443,7 +443,7 @@
   $('#kernelCustomizeForm')?.addEventListener('submit', async e => {
     e.preventDefault();
     const status = $('#kernelCustomizeStatus');
-    if (status) status.textContent = t('savingKernel', 'Saving customizationâ€¦');
+    if (status) status.textContent = t('savingKernel', 'Saving customization…');
     try {
       await saveCustomization();
       if (status) status.textContent = t('savedKernel', 'Customization saved on this PC. Modules, voice, presence, and phrasing stay local.');
