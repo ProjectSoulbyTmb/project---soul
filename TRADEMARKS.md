@@ -14,9 +14,9 @@ Soul Consciousness Studios is a trademark of Soul Consciousness Studios (unregis
 
 The associated approved black, white, and red emblems and distinctive branding listed in [docs/COPYRIGHT_ASSET_REGISTER.md](docs/COPYRIGHT_ASSET_REGISTER.md) are claimed as first-party brand assets of Soul Consciousness Studios. Publication of source code does not grant permission to use these marks.
 
-The â„¢ symbol used with these names in this repository means an **unregistered** common-law claim of use. It is not a claim of federal registration. **Do not use the Â® symbol** unless and until a registration actually issues for the listed goods or services. This repository does not contain a USPTO serial number, registration number, or Â® claim. The Â® symbol must not be used unless a registration actually issues.
+The ™ symbol used with these names in this repository means an **unregistered** common-law claim of use. It is not a claim of federal registration. **Do not use the ® symbol** unless and until a registration actually issues for the listed goods or services. This repository does not contain a USPTO serial number, registration number, or ® claim. The ® symbol must not be used unless a registration actually issues.
 
-## What the â„¢ claim does and does not mean
+## What the ™ claim does and does not mean
 
 Common-law trademark rights, if any, arise from **lawful use in commerce** as a source identifier, not from a GitHub file. "Soul" is an ordinary English word; a feature-name claim is narrower and weaker than a coined product mark such as Eidovara. Names, titles, and short phrases are also outside copyright. See [docs/TRADEMARK_FILING.md](docs/TRADEMARK_FILING.md).
 
