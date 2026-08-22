@@ -2,20 +2,7 @@
 
 ## v1.0.0
 
-- Source, website, website helper knowledge pack, Worker/service payloads, and desktop kernel all identify `1.0.0`. This is the staged first stable-numbered release.
-- **Installer status:** no v1.0.0 Windows artifact exists yet. The unsigned `Eidovara-v1.0.0-Windows-x64-Setup.exe` publishes when tag `v1.0.0` passes the Release Windows workflow; its measured size and SHA-256 land in that release's `SHA256SUMS.txt` and `latest.yml`. (The digest previously advertised beside the v1.0.0 name — `F29A52F0495…` — belongs to the published v0.22.2 Setup.exe and was never measured from a v1.0.0 build.)
-- Release-pipeline hardening: the Release Windows workflow no longer gates on a hard-coded installer digest (any source change would fail every future tag) and no longer verifies `dist/*.attestation.json` files that no step produces; provenance attestations remain uploaded by `actions/attest-build-provenance`, and checksums stay in `SHA256SUMS.txt` + `latest.yml`.
-- Encoding-integrity pass: repaired widespread cp1252-mojibake and destroyed-glyph question-mark runs across ~50 source, site, test, and legal files (em dashes, arrows, curly quotes, ©, ™, ✓/✗, accented localization strings) restored from git history or byte-level reversal; fixed malformed HTML in `docs/roadmap.html`; added repo-wide encoding-hygiene regression scan to CI checks.
-- Version-facts honesty pass: PRIVACY.md, SECURITY.md, NETWORK-USAGE.md, NOTICE.md, TERMS.md §8, LEGAL_NOTICES.md, THIRD_PARTY_NOTICES.md, and docs mirrors now describe the current surface instead of v0.19.1; VERSION_COMPATIBILITY_MATRIX rows corrected against GitHub Releases (v0.22.2 = F29A52F0…, v0.22.3 = 36BFC6F0…).
-- Website: download verification on download.html now fetches the live release `SHA256SUMS.txt` instead of comparing against a stale compiled-in digest; sitemap gains roadmap/version-history; service-worker cache paths made relative so the GitHub Pages mirror installs correctly.
-
 ## Unreleased
-
-- Nothing queued yet.
-
-## v0.22.3
-
-- Renderer packaging hotfix: `Eidovara-0.22.3-Windows-x64-Setup.exe`, 106,802,077 bytes, SHA-256 `36BFC6F02161E4E4E599DC6219B3B6718804F1FE6B1554A5906D827D4FE1F145`. Authenticode-unsigned. Latest published tag as of this entry.
 
 ## v0.22.2
 
