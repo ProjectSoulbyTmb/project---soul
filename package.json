@@ -95,7 +95,7 @@
       "releaseType": "release"
     },
     "nsis": {
-      "artifactName": "Eidovara-${version}-Windows-${arch}-Setup.${ext}",
+      "artifactName": "Eidovara-v${version}-Windows-${arch}-Setup.${ext}",
       "license": "installer/EULA.txt",
       "installerIcon": "assets/branding/eidovara.ico",
       "uninstallerIcon": "assets/branding/eidovara.ico",
@@ -105,7 +105,7 @@
       "createStartMenuShortcut": true
     },
     "portable": {
-      "artifactName": "Eidovara-${version}-Windows-${arch}-Portable.${ext}"
+      "artifactName": "Eidovara-v${version}-Windows-${arch}-Portable.${ext}"
     },
     "electronFuses": {
       "runAsNode": false,
