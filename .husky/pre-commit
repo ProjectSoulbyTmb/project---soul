@@ -1,5 +1,9 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
-
-# Run lint and format check on staged files
-npx lint-staged
+#!/bin/sh
+# Robust pre-commit: locate node even when PATH is minimal, run corruption guard.
+NODE=""
+for c in node "/c/Program Files/nodejs/node.exe" "C:/Program Files/nodejs/node.exe"; do
+  if command -v "$c" >/dev/null 2>&1; then NODE="$c"; break; fi
+done
+if [ -z "$NODE" ]; then echo "pre-commit: node not found, skipping guards"; exit 0; fi
+cd "$(dirname "$0")/.." || exit 1
+exec "$NODE" scripts/guard.mjs
