@@ -59,5 +59,5 @@ test('advertised Free surface confirms launches and media, and does not hard-cod
   assert.doesNotMatch(renderer, /dreambot333\.workers\.dev/);
   assert.match(read('src/core/service.js'), /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
   assert.match(read('NETWORK-USAGE.md'), /en\.wikipedia\.org/);
-  assert.match(read('README.md'), /Premium RGB effects/);
+  assert.match(read('README.md'), /RGB customization/);
 });
