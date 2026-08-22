@@ -1,31 +1,121 @@
-# Security, licensing, and sustainability maintenance
-
-Eidovara uses reviewed releases, not silent self-modification. The application may check the official HTTPS update manifest automatically, but it downloads and opens a verified package only after user approval.
-
-## Continuous controls
-
-- GitHub Dependabot checks package and workflow updates weekly.
-- Security automation runs on every main-branch push, every pull request, and weekly. It executes the full tests, syntax checks, production dependency audit, and private-key scan.
-- Each release generates SHA-256 checksums, an SPDX software bill of materials, a privacy declaration, signing-status disclosure, and GitHub build provenance.
-- Network destinations, data categories, and user triggers are documented in `NETWORK_USAGE.md` / `NETWORK-USAGE.md` and must be updated when connectivity changes. Documented future adapters (neural TTS, VRM, OBS control, live payments) must not be enabled by a maintenance update.
-
-## Required review before adoption
-
-Dependency, runtime, media, voice, avatar, provider, payment, and AI-model upgrades require all of the following before release:
-
-1. Review the exact version, source, license, notices, maintainer status, and known vulnerabilities.
-2. Confirm compatibility with the proprietary Eidovara license and document redistributed material.
-3. Pin the dependency or asset version and integrity hash where practical.
-4. Test migrations, restart persistence, offline behavior, permissions, failure handling, and removal.
-5. Update the SBOM, third-party notices, privacy notice, network inventory, and release notes when affected.
-6. Release through a reviewable pull request and retain rollback instructions.
-
-No update may weaken consent, user control, credential handling, data deletion, or the distinction between persistent software adaptation and human consciousness. Consumer demand is evidence for prioritization, not permission to collect telemetry, copy protected products, bypass platform terms, or install unreviewed code.
-
-Eidovara is modular by product policy: applications, gaming, media, entertainment, appearance, accessibility, research, and maintenance must not depend on a remote AI provider. Soul may coordinate or explain those capabilities but is an optional layer. New modules must degrade independently so one provider or adapter outage does not disable the workspace.
-
-## Release gates
-
-A consumer release must pass tests, syntax and smoke checks, dependency audit, forbidden-string and secret scans, persistence/restart checks, and release-evidence generation. Public Windows distribution must disclose Authenticode status. A trusted signing claim is permitted only after the built executable verifies against a current public-trust certificate.
-
-Payment-controlled Premium activation remains incomplete until a server validates signed provider webhooks and issues expiring, revocable entitlements. The local administrator edition switch is for owner testing and is not payment authorization.
+{
+  "name": "Eidovara",
+  "short_name": "Eidovara",
+  "description": "Eidovara v1.0.0 — Local-first Windows desktop workspace with media, internet research, optional Soul layer, persistent continuity, custom themes, and gaming mode. 18+ restricted source-available software.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "orientation": "portrait-primary",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
+  "theme_color_light": "#007aff",
+  "theme_color_dark": "#0a84ff",
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "eidovara-icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "eidovara-icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "eidovara-mark.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "eidovara-icon.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "eidovara-icon.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "eidovara-icon.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "eidovara-icon.png",
+      "sizes": "48x48",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "categories": ["productivity", "utilities", "developer"],
+  "shortcuts": [
+    {
+      "name": "Download Eidovara",
+      "short_name": "Download",
+      "description": "Download Eidovara v1.0.0 (18+)",
+      "url": "/download.html",
+      "icons": [{ "src": "eidovara-icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Product Features",
+      "short_name": "Product",
+      "description": "View product features and capabilities",
+      "url": "/product.html",
+      "icons": [{ "src": "eidovara-mark.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Service Status",
+      "short_name": "Status",
+      "description": "Check Eidovara service status",
+      "url": "/status.html",
+      "icons": [{ "src": "eidovara-icon.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "eidovara-wallpaper-product.jpg",
+      "sizes": "1920x1080",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Eidovara Dashboard"
+    },
+    {
+      "src": "eidovara-og.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Eidovara Overview"
+    }
+  ],
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "iarc_rating_id": "e8a9b2c1-4f3d-4a5b-9c8d-1e2f3a4b5c6d",
+  "protocol_handlers": [],
+  "file_handlers": [],
+  "share_target": {
+    "action": "/share-target",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        {
+          "name": "media",
+          "accept": ["image/*", "audio/*", "video/*"]
+        }
+      ]
+    }
+  }
+}
