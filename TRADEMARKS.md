@@ -1,4 +1,4 @@
-﻿# Eidovara trademark policy
+# Eidovara trademark policy
 
 This file is a **usage policy and common-law claim record**. It is **not** a USPTO registration, a certificate, a clearance opinion, or legal advice. **No trademark application is filed by publishing this file.**
 
