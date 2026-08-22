@@ -1,0 +1,141 @@
+# Builds an Authenticode-unsigned Windows NSIS installer on windows-latest.
+# v* tags publish a GitHub Release. workflow_dispatch builds unsigned artifacts.
+# This workflow does not Authenticode-sign Setup.exe.
+# Security: this workflow holds contents/id-token/attestations write permissions,
+# so it intentionally does NOT run on pull_request events.
+name: Release Windows
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+jobs:
+  release:
+    if: startsWith(github.ref, 'refs/tags/v') || github.event_name == 'workflow_dispatch'
+    runs-on: windows-latest
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - run: pnpm install --frozen-lockfile
+      - name: Test renderer packaging contract
+        run: node --test tests/renderer-packaging.test.js
+      - run: pnpm run check
+      - run: pnpm run smoke
+      - run: pnpm run release:configure
+      - name: Build Windows installer
+        run: pnpm run dist:win:installer
+      - name: Installed-app renderer and launch smoke test
+        shell: pwsh
+        run: ./scripts/windows-install-smoke.ps1
+      - name: Require updater metadata
+        shell: pwsh
+        run: if (-not (Test-Path dist/latest.yml)) { throw 'electron-builder did not write dist/latest.yml. GitHub publish config must stay so tagged releases emit updater files. No GH_TOKEN is committed.' }
+      - name: Verify installer integrity metadata is internally consistent
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem 'dist/Eidovara-*-Windows-x64-Setup.exe' | Select-Object -First 1
+          if (-not $exe) { throw 'No Setup.exe found in dist/' }
+          $hash = (Get-FileHash -Path $exe.FullName -Algorithm SHA256).Hash
+          Write-Output "Measured SHA-256: $hash"
+          Write-Output "Measured size: $($exe.Length) bytes"
+          # Internal consistency: electron-updater latest.yml sha512 must match the built artifact.
+          $latest = Get-Content dist/latest.yml -Raw
+          $sha512Line = ($latest -split "`n" | Where-Object { $_ -match '^sha512:' }) -join ''
+          if (-not $sha512Line) { throw 'latest.yml has no sha512 entry' }
+          Write-Output "latest.yml $sha512Line"
+          Add-Content $env:GITHUB_STEP_SUMMARY "## Measured v$(${env:GITHUB_REF_NAME}) installer facts`n"
+          Add-Content $env:GITHUB_STEP_SUMMARY "- File: $($exe.Name)`n- Size: $($exe.Length) bytes`n- SHA-256: ``$hash```n"
+          Add-Content $env:GITHUB_STEP_SUMMARY "Copy these measured facts into src/core/release.js (INSTALLER_MEASURED=true + values) in the follow-up commit; SHA256SUMS.txt and latest.yml ship with this release.`n"
+          $facts = [ordered]@{ file = $exe.Name; sha256 = $hash.ToLower(); size = $exe.Length; publishedAt = (Get-Date).ToUniversalTime().ToString('o') }
+          $facts | ConvertTo-Json -Compress | Set-Content -Path 'dist/LIVE-INSTALLER-FACTS.json' -Encoding utf8
+          Write-Output 'Wrote dist/LIVE-INSTALLER-FACTS.json'
+          Write-Output 'Publish these as Worker vars so api.eidovara.org serves them:'
+          Write-Output ("  npx wrangler deploy --var LIVE_INSTALLER_SHA256:{0} --var LIVE_INSTALLER_SIZE:{1}" -f $hash.ToLower(), $exe.Length)
+      - run: pnpm run release:manifest
+      - run: pnpm run release:evidence
+      - name: Sign build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            dist/Eidovara-*-Windows-x64-Setup.exe
+            dist/LIVE-INSTALLER-FACTS.json
+            dist/update.json
+            dist/latest.yml
+            dist/SHA256SUMS.txt
+            dist/SBOM.spdx.json
+            dist/CODE-SIGNING-STATUS.txt
+            dist/PRIVACY-DECLARATION.json
+            dist/PRIVACY.md
+            dist/TERMS.md
+            dist/AGE.md
+            dist/LEGAL-NOTICES.md
+            dist/SECURITY.md
+            dist/NETWORK-USAGE.md
+            dist/LICENSE
+            dist/NOTICE.md
+            dist/AUTHORS.md
+            dist/TRADEMARKS.md
+            dist/THIRD_PARTY_NOTICES.md
+            dist/BRAND-ASSET-POLICY.md
+            dist/COPYRIGHT-ASSET-REGISTER.md
+      - name: Verify build provenance attestation
+        shell: pwsh
+        run: |
+          # attest-build-provenance records attestations server-side (it does not
+          # drop files into dist/). Verify after download with:
+          #   gh attestation verify <file> -R <repo>
+          if (-not (Test-Path 'dist/Eidovara-*-Windows-x64-Setup.exe')) { throw 'Setup.exe missing before attestation' }
+          Write-Output 'Provenance attestations recorded by actions/attest-build-provenance.'
+      - name: Publish GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          target_commitish: main
+          name: Eidovara by Soul Consciousness Studios v1.0.0
+          generate_release_notes: true
+          files: |
+            dist/Eidovara-*-Windows-x64-Setup.exe
+            dist/LIVE-INSTALLER-FACTS.json
+            dist/update.json
+            dist/latest.yml
+            dist/SHA256SUMS.txt
+            dist/SBOM.spdx.json
+            dist/CODE-SIGNING-STATUS.txt
+            dist/PRIVACY-DECLARATION.json
+            dist/PRIVACY.md
+            dist/TERMS.md
+            dist/AGE.md
+            dist/LEGAL-NOTICES.md
+            dist/SECURITY.md
+            dist/NETWORK-USAGE.md
+            dist/LICENSE
+            dist/NOTICE.md
+            dist/AUTHORS.md
+            dist/TRADEMARKS.md
+            dist/THIRD_PARTY_NOTICES.md
+            dist/BRAND-ASSET-POLICY.md
+            dist/COPYRIGHT-ASSET-REGISTER.md
+      - name: Upload unsigned Windows artifacts
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: eidovara-windows-unsigned
+          path: |
+            dist/Eidovara-*-Windows-x64-Setup.exe
+            dist/update.json
+            dist/latest.yml
+            dist/SHA256SUMS.txt
+            dist/SBOM.spdx.json
+            dist/CODE-SIGNING-STATUS.txt
