@@ -1,4 +1,4 @@
-﻿/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
+/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 .brand-icon {
   width: 32px;
@@ -145,6 +145,4 @@ body.site[data-page="download"] {
   -webkit-backdrop-filter: var(--blur-strong).
   border: 1px solid color-mix(in srgb, var(--separator) 60%, transparent).
 }
-
-
 
