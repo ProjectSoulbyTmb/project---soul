@@ -1,164 +1,580 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import { isBlockedResearchHost } from '../providers/internet.js';
+import { classifyWorkspaceIntent } from './workspace.js';
+import { knowledgeEntry, matchProductIntent, shouldUseKnowledgeReply } from './knowledge.js';
+import { builtinModules, moduleForIntent } from './modules.js';
+import { PRESENCE_LOOKS, defaultPresence, normalizePresence, presenceLook } from './presence.js';
+import { FUTURE_VOICE_BACKEND, defaultVoiceSettings, normalizeVoiceSettings } from './voices.js';
+import { ENGINE_HONESTY, runtimeEngineCatalog } from './runtime-engines.js';
+import { defaultSoulOnline, normalizeSoulOnline } from './soul-online.js';
+import {
+  createRuntimeRegistry,
+  defaultPhrasing,
+  defaultRegistry,
+  matchCustomAction,
+  normalizeRegistry
+} from './registry.js';
+import {
+  defaultWorkspaceLayers,
+  expireFocusIfNeeded,
+  isFocusStartCommand,
+  isFocusStopCommand,
+  isScratchCaptureCommand,
+  normalizeWorkspaceLayers,
+  workspacePublicView
+} from './layers.js';
 
-export const OVERLAY_KINDS = Object.freeze(['chat', 'browse', 'discord']);
-export const DISCORD_HOME = 'https://discord.com/app';
-export const DISCORD_LOGIN = 'https://discord.com/login';
-export const GUEST_PARTITIONS = Object.freeze({
-  browse: 'persist:eidovara-guest',
-  discord: 'persist:eidovara-guest-discord'
-});
-
-export function chromeUserAgent(chromeVersion) {
-  const version = String(chromeVersion || '').replace(/[^\d.]/g, '') || '120.0.0.0';
-  return `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${version} Safari/537.36`;
-}
-
-export function guestWebPreferences(kind) {
-  const id = normalizeOverlayKind(kind);
+export function defaultKernelState() {
   return {
-    partition: id && id !== 'chat' ? GUEST_PARTITIONS[id] : undefined,
-    sandbox: true,
-    nodeIntegration: false,
-    contextIsolation: true,
-    webSecurity: true,
-    allowRunningInsecureContent: false,
-    spellcheck: id === 'discord'
+    session: { live: false, startedAt: null, heartbeatAt: null, pulseCount: 0, source: 'offline' },
+    registry: defaultRegistry(),
+    voice: defaultVoiceSettings(),
+    presence: defaultPresence(),
+    soulOnline: defaultSoulOnline(),
+    workspace: defaultWorkspaceLayers()
   };
 }
 
-export function overlayWindowOptions(kind) {
-  const id = normalizeOverlayKind(kind);
+export function migrateKernel(input) {
+  const base = defaultKernelState();
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return base;
   return {
-    frame: false,
-    transparent: true,
-    alwaysOnTop: true,
-    skipTaskbar: id === 'chat',
-    sandbox: true,
-    nodeIntegration: false,
-    contextIsolation: true,
-    webSecurity: true,
-    backgroundColor: '#00000000',
-    partition: id === 'chat' ? '' : GUEST_PARTITIONS[id]
+    session: {
+      live: input.session?.live === true,
+      startedAt: input.session?.startedAt ? String(input.session.startedAt).slice(0, 40) : null,
+      heartbeatAt: input.session?.heartbeatAt ? String(input.session.heartbeatAt).slice(0, 40) : null,
+      pulseCount: Math.max(0, Number(input.session?.pulseCount) || 0),
+      source: input.session?.source === 'assist' ? 'assist' : 'offline'
+    },
+    registry: normalizeRegistry(input.registry, base.registry),
+    voice: normalizeVoiceSettings(input.voice, base.voice),
+    presence: normalizePresence(input.presence, base.presence),
+    soulOnline: normalizeSoulOnline(input.soulOnline, base.soulOnline),
+    workspace: normalizeWorkspaceLayers(input.workspace, base.workspace)
   };
 }
 
-export function normalizeOverlayKind(kind) {
-  const id = String(kind || '').trim().toLowerCase();
-  return OVERLAY_KINDS.includes(id) ? id : '';
+export function startKernelSession(state, { at } = {}) {
+  const now = at || new Date().toISOString();
+  state.kernel = migrateKernel(state.kernel);
+  state.kernel.session.live = true;
+  state.kernel.session.startedAt = state.kernel.session.startedAt || now;
+  state.kernel.session.heartbeatAt = now;
+  state.kernel.session.pulseCount = Math.max(0, Number(state.kernel.session.pulseCount) || 0);
+  state.kernel.session.source = 'offline';
+  if (state.continuity) state.continuity.lastActiveAt = now;
+  return kernelView(state);
 }
 
-export function isPrivateOrLocalHostname(hostname) {
-  const host = String(hostname || '').trim().toLowerCase().replace(/^\[|\]$/g, '');
-  if (!host) return true;
-  if (host === 'localhost' || host.endsWith('.localhost') || host === 'localhost.') return true;
-  if (host.endsWith('.local') || host.endsWith('.internal') || host.endsWith('.lan')) return true;
-  if (host === '0.0.0.0' || host === '::' || host === '::1' || host === '0:0:0:0:0:0:0:1') return true;
-  if (host.includes(':') && (host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd'))) return true;
-  if (host.includes('metadata.google') || host === 'metadata' || host.endsWith('.metadata.google.internal')) return true;
-  const ipv4 = host.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-  if (ipv4) {
-    const oct = ipv4.slice(1).map(Number);
-    if (oct.some(n => n > 255)) return true;
-    if (oct[0] === 0 || oct[0] === 10 || oct[0] === 127) return true;
-    if (oct[0] === 169 && oct[1] === 254) return true;
-    if (oct[0] === 192 && oct[1] === 168) return true;
-    if (oct[0] === 172 && oct[1] >= 16 && oct[1] <= 31) return true;
-    if (oct[0] === 100 && oct[1] >= 64 && oct[1] <= 127) return true;
+export function stopKernelSession(state) {
+  state.kernel = migrateKernel(state.kernel);
+  state.kernel.session.live = false;
+  return kernelView(state);
+}
+
+export function kernelHeartbeat(state, { at } = {}) {
+  const now = at || new Date().toISOString();
+  state.kernel = migrateKernel(state.kernel);
+  if (!state.kernel.session.live) return kernelView(state);
+  state.kernel.session.heartbeatAt = now;
+  state.kernel.session.pulseCount = Math.max(0, Number(state.kernel.session.pulseCount) || 0) + 1;
+  if (state.continuity) state.continuity.lastActiveAt = now;
+  return kernelView(state);
+}
+
+export function configureKernelState(state, input = {}) {
+  state.kernel = migrateKernel(state.kernel);
+  const next = input && typeof input === 'object' ? input : {};
+  if (next.registry) state.kernel.registry = normalizeRegistry(next.registry, state.kernel.registry);
+  if (next.moduleEnabled && typeof next.moduleEnabled === 'object') {
+    state.kernel.registry = normalizeRegistry({ ...state.kernel.registry, moduleEnabled: { ...state.kernel.registry.moduleEnabled, ...next.moduleEnabled } }, state.kernel.registry);
   }
-  return false;
+  if (Array.isArray(next.customActions)) {
+    state.kernel.registry = normalizeRegistry({ ...state.kernel.registry, customActions: next.customActions }, state.kernel.registry);
+  }
+  if (next.phrasing) {
+    state.kernel.registry = normalizeRegistry({ ...state.kernel.registry, phrasing: next.phrasing }, state.kernel.registry);
+  }
+  if (next.voice) state.kernel.voice = normalizeVoiceSettings(next.voice, state.kernel.voice);
+  if (next.presence) state.kernel.presence = normalizePresence(next.presence, state.kernel.presence);
+  if (next.soulOnline) state.kernel.soulOnline = normalizeSoulOnline(next.soulOnline, state.kernel.soulOnline);
+  if (next.assistOptIn !== undefined) state.kernel.soulOnline = normalizeSoulOnline({ assistOptIn: next.assistOptIn }, state.kernel.soulOnline);
+  if (next.workspace) state.kernel.workspace = normalizeWorkspaceLayers(next.workspace, state.kernel.workspace);
+  const at = new Date().toISOString();
+  if (!Array.isArray(state.audit)) state.audit = [];
+  state.audit.push({ at, type: 'kernel.configured', details: { assistOptIn: state.kernel.soulOnline.assistOptIn === true, lookId: state.kernel.presence.lookId } });
+  return kernelView(state);
 }
 
-export function isDiscordHostname(hostname) {
-  const host = String(hostname || '').trim().toLowerCase();
-  if (!host) return false;
-  return (
-    host === 'discord.com'
-    || host.endsWith('.discord.com')
-    || host === 'discord.gg'
-    || host.endsWith('.discord.gg')
-    || host === 'discordapp.com'
-    || host.endsWith('.discordapp.com')
-    || host === 'discordapp.net'
-    || host.endsWith('.discordapp.net')
-  );
+export function kernelView(state, runtime) {
+  const kernel = migrateKernel(state?.kernel);
+  if (state?.kernel) {
+    state.kernel = kernel;
+    expireFocusIfNeeded(state);
+  }
+  const registry = runtime || createRuntimeRegistry();
+  const modules = registry.list().map(mod => ({
+    ...mod,
+    enabled: registry.enabled(mod.id, kernel.registry)
+  }));
+  return {
+    live: kernel.session.live === true,
+    startedAt: kernel.session.startedAt,
+    heartbeatAt: kernel.session.heartbeatAt,
+    pulseCount: kernel.session.pulseCount || 0,
+    source: kernel.session.source || 'offline',
+    voice: kernel.voice,
+    presence: { ...kernel.presence, look: presenceLook(kernel.presence.lookId) },
+    soulOnline: kernel.soulOnline,
+    phrasing: kernel.registry.phrasing,
+    customActions: kernel.registry.customActions,
+    modules,
+    looks: PRESENCE_LOOKS,
+    futureVoiceBackend: FUTURE_VOICE_BACKEND,
+    engines: runtimeEngineCatalog(),
+    engineHonesty: ENGINE_HONESTY,
+    selfModel: state?.continuity?.selfModel || null,
+    assistOptIn: kernel.soulOnline.assistOptIn === true,
+    workspace: workspacePublicView(state?.kernel?.workspace || kernel.workspace)
+  };
 }
 
-export function classifyGuestNavigation(raw) {
-  const text = String(raw || '').trim();
-  if (!text) return { ok: false, reason: 'empty' };
-  let parsed;
-  try { parsed = new URL(text); } catch {
-    try { parsed = new URL(`https://${text}`); } catch {
-      return { ok: false, reason: 'invalid' };
+export const KERNEL_ACTION_TYPES = Object.freeze([
+  'open-view', 'open-legal', 'open-service', 'open-updates', 'open-setup',
+  'open-diagnostics', 'pick-local-media', 'discover-apps',
+  'start-focus', 'stop-focus', 'capture-scratch', 'open-palette', 'open-cheatsheet',
+  'open-overlay', 'open-chat-overlay', 'open-browse-overlay', 'open-discord-overlay',
+  'set-always-on-top', 'open-now-playing', 'open-external'
+]);
+
+function action(type, extra = {}) {
+  return { type, auto: false, ...extra };
+}
+
+function soulStep(overlay) {
+  return overlay.enabled
+    ? action('open-view', { view: 'identity', label: 'Soul identity' })
+    : action('open-setup', { label: 'Optional Soul setup' });
+}
+
+export function actionsForIntent(intent, overlay = {}, view = '') {
+  switch (intent) {
+    case 'apps':
+      return [
+        action('open-view', { view: 'apps', label: 'Open Apps & Gaming', auto: true }),
+        action('discover-apps', { label: 'Discover installed apps' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' })
+      ];
+    case 'entertainment':
+      return [
+        action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
+    case 'mood':
+    case 'favorites':
+    case 'watch':
+    case 'gaming-ost':
+    case 'study-ost':
+    case 'surprise':
+      return [
+        action('open-view', { view: 'entertainment', label: 'Open Entertainment' }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
+    case 'local-media':
+      return [
+        action('open-view', { view: 'entertainment', label: 'Open Entertainment', auto: true }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
+    case 'adult-soul':
+    case 'adult-session':
+      return [
+        action('open-view', { view: 'adultSoul', label: 'Open Adult Soul', auto: true }),
+        action('open-view', { view: 'identity', label: 'Identity & consent' })
+      ];
+    case 'adult-media':
+      return [
+        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Open Adult Media', auto: true }),
+        action('pick-local-media', { label: 'Open local media' })
+      ];
+    case 'adult-media-blocked':
+      return [
+        action('open-view', { view: 'identity', label: 'Identity & consent', auto: true }),
+        action('open-legal', { legal: 'age', label: 'Age 18+ notice' })
+      ];
+    case 'memory':
+    case 'remember':
+    case 'forget':
+      return [action('open-view', { view: 'memory', label: 'Open Memory', auto: true })];
+    case 'identity-panel':
+      return [action('open-view', { view: 'identity', label: 'Identity & consent', auto: true }), soulStep(overlay)];
+    case 'identity':
+      return [action('open-view', { view: 'identity', label: 'Identity & consent' }), soulStep(overlay)];
+    case 'settings':
+      return [
+        action('open-view', { view: 'settings', label: 'Open Settings', auto: true }),
+        action('open-service', { label: 'Service settings' }),
+        action('open-updates', { label: 'Software updates' })
+      ];
+    case 'theme':
+      return [action('open-view', { view: 'settings', panel: 'settingsForm', label: 'Theme & language', auto: true })];
+    case 'backups':
+      return [action('open-view', { view: 'settings', panel: 'backupSection', label: 'Open backups', auto: true })];
+    case 'updates':
+      return [action('open-updates', { label: 'Software updates', auto: true })];
+    case 'service':
+      return [action('open-service', { label: 'Service settings', auto: true })];
+    case 'status':
+      return [action('open-diagnostics', { label: 'Show diagnostics', auto: true }), action('open-service', { label: 'Service settings' })];
+    case 'setup':
+      return [action('open-setup', { label: overlay.enabled ? 'Adjust Soul setup' : 'Optional Soul setup', auto: true })];
+    case 'accessibility':
+      return [action('open-view', { view: 'settings', panel: 'assistantBehaviorForm', label: 'Accessibility settings', auto: true })];
+    case 'presence':
+      return [action('open-view', { view: 'settings', panel: 'kernelCustomizeForm', label: 'Presence & voice', auto: true })];
+    case 'dashboard':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Open Dashboard', auto: true }),
+        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' }),
+        soulStep(overlay)
+      ];
+    case 'conversation':
+      return [action('open-view', { view: 'chat', label: 'Open conversation', auto: true })];
+    case 'focus':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Open Dashboard' }),
+        action('start-focus', { minutes: 25, label: 'Focus session' })
+      ];
+    case 'focus-stop':
+      return [action('stop-focus', { label: 'Stop focus session', auto: true })];
+    case 'scratch':
+      return [action('open-view', { view: 'dashboard', label: 'Open scratchpad', auto: true }), action('capture-scratch', { label: 'Capture to memory' })];
+    case 'palette':
+      return [action('open-palette', { label: 'Open command palette', auto: true })];
+    case 'search':
+      return [action('open-palette', { label: 'Search this workspace', auto: true })];
+    case 'cheatsheet':
+      return [action('open-cheatsheet', { label: 'Keyboard cheatsheet', auto: true })];
+    case 'widgets':
+      return [action('open-view', { view: 'dashboard', label: 'Open Dashboard', auto: true })];
+    case 'study':
+    case 'create':
+    case 'talk':
+    case 'reassure':
+    case 'growth':
+      return [
+        action('open-view', { view: 'chat', label: 'Open conversation' }),
+        action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-view', { view: 'memory', label: 'Memory' })
+      ];
+    case 'hello':
+    case 'thanks':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-view', { view: 'chat', label: 'Conversation' }),
+        soulStep(overlay)
+      ];
+    case 'overlay-chat':
+      return [
+        action('open-chat-overlay', { label: 'Soul chat overlay', auto: true }),
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })
+      ];
+    case 'overlay-browse':
+      return [
+        action('open-browse-overlay', { label: 'Browse overlay', auto: true, url: '' }),
+        action('open-overlay', { kind: 'browse', label: 'Browse overlay' })
+      ];
+    case 'overlay-discord':
+      return [
+        action('open-discord-overlay', { label: 'Discord guest overlay', auto: true }),
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' })
+      ];
+    case 'overlays':
+      return [
+        action('open-view', { view: 'apps', label: 'Play desk', auto: true }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
+        action('open-browse-overlay', { label: 'Browse overlay' }),
+        action('open-discord-overlay', { label: 'Discord guest overlay' }),
+        action('open-overlay', { kind: 'chat', label: 'Soul chat overlay' })
+      ];
+    case 'gaming':
+      return [
+        action('open-view', { view: 'apps', label: 'Play desk' }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
+        action('open-browse-overlay', { label: 'Browse overlay' }),
+        action('open-discord-overlay', { label: 'Discord guest overlay' }),
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
+        action('discover-apps', { label: 'Discover installed apps' }),
+        action('set-always-on-top', { on: true, label: 'Keep Eidovara on top' }),
+        action('open-setup', { label: overlay.enabled ? 'Adjust roles' : 'Optional Soul setup' })
+      ];
+    case 'research':
+      return [
+        action('open-view', { view: 'research', label: 'Open Research', auto: true }),
+        action('open-view', { view: 'chat', label: 'Open conversation' }),
+        action('open-legal', { legal: 'privacy', label: 'Privacy notice' })
+      ];
+    case 'here':
+      return suggestionsForView(view, overlay);
+    default: {
+      const entry = knowledgeEntry(intent);
+      if (entry?.actions?.length) return entry.actions.map(item => action(item.type, item));
+      return [soulStep(overlay), action('open-view', { view: 'dashboard', label: 'Dashboard' }), action('open-view', { view: 'apps', label: 'Apps & Gaming' })];
     }
   }
-  if (parsed.protocol === 'about:') {
-    if (text === 'about:blank' || parsed.pathname === 'blank') {
-      return { ok: true, url: 'about:blank', hostname: '', blank: true };
-    }
-    return { ok: false, reason: 'about' };
-  }
-  if (parsed.protocol === 'https:') {
-    if (parsed.username || parsed.password) return { ok: false, reason: 'credentials' };
-    if (isPrivateOrLocalHostname(parsed.hostname) || isBlockedResearchHost(parsed)) {
-      return { ok: false, reason: 'private-host' };
-    }
-    parsed.hash = '';
-    return { ok: true, url: parsed.toString(), hostname: parsed.hostname.toLowerCase() };
-  }
-  if (parsed.protocol === 'http:') return { ok: false, reason: 'http' };
-  if (parsed.protocol === 'file:') return { ok: false, reason: 'file' };
-  if (parsed.protocol === 'javascript:' || parsed.protocol === 'data:' || parsed.protocol === 'blob:' || parsed.protocol === 'vbscript:') {
-    return { ok: false, reason: 'unsafe-scheme' };
-  }
-  return { ok: false, reason: 'scheme' };
 }
 
-export function resolveOverlayTarget(kind, requestedUrl) {
-  const id = normalizeOverlayKind(kind);
-  if (!id) return { ok: false, reason: 'kind' };
-  if (id === 'chat') return { ok: true, kind: id, mode: 'local', file: 'chat-overlay.html' };
-  const raw = String(requestedUrl || '').trim();
-  if (id === 'discord') {
-    if (!raw) return { ok: true, kind: id, mode: 'guest', url: DISCORD_HOME, hostname: 'discord.com' };
-    const nav = classifyGuestNavigation(raw);
-    if (!nav.ok) return { ...nav, kind: id };
-    if (!isDiscordHostname(nav.hostname)) return { ok: false, reason: 'not-discord', kind: id };
-    return { ok: true, kind: id, mode: 'guest', url: nav.url, hostname: nav.hostname };
+export function suggestionsForView(view, overlay = {}) {
+  const current = String(view || 'dashboard');
+  switch (current) {
+    case 'dashboard':
+      return [
+        action('open-view', { view: 'dashboard', label: 'Stay on Dashboard' }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
+        action('start-focus', { minutes: 25, label: 'Focus session' }),
+        action('open-now-playing', { label: 'Now playing' }),
+        soulStep(overlay)
+      ];
+    case 'apps':
+      return [
+        action('discover-apps', { label: 'Discover installed apps' }),
+        action('open-discord-overlay', { label: 'Discord guest overlay' }),
+        action('open-browse-overlay', { label: 'Browse overlay' }),
+        action('open-chat-overlay', { label: 'Soul chat overlay' }),
+        action('open-overlay', { kind: 'discord', label: 'Discord guest overlay' }),
+        action('set-always-on-top', { on: true, label: 'Keep Eidovara on top' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' }),
+        action('open-view', { view: 'settings', label: 'Settings' })
+      ];
+    case 'entertainment':
+      return [
+        action('pick-local-media', { label: 'Open local media' }),
+        action('open-now-playing', { label: 'Now playing' }),
+        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Adult Media desk' }),
+        action('open-view', { view: 'adultSoul', label: 'Adult Soul' }),
+        action('open-view', { view: 'apps', label: 'Play desk' }),
+        action('open-view', { view: 'chat', label: 'Conversation' })
+      ];
+    case 'memory':
+      return [
+        action('open-view', { view: 'memory', label: 'Review memory' }),
+        action('open-view', { view: 'chat', label: 'Conversation' }),
+        action('open-view', { view: 'identity', label: 'Identity & consent' })
+      ];
+    case 'identity':
+      return [
+        action('open-view', { view: 'identity', label: 'Identity & Adult Mode' }),
+        soulStep(overlay),
+        action('open-view', { view: 'adultSoul', label: 'Adult Soul studio' }),
+        action('open-legal', { legal: 'age', label: 'Age 18+ notice' })
+      ];
+    case 'adultSoul':
+      return [
+        action('open-view', { view: 'adultSoul', label: 'Stay on Adult Soul' }),
+        action('open-view', { view: 'entertainment', panel: 'adultMediaDesk', label: 'Adult Media desk' }),
+        action('open-view', { view: 'identity', label: 'Identity & consent' })
+      ];
+    case 'settings':
+      return [
+        action('open-service', { label: 'Service settings' }),
+        action('open-updates', { label: 'Software updates' }),
+        action('open-view', { view: 'settings', panel: 'backupSection', label: 'Backups' }),
+        action('open-diagnostics', { label: 'Diagnostics' })
+      ];
+    case 'chat':
+      return [
+        action('open-view', { view: 'memory', label: 'Memory' }),
+        action('open-view', { view: 'dashboard', label: 'Dashboard' }),
+        action('open-legal', { legal: 'privacy', label: 'Privacy' })
+      ];
+    case 'research':
+      return [
+        action('open-view', { view: 'research', label: 'Open Research' }),
+        action('open-view', { view: 'chat', label: 'Conversation' }),
+        action('open-legal', { legal: 'privacy', label: 'Privacy' })
+      ];
+    default:
+      return [
+        action('open-view', { view: 'apps', label: 'Apps & Gaming' }),
+        action('open-view', { view: 'entertainment', label: 'Entertainment' }),
+        action('open-view', { view: 'memory', label: 'Memory' }),
+        action('open-view', { view: 'settings', label: 'Settings' }),
+        soulStep(overlay)
+      ];
   }
-  if (!raw) return { ok: true, kind: id, mode: 'guest', url: '', blank: true };
-  const nav = classifyGuestNavigation(raw);
-  if (!nav.ok) return { ...nav, kind: id };
-  return { ok: true, kind: id, mode: 'guest', url: nav.url, hostname: nav.hostname };
 }
 
-export function guestNavigateAllowed(kind, raw) {
-  const id = normalizeOverlayKind(kind);
-  if (id === 'chat') return { ok: false, reason: 'local-only' };
-  const nav = classifyGuestNavigation(raw);
-  if (!nav.ok) return { ...nav, kind: id };
-  if (nav.blank) return { ok: true, kind: id, url: 'about:blank', hostname: '' };
-  if (id === 'discord' && !isDiscordHostname(nav.hostname)) return { ok: false, reason: 'not-discord', kind: id };
-  return { ok: true, kind: id, url: nav.url, hostname: nav.hostname };
+export function soulOverlay(state = {}) {
+  const enabled = state.setup?.completed === true;
+  const policy = state.policy || {};
+  const adult = policy.mode === 'adult'
+    && policy.adultSoulEnabled === true
+    && policy.currentConsent === true
+    && policy.adultStatusConfirmed === true;
+  const sm = state.continuity?.selfModel || {};
+  const name = String(sm.name || 'Soul');
+  return {
+    enabled,
+    name: enabled ? name : null,
+    architecture: enabled ? String(sm.architecture || '') : null,
+    adultMode: Boolean(adult),
+    sentience: false,
+    label: enabled
+      ? `${name} is a software self-model on this device — not a claim of consciousness.`
+      : 'Optional Soul setup is off. The workspace kernel is software, not a mind.'
+  };
 }
 
-export function rememberOverlayRecent(list, entry, limit = 12) {
-  const url = String(entry?.url || '').slice(0, 500);
-  const kind = normalizeOverlayKind(entry?.kind) || 'browse';
-  if (!url.startsWith('https://')) return Array.isArray(list) ? list.slice(0, limit) : [];
-  const next = [{ url, kind, title: String(entry?.title || url).slice(0, 80), at: String(entry?.at || new Date().toISOString()).slice(0, 40) }];
-  for (const item of Array.isArray(list) ? list : []) {
-    if (String(item?.url) === url) continue;
-    next.push({
-      url: String(item.url || '').slice(0, 500),
-      kind: normalizeOverlayKind(item.kind) || 'browse',
-      title: String(item.title || item.url || '').slice(0, 80),
-      at: String(item.at || '').slice(0, 40)
-    });
-    if (next.length >= limit) break;
+export function routeKernel(input, state, runtime = createRuntimeRegistry(), { view } = {}) {
+  const text = String(input || '');
+  const overlay = soulOverlay(state);
+  const kernel = migrateKernel(state?.kernel);
+  const currentView = String(view || '').slice(0, 40);
+  const custom = matchCustomAction(text, kernel.registry.customActions);
+  if (custom) {
+    const intent = custom.intent || classifyWorkspaceIntent(custom.command);
+    const mod = moduleForIntent(intent, runtime.list()) || runtime.get('quick-actions');
+    const enabled = !mod || runtime.enabled(mod.id, kernel.registry);
+    return {
+      intent,
+      moduleId: mod?.id || 'quick-actions',
+      enabled,
+      source: 'custom-action',
+      view: custom.view || mod?.ui?.view || 'chat',
+      action: custom,
+      overlay,
+      knowledgeReply: null,
+      usedKnowledge: false,
+      actions: actionsForIntent(intent, overlay, currentView)
+    };
   }
-  return next;
+  const workspace = classifyWorkspaceIntent(text);
+  const product = matchProductIntent(text);
+  let intent = (workspace === 'general' && product) ? product : workspace;
+  if (intent === 'focus' && isFocusStopCommand(text)) intent = 'focus-stop';
+  if (intent === 'focus' && isFocusStartCommand(text)) intent = 'focus';
+  if (isScratchCaptureCommand(text) && workspace === 'scratch') intent = 'scratch';
+  const productIntent = product && shouldUseKnowledgeReply(product) ? product : (shouldUseKnowledgeReply(intent) ? intent : null);
+  const mod = moduleForIntent(productIntent || intent, runtime.list()) || moduleForIntent(workspace, runtime.list());
+  const enabled = !mod || runtime.enabled(mod.id, kernel.registry);
+  const entry = productIntent ? knowledgeEntry(productIntent) : null;
+  const usedKnowledge = Boolean(enabled && entry?.reply && (intent === 'general' || shouldUseKnowledgeReply(intent) || productIntent));
+  const routedIntent = productIntent && (intent === 'general' || shouldUseKnowledgeReply(intent)) ? productIntent : intent;
+  const actions = actionsForIntent(routedIntent, overlay, currentView).map(item => {
+    if (item.type === 'start-focus' && isFocusStartCommand(text)) return { ...item, auto: true };
+    if (item.type === 'capture-scratch' && isScratchCaptureCommand(text)) return { ...item, auto: true };
+    return item;
+  });
+  return {
+    intent: routedIntent,
+    moduleId: mod?.id || null,
+    enabled,
+    source: usedKnowledge ? 'knowledge' : 'workspace',
+    view: routedIntent === 'here' ? (currentView || 'dashboard') : (mod?.ui?.view || (routedIntent === 'palette' || routedIntent === 'search' || routedIntent === 'cheatsheet' ? 'dashboard' : 'chat')),
+    action: null,
+    overlay,
+    knowledgeReply: usedKnowledge ? entry.reply : null,
+    usedKnowledge,
+    actions
+  };
 }
+
+export function researchResultActions(webResearch = {}, overlay = {}) {
+  const actions = actionsForIntent('research', overlay);
+  for (const source of (webResearch?.sources || []).slice(0, 6)) {
+    if (!source?.url || !/^https:\/\//i.test(source.url)) continue;
+    const host = String(source.hostname || '').slice(0, 80);
+    const title = String(source.title || host || 'Source').slice(0, 60);
+    actions.push(action('open-external', {
+      url: source.url,
+      hostname: host,
+      snippet: String(source.description || source.extract || '').slice(0, 180),
+      label: host ? `${title} · ${host}`.slice(0, 80) : title,
+      auto: false
+    }));
+  }
+  return actions;
+}
+
+export function kernelPublicMeta(route) {
+  const value = route && typeof route === 'object' ? route : {};
+  return {
+    intent: String(value.intent || 'general'),
+    moduleId: value.moduleId || null,
+    enabled: value.enabled !== false,
+    source: String(value.source || 'workspace'),
+    view: String(value.view || 'chat'),
+    usedKnowledge: Boolean(value.usedKnowledge),
+    actions: Array.isArray(value.actions) ? value.actions.map(item => ({
+      type: String(item.type || ''),
+      view: item.view || undefined,
+      legal: item.legal || undefined,
+      panel: item.panel || undefined,
+      minutes: item.minutes || undefined,
+      kind: item.kind ? String(item.kind).slice(0, 20) : undefined,
+      on: item.on === true || item.on === false ? item.on : undefined,
+      url: item.url ? String(item.url).slice(0, 500) : undefined,
+      hostname: item.hostname ? String(item.hostname).slice(0, 253) : undefined,
+      snippet: item.snippet ? String(item.snippet).slice(0, 180) : undefined,
+      label: String(item.label || '').slice(0, 80),
+      auto: item.type === 'open-external' ? false : Boolean(item.auto)
+    })).filter(item => item.type && (
+      KERNEL_ACTION_TYPES.includes(item.type)
+      || (item.type === 'open-external' && /^https:\/\//i.test(item.url || ''))
+    ) && (item.type !== 'open-overlay' || ['chat', 'browse', 'discord'].includes(item.kind))) : [],
+    soul: {
+      enabled: Boolean(value.overlay?.enabled),
+      name: value.overlay?.enabled ? String(value.overlay?.name || 'Soul') : null,
+      adultMode: Boolean(value.overlay?.adultMode),
+      sentience: false,
+      label: String(value.overlay?.label || '')
+    },
+    localOnly: true,
+    network: false,
+    conversationsSent: false,
+    webLookup: false
+  };
+}
+
+export function disabledModuleReply(route, locale = 'en') {
+  const title = route?.moduleId || 'that module';
+  const copy = {
+    en: `The ${title} module is turned off in Soul customization. Enable it in Settings when you want that workspace surface. Local Soul stays on this device.`,
+    es: `El módulo ${title} está desactivado en la personalización de Soul. Actívalo en Configuración. Soul local sigue en este dispositivo.`,
+    fr: `Le module ${title} est désactivé dans la personnalisation de Soul. Activez-le dans Paramètres. Soul local reste sur cet appareil.`,
+    de: `Das Modul ${title} ist in der Soul-Anpassung aus. Aktivieren Sie es unter Einstellungen. Lokales Soul bleibt auf diesem Gerät.`
+  };
+  return copy[locale] || copy.en;
+}
+
+/** Local wording only. Default knobs leave replies unchanged. Never claims sentience. */
+export function applyPhrasing(text, knobs, locale = 'en') {
+  const defaults = defaultPhrasing();
+  const wit = Number.isFinite(Number(knobs?.wit)) ? Number(knobs.wit) : defaults.wit;
+  const formality = Number.isFinite(Number(knobs?.formality)) ? Number(knobs.formality) : defaults.formality;
+  const brevity = Number.isFinite(Number(knobs?.brevity)) ? Number(knobs.brevity) : defaults.brevity;
+  let out = String(text || '');
+  const near = (value, fallback) => Math.abs(value - fallback) < 15;
+  if (!near(formality, defaults.formality) && formality >= 70) {
+    const extra = {
+      en: 'Stated plainly, as software on this device — not a person.',
+      es: 'Dicho con claridad: software en este dispositivo, no una persona.',
+      fr: 'Dit clairement : un logiciel sur cet appareil, pas une personne.',
+      de: 'Klar gesagt: Software auf diesem Gerät, keine Person.'
+    }[locale] || '';
+    if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
+  }
+  if (brevity < 75 && !near(wit, defaults.wit) && wit >= 70) {
+    const extra = {
+      en: 'I can keep the wording sharp without pretending to be alive.',
+      es: 'Puedo ser directo sin fingir que estoy vivo.',
+      fr: 'Je peux rester vif sans prétendre être vivant.',
+      de: 'Ich kann prägnant bleiben, ohne lebendig zu wirken.'
+    }[locale] || '';
+    if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
+  }
+  return out;
+}
+
+export { builtinModules, createRuntimeRegistry, FUTURE_VOICE_BACKEND, runtimeEngineCatalog, ENGINE_HONESTY };
 
