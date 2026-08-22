@@ -1,105 +1,116 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  callCompatibleProvider,
-  callLocalProvider,
-  providerRequestUrl,
-} from '../src/providers/http.js';
-import {
-  isExplicitInternetRequest,
-  isLocalWorkspaceIntent,
-  classifyWorkspaceIntent,
-} from '../src/core/workspace.js';
-import { researchInternet } from '../src/providers/internet.js';
+import worker, {
+  httpsUrl,
+  LIVE_INSTALLER_VERSION,
+  LIVE_INSTALLER,
+  LIVE_INSTALLER_SHA256,
+} from '../server/worker.js';
+import { ASSIST_VERSION } from '../docs/knowledge.js';
 
-test('providerRequestUrl strips duplicate chat suffixes', () => {
-  assert.equal(
-    providerRequestUrl('https://api.example.test/v1', '/chat/completions'),
-    'https://api.example.test/v1/chat/completions'
-  );
-  assert.equal(
-    providerRequestUrl('https://api.example.test/v1/chat/completions', '/chat/completions'),
-    'https://api.example.test/v1/chat/completions'
-  );
-  assert.equal(
-    providerRequestUrl('http://127.0.0.1:11434/api/chat', '/api/chat'),
-    'http://127.0.0.1:11434/api/chat'
-  );
+test('server accepts only HTTPS public configuration', async () => {
+  const env = {
+    WEBSITE_URL: 'https://example.test/',
+    STRIPE_PAYMENT_URL: 'http://unsafe.test',
+    PAYPAL_PAYMENT_URL: 'https://paypal.test/buy',
+  };
+  const res = await worker.fetch(new Request('https://api.example.test/v1/config'), env);
+  const body = await res.json();
+  assert.equal(res.status, 200);
+  assert.equal(body.store.stripe, '');
+  assert.equal(body.store.paypal, 'https://paypal.test/buy');
+  assert.equal(httpsUrl('javascript:alert(1)'), '');
 });
 
-test('http providers do not duplicate chat path suffixes', async () => {
-  const seen = [];
-  const original = globalThis.fetch;
-  globalThis.fetch = async (url, options) => {
-    seen.push({ url: String(url), body: JSON.parse(options.body) });
-    return {
-      ok: true,
-      headers: { get: () => '20' },
-      arrayBuffer: async () =>
-        Buffer.from(
-          JSON.stringify({
-            choices: [{ message: { content: 'ok-remote' } }],
-            message: { content: 'ok-local' },
-          })
-        ),
-    };
-  };
-  try {
-    const remote = await callCompatibleProvider({
-      endpoint: 'https://api.example.test/v1/chat/completions',
-      apiKey: 'k',
-      model: 'm',
-      messages: [{ role: 'user', content: 'hi' }],
-    });
-    const local = await callLocalProvider({
-      endpoint: 'http://127.0.0.1:11434/api/chat',
-      model: 'llama',
-      messages: [{ role: 'user', content: 'hi' }],
-    });
-    assert.equal(remote, 'ok-remote');
-    assert.equal(local, 'ok-local');
-    assert.equal(seen[0].url, 'https://api.example.test/v1/chat/completions');
-    assert.equal(seen[1].url, 'http://127.0.0.1:11434/api/chat');
-  } finally {
-    globalThis.fetch = original;
-  }
+test('server fails closed for writes and unknown paths', async () => {
+  assert.equal(
+    (await worker.fetch(new Request('https://api.test/health', { method: 'POST' }), {})).status,
+    405
+  );
+  assert.equal((await worker.fetch(new Request('https://api.test/private'), {})).status, 404);
 });
 
-test('mood mix and app-shelf talk stay local instead of hitting Wikipedia', async () => {
-  let called = false;
-  const original = globalThis.fetch;
-  globalThis.fetch = async () => {
-    called = true;
-    throw new Error('network should not run');
-  };
-  try {
-    assert.equal(
-      classifyWorkspaceIntent('Find music that fits my current mood and explain why.'),
-      'mood'
-    );
-    assert.equal(
-      isLocalWorkspaceIntent('Find music that fits my current mood and explain why.'),
-      true
-    );
-    assert.equal(
-      isExplicitInternetRequest('Find music that fits my current mood and explain why.'),
-      false
-    );
-    assert.equal(
-      await researchInternet('Find music that fits my current mood and explain why.'),
-      null
-    );
-    assert.equal(await researchInternet('Find music audio to play about an example'), null);
-    assert.equal(
-      await researchInternet('Help me add a trusted Windows app from the Start Menu.'),
-      null
-    );
-    assert.equal(called, false);
-    assert.equal(
-      isExplicitInternetRequest('Search the internet for information and pictures of Saturn'),
-      true
-    );
-  } finally {
-    globalThis.fetch = original;
-  }
+test('Worker health/status support HEAD, CORS, honesty flags, and private status cache', async () => {
+  const healthHead = await worker.fetch(
+    new Request('https://api.example.test/health', { method: 'HEAD' }),
+    {}
+  );
+  assert.equal(healthHead.status, 200);
+  assert.equal(await healthHead.text(), '');
+  assert.match(healthHead.headers.get('access-control-allow-origin'), /\*/);
+  assert.match(healthHead.headers.get('access-control-allow-methods'), /HEAD/);
+
+  const preflight = await worker.fetch(
+    new Request('https://api.example.test/v1/status', {
+      method: 'OPTIONS',
+      headers: { origin: 'https://eidovara.org', 'access-control-request-method': 'GET' },
+    }),
+    {}
+  );
+  assert.equal(preflight.status, 204);
+  assert.equal(preflight.headers.get('access-control-allow-origin'), '*');
+  assert.match(preflight.headers.get('access-control-allow-methods'), /GET/);
+  assert.match(preflight.headers.get('access-control-allow-methods'), /HEAD/);
+  assert.match(preflight.headers.get('access-control-allow-headers'), /accept/i);
+
+  const statusRes = await worker.fetch(new Request('https://api.example.test/v1/status'), {});
+  const status = await statusRes.json();
+  assert.equal(statusRes.status, 200);
+  assert.match(statusRes.headers.get('cache-control'), /private/);
+  assert.match(statusRes.headers.get('cache-control'), /no-store/);
+  assert.equal(status.status, 'ok');
+  assert.equal(status.online, true);
+  assert.equal(status.paymentsEnabled, false);
+  assert.equal(status.checkoutEnabled, false);
+  assert.equal(status.conversationsStored, false);
+  assert.equal(status.ageRestricted, true);
+  assert.equal(status.minimumAge, 18);
+  assert.equal(status.authenticodeSigned, false);
+  assert.equal(status.version, ASSIST_VERSION);
+  assert.equal(status.liveInstallerVersion, LIVE_INSTALLER_VERSION);
+  assert.ok(!status.endpoints.includes('/v1/heartbeat'));
+  assert.match(status.heartbeat, /Desktop Connect uses GET \/health/);
+  // The live installer must be advertised with its exact filename and checksum.
+  assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER.replaceAll('.', '\\.')));
+  assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER_SHA256));
+  assert.doesNotMatch(JSON.stringify(status), /workers\.dev/i);
+
+  const statusHead = await worker.fetch(
+    new Request('https://api.example.test/v1/status', { method: 'HEAD' }),
+    {}
+  );
+  assert.equal(statusHead.status, 200);
+  assert.equal(await statusHead.text(), '');
+});
+
+test('server health is stateless and sends hardened headers', async () => {
+  const res = await worker.fetch(new Request('https://api.test/health'));
+  const body = await res.json();
+  assert.equal(body.status, 'ok');
+  assert.equal(body.checkoutEnabled, false);
+  assert.equal(body.conversationsStored, false);
+  assert.equal(res.headers.get('x-frame-options'), 'DENY');
+  assert.match(res.headers.get('strict-transport-security'), /max-age=/);
+  assert.match(res.headers.get('content-security-policy'), /default-src 'none'/);
+});
+
+test('server config advertises 18+ source-available Windows alpha with payments off', async () => {
+  const res = await worker.fetch(new Request('https://api.example.test/v1/config'), {});
+  const body = await res.json();
+  assert.equal(res.status, 200);
+  assert.equal(body.paymentsEnabled, false);
+  assert.equal(body.checkoutEnabled, false);
+  assert.equal(body.localFirst, true);
+  assert.equal(body.conversations, false);
+  assert.equal(body.conversationsStored, false);
+  assert.equal(body.ageRestricted, true);
+  assert.equal(body.minimumAge, 18);
+  assert.equal(body.authenticodeSigned, false);
+  assert.equal(body.openSource, false);
+  assert.equal(body.premium, 'local-admin-testing-only');
+  assert.deepEqual(body.officialPlatforms, ['windows-10-11-x64']);
+  assert.equal(body.store.stripe, '');
+  assert.equal(body.store.paypal, '');
+  assert.equal(body.store.gumroad, '');
+  assert.match(body.terms, /18 or older/);
 });
