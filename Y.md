@@ -1,487 +1,833 @@
-/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
-/* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
-/* 
-   Eidovara Website Styles — Modern CSS with Cascade Layers
-   Visual revision: modern-2026
-   Tokens imported from tokens.css
-*/
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+/**
+ * Eidovara Website — Modern Entry Point
+ * Privacy-respecting, accessible, performant
+ */
 
-/* ==========================================================================
-   CASCADE LAYERS — Order defines specificity (last wins)
-   ========================================================================== */
-@layer reset, tokens, base, layout, components, utilities, overrides;
+(() => {
+  'use strict';
 
-/* ==========================================================================
-   LAYER: reset — Normalize browser defaults
-   ========================================================================== */
-@layer reset {
-  *, *::before, *::after { box-sizing: border-box; }
-  html { 
-    scroll-behavior: smooth; 
-    -webkit-text-size-adjust: 100%;
-    text-rendering: optimizeLegibility;
-  }
-  html, body { margin: 0; min-height: 100%; }
-  body { 
-    background-color: var(--grouped);
-    background-image: var(--gradient-hero);
-    background-attachment: fixed;
-    color: var(--text);
-    font-family: var(--font-ui);
-    font-size: var(--body);
-    line-height: var(--line-height-normal);
-    letter-spacing: var(--letter-spacing-normal);
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-  img, picture, video, canvas, svg { display: block; max-width: 100%; height: auto; }
-  button, input, select, textarea { font: inherit; }
-  a { color: var(--accent); text-decoration: none; }
-  :focus-visible { outline: var(--focus-ring); outline-offset: 3px; }
-  ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); color: var(--text); }
-}
+  // ==========================================================================
+  // CONFIGURATION & CONSTANTS
+  // ==========================================================================
+  const CONFIG = {
+    storageKeys: {
+      theme: 'eidovara.theme',
+      fontSize: 'eidovara.fontSize',
+      contrast: 'eidovara.highContrast',
+      lang: 'eidovara.lang',
+      analytics: 'eidovara.analyticsConsent',
+      cookieBanner: 'eidovara.cookieBannerDismissed',
+      serviceBase: 'eidovara.serviceBase',
+    },
+    defaults: {
+      theme: 'auto',
+      fontSize: '1',
+      contrast: false,
+      lang: 'en',
+      analytics: false,
+    },
+    languages: [
+      { code: 'en', name: 'English', native: 'English' },
+      { code: 'es', name: 'Español', native: 'Español' },
+      { code: 'fr', name: 'Français', native: 'Français' },
+      { code: 'de', name: 'Deutsch', native: 'Deutsch' },
+    ],
+    serviceBase: 'https://api.eidovara.org',
+    analyticsEndpoint: null, // Set to your Umami/Plausible endpoint if desired
+  };
 
-/* ==========================================================================
-   LAYER: tokens — Design tokens (imported from tokens.css)
-   ========================================================================== */
-@layer tokens {
-  @import url("tokens.css");
-}
+  // ==========================================================================
+  // STATE MANAGEMENT
+  // ==========================================================================
+  const state = {
+    theme: null,
+    fontSize: null,
+    contrast: null,
+    lang: null,
+    analyticsConsent: null,
+    cookieBannerDismissed: false,
+    serviceBase: null,
+  };
 
-/* ==========================================================================
-   LAYER: base — Base element styles
-   ========================================================================== */
-@layer base {
-  /* Scrollbar styling */
-  *::-webkit-scrollbar { width: 8px; height: 8px; }
-  *::-webkit-scrollbar-track { background: transparent; }
-  *::-webkit-scrollbar-thumb { background: var(--fill-secondary); border-radius: 4px; }
-  *::-webkit-scrollbar-thumb:hover { background: var(--fill); }
-  * { scrollbar-width: thin; scrollbar-color: var(--fill-secondary) transparent; }
+  // ==========================================================================
+  // UTILITY FUNCTIONS
+  // ==========================================================================
+  const $ = (selector, context = document) => context.querySelector(selector);
+  const $$ = (selector, context = document) => [...context.querySelectorAll(selector)];
 
-  /* Skip link */
-  .skip-link {
-    position: absolute;
-    left: 16px; top: -48px;
-    z-index: 40;
-    padding: 10px 16px;
-    border-radius: var(--btn-radius);
-    background: var(--accent);
-    color: var(--on-accent);
-    font-weight: 600;
-    font-size: var(--caption);
-    text-decoration: none;
-    transition: top var(--motion-fast) var(--ease-out);
-  }
-  .skip-link:focus { top: 12px; }
-
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    html { scroll-behavior: auto; }
-    *, *::before, *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
-}
-
-/* ==========================================================================
-   LAYER: layout — Page-level layout structures
-   ========================================================================== */
-@layer layout {
-  /* Site max width & gutter */
-  :root {
-    --eidovara-visual: modern-2026;
-    --site-max: 1120px;
-    --site-gutter: clamp(16px, 3vw, 24px);
-  }
-
-  /* Header */
-  .site-header, .site-header.site-chrome {
-    position: sticky; top: 0; z-index: 20;
-    backdrop-filter: var(--blur-strong);
-    -webkit-backdrop-filter: var(--blur-strong);
-    background: color-mix(in srgb, var(--nav-bar) 94%, transparent);
-    border-bottom: var(--hairline) solid var(--separator);
-    transition: background var(--motion-normal) var(--ease-out),
-                box-shadow var(--motion-normal) var(--ease-out),
-                transform var(--motion-normal) var(--ease-out);
-  }
-  .site-header.is-compact { background: var(--nav-bar); box-shadow: var(--shadow-md); }
-  .site-header.is-hidden { transform: translateY(-100%); }
-  .site-header-inner {
-    max-width: var(--site-max); margin: 0 auto;
-    padding: 14px var(--site-gutter);
-    display: flex; justify-content: space-between;
-    gap: 16px; align-items: center;
-  }
-
-  /* Navigation */
-  #site-nav {
-    display: flex; flex-wrap: wrap; align-items: center; gap: 4px;
-  }
-  nav a, .site-footer a, .nav-legal summary {
-    display: inline-flex; align-items: center;
-    min-height: 40px; padding: 6px 14px;
-    border-radius: var(--radius-full);
-    text-decoration: none; color: var(--muted);
-    font-size: var(--caption); font-weight: 500;
-    background: none; border: 0; font-family: inherit; cursor: pointer;
-    transition: background var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
-  }
-  nav a:hover, .nav-legal summary:hover { background: var(--fill-tertiary); color: var(--text); }
-  nav a[aria-current="page"], .nav-legal[data-current] summary { color: var(--text); background: var(--fill-secondary); font-weight: 600; }
-  nav a.nav-cta { margin-left: 8px; background: var(--text); color: var(--grouped); font-weight: 650; }
-  nav a.nav-cta:hover { filter: brightness(1.1); box-shadow: var(--shadow-lg); }
-
-  .nav-toggle { display: none; min-height: 44px; min-width: 44px; padding: 8px 14px; border: 0; border-radius: var(--btn-radius); background: var(--btn-gray); color: var(--text); font: inherit; font-weight: 600; }
-  .nav-toggle-icon { display: block; width: 20px; height: 2px; background: currentColor; position: relative; }
-  .nav-toggle-icon::before, .nav-toggle-icon::after { content: ''; position: absolute; left: 0; width: 100%; height: 2px; background: currentColor; }
-  .nav-toggle-icon::before { top: -6px; }
-  .nav-toggle-icon::after { bottom: -6px; }
-
-  /* Mobile nav */
-  @media (max-width: 900px) {
-    .nav-toggle { display: inline-flex; align-items: center; justify-content: center; }
-    html.has-js #site-nav {
-      display: none; position: absolute; left: 0; right: 0; top: 100%;
-      flex-direction: column; align-items: stretch;
-      padding: 12px 20px 20px; background: var(--nav-bar);
-      border-bottom: var(--hairline) solid var(--separator); gap: 6px;
-    }
-    html.has-js .site-header.nav-open #site-nav { display: flex; }
-    html.has-js .nav-legal[open] .nav-legal-menu { position: static; box-shadow: none; }
-    #site-nav > a.nav-cta { margin-left: 0; justify-content: center; }
-  }
-
-  /* Legal dropdown */
-  .nav-legal { position: relative; }
-  .nav-legal summary { list-style: none; }
-  .nav-legal summary::-webkit-details-marker { display: none; }
-  .nav-legal-menu {
-    display: grid; gap: 4px; min-width: 200px; padding: 10px;
-    border-radius: 16px; background: var(--elevated);
-    box-shadow: var(--shadow-xl); border: 1px solid var(--glass-border);
-    backdrop-filter: var(--blur-strong); -webkit-backdrop-filter: var(--blur-strong);
-  }
-  .nav-legal[open] .nav-legal-menu { position: absolute; right: 0; top: calc(100% + 10px); z-index: 21; animation: fadeInUp var(--motion-normal) var(--ease-out); }
-  .nav-legal-menu a { padding: 10px 14px; border-radius: 12px; color: var(--text); font-size: var(--subhead); font-weight: 500; }
-  .nav-legal-menu a:hover { background: var(--fill-tertiary); }
-  @keyframes fadeInUp { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
-
-  /* Main content */
-  main, main.site-main { max-width: var(--site-max); margin: 0 auto; padding: 24px var(--site-gutter) 120px; }
-
-  /* Section header pattern */
-  .section-header { margin-bottom: 32px; }
-  .section-header .eyebrow { color: var(--accent); text-transform: none; letter-spacing: 0.02em; font-size: var(--caption); font-weight: 650; margin: 0 0 12px; display: inline-flex; align-items: center; gap: 8px; }
-  .section-title { line-height: var(--line-height-tight); letter-spacing: var(--letter-spacing-tight); font-weight: 650; margin: 0 0 18px; font-size: clamp(36px, 5.5vw, 56px); }
-  .lead { color: var(--copy); font-size: clamp(18px, 2.2vw, 22px); line-height: var(--line-height-relaxed); max-width: 42rem; margin: 0 0 14px; font-weight: 450; }
-
-  /* Hero section */
-  .hero, .hero.hero-stage { padding: 80px 0 100px; max-width: 900px; }
-  .hero-content { text-align: left; }
-  .hero h1 { font-size: clamp(52px, 8vw, 88px); letter-spacing: -0.05em; margin: 0 0 22px; background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero h1 em { font-style: normal; background: var(--gradient-primary); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-  .hero-description { color: var(--copy); font-size: clamp(18px, 2.2vw, 22px); line-height: var(--line-height-relaxed); max-width: 42rem; margin: 0 0 12px; font-weight: 450; }
-  .hero-lockup { display: flex; align-items: flex-start; gap: 24px; margin: 0 0 22px; }
-  .hero-mark { width: 104px; height: 104px; flex: none; object-fit: cover; border-radius: 24px; box-shadow: var(--shadow-xl), var(--shadow-inner); transition: transform var(--motion-slow) var(--ease-spring), box-shadow var(--motion-slow) var(--ease-out); }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) { .hero-mark:hover { transform: scale(1.02) rotate(1deg); box-shadow: var(--shadow-2xl), var(--shadow-inner); } }
-  .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 32px; }
-  .trust-strip { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 40px; }
-  .trust-strip span { background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: var(--radius-full); padding: 8px 16px; color: var(--muted); font-size: var(--caption); font-weight: 550; letter-spacing: 0.02em; backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); transition: all var(--motion-normal) var(--ease-out); }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) { .trust-strip span:hover { background: color-mix(in srgb, var(--panel) 90%, transparent); color: var(--text); transform: translateY(-2px); box-shadow: var(--shadow-md); } }
-
-  /* Grids */
-  .get-grid, .feature-grid, .benefit-grid { display: grid; gap: 16px; margin: 32px 0 88px; }
-  .get-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .benefit-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  @media (max-width: 900px) { .get-grid, .feature-grid, .benefit-grid { grid-template-columns: 1fr; } }
-
-  /* Cards */
-  .get-grid article, .feature, .benefit, .plans article, .module-grid article, .legal-index a, .legal-card, .status-panel, .download-gate, .download-verify, .trust {
-    background: var(--glass-bg); border: 1px solid var(--glass-border);
-    border-radius: var(--card-radius); box-shadow: var(--card-shadow);
-    backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
-    transition: transform var(--motion-normal) var(--ease-out), box-shadow var(--motion-normal) var(--ease-out), border-color var(--motion-normal) var(--ease-out);
-  }
-  .get-grid article, .module-grid article, .legal-card { padding: 24px; }
-  .feature { min-height: 256px; padding: 28px; display: flex; flex-direction: column; justify-content: flex-end; }
-  .feature.large { grid-column: span 2; min-height: 288px; }
-  .benefit { min-height: 0; padding: 28px 26px; display: flex; flex-direction: column; justify-content: flex-start; }
-  .benefit p { margin: 0; }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .get-grid article:hover, .feature:hover, .benefit:hover, .plans article:hover, .module-grid article:hover, .legal-index a:hover, .legal-card:hover {
-      transform: translateY(-6px); box-shadow: var(--lift-shadow); border-color: color-mix(in srgb, var(--accent) 30%, var(--card-border));
+  function getStorage(key, fallback = null) {
+    try {
+      return localStorage.getItem(key) ?? fallback;
+    } catch {
+      return fallback;
     }
   }
 
-  /* Trust section */
-  .trust { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 32px; padding: 28px; margin-bottom: 88px; box-shadow: none; background: transparent; border: none; }
-  .trust-links { display: grid; gap: 0; border-radius: 16px; overflow: hidden; background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); }
-  .trust-links a { display: grid; gap: 4px; padding: 16px 20px; text-decoration: none; color: var(--text); background: transparent; border-top: var(--hairline) solid var(--separator); transition: background var(--motion-fast) var(--ease-out); }
-  .trust-links a:first-child { border-top: 0; }
-  .trust-links a:hover { background: var(--fill-tertiary); }
-  .trust-links span { color: var(--muted); font-size: var(--footnote); }
-  .trust-links strong { font-weight: 650; }
-  @media (max-width: 900px) { .trust { grid-template-columns: 1fr; } }
-
-  /* Plans */
-  .plans { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 32px 0 88px; }
-  .plans article { padding: 24px; box-shadow: none; }
-  .plans .premium { outline: none; border-color: var(--glass-border); background: var(--glass-bg); }
-  .plan-label { font-weight: 650; font-size: var(--headline); margin: 0; letter-spacing: -0.02em; }
-  .price { font-size: 32px; letter-spacing: -0.04em; font-weight: 650; margin: 10px 0 18px; }
-  .plans ul { min-height: 0; padding-left: 20px; margin: 0 0 20px; }
-  .plans li { margin: 8px 0; line-height: 1.6; }
-  @media (max-width: 900px) { .plans { grid-template-columns: 1fr; } }
-
-  /* Creator */
-  .creator { max-width: 760px; padding: 32px 0 12px; }
-
-  /* Legal */
-  .legal { max-width: 760px; margin: auto; }
-  .legal h2, .site-main > h2 { margin-top: 40px; font-size: var(--title-3); letter-spacing: -0.024em; }
-  .legal-card { margin: 16px 0; }
-  .legal-card h2 { margin: 0 0 10px; }
-
-  /* Footer */
-  .site-footer, .site-footer.site-end { color: var(--muted); border-top: var(--hairline) solid var(--separator); font-size: var(--caption); background: color-mix(in srgb, var(--grouped) 90%, transparent); padding: 32px 0; }
-  .site-footer-inner { max-width: var(--site-max); align-items: flex-start; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
-  .footer-brand { display: flex; align-items: center; gap: 12px; }
-  .footer-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .footer-nav a { color: var(--muted); font-size: var(--caption); }
-  .footer-nav a:hover { color: var(--text); }
-
-  /* FAQ */
-  .faq details { background: var(--glass-bg); border-radius: 16px; border: 1px solid var(--glass-border); padding: 4px 20px; margin: 10px 0; box-shadow: var(--shadow-sm); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); transition: all var(--motion-normal) var(--ease-out); }
-  .faq summary { cursor: pointer; font-weight: 600; min-height: 52px; display: flex; align-items: center; justify-content: space-between; gap: 16px; letter-spacing: -0.018em; list-style: none; }
-  .faq summary::-webkit-details-marker { display: none; }
-  .faq summary::after { content: ""; width: 8px; height: 8px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(45deg); opacity: 0.5; flex: none; transition: transform var(--motion-normal) var(--ease-spring); }
-  .faq details[open] summary::after { transform: rotate(225deg); }
-  .faq details p { margin: 0 0 18px; max-width: 68ch; }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) { .faq details:hover { box-shadow: var(--shadow-md); } }
-
-  /* Panels */
-  .status-panel, .download-gate, .download-verify, .panel { padding: 28px; margin: 28px 0; }
-  .download-gate .age-gate { width: 20px; height: 20px; margin-right: 10px; vertical-align: middle; accent-color: var(--accent); flex-shrink: 0; }
-  .age-gate-label { display: flex; gap: 12px; align-items: flex-start; font-weight: 600; margin: 16px 0 24px; letter-spacing: -0.015em; line-height: 1.5; }
-  .download-gate .download-actions { opacity: 0.4; pointer-events: none; filter: grayscale(0.1); transition: opacity var(--motion-normal) var(--ease-out), filter var(--motion-normal) var(--ease-out); }
-  .download-gate .age-gate:checked ~ .download-actions, .download-gate .download-actions.is-enabled { opacity: 1; pointer-events: auto; filter: none; }
-  .download-actions a[aria-disabled="true"] { pointer-events: none; }
-  .download-source { margin: 20px 0 0; font-size: var(--caption); }
-  .download-verify h2 { margin: 0 0 16px; font-size: var(--title-3); letter-spacing: -0.024em; }
-  .download-verify p { margin: 10px 0; }
-  .download-verify .sha-256 { display: block; margin-top: 8px; word-break: break-all; font-size: var(--caption); line-height: 1.6; padding: 14px 16px; background: var(--fill-tertiary); border: 1px solid var(--separator); border-radius: 12px; font-family: var(--font-mono); }
-  .download-verify code { word-break: break-all; }
-
-  /* Module grid */
-  .module-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 32px 0 56px; }
-  @media (max-width: 900px) { .module-grid { grid-template-columns: 1fr; } }
-
-  /* Legal index */
-  .legal-index { display: grid; gap: 14px; margin: 28px 0; }
-  .legal-index a { text-decoration: none; color: var(--text); display: block; padding: 22px 24px; }
-
-  /* Cookie consent */
-  .cookie-consent { position: fixed; bottom: 16px; left: 16px; right: 16px; z-index: 100; max-width: var(--site-max); margin: 0 auto; animation: slideUp var(--motion-normal) var(--ease-spring); }
-  .cookie-consent[hidden] { display: none; }
-  .cookie-consent-inner { background: var(--elevated); border: 1px solid var(--glass-border); border-radius: 16px; padding: 24px; box-shadow: var(--shadow-xl); backdrop-filter: var(--blur-strong); -webkit-backdrop-filter: var(--blur-strong); }
-  .cookie-consent h3 { margin: 0 0 8px; font-size: var(--headline); }
-  .cookie-consent p { margin: 0 0 16px; color: var(--copy); font-size: var(--subhead); }
-  .cookie-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-  .cookie-actions button { padding: 10px 16px; border-radius: var(--btn-radius); font-weight: 600; font-size: var(--caption); }
-  .cookie-accept-all { background: var(--gradient-primary); color: var(--on-accent); border: 0; box-shadow: var(--shadow-lg); }
-  .cookie-essential-only { background: var(--btn-gray); color: var(--text); border: 0; }
-  .cookie-preferences { background: transparent; color: var(--accent); border: 1px solid var(--accent); }
-
-  /* Cookie modal */
-  .cookie-modal { border: none; border-radius: 24px; padding: 0; max-width: 480px; width: calc(100% - 32px); background: var(--elevated); box-shadow: var(--shadow-2xl); }
-  .cookie-modal::backdrop { background: var(--overlay-strong); backdrop-filter: var(--blur); }
-  .cookie-modal-inner { padding: 24px; }
-  .cookie-modal header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .cookie-modal h2 { margin: 0; font-size: var(--title-3); }
-  .modal-close { background: none; border: none; font-size: 24px; cursor: pointer; color: var(--muted); padding: 4px; line-height: 1; }
-  .modal-close:hover { color: var(--text); }
-  .modal-content fieldset { border: 1px solid var(--separator); border-radius: 12px; padding: 16px; margin: 16px 0; }
-  .modal-content legend { font-weight: 600; margin-bottom: 12px; font-size: var(--subhead); }
-  .modal-content label { display: flex; align-items: flex-start; gap: 10px; cursor: pointer; }
-  .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 24px; }
-
-  /* Animations */
-  @media (prefers-reduced-motion: no-preference) {
-    .hero.hero-stage > * { animation: rise 700ms var(--ease-out) both; }
-    .hero.hero-stage > *:nth-child(2) { animation-delay: 60ms; }
-    .hero.hero-stage > *:nth-child(3) { animation-delay: 110ms; }
-    .hero.hero-stage > *:nth-child(4) { animation-delay: 160ms; }
-    .hero.hero-stage > *:nth-child(5) { animation-delay: 210ms; }
-    .hero.hero-stage > *:nth-child(6) { animation-delay: 260ms; }
-    @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  function setStorage(key, value) {
+    try {
+      if (value === null || value === undefined) localStorage.removeItem(key);
+      else localStorage.setItem(key, String(value));
+    } catch {
+      /* private mode / quota exceeded */
+    }
   }
 
-  /* Intersection Observer animations */
-  @media (prefers-reduced-motion: no-preference) {
-    .animate-on-scroll { opacity: 0; transform: translateY(30px); transition: opacity var(--motion-slow) var(--ease-out), transform var(--motion-slow) var(--ease-out); }
-    .animate-on-scroll.in-view { opacity: 1; transform: translateY(0); }
-    .stagger-1 { transition-delay: 80ms; }
-    .stagger-2 { transition-delay: 140ms; }
-    .stagger-3 { transition-delay: 200ms; }
-    .stagger-4 { transition-delay: 260ms; }
-    .stagger-5 { transition-delay: 320ms; }
+  function debounce(fn, ms = 150) {
+    let timer;
+    return (...args) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => fn(...args), ms);
+    };
   }
-}
 
-/* ==========================================================================
-   LAYER: components — Reusable UI components
-   ========================================================================== */
-@layer components {
-  /* Brand */
-  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); font-weight: 650; font-size: var(--subhead); letter-spacing: -0.03em; transition: opacity var(--motion-fast) var(--ease-out); }
-  .brand:hover { opacity: 0.8; }
-  .brand-icon { width: 28px; height: 28px; object-fit: contain; border-radius: 8px; box-shadow: var(--shadow-inner); transition: transform var(--motion-normal) var(--ease-spring); }
-  .brand:hover .brand-icon { transform: scale(1.05); }
-  .studio-line { display: flex; align-items: center; gap: 10px; }
-  .studio-icon { width: 32px; height: 32px; object-fit: contain; border-radius: 10px; transition: transform var(--motion-normal) var(--ease-spring); }
-  .studio-mark { width: 48px; height: 48px; object-fit: contain; border-radius: 14px; box-shadow: var(--shadow-inner); transition: transform var(--motion-normal) var(--ease-spring); }
-
-  /* Buttons */
-  .actions a, .plans a, .btn-filled, .btn-gray, .status-panel button, .assist-service-save, .assist-close, .assist-send, .cookie-actions button, .modal-actions button {
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    min-height: 48px; padding: 12px 22px; border-radius: var(--btn-radius);
-    text-decoration: none; font-weight: 600; font-size: var(--caption);
-    letter-spacing: -0.015em; border: 0;
-    transition: transform var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out), background var(--motion-fast) var(--ease-out), filter var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out);
+  function throttle(fn, ms = 100) {
+    let last = 0;
+    return (...args) => {
+      const now = Date.now();
+      if (now - last >= ms) {
+        last = now;
+        fn(...args);
+      }
+    };
   }
-  .actions .text-link, .text-link { min-height: 48px; padding: 12px 8px; border-radius: 0; background: none; color: var(--accent); box-shadow: none; font-weight: 600; font-size: var(--subhead); border-bottom: 2px solid transparent; transition: border-color var(--motion-fast) var(--ease-out), color var(--motion-fast) var(--ease-out); }
-  .primary, .btn-filled, .plans .primary, .status-panel button:not(#statusClear), .assist-send, .cookie-accept-all {
-    background: var(--gradient-primary); color: var(--on-accent); box-shadow: var(--shadow-lg); position: relative; overflow: hidden;
+
+  // ==========================================================================
+  // THEME MANAGEMENT
+  // ==========================================================================
+  function applyTheme(theme) {
+    const resolved =
+      theme === 'auto'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light'
+        : theme;
+    document.documentElement.setAttribute('data-theme', resolved);
+    state.theme = theme;
+    setStorage(CONFIG.storageKeys.theme, theme);
   }
-  .primary::before, .btn-filled::before { content: ''; position: absolute; inset: 0; background: var(--gradient-secondary); opacity: 0; transition: opacity var(--motion-normal) var(--ease-out); }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .primary:hover, .btn-filled:hover, .plans .primary:hover, .status-panel button:not(#statusClear):hover, .assist-send:hover, .cookie-accept-all:hover { filter: brightness(1.05); transform: translateY(-2px); box-shadow: var(--shadow-xl); }
-    .primary:hover::before, .btn-filled:hover::before { opacity: 1; }
-    .primary:active, .btn-filled:active { transform: translateY(0); filter: brightness(0.98); }
-    .actions .text-link:hover, .text-link:hover { border-bottom-color: var(--accent); color: var(--accent); background: none; transform: none; filter: none; box-shadow: none; }
+
+  function initTheme() {
+    const stored = getStorage(CONFIG.storageKeys.theme, CONFIG.defaults.theme);
+    applyTheme(stored);
+
+    // Listen for system theme changes
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+        if (
+          !getStorage(CONFIG.storageKeys.theme) ||
+          getStorage(CONFIG.storageKeys.theme) === 'auto'
+        ) {
+          applyTheme('auto');
+        }
+      });
+    }
   }
-  .actions a:not(.primary):not(.text-link), .btn-gray, .status-panel #statusClear, .assist-close, .assist-service-save, .cookie-essential-only {
-    background: var(--btn-gray); color: var(--text); box-shadow: var(--shadow-sm);
+
+  // ==========================================================================
+  // FONT SIZE MANAGEMENT
+  // ==========================================================================
+  function applyFontSize(size) {
+    document.documentElement.style.setProperty('--font-size-multiplier', size);
+    state.fontSize = size;
+    setStorage(CONFIG.storageKeys.fontSize, size);
   }
-  @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-    .actions a:not(.primary):not(.text-link):hover, .btn-gray:hover, .status-panel #statusClear:hover, .assist-close:hover, .assist-service-save:hover, .cookie-essential-only:hover { background: var(--fill); transform: translateY(-2px); box-shadow: var(--shadow-md); }
-    .cookie-preferences:hover { background: color-mix(in srgb, var(--accent) 10%, transparent); }
+
+  function initFontSize() {
+    const stored = getStorage(CONFIG.storageKeys.fontSize, CONFIG.defaults.fontSize);
+    applyFontSize(stored);
   }
-  .actions a:active, .btn-gray:active, .primary:active, .btn-filled:active { transform: translateY(0) scale(0.98); }
 
-  /* Form inputs */
-  .status-panel input, .assist-service input, .assist-form textarea, .status-panel label input, .assist-service label input {
-    width: 100%; min-height: 48px; border-radius: 12px; border: 1px solid var(--card-border);
-    background: var(--fill-tertiary); color: var(--text); font: inherit; padding: 12px 16px;
-    transition: border-color var(--motion-fast) var(--ease-out), box-shadow var(--motion-fast) var(--ease-out);
+  // ==========================================================================
+  // HIGH CONTRAST MANAGEMENT
+  // ==========================================================================
+  function applyContrast(enabled) {
+    document.documentElement.classList.toggle('high-contrast', enabled);
+    state.contrast = enabled;
+    setStorage(CONFIG.storageKeys.contrast, enabled ? '1' : '0');
   }
-  .status-panel input:focus, .assist-service input:focus, .assist-form textarea:focus {
-    border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 25%, transparent); outline: none;
+
+  function initContrast() {
+    const stored =
+      getStorage(CONFIG.storageKeys.contrast, CONFIG.defaults.contrast ? '1' : '0') === '1';
+    applyContrast(stored);
   }
-  .status-panel label, .assist-label { display: block; font-weight: 600; margin: 14px 0 8px; letter-spacing: -0.015em; }
-  .status-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
 
-  /* Code */
-  code { font-size: 0.9em; font-family: var(--font-mono); background: var(--fill-tertiary); border: var(--hairline) solid var(--separator); border-radius: 6px; padding: 0.1em 0.4em; }
-  pre { background: var(--fill-tertiary); border: 1px solid var(--separator); border-radius: 12px; padding: 20px; overflow-x: auto; margin: 16px 0; }
-  pre code { background: transparent; border: none; padding: 0; font-size: var(--caption); line-height: 1.6; }
-
-  /* Copy button */
-  .copyable { position: relative; }
-  .copy-btn { position: absolute; top: 8px; right: 8px; background: var(--btn-gray); border: none; border-radius: 6px; padding: 6px; cursor: pointer; color: var(--text); opacity: 0; transition: opacity var(--motion-fast); }
-  .copyable:hover .copy-btn, .copyable:focus-within .copy-btn { opacity: 1; }
-  .copy-btn.copied { background: var(--good); color: var(--on-accent); }
-}
-
-/* ==========================================================================
-   LAYER: utilities — Helper classes
-   ========================================================================== */
-@layer utilities {
-  /* Glass morphism */
-  .glass { background: var(--glass-bg); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); border: 1px solid var(--glass-border); }
-  .glass-strong { background: color-mix(in srgb, var(--panel) 85%, transparent); backdrop-filter: var(--blur-strong); -webkit-backdrop-filter: var(--blur-strong); border: 1px solid color-mix(in srgb, var(--separator) 60%, transparent); }
-
-  /* Container queries for responsive components */
-  .card-container { container-type: inline-size; container-name: card; }
-  @container card (max-width: 400px) { .card { padding: 16px; } .card h3 { font-size: var(--subhead); } }
-  @container card (min-width: 401px) { .card { padding: 24px; } .card h3 { font-size: var(--headline); } }
-
-  /* Visually hidden */
-  .visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
-  .visually-hidden:focus { position: static; width: auto; height: auto; padding: inherit; margin: inherit; overflow: visible; clip: auto; white-space: normal; }
-
-  /* Text utilities */
-  .text-center { text-align: center; }
-  .text-muted { color: var(--muted); }
-  .text-accent { color: var(--accent); }
-  .font-mono { font-family: var(--font-mono); }
-  .font-bold { font-weight: 650; }
-
-  /* Spacing */
-  .mt-1 { margin-top: var(--space-1); } .mt-2 { margin-top: var(--space-2); } .mt-3 { margin-top: var(--space-3); } .mt-4 { margin-top: var(--space-4); } .mt-5 { margin-top: var(--space-5); } .mt-6 { margin-top: var(--space-6); }
-  .mb-1 { margin-bottom: var(--space-1); } .mb-2 { margin-bottom: var(--space-2); } .mb-3 { margin-bottom: var(--space-3); } .mb-4 { margin-bottom: var(--space-4); } .mb-5 { margin-bottom: var(--space-5); } .mb-6 { margin-bottom: var(--space-6); }
-
-  /* Flex */
-  .flex { display: flex; }
-  .flex-col { flex-direction: column; }
-  .items-center { align-items: center; }
-  .justify-center { justify-content: center; }
-  .justify-between { justify-content: space-between; }
-  .gap-1 { gap: var(--space-1); } .gap-2 { gap: var(--space-2); } .gap-3 { gap: var(--space-3); } .gap-4 { gap: var(--space-4); }
-
-  /* Grid */
-  .grid { display: grid; }
-  .grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  @media (max-width: 900px) { .grid-cols-2, .grid-cols-3 { grid-template-columns: 1fr; } }
-
-  /* Rounded */
-  .rounded { border-radius: var(--radius-md); }
-  .rounded-lg { border-radius: var(--radius-lg); }
-  .rounded-full { border-radius: var(--radius-full); }
-
-  /* Shadows */
-  .shadow-sm { box-shadow: var(--shadow-sm); }
-  .shadow-md { box-shadow: var(--shadow-md); }
-  .shadow-lg { box-shadow: var(--shadow-lg); }
-  .shadow-xl { box-shadow: var(--shadow-xl); }
-
-  /* Transitions */
-  .transition-fast { transition: all var(--motion-fast) var(--ease-out); }
-  .transition-normal { transition: all var(--motion-normal) var(--ease-out); }
-  .transition-slow { transition: all var(--motion-slow) var(--ease-out); }
-
-  /* Print styles */
-  @media print {
-    .site-header, .site-footer, .cookie-consent, .assist-launch, .actions, .nav-toggle { display: none !important; }
-    main { padding: 0; max-width: none; }
-    body { background: none !important; color: #000 !important; }
-    a { text-decoration: underline; }
-    .hero { padding: 0; }
-    .hero h1 { background: none !important; -webkit-text-fill-color: initial !important; color: #000 !important; }
-    .hero h1 em { background: none !important; -webkit-text-fill-color: initial !important; color: #000 !important; }
+  // ==========================================================================
+  // LANGUAGE MANAGEMENT
+  // ==========================================================================
+  function applyLang(lang) {
+    document.documentElement.lang = lang;
+    state.lang = lang;
+    setStorage(CONFIG.storageKeys.lang, lang);
+    updateLangSelector(lang);
   }
-}
 
-/* ==========================================================================
-   LAYER: overrides — Page-specific or exception styles
-   ========================================================================== */
-@layer overrides {
-  /* Page-specific background */
-  body.site[data-page="home"], body.site[data-page="product"], body.site[data-page="download"] { background-color: var(--grouped); background-image: var(--gradient-hero); background-attachment: fixed; }
-  @media (prefers-color-scheme: dark) { body.site[data-page="home"], body.site[data-page="product"], body.site[data-page="download"] { background-image: var(--gradient-hero); } }
-  @media (prefers-reduced-motion: reduce) { body.site[data-page="home"], body.site[data-page="product"], body.site[data-page="download"] { background-attachment: scroll; } }
+  function initLang() {
+    const stored = getStorage(CONFIG.storageKeys.lang, CONFIG.defaults.lang);
+    applyLang(stored);
+  }
 
-  /* Logo animation */
-  @media (prefers-reduced-motion: no-preference) { .brand-icon { animation: logoFloat 6s var(--ease-in-out) infinite; } @keyframes logoFloat { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-3px) rotate(1deg); } } }
+  function updateLangSelector(lang) {
+    const select = $('#langSelector');
+    if (select) select.value = lang;
+  }
 
-  /* Responsive overrides */
-  @media (max-width: 900px) { :root { --site-gutter: 20px; } .hero, .hero.hero-stage { padding-top: 40px; padding-bottom: 60px; } .hero h1 { font-size: clamp(44px, 12vw, 64px); } .section-title, .creator h2 { font-size: clamp(32px, 9vw, 48px); } .trust h2 { font-size: clamp(26px, 7vw, 36px); } }
-  @media (max-width: 600px) { :root { --site-gutter: 16px; } .hero h1 { font-size: clamp(38px, 14vw, 52px); } .section-title, .creator h2 { font-size: clamp(28px, 11vw, 40px); } .actions { gap: 8px; } .actions a, .plans a, .btn-filled, .btn-gray { padding: 10px 16px; min-height: 44px; } .hero-mark { width: 80px; height: 80px; } }
-}
+  // ==========================================================================
+  // COOKIE CONSENT MANAGEMENT
+  // ==========================================================================
+  function initCookieConsent() {
+    const banner = $('#cookie-consent');
+    if (!banner) return;
+
+    const dismissed = getStorage(CONFIG.storageKeys.cookieBanner);
+    const analyticsConsent = getStorage(CONFIG.storageKeys.analytics);
+
+    if (dismissed) {
+      banner.hidden = true;
+      state.cookieBannerDismissed = true;
+      state.analyticsConsent = analyticsConsent === '1';
+      loadAnalyticsIfConsented();
+      return;
+    }
+
+    banner.hidden = false;
+
+    // Accept all
+    $('#cookie-consent [data-cookie-action="accept-all"]').addEventListener('click', () => {
+      setStorage(CONFIG.storageKeys.cookieBanner, '1');
+      setStorage(CONFIG.storageKeys.analytics, '1');
+      state.cookieBannerDismissed = true;
+      state.analyticsConsent = true;
+      banner.hidden = true;
+      loadAnalyticsIfConsented();
+    });
+
+    // Essential only
+    $('#cookie-consent [data-cookie-action="essential-only"]').addEventListener('click', () => {
+      setStorage(CONFIG.storageKeys.cookieBanner, '1');
+      setStorage(CONFIG.storageKeys.analytics, '0');
+      state.cookieBannerDismissed = true;
+      state.analyticsConsent = false;
+      banner.hidden = true;
+    });
+
+    // Open preferences modal
+    $('#cookie-consent [data-cookie-action="preferences"]').addEventListener('click', () => {
+      openCookieModal();
+    });
+  }
+
+  function openCookieModal() {
+    const modal = $('#cookie-modal');
+    if (!modal) return;
+    $('#analytics-consent').checked = state.analyticsConsent;
+    modal.showModal();
+  }
+
+  function initCookieModal() {
+    const modal = $('#cookie-modal');
+    if (!modal) return;
+
+    modal.addEventListener('close', () => {
+      if (modal.returnValue === 'save') {
+        const consent = $('#analytics-consent').checked;
+        setStorage(CONFIG.storageKeys.analytics, consent ? '1' : '0');
+        state.analyticsConsent = consent;
+        loadAnalyticsIfConsented();
+      }
+    });
+
+    // Close on Escape
+    modal.addEventListener('keydown', e => {
+      if (e.key === 'Escape') modal.close();
+    });
+  }
+
+  function loadAnalyticsIfConsented() {
+    if (state.analyticsConsent && CONFIG.analyticsEndpoint && !window._eidovaraAnalyticsLoaded) {
+      // Load privacy-respecting analytics (Umami, Plausible, etc.)
+      const script = document.createElement('script');
+      script.defer = true;
+      script.src = CONFIG.analyticsEndpoint;
+      script.dataset.websiteId = CONFIG.analyticsEndpoint.split('/').pop(); // Adjust as needed
+      document.head.appendChild(script);
+      window._eidovaraAnalyticsLoaded = true;
+    }
+  }
+
+  // ==========================================================================
+  // SERVICE BASE MANAGEMENT (for status page)
+  // ==========================================================================
+  function getServiceBase() {
+    if (state.serviceBase) return state.serviceBase;
+    const stored = getStorage(CONFIG.storageKeys.serviceBase);
+    state.serviceBase = stored || CONFIG.serviceBase;
+    return state.serviceBase;
+  }
+
+  function setServiceBase(value) {
+    const normalized = normalizeBase(value);
+    state.serviceBase = normalized;
+    if (normalized) setStorage(CONFIG.storageKeys.serviceBase, normalized);
+    else setStorage(CONFIG.storageKeys.serviceBase, null);
+    return normalized;
+  }
+
+  function normalizeBase(value) {
+    let raw = String(value || '').trim();
+    if (!raw) return '';
+    if (!/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) raw = `https://${raw}`;
+    const url = new URL(raw);
+    if (url.username || url.password) throw new Error('Service URL must not include credentials.');
+    if (url.protocol !== 'https:') throw new Error('Service URL must use HTTPS.');
+    const suffixes = ['/health', '/v1/health', '/v1/config', '/v1/status', '/v1/assist'];
+    let path = String(url.pathname || '').replace(/\/+$/, '');
+    for (const suffix of suffixes) {
+      const escaped = suffix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      path = path.replace(new RegExp(`${escaped}$`, 'i'), '').replace(/\/+$/, '');
+    }
+    return `${url.origin}${path}`.replace(/\/+$/, '');
+  }
+
+  // ==========================================================================
+  // UI COMPONENT CREATION
+  // ==========================================================================
+  function createThemeToggle() {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'theme-toggle';
+    btn.setAttribute('aria-label', 'Toggle dark/light mode');
+    btn.innerHTML = `
+      <svg class="icon-sun" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      <svg class="icon-moon" aria-hidden="true" viewBox="0 0 24 24" width="20" height="20"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+    `;
+    btn.addEventListener('click', () => {
+      const current = document.documentElement.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+    return btn;
+  }
+
+  function createFontSizeControls() {
+    const container = document.createElement('div');
+    container.className = 'font-size-controls';
+    container.setAttribute('role', 'group');
+    container.setAttribute('aria-label', 'Font size');
+    container.innerHTML = `
+      <button type="button" class="font-size-btn" data-size="0.875" aria-label="Decrease font size">A-</button>
+      <button type="button" class="font-size-btn" data-size="1" aria-label="Reset font size">A</button>
+      <button type="button" class="font-size-btn" data-size="1.125" aria-label="Increase font size">A+</button>
+    `;
+    container.querySelectorAll('.font-size-btn').forEach(btn => {
+      btn.addEventListener('click', () => applyFontSize(btn.dataset.size));
+    });
+    return container;
+  }
+
+  function createContrastToggle() {
+    const label = document.createElement('label');
+    label.className = 'contrast-toggle';
+    label.innerHTML = `
+      <input type="checkbox" id="contrastToggle" ${state.contrast ? 'checked' : ''}>
+      <span class="toggle-slider"></span>
+      <span class="toggle-label">High contrast</span>
+    `;
+    label
+      .querySelector('#contrastToggle')
+      .addEventListener('change', e => applyContrast(e.target.checked));
+    return label;
+  }
+
+  function createLangSelector() {
+    const select = document.createElement('select');
+    select.id = 'langSelector';
+    select.setAttribute('aria-label', 'Language');
+    select.innerHTML = CONFIG.languages
+      .map(
+        l =>
+          `<option value="${l.code}" ${state.lang === l.code ? 'selected' : ''}>${l.native}</option>`
+      )
+      .join('');
+    select.addEventListener('change', e => applyLang(e.target.value));
+    return select;
+  }
+
+  // ==========================================================================
+  // HEADER CONTROLS INJECTION
+  // ==========================================================================
+  function injectHeaderControls() {
+    const headerControls = $('.header-controls');
+    if (!headerControls) return;
+    headerControls.append(
+      createThemeToggle(),
+      createFontSizeControls(),
+      createContrastToggle(),
+      createLangSelector()
+    );
+  }
+
+  // ==========================================================================
+  // NAVIGATION
+  // ==========================================================================
+  function initNavigation() {
+    const header = $('.site-header');
+    const toggle = $('#navToggle');
+    const nav = $('#site-nav');
+    document.documentElement.classList.add('has-js');
+
+    // Active nav link
+    const page = document.body?.dataset.page || '';
+    $$('[data-nav]').forEach(link => {
+      if (link.getAttribute('data-nav') === page) link.setAttribute('aria-current', 'page');
+    });
+    if (page === 'legal') {
+      const legal = $('.nav-legal');
+      if (legal) legal.setAttribute('data-current', 'true');
+    }
+
+    // Compact header on scroll
+    if (header) {
+      const compact = () => header.classList.toggle('is-compact', window.scrollY > 10);
+      compact();
+      window.addEventListener('scroll', throttle(compact, 50), { passive: true });
+    }
+
+    // Mobile nav toggle
+    if (toggle && header && nav) {
+      const close = () => {
+        header.classList.remove('nav-open');
+        toggle.setAttribute('aria-expanded', 'false');
+      };
+      toggle.addEventListener('click', () => {
+        const open = header.classList.toggle('nav-open');
+        toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      nav.querySelectorAll('a').forEach(link => link.addEventListener('click', close));
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') close();
+      });
+    }
+
+    // Legal dropdown outside click
+    const legalMenu = $('.nav-legal');
+    if (legalMenu) {
+      document.addEventListener('click', e => {
+        if (legalMenu.open && !legalMenu.contains(e.target)) legalMenu.removeAttribute('open');
+      });
+      document.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && legalMenu.open) legalMenu.removeAttribute('open');
+      });
+    }
+  }
+
+  // ==========================================================================
+  // DOWNLOAD PAGE: AGE GATE & VERIFICATION
+  // ==========================================================================
+  function initDownloadPage() {
+    initCopyButtons();
+    initDownloadVerification();
+
+    const age = $('#ageConfirm');
+    const actions = $('#downloadActions');
+    if (age && actions) {
+      const sync = () => {
+        actions.classList.toggle('is-enabled', age.checked);
+        actions.querySelectorAll('a').forEach(link => {
+          if (age.checked) link.removeAttribute('aria-disabled');
+          else link.setAttribute('aria-disabled', 'true');
+        });
+      };
+      age.addEventListener('change', sync);
+      sync();
+    }
+  }
+
+  // ==========================================================================
+  // COPY BUTTONS
+  // ==========================================================================
+  function initCopyButtons() {
+    $$('.sha-256, code.copyable').forEach(el => {
+      if (el.dataset.copyInit) return;
+      el.dataset.copyInit = 'true';
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'copy-btn';
+      btn.setAttribute('aria-label', 'Copy to clipboard');
+      btn.innerHTML =
+        '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      btn.addEventListener('click', async () => {
+        const text = el.textContent.trim();
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = '✓ Copied';
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.innerHTML =
+              '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+            btn.classList.remove('copied');
+          }, 2000);
+        } catch {
+          btn.textContent = '✗ Failed';
+          setTimeout(() => {
+            btn.innerHTML =
+              '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+          }, 2000);
+        }
+      });
+      el.style.position = 'relative';
+      el.appendChild(btn);
+    });
+  }
+
+  // ==========================================================================
+  // DOWNLOAD VERIFICATION (SHA-256)
+  // ==========================================================================
+  function initDownloadVerification() {
+    const fileInput = $('#fileVerify');
+    const resultEl = $('#verifyResult');
+    if (!fileInput || !resultEl) return;
+
+    const SUMS_URL =
+      'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/SHA256SUMS.txt';
+
+    const fetchExpectedSha256 = async () => {
+      const res = await fetch(SUMS_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('SHA256SUMS.txt HTTP ' + res.status);
+      const text = await res.text();
+      for (const line of text.split('\n')) {
+        const m = line.match(/^([0-9A-Fa-f]{64})\s+\*?(.+)$/);
+        if (m && /Eidovara-.*-Windows-x64-Setup\.exe$/.test(m[2].trim())) {
+          return { hash: m[1].toUpperCase(), file: m[2].trim() };
+        }
+      }
+      throw new Error('No Windows Setup.exe entry in SHA256SUMS.txt');
+    };
+
+    fileInput.addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      resultEl.textContent = 'Computing SHA-256…';
+      resultEl.className = 'verify-result verifying';
+      try {
+        const buffer = await file.arrayBuffer();
+        const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashHex = hashArray
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('')
+          .toUpperCase();
+        let expected;
+        try {
+          expected = await fetchExpectedSha256();
+        } catch (fetchErr) {
+          resultEl.innerHTML =
+            `<span class="verify-fail">✗ Checksum unavailable</span> Computed SHA-256: <code>${hashHex}</code>. ` +
+            'Could not fetch the release SHA256SUMS.txt automatically (' +
+            String(fetchErr && fetchErr.message ? fetchErr.message : fetchErr) +
+            '). Compare manually against the checksums published with the release.';
+          resultEl.className = 'verify-result failed';
+          return;
+        }
+        const match = hashHex === expected.hash;
+        resultEl.innerHTML = match
+          ? `<span class="verify-ok">✓ Verified</span> SHA-256 matches ${expected.file}: <code>${hashHex}</code>`
+          : `<span class="verify-fail">✗ Mismatch</span> Expected (${expected.file}): <code>${expected.hash}</code>, Got: <code>${hashHex}</code>`;
+        resultEl.className = 'verify-result ' + (match ? 'verified' : 'failed');
+      } catch (err) {
+        resultEl.textContent = 'Error computing hash: ' + err.message;
+        resultEl.className = 'verify-result failed';
+      }
+    });
+  }
+
+  // ==========================================================================
+  // FAQ SEARCH
+  // ==========================================================================
+  function initFaqPage() {
+    const input = $('#faqSearch');
+    const items = $$('.faq details');
+    if (!input || !items.length) return;
+
+    input.addEventListener(
+      'input',
+      debounce(() => {
+        const query = input.value.toLowerCase().trim();
+        items.forEach(item => {
+          item.style.display =
+            !query || item.textContent.toLowerCase().includes(query) ? '' : 'none';
+        });
+      }, 150)
+    );
+  }
+
+  // ==========================================================================
+  // STATUS PAGE: SERVICE STATUS CHECKER
+  // ==========================================================================
+  function initStatusPage() {
+    const form = $('#statusForm');
+    if (!form) return;
+
+    const input = form.querySelector('#statusBase');
+    const out = form.querySelector('#statusOut');
+    const save = form.querySelector('#statusSave');
+    const clear = form.querySelector('#statusClear');
+    const probe = form.querySelector('#statusProbe');
+
+    const failClosed = message => {
+      if (out) out.textContent = message;
+    };
+
+    const base = getServiceBase();
+    if (input) input.value = base || CONFIG.serviceBase;
+    failClosed(
+      'Official default is https://api.eidovara.org. Override with another HTTPS base if you operate one. Check calls /health and /v1/status and keeps polling until you Clear. Conversations are not sent. No workers.dev host is compiled in.'
+    );
+
+    let statusPollTimer = 0;
+    let statusFailCount = 0;
+
+    const stopStatusPoll = () => {
+      if (statusPollTimer) {
+        clearTimeout(statusPollTimer);
+        statusPollTimer = 0;
+      }
+    };
+
+    const nextPollDelay = failed =>
+      failed
+        ? Math.min(4000 * Math.pow(2, statusFailCount), 64000) + Math.floor(Math.random() * 5000)
+        : 25000 + Math.floor(Math.random() * 5000);
+
+    const presenceOf = (online, failed) =>
+      online ? 'Online' : failed ? 'Reconnecting' : 'Offline';
+
+    const runProbe = async ({ fromPoll } = {}) => {
+      let base = '';
+      try {
+        base = normalizeBase(input?.value || getServiceBase() || CONFIG.serviceBase);
+      } catch (error) {
+        stopStatusPoll();
+        failClosed(error.message || 'Invalid service URL.');
+        return;
+      }
+      if (!base) {
+        stopStatusPoll();
+        failClosed('No valid HTTPS service base. Fail closed — nothing was fetched.');
+        return;
+      }
+      if (!fromPoll) failClosed(`Checking ${base} …`);
+
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+
+      const boundedJson = async res => {
+        const maxBytes = 32768;
+        const declared = Number(res.headers.get('content-length') || 0);
+        if (declared > maxBytes) return {};
+        const raw = await res.text();
+        if (raw.length > maxBytes) return {};
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return {};
+        }
+      };
+
+      try {
+        const [healthRes, statusRes] = await Promise.all([
+          fetch(`${base}/health`, {
+            method: 'GET',
+            signal: controller.signal,
+            redirect: 'error',
+            headers: { accept: 'application/json' },
+          }),
+          fetch(`${base}/v1/status`, {
+            method: 'GET',
+            signal: controller.signal,
+            redirect: 'error',
+            headers: { accept: 'application/json' },
+          }),
+        ]);
+        const health = await boundedJson(healthRes);
+        const status = await boundedJson(statusRes);
+        const online =
+          healthRes.ok &&
+          statusRes.ok &&
+          (health.status === 'ok' || health.online === true) &&
+          (status.status === 'ok' || status.online === true);
+        if (online) statusFailCount = 0;
+        else statusFailCount += 1;
+        const presence = presenceOf(online, !online);
+        const lines = [
+          `Presence: ${presence}`,
+          `Base: ${base}`,
+          `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
+          `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
+          'This website never sends desktop conversations. v1.0.0 payments stay off. Check keeps polling; Clear stops.',
+        ];
+        failClosed(lines.join('\n'));
+        stopStatusPoll();
+        statusPollTimer = setTimeout(() => {
+          void runProbe({ fromPoll: true });
+        }, nextPollDelay(!online));
+      } catch (error) {
+        statusFailCount += 1;
+        failClosed(
+          `Presence: Reconnecting\nUnreachable (${error.name === 'AbortError' ? 'timeout' : error.message || 'fetch failed'}). Fail closed. Offline Soul and this website still work.`
+        );
+        stopStatusPoll();
+        statusPollTimer = setTimeout(() => {
+          void runProbe({ fromPoll: true });
+        }, nextPollDelay(true));
+      } finally {
+        clearTimeout(timer);
+      }
+    };
+
+    const saveBase = event => {
+      event.preventDefault();
+      try {
+        const base = normalizeBase(input?.value || '');
+        setServiceBase(base);
+        failClosed(
+          base
+            ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent. Ask Eidovara may use this base for /v1/assist.`
+            : 'Cleared override. Default https://api.eidovara.org. Ask Eidovara stays on this page until you save a base.'
+        );
+      } catch (error) {
+        failClosed(error.message || 'Invalid service URL.');
+      }
+    };
+
+    form.addEventListener('submit', saveBase);
+    save?.addEventListener('click', saveBase);
+    clear?.addEventListener('click', event => {
+      event.preventDefault();
+      stopStatusPoll();
+      statusFailCount = 0;
+      if (input) input.value = CONFIG.serviceBase;
+      setServiceBase(null);
+      failClosed(
+        'Cleared override. Default https://api.eidovara.org. Check to probe /health and /v1/status. Polling stopped. Ask Eidovara stays on this page until you save a base.'
+      );
+    });
+    probe?.addEventListener('click', async event => {
+      event.preventDefault();
+      statusFailCount = 0;
+      await runProbe({ fromPoll: false });
+    });
+  }
+
+  // ==========================================================================
+  // INTERSECTION OBSERVER ANIMATIONS
+  // ==========================================================================
+  function initScrollAnimations() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
+
+    $$('.animate-on-scroll').forEach(el => observer.observe(el));
+  }
+
+  // ==========================================================================
+  // PRIVACY-RESPECTING ANALYTICS (optional)
+  // ==========================================================================
+  function initAnalytics() {
+    // Load only if user consented
+    if (state.analyticsConsent && CONFIG.analyticsEndpoint && !window._eidovaraAnalyticsLoaded) {
+      const script = document.createElement('script');
+      script.defer = true;
+      script.src = CONFIG.analyticsEndpoint;
+      // For Umami: script.dataset.websiteId = 'your-id';
+      // For Plausible: script.dataset.domain = 'eidovara.org';
+      document.head.appendChild(script);
+      window._eidovaraAnalyticsLoaded = true;
+    }
+  }
+
+  // ==========================================================================
+  // SERVICE WORKER REGISTRATION
+  // ==========================================================================
+  function registerServiceWorker() {
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(() => {});
+      });
+    }
+  }
+
+  // ==========================================================================
+  // EXPOSE GLOBAL API FOR TESTING
+  // ==========================================================================
+  window.Eidovara = {
+    applyTheme,
+    applyFontSize,
+    applyContrast,
+    applyLang,
+    getStorage,
+    setStorage,
+    getServiceBase,
+    setServiceBase,
+    normalizeBase,
+    openCookieModal,
+    CONFIG,
+  };
+
+  // ==========================================================================
+  // INITIALIZATION
+  // ==========================================================================
+  function init() {
+    // Load all state
+    initTheme();
+    initFontSize();
+    initContrast();
+    initLang();
+
+    // Initialize cookie consent
+    initCookieConsent();
+    initCookieModal();
+
+    // Initialize UI
+    initNavigation();
+    injectHeaderControls();
+
+    // Page-specific
+    if (document.body?.dataset.page === 'download') initDownloadPage();
+    if (document.body?.dataset.page === 'faq') initFaqPage();
+    if (document.body?.dataset.page === 'status') initStatusPage();
+
+    // Copy buttons & download verification (all pages)
+    initCopyButtons();
+    initDownloadVerification();
+
+    // Scroll animations
+    initScrollAnimations();
+
+    // Analytics (respects consent)
+    initAnalytics();
+
+    // Service worker
+    registerServiceWorker();
+
+    // Mark JS as loaded
+    document.documentElement.classList.add('has-js');
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
