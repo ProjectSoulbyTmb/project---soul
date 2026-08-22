@@ -196,7 +196,7 @@ export function attachAdultFigure(canvas) {
     ctx.restore();
     ctx.fillStyle = 'rgba(255,255,255,0.55)';
     ctx.font = `${12 * dpr}px ui-sans-serif, system-ui`;
-    ctx.fillText('Canvas fallback Â· first-party figure Â· not VRM', 16 * dpr, h - 16 * dpr);
+    ctx.fillText('Canvas fallback · first-party figure · not VRM', 16 * dpr, h - 16 * dpr);
   }
 
   function ensureProgram() {
