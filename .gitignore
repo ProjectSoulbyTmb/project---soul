@@ -34,3 +34,6 @@ project-soul.log
 
 # pnpm is the canonical lockfile
 package-lock.json
+
+# Local publish-set build output
+/_publish/

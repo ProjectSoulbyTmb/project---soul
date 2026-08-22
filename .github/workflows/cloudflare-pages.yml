@@ -6,6 +6,7 @@ on:
     paths:
       - 'docs/**'
       - '.github/workflows/cloudflare-pages.yml'
+      - '.github/publish-manifest.txt'
   workflow_dispatch:
 
 permissions:
@@ -47,10 +48,14 @@ jobs:
             exit 1
           fi
 
-      - name: Deploy docs to eidovara.org Cloudflare Pages project
+      - name: Build publish set from manifest
+        shell: bash
+        run: bash scripts/build-publish-set.sh docs .github/publish-manifest.txt _publish
+
+      - name: Deploy public site to eidovara.org Cloudflare Pages project
         uses: cloudflare/wrangler-action@ebbaa1584979971c8614a24965b4405ff95890e0 # v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: pages deploy docs --project-name=eidovara --branch=main
+          command: pages deploy _publish --project-name=eidovara --branch=main
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}

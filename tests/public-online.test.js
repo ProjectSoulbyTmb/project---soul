@@ -81,7 +81,9 @@ test('Windows release workflow remains tag-published, dispatch-safe, and unsigne
   assert.match(workflow, /softprops\/action-gh-release@[0-9a-f]{40}/);
   assert.match(workflow, /upload-artifact@[0-9a-f]{40}/);
   assert.match(workflow, /eidovara-windows-unsigned/);
-  assert.match(read('.github/workflows/pages.yml'), /path: docs\b/);
+  assert.match(read('.github/workflows/pages.yml'), /build-publish-set\.sh/);
+  assert.match(read('.github/workflows/pages.yml'), /publish-manifest\.txt/);
+  assert.match(read('.github/workflows/pages.yml'), /path: _publish\b/);
   assert.match(read('.github/workflows/pages.yml'), /branches: \[main\]/);
   assert.match(read('.github/workflows/pages.yml'), /actions\/deploy-pages@[0-9a-f]{40}/);
 });
