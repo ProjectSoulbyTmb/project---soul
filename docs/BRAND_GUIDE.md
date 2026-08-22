@@ -1,4 +1,4 @@
-﻿# Eidovara brand use (short, safe)
+# Eidovara brand use (short, safe)
 
 This is a **usage note** for Soul Consciousness Studios and anyone given written permission. It is not a license to the public, not a registration, and not legal advice.
 
