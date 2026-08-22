@@ -54,7 +54,7 @@ jobs:
           }
           if ($missing.Count -gt 0) { throw "Missing SPDX headers in: $($missing -join ', ')" }
       - name: Generate SPDX SBOM
-        run: pnpm licenses generate-spdx -o sbom/spdx-licenses.json 2>/dev/null || echo '{}' > sbom/spdx-licenses.json
+        run: node scripts/ci-spdx.mjs sbom/spdx-licenses.json
       - name: Upload SBOM artifact
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

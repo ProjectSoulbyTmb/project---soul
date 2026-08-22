@@ -37,3 +37,6 @@ package-lock.json
 
 # Local publish-set build output
 /_publish/
+
+# Generated locally
+/sbom/

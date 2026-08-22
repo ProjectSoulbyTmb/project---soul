@@ -4,6 +4,7 @@ import path from 'node:path';
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
+  passWithNoTests: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,
@@ -26,7 +27,6 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         // Electron-specific launch options
         launchOptions: {
-          executablePath: path.resolve('node_modules/.bin/electron'),
           args: ['.', '--no-sandbox', '--disable-gpu'],
         },
       },

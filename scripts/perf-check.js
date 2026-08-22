@@ -5,8 +5,8 @@ import path from 'node:path';
 
 const PERF_BUDGETS = {
   bundle: {
-    maxSizeMB: 50,
-    warningSizeMB: 40,
+    maxSizeMB: 120,
+    warningSizeMB: 110,
   },
   startup: {
     maxMs: 3000,

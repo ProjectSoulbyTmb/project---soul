@@ -22,6 +22,11 @@ jobs:
       - uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4
         with:
           node-version: 20
+      - name: strict-lint: install dependencies
+        shell: pwsh
+        run: |
+          corepack enable
+          pnpm install --frozen-lockfile
       - name: Zero-warning lint policy
         run: npx --yes eslint . --max-warnings 0
 
@@ -53,18 +58,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: All GitHub Actions pinned by commit digest
-        shell: python
-        run: |
-          import re, sys, pathlib
-          bad = []
-          for f in pathlib.Path('.github/workflows').glob('*.y*ml'):
-              for i, line in enumerate(f.read_text(encoding='utf-8').splitlines(), 1):
-                  m = re.search(r'uses:\s*(\S+)@(\S+)', line)
-                  if m and not re.fullmatch(r'[0-9a-f]{40}', m.group(2), re.I):
-                      bad.append(f'{f.name}:{i}: {m.group(1)}@{m.group(2)}')
-          for b in bad:
-              print('FLOATING PIN:', b)
-          sys.exit(1 if bad else 0)
+        run: node scripts/ci-digest-pin.mjs
 
   boot-smoke:
     runs-on: windows-latest
