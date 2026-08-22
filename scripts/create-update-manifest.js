@@ -5,7 +5,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 
 const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
-const name = `Eidovara-${pkg.version}-Windows-x64-Setup.exe`;
+const name = `Eidovara-v${pkg.version}-Windows-x64-Setup.exe`;
 if (!fs.existsSync(path.join('dist', name))) throw new Error(`Missing Windows installer: ${name}`);
 const file = path.join('dist', name);
 const sha256 = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase();
