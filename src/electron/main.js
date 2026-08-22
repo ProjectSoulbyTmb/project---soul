@@ -661,12 +661,12 @@ ipcMain.handle('soul:saveSettings', (_e, incoming) => {
     config.companion = {
       avatarMode: ['hidden','2d','3d'].includes(incoming.companion.avatarMode) ? incoming.companion.avatarMode : '3d',
       motion: ['full','gentle','reduced'].includes(incoming.companion.motion) ? incoming.companion.motion : 'gentle',
-      voiceEnabled: incoming.companion.mute === undefined ? Boolean(incoming.companion.voiceEnabled) : !incoming.companion.mute,
+      voiceEnabled: incoming.companion.mute === undefined ? Boolean(incoming.companion.voiceEnabled) : !Boolean(incoming.companion.mute),
       voiceName: String(incoming.companion.voiceURI || incoming.companion.voiceName || '').slice(0, 300),
       voiceURI: String(incoming.companion.voiceURI || incoming.companion.voiceName || '').slice(0, 300),
       rate: Math.max(0.5, Math.min(2, Number(incoming.companion.rate) || 1)),
       pitch: Math.max(0.5, Math.min(2, Number(incoming.companion.pitch) || 1)),
-      mute: incoming.companion.mute === undefined ? !incoming.companion.voiceEnabled : Boolean(incoming.companion.mute),
+      mute: incoming.companion.mute === undefined ? !Boolean(incoming.companion.voiceEnabled) : Boolean(incoming.companion.mute),
       lookId: ['orb','hologram','ambient','pulse','silhouette','local-image'].includes(incoming.companion.lookId) ? incoming.companion.lookId : (config.companion?.lookId || 'orb'),
       adultPresentation: adultGatesActive && Boolean(incoming.companion.adultPresentation),
       bodyHeight: boundedShape(incoming.companion.bodyHeight),
@@ -738,7 +738,7 @@ ipcMain.handle('soul:configureKernel', (_e, input) => {
       rate: input.voice?.rate !== undefined ? Math.max(0.5, Math.min(2, Number(input.voice.rate) || 1)) : (config.companion?.rate || 1),
       pitch: input.voice?.pitch !== undefined ? Math.max(0.5, Math.min(2, Number(input.voice.pitch) || 1)) : (config.companion?.pitch || 1),
       mute: input.voice?.mute !== undefined ? Boolean(input.voice.mute) : (config.companion?.mute !== false),
-      voiceEnabled: input.voice?.mute !== undefined ? !input.voice.mute : config.companion?.voiceEnabled,
+      voiceEnabled: input.voice?.mute !== undefined ? !Boolean(input.voice.mute) : config.companion?.voiceEnabled,
       lookId: input.presence?.lookId || config.companion?.lookId || 'orb'
     };
     saveConfig();
