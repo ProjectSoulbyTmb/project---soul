@@ -60,7 +60,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.match(md, /LicenseRef-Eidovara-Source-Available-1\.0/);
   assert.doesNotMatch(md, FAKE);
   assert.doesNotMatch(JSON.stringify(cert), FAKE);
-  assert.doesNotMatch(md, /Â®/);
+  assert.doesNotMatch(md, /®/);
   assert.match(read('docs/INFRINGEMENT.md'), /DMCA/);
   assert.match(read('docs/INFRINGEMENT.md'), /not legal advice/i);
   assert.match(read('docs/COPYRIGHT_DEPOSIT.md'), /copyright\.gov/);
