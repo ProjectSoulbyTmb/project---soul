@@ -1,4 +1,4 @@
-﻿# Unsigned entity IP assignment template
+# Unsigned entity IP assignment template
 
 **Status: template only â€” not executed.**
 
