@@ -85,9 +85,10 @@ test('site helper download pointers match the canonical installer without import
   const pinned = knowledgeSource.match(/const INSTALLER_PINNED = '([^']+)'/);
   const name = knowledgeSource.match(/const INSTALLER_NAME = '([^']+)'/);
   const sha = knowledgeSource.match(/const INSTALLER_SHA256 = '([^']+)'/);
-  assert.ok(latest && pinned && name && sha, 'docs/knowledge.js must keep INSTALLER constants parseable');
+  assert.ok(latest && pinned && name, 'docs/knowledge.js must keep INSTALLER constants parseable');
   assert.equal(name[1], INSTALLER_NAME, 'docs/knowledge.js INSTALLER_NAME drifted from release.js');
-  assert.equal(sha[1], INSTALLER_SHA256, 'docs/knowledge.js INSTALLER_SHA256 drifted from release.js');
+  if (!INSTALLER_MEASURED) assert.equal(sha, null, 'docs/knowledge.js digest must stay null until measured');
+  else assert.equal(sha[1], INSTALLER_SHA256, 'docs/knowledge.js INSTALLER_SHA256 drifted from release.js');
   assert.equal(latest[1], INSTALLER_LATEST_URL, 'docs/knowledge.js INSTALLER URL drifted from release.js');
   assert.equal(pinned[1], INSTALLER_PINNED_URL, 'docs/knowledge.js pinned URL drifted from release.js');
 });

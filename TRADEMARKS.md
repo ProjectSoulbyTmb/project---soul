@@ -66,3 +66,4 @@ The following names are **other people's marks**. Reference describes compatibil
 
 Do not ship third-party logos, trade dress, or character art in Eidovara. See [docs/BRAND_GUIDE.md](docs/BRAND_GUIDE.md).
 
+Copyright © 2026 Soul Consciousness Studios. All rights reserved.

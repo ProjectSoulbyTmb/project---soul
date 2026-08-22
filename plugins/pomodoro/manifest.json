@@ -1,0 +1,265 @@
+{
+  "manifest_version": 1,
+  "id": "com.soul.pomodoro",
+  "name": "Pomodoro Timer",
+  "version": "1.0.0",
+  "description": "Pomodoro timer with ambient sounds, session tracking, and break reminders",
+  "author": "Soul Consciousness Studios",
+  "license": "LicenseRef-Eidovara-Source-Available-1.0",
+  "keywords": ["pomodoro", "timer", "focus", "productivity", "timer", "ambient"],
+  "homepage": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro",
+  "repository": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro",
+  "funding": "https://github.com/sponsors/ProjectSoulbyTmb",
+  "permissions": {
+    "memory": true,
+    "network": [],
+    "filesystem": [],
+    "shell": [],
+    "notifications": true,
+    "clipboard": "read",
+    "idle": true,
+    "power": false,
+    "idleDetection": false
+  },
+  "entrypoints": {
+    "main": "src/index.js",
+    "ui": "ui/pomodoro.html",
+    "commands": [
+      {
+        "id": "pomodoro.start",
+        "name": "Start Pomodoro",
+        "description": "Start a new pomodoro session",
+        "shortcut": "Ctrl+Shift+P",
+        "category": "pomodoro",
+        "action": "start",
+        "params": [
+          {
+            "name": "duration",
+            "type": "number",
+            "description": "Session duration in minutes",
+            "required": false,
+            "default": 25,
+            "validation": "^([1-9]|[1-5][0-9]|60)$"
+          },
+          {
+            "name": "type",
+            "type": "select",
+            "description": "Session type",
+            "required": false,
+            "default": "focus",
+            "options": [
+              { "value": "focus", "label": "Focus (25 min)" },
+              { "value": "short-break", "label": "Short Break (5 min)" },
+              { "value": "long-break", "label": "Long Break (15 min)" },
+              { "value": "custom", "label": "Custom Duration" }
+            ]
+          },
+          {
+            "name": "ambient",
+            "type": "select",
+            "description": "Ambient sound",
+            "required": false,
+            "default": "none",
+            "options": [
+              { "value": "none", "label": "None" },
+              { "value": "rain", "label": "Rain" },
+              { "value": "fireplace", "label": "Fireplace" },
+              { "value": "coffee-shop", "label": "Coffee Shop" },
+              { "value": "white-noise", "label": "White Noise" },
+              { "value": "forest", "label": "Forest" },
+              { "value": "ocean", "label": "Ocean Waves" }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "pomodoro.pause",
+        "name": "Pause Timer",
+        "description": "Pause the current pomodoro",
+        "shortcut": "Ctrl+Shift+Space",
+        "category": "pomodoro",
+        "action": "pause",
+        "params": []
+      },
+      {
+        "id": "pomodoro.resume",
+        "name": "Resume Timer",
+        "description": "Resume paused pomodoro",
+        "shortcut": "Ctrl+Shift+R",
+        "category": "pomodoro",
+        "action": "resume",
+        "params": []
+      },
+      {
+        "id": "pomodoro.stop",
+        "name": "Stop Timer",
+        "description": "Stop the current pomodoro",
+        "shortcut": "Ctrl+Shift+X",
+        "category": "pomodoro",
+        "action": "stop",
+        "params": []
+      },
+      {
+        "id": "pomodoro.settings",
+        "name": "Pomodoro Settings",
+        "description": "Configure pomodoro settings",
+        "shortcut": "Ctrl+Shift+Alt+P",
+        "category": "settings",
+        "action": "settings",
+        "params": [
+          {
+            "name": "focusDuration",
+            "type": "number",
+            "description": "Focus duration in minutes",
+            "required": false,
+            "default": 25,
+            "validation": "^([1-9]|[1-5][0-9]|60)$"
+          },
+          {
+            "name": "shortBreakDuration",
+            "type": "number",
+            "description": "Short break duration in minutes",
+            "required": false,
+            "default": 5,
+            "validation": "^([1-9]|[1-5][0-9]|60)$"
+          },
+          {
+            "name": "longBreakDuration",
+            "type": "number",
+            "description": "Long break duration in minutes",
+            "required": false,
+            "default": 15,
+            "validation": "^([1-9]|[1-5][0-9]|60)$"
+          },
+          {
+            "name": "sessionsUntilLongBreak",
+            "type": "number",
+            "description": "Sessions before long break",
+            "required": false,
+            "default": 4,
+            "validation": "^([2-9]|1[0-9]|20)$"
+          },
+          {
+            "name": "autoStartBreaks",
+            "type": "boolean",
+            "description": "Auto-start breaks",
+            "required": false,
+            "default": true
+          },
+          {
+            "name": "autoStartFocus",
+            "type": "boolean",
+            "description": "Auto-start focus sessions",
+            "required": false,
+            "default": false
+          },
+          {
+            "name": "soundEnabled",
+            "type": "boolean",
+            "description": "Play notification sounds",
+            "required": false,
+            "default": true
+          },
+          {
+            "name": "ambientVolume",
+            "type": "number",
+            "description": "Ambient sound volume (0-100)",
+            "required": false,
+            "default": 30,
+            "validation": "^(100|[1-9]?[0-9])$"
+          }
+        ]
+      },
+      {
+        "id": "pomodoro.stats",
+        "name": "Pomodoro Stats",
+        "description": "View pomodoro statistics",
+        "shortcut": "Ctrl+Shift+S",
+        "category": "stats",
+        "action": "stats",
+        "params": []
+      },
+      {
+        "id": "pomodoro.reset",
+        "name": "Reset Today's Stats",
+        "description": "Reset today's pomodoro statistics",
+        "shortcut": "Ctrl+Shift+Alt+R",
+        "category": "stats",
+        "action": "reset-stats",
+        "params": [
+          {
+            "name": "confirm",
+            "type": "boolean",
+            "description": "Confirm reset",
+            "required": true,
+            "default": false
+          }
+        ]
+      }
+    ],
+    "hooks": [
+      {
+        "name": "session-completed",
+        "event": "pomodoro.session.completed",
+        "handler": "onSessionCompleted",
+        "priority": 10,
+        "async": true
+      },
+      {
+        "name": "break-started",
+        "event": "pomodoro.break.started",
+        "handler": "onBreakStarted",
+        "priority": 10,
+        "async": true
+      },
+      {
+        "name": "session-paused",
+        "event": "pomodoro.session.paused",
+        "handler": "onSessionPaused",
+        "priority": 10,
+        "async": true
+      },
+      {
+        "name": "session-resumed",
+        "event": "pomodoro.session.resumed",
+        "handler": "onSessionResumed",
+        "priority": 10,
+        "async": true
+      },
+      {
+        "name": "long-break-due",
+        "event": "pomodoro.long-break.due",
+        "handler": "onLongBreakDue",
+        "priority": 15,
+        "async": true
+      },
+      {
+        "name": "idle-detected",
+        "event": "system.idle",
+        "handler": "onIdleDetected",
+        "priority": 5,
+        "async": true,
+        "filter": "pomodoro.running"
+      }
+    ]
+  },
+  "dependencies": {},
+  "engines": {
+    "eidovara": ">=1.0.0",
+    "node": ">=18.0.0"
+  },
+  "categories": ["productivity", "timer", "wellness", "focus"],
+  "screenshots": [],
+  "icon": "icon.png",
+  "minEidovaraVersion": "1.0.0",
+  "platform": ["windows"],
+  "languages": ["en", "es", "fr", "de"],
+  "maturity": "stable",
+  "publisher": "Soul Consciousness Studios",
+  "license": "LicenseRef-Eidovara-Source-Available-1.0",
+  "privacyPolicy": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/blob/main/PRIVACY.md",
+  "supportUrl": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/issues",
+  "contributionGuide": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/blob/main/CONTRIBUTING.md",
+  "changelog": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/blob/main/CHANGELOG.md",
+  "tags": ["pomodoro", "timer", "focus", "productivity", "wellness", "ambient"]
+}

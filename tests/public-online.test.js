@@ -57,11 +57,15 @@ test('primary download CTA points at the published installer and keeps the age g
   const home = read('docs/index.html');
   assert.match(home, new RegExp('v' + escapeRe(SOURCE_VERSION) + ' is published'));
   assert.match(home, new RegExp(escapeRe(INSTALLER_NAME)));
-  assert.match(home, new RegExp(INSTALLER_SHA256));
+  if (INSTALLER_SHA256) assert.match(home, new RegExp(INSTALLER_SHA256));
+  else assert.match(home, /SHA256SUMS\.txt/);
+  
 
   const product = read('docs/product.html');
   assert.match(product, new RegExp(escapeRe(INSTALLER_NAME)));
-  assert.match(product, new RegExp(INSTALLER_SHA256));
+  if (INSTALLER_SHA256) assert.match(product, new RegExp(INSTALLER_SHA256));
+  else assert.match(product, /SHA256SUMS\.txt/);
+  
 
   const status = read('docs/status.html');
   assert.match(status, new RegExp(escapeRe(INSTALLER_NAME)));

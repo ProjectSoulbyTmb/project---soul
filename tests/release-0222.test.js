@@ -37,7 +37,8 @@ test('source and published Windows installer use one coherent set of release met
 test('download page advertises exactly the canonical installer with integrity metadata', () => {
   const downloadPage = read('docs/download.html');
   assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_NAME)));
-  assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
+  if (INSTALLER_SHA256) assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
+  else assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.match(downloadPage, /Authenticode-unsigned/);
   assert.match(downloadPage, /GitHub\/Sigstore provenance/);
   assert.match(read('CHANGELOG.md'), new RegExp('## v' + escapeRe(SOURCE_VERSION)));

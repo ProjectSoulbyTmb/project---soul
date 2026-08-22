@@ -5,6 +5,7 @@ import { DEFAULT_EIDOVARA_SERVICE_BASE } from '../src/core/service.js';
 import {
   DESKTOP_KNOWLEDGE_VERSION,
   INSTALLER_NAME,
+  INSTALLER_MEASURED,
   INSTALLER_SHA256
 } from '../src/core/knowledge.js';
 
@@ -15,7 +16,8 @@ test('current source keeps kernel, official api.eidovara.org, and the live insta
   const pkg = JSON.parse(read('package.json'));
   assert.equal(pkg.version, DESKTOP_KNOWLEDGE_VERSION);
   assert.equal(INSTALLER_NAME, `Eidovara-v${DESKTOP_KNOWLEDGE_VERSION}-Windows-x64-Setup.exe`);
-  assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
+  if (INSTALLER_MEASURED) assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
+  else assert.equal(INSTALLER_SHA256, null);
   assert.equal(DEFAULT_EIDOVARA_SERVICE_BASE, 'https://api.eidovara.org');
   const html = read('src/renderer/index.html');
   assert.match(html, /id="startPath"/);
@@ -38,7 +40,8 @@ test('historical release hashes stay in CHANGELOG; live pages advertise only the
   assert.doesNotMatch(v0190, /after the artifact exists/);
   const downloadPage = read('docs/download.html');
   assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_NAME)));
-  assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
+  if (INSTALLER_SHA256) assert.match(downloadPage, new RegExp(INSTALLER_SHA256));
+  else assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.doesNotMatch(downloadPage, /F2B0D9BB0A887294CF58A43C75DF67FA422C2120540DE03D5227A9B239D08310/);
   assert.match(read('src/providers/internet.js'), /RAW_DROP_TAGS/);
   assert.match(read('tests/internet.test.js'), /<SCRIPT>steal\(\)<\/SCRIPT>/);

@@ -2,6 +2,7 @@
 
 Use this checklist for websites, store listings, release notes, videos, screenshots, advertisements, interviews, and social posts. It reduces avoidable advertising, trademark, privacy, and consumer-protection risk but is not a legal clearance opinion.
 
+This checklist governs the source-available Eidovara distribution; every public claim must stay inside it. All marketing states the 18+ requirement.
 ## Claims supported by the current release
 
 - “Alpha Windows workspace” or “customizable desktop assistant and media workspace.”
@@ -33,3 +34,5 @@ Use this checklist for websites, store listings, release notes, videos, screensh
 ## Publication gate
 
 Before publishing a new claim, preserve the exact claim, supporting test or source, release version, reviewer, and date. Re-review marketing after feature, privacy, pricing, provider, licensing, or security changes. Remove outdated claims promptly. Use only approved brand assets and properly licensed screenshots, music, voices, avatars, footage, and testimonials.
+
+Eidovara is not an Apple product and is not affiliated with Apple Inc.

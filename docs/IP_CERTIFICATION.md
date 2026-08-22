@@ -37,8 +37,8 @@ These facts match the published unsigned Windows installer plus this source cut.
 | App id | `com.soulconsciousnessstudios.eidovara` |
 | Official platform | Windows 10/11 x64 |
 | Installer | `Eidovara-v1.0.0-Windows-x64-Setup.exe` |
-| Size | measured from the tagged build; see release SHA256SUMS.txt |
-| SHA-256 | measured from the tagged build; see release SHA256SUMS.txt |
+| Size | `null` until the tagged build is measured; see release SHA256SUMS.txt |
+| SHA-256 | `null` until the tagged build is measured; see release SHA256SUMS.txt |
 | Release tag | `v1.0.0` |
 | Authenticode | unsigned |
 | Build provenance | GitHub/Sigstore provenance available; not Authenticode |

@@ -92,6 +92,7 @@
 @layer layout {
   /* Site max width & gutter */
   :root {
+    --eidovara-visual: modern-2026;
     --site-max: 1120px;
     --site-gutter: clamp(16px, 3vw, 24px);
   }

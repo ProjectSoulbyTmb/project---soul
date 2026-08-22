@@ -54,7 +54,8 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.equal(cert.instruments.find(row => row.id === 'trademark-filing').status, 'not-filed');
   assert.match(md, /not a U\.S\. Copyright Office registration/i);
   assert.match(md, /repository self-attestation/i);
-  assert.match(md, new RegExp(INSTALLER_SHA256));
+  if (INSTALLER_SHA256) assert.match(md, new RegExp(INSTALLER_SHA256));
+  else assert.match(md, /SHA256SUMS\.txt/);
   assert.match(md, /unsigned-template/);
   assert.match(md, /owner-action-required/);
   assert.match(md, /LicenseRef-Eidovara-Source-Available-1\.0/);

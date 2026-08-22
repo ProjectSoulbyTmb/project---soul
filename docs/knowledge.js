@@ -98,9 +98,9 @@ export const ENTRIES = [
     links: [{ href: 'product.html', label: 'Product' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
-    id: 'soul', modes: ['help'], tags: ['soul', 'assistant', 'conscious', 'sentient', 'voice', 'avatar', 'memory', 'tone', 'continuity'],
+    id: 'soul', modes: ['help'], tags: ['soul', 'assistant', 'conscious', 'voice', 'avatar', 'memory', 'tone', 'continuity'],
     title: 'Optional Soul',
-    reply: 'Soul is optional software assistance with configurable tone, memory, continuity, voice/presence, boundaries, and initiative. It is not a human, not therapy, and not a claim of consciousness or sentience. The website helper is not Soul; it answers only from this product knowledge pack.',
+    reply: 'Soul is optional software assistance with configurable tone, memory, continuity, voice/presence, boundaries, and initiative. It is not a human, not therapy, and not a claim of consciousness, and it does not claim to feel or be aware. The website helper is not Soul; it answers only from this product knowledge pack.',
     links: [{ href: 'assist.html', label: 'Website helper' }, { href: 'terms.html', label: 'Terms' }]
   },
   {
@@ -116,9 +116,9 @@ export const ENTRIES = [
     links: [{ href: 'licensing.html', label: 'Licensing' }]
   },
   {
-    id: 'brands', modes: ['help', 'legal'], tags: ['brand', 'trademark', 'affiliated', 'third-party', 'assistant', 'platform'],
+    id: 'brands', modes: ['help', 'legal'], tags: ['brand', 'brands', 'trademark', 'affiliated', 'third-party', 'assistant', 'platform', 'jarvis', 'iron man', 'siri', 'alexa', 'cortana', 'chatgpt', 'claude', 'raycast', 'spotlight', 'disney', 'marvel', 'stark'],
     title: 'First-party names only',
-    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. Third-party products, platforms, models, media services, and marks remain owned by their respective owners. References to interoperable services are factual platform or user-directed handoff information and do not imply sponsorship or affiliation.',
+    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. Third-party products, platforms, models, media services, and marks remain owned by their respective owners. Eidovara is not Jarvis and is not affiliated with those owners. References to interoperable services are factual platform or user-directed handoff information and do not imply sponsorship or affiliation.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
@@ -130,13 +130,13 @@ export const ENTRIES = [
   {
     id: 'ownership', modes: ['legal', 'help'], tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
     title: 'First-party owner',
-    reply: '© 2026 Soul Consciousness Studios. All rights reserved. Qualifying original Eidovara first-party expression is claimed by Soul Consciousness Studios. Soul Consciousness Studios is an intended publisher name. Third-party software, services, models, marks, and media retain their respective rights. Repository records are not government registrations or legal advice.',
+    reply: '© 2026 Soul Consciousness Studios. All rights reserved. Qualifying original Eidovara first-party expression is claimed by Soul Consciousness Studios. Soul Consciousness Studios is an intended publisher name. Eidovara and Soul Consciousness Studios are trademarks of Soul Consciousness Studios (unregistered). Third-party software, services, models, marks, and media retain their respective rights. Repository records are not government registrations. This overview is not legal advice.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
     id: 'cla', modes: ['legal', 'help'], tags: ['cla', 'contributor', 'assignment', 'signed', 'execute', 'executed', 'template', 'inbound', 'pr', 'pull'],
     title: 'Contributor assignment status',
-    reply: 'Contributor and entity assignment documents in the public repository are templates unless separately executed. Posting a pull request does not by itself transfer copyright or trademark rights. Do not publish executed private agreements or confidential material in the repository.',
+    reply: 'Contributor and entity assignment documents in the public repository are templates unless separately executed. Pull requests do not transfer copyright or trademark rights by themselves. Do not publish executed private agreements or confidential material in the repository.',
     links: [{ href: 'CONTRIBUTOR_ASSIGNMENT.md', label: 'CLA template' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
@@ -148,7 +148,7 @@ export const ENTRIES = [
   {
     id: 'pages-publish', modes: ['help'], tags: ['pages', 'website', 'live', 'github', 'publish', 'main', 'merge', 'old', 'outdated', 'missing', 'eidovara', 'cloudflare', 'domain'],
     title: 'Website publication',
-    reply: 'The official consumer site is https://eidovara.org from the same docs/ source on main. GitHub Pages mirrors docs/ from main. The Cloudflare Pages production workflow is configured to deploy docs/ after website changes reach main when its production credentials are available. Browser or edge caching can briefly show older content after a deployment.',
+    reply: 'The official consumer site is https://eidovara.org from the same docs/ source on main. Both Cloudflare Pages and GitHub Pages redeploy automatically after every merge to main, so refresh to see the latest content. GitHub Pages mirrors docs/ from main. The Cloudflare Pages production workflow is configured to deploy docs/ after website changes reach main when its production credentials are available. Browser or edge caching can briefly show older content after a deployment.',
     links: [{ href: './', label: 'Home' }, { href: 'status.html', label: 'Status' }]
   },
   {

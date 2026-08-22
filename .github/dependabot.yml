@@ -1,3 +1,4 @@
+# fail-on-severity: moderate is enforced for dependency review by .github/workflows/dependency-review.yml.
 #  Covers npm dependencies and github actions ecosystems.Monthly npm and GitHub Actions updates. Future Dependabot PRs should pass
 # test-and-audit: the secret-scan regex lives in security.yml, which is
 # excluded from that grep (do not weaken the scan to make PRs green).

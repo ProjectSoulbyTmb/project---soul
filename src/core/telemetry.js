@@ -233,7 +233,7 @@ export const ipcTelemetry = {
   /**
    * @param {string} channel - IPC channel name
    * @param {() => Promise<any>} handler
-   * @returns {Promise<any>}
+   * @returns {any} synchronous result of fn
    */
   async handle(channel, handler) {
     return timeAsync(`ipc.${channel}`, handler, { 'ipc.channel': channel });
