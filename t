@@ -1,0 +1,6 @@
+Contact: https://github.com/ProjectSoulbyTmb/project---soul/security/advisories/new
+Policy: https://github.com/ProjectSoulbyTmb/project---soul/security/policy
+Preferred-Languages: en
+Canonical: https://eidovara.org/.well-known/security.txt
+Expires: 2027-08-20T00:00:00Z
+# No PGP key is published. Use GitHub private vulnerability reporting when the owner has enabled it.
