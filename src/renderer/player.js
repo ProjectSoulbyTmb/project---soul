@@ -149,11 +149,11 @@
     const root = $('#eidovaraPlayer');
     if (item) {
       if ($('#mediaTitle')) $('#mediaTitle').textContent = item.title || 'Untitled media';
-      if ($('#mediaKind')) $('#mediaKind').textContent = `${item.local ? 'local ' : ''}${item.type} Â· ${index + 1} of ${queue.length}`;
+      if ($('#mediaKind')) $('#mediaKind').textContent = `${item.local ? 'local ' : ''}${item.type} · ${index + 1} of ${queue.length}`;
       if ($('#npStageTitle')) $('#npStageTitle').textContent = item.title || 'Untitled media';
       if ($('#npStageKind')) $('#npStageKind').textContent = item.local ? 'Local file through eidovara-media' : (item.type || '');
-      if ($('#mediaPlayBtn')) $('#mediaPlayBtn').textContent = player && !player.paused ? 'âšâš' : 'â–¶';
-      if ($('#mediaLoopBtn')) $('#mediaLoopBtn').textContent = loop === 'one' ? 'ðŸ”‚' : loop === 'all' ? 'ðŸ”' : 'ðŸ”ï¸Ž';
+      if ($('#mediaPlayBtn')) $('#mediaPlayBtn').textContent = player && !player.paused ? '❚❚' : '▶';
+      if ($('#mediaLoopBtn')) $('#mediaLoopBtn').textContent = loop === 'one' ? '🔂' : loop === 'all' ? '🔁' : '🔁︎';
       if ($('#mediaShuffleBtn')) $('#mediaShuffleBtn').classList.toggle('is-on', shuffle);
       if ($('#mediaRate')) $('#mediaRate').value = String(rate);
       if ($('#mediaPopOutBtn')) $('#mediaPopOutBtn').classList.toggle('hidden', hideFloat());
@@ -232,7 +232,7 @@
     player.playbackRate = rate;
     fillCaptions(item, player);
     fillQuality(item);
-    if ($('#mediaFavoriteBtn')) $('#mediaFavoriteBtn').textContent = 'â™¡';
+    if ($('#mediaFavoriteBtn')) $('#mediaFavoriteBtn').textContent = '♡';
     if ($('#mediaSourceBtn')) $('#mediaSourceBtn').disabled = !item.sourceUrl;
     setActive(true);
     mediaSignal('play', item);
@@ -360,7 +360,7 @@
     const item = currentItem();
     if (!item) return;
     await window.soul.recordMedia({ event: 'favorite', type: item.type, title: item.title, sourceUrl: item.sourceUrl });
-    $('#mediaFavoriteBtn').textContent = 'â™¥';
+    $('#mediaFavoriteBtn').textContent = '♥';
   });
   $('#mediaSimilarBtn')?.addEventListener('click', async () => {
     const item = currentItem();
