@@ -61,12 +61,7 @@ The official advertised product is **Authenticode-unsigned Windows 10/11 x64 des
 
 You are responsible for export-control, sanctions, and local law applicable to downloading and running this unsigned desktop software, including U.S. Export Administration Regulations and OFAC sanctions where they apply. This repository does not publish an export-license number, EAR classification, or a claim that every jurisdiction permits the download. Do not use Eidovara if applicable law prohibits you from receiving or running U.S.-origin encryption software. This paragraph is product notice, not an export-compliance certification.
 
-<<<<<<< HEAD
 ## 8. Commerce in v1.0.0
-=======
-This release does not process live payments.
-## 8. Commerce in v0.19.1
->>>>>>> d98cdb69e8dec3b76efb23c773ae499100b1588d
 
 This release does **not** process live payments, store payment cards, or automatically unlock Premium. Premium feature gates exist for **local administrator testing only** (Ctrl+A). That override is not proof of purchase or subscription. No PCI, SOC, or similar certification is claimed. Payment-provider URLs on the optional Worker remain empty until a real store exists.
 
