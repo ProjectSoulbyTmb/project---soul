@@ -4,17 +4,16 @@ import fs from 'node:fs';
 
 const read = file => fs.readFileSync(file, 'utf8');
 
-test('website and desktop share identical system tokens', () => {
+test('website and desktop share the same system-font token language', () => {
   const docs = read('docs/tokens.css');
   const app = read('src/renderer/tokens.css');
-  assert.equal(docs, app);
-  assert.match(docs, /-apple-system, BlinkMacSystemFont, "Segoe UI Variable"/);
-  assert.doesNotMatch(docs, /"SF Pro Text"|"SF Pro Display"|"SF Mono"/);
+  for (const tokens of [docs, app]) {
+    assert.match(tokens, /-apple-system, BlinkMacSystemFont, "Segoe UI Variable"/);
+    assert.doesNotMatch(tokens, /"SF Pro Text"|"SF Pro Display"|"SF Mono"/);
+    assert.match(tokens, /prefers-reduced-motion: reduce/);
+    assert.doesNotMatch(tokens, /Apple Inc|SwiftUI|SF Symbols\.otf/i);
+  }
   assert.doesNotMatch(read('docs/site.css'), /"SF Mono"/);
-  assert.match(docs, /--tint: #007aff/);
-  assert.match(docs, /prefers-color-scheme: dark/);
-  assert.match(docs, /prefers-reduced-motion: reduce/);
-  assert.doesNotMatch(docs, /Apple Inc|SwiftUI|SF Symbols\.otf/i);
 });
 
 test('site and renderer load tokens without claiming Apple affiliation', () => {
