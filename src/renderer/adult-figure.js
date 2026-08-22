@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { buildAdultMesh, hexRgb, FIGURE_BACKEND, FIGURE_QUALITY } from '../core/adult-mesh.js';
 import { avatarLayout } from '../core/adult-soul.js';
