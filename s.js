@@ -2,47 +2,48 @@
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {
-  FEEL_PATTERNS, FEEL_PATTERN_IDS, defaultAdultFeel, feelSample, publicStealth, normalizeAdultFeel,
-  mapGamepadStick, mapGamepadButtons, nextFeelPattern, rumbleFromLevel, GAMEPAD_HONESTY
-} from '../src/core/adult-feel.js';
+import { officialSearchHandoffs, discoverMedia } from '../src/core/entertainment.js';
+import { adultOfficialHandoffs, classifyAdultMediaIntent } from '../src/core/adult-media.js';
+import { isHandoffOnlyHost, fetchPublicPage } from '../src/providers/internet.js';
+import { shouldDestroyGuestOverlays } from '../src/core/overlays.js';
+import fs from 'node:fs';
 
-test('Feel Sync ships eleven named patterns in 0–1', () => {
-  assert.equal(FEEL_PATTERNS.length, 11);
-  const feel = defaultAdultFeel();
-  for (const pattern of FEEL_PATTERNS) {
-    const sample = feelSample({ ...feel, pattern: pattern.id, intensity: 80, speed: 55, loop: true, float: false }, 1800, 0.4);
-    assert.ok(sample >= 0 && sample <= 1, `${pattern.id} ${sample}`);
-  }
+const read = file => fs.readFileSync(file, 'utf8');
+
+test('Saturn official chips stay YouTube, Spotify, Internet Archive', () => {
+  assert.deepEqual(officialSearchHandoffs('Saturn').map(item => item.provider), ['YouTube', 'Spotify', 'Internet Archive']);
 });
 
-test('gamepad stick maps into Feel 0–100 and rumble stays dual-rumble math', () => {
-  const idle = mapGamepadStick([0.02, -0.01], { speed: 40, intensity: 70 });
-  assert.equal(idle.moved, false);
-  assert.equal(idle.speed, 40);
-  const moved = mapGamepadStick([1, -1], { speed: 40, intensity: 70 });
-  assert.equal(moved.moved, true);
-  assert.equal(moved.speed, 100);
-  assert.equal(moved.intensity, 100);
-  const rumble = rumbleFromLevel(0.5);
-  assert.equal(rumble.duration, 140);
-  assert.ok(rumble.strongMagnitude > 0 && rumble.strongMagnitude <= 1);
-  assert.equal(nextFeelPattern('wave'), FEEL_PATTERN_IDS[(FEEL_PATTERN_IDS.indexOf('wave') + 1) % FEEL_PATTERN_IDS.length]);
-  const edge = mapGamepadButtons([{ pressed: true }, { pressed: false }], { 0: false });
-  assert.equal(edge.cyclePattern, true);
-  const hold = mapGamepadButtons([{ pressed: true }], { 0: true });
-  assert.equal(hold.cyclePattern, false);
-  assert.match(GAMEPAD_HONESTY, /not Lovense/i);
+test('mood mix does not grow Pornhub chips', () => {
+  const discovery = discoverMedia('Help me create a calm study soundtrack', { entertainment: { favorites: [], history: [], taste: {} } });
+  assert.equal((discovery.adultHandoffs || []).length, 0);
+  assert.deepEqual(discovery.handoffs.map(item => item.provider), ['YouTube', 'Spotify', 'Internet Archive']);
 });
 
-test('public stealth never leaks PIN hash', () => {
-  const feel = normalizeAdultFeel({
-    stealth: { pinEnabled: true, pinHash: 'abc123', pinSalt: 'def456', locked: true }
-  });
-  const pub = publicStealth(feel.stealth);
-  assert.equal(pub.pinEnabled, true);
-  assert.equal(pub.locked, true);
-  assert.equal('pinHash' in pub, false);
-  assert.equal('pinSalt' in pub, false);
+test('adult official handoffs exist separately and only for adult queries', () => {
+  const chips = adultOfficialHandoffs('Saturn');
+  assert.ok(chips.length >= 3);
+  assert.ok(chips.every(item => item.adult === true && item.embed === false && /^https:/.test(item.url)));
+  assert.equal(classifyAdultMediaIntent('open pornhub'), 'adult-media');
+});
+
+test('Pornhub stays handoff-only; HTML is not fetched', async () => {
+  assert.equal(isHandoffOnlyHost('https://www.pornhub.com/video/search?search=test'), true);
+  await assert.rejects(
+    () => fetchPublicPage('https://www.pornhub.com/video/search?search=test'),
+    /official browser searches|does not fetch their HTML/i
+  );
+});
+
+test('Adult Mode closes guest overlays', () => {
+  assert.equal(shouldDestroyGuestOverlays({ adultAllowed: true, ageGateAccepted: true }).closeGuests, true);
+  assert.match(read('src/electron/guest-overlays.js'), /Adult Mode is on, so guest overlays stay closed/);
+});
+
+test('Adult Media desk is hidden without admin session and adult-mode', () => {
+  const css = read('src/renderer/adult-media.css') + read('src/renderer/styles.css');
+  assert.match(css, /body:not\(\.admin-session\) #adultMediaDesk/);
+  assert.match(css, /body:not\(\.adult-mode\) #adultMediaDesk/);
+  assert.match(read('src/electron/main.js'), /soul:adultMediaDesk[\s\S]*requireAdmin/);
 });
 
