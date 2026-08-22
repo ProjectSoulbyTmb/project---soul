@@ -1,4 +1,4 @@
-﻿/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
+/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 /* Eidovara interface tokens ??? system-inspired visual language, not an Apple product.
    System font stack only; do not ship or require licensed SF Pro or SF Mono files. */
@@ -116,3 +116,11 @@
 
 
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
