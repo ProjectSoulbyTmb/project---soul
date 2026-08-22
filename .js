@@ -1,34 +1,72 @@
-COPYRIGHT CLAIM (ONE PAGE)
-Product: Eidovara (Windows desktop software; Soul is a software self-model feature)
-Claimant: Soul Consciousness Studios
-Intended publisher name: Soul Consciousness Studios
-  (not a formed company; does not own this copyright unless a signed assignment exists)
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+import js from '@eslint/js';
+import globals from 'globals';
 
-Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.
-Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
-
-This page is a copyright notice and ownership claim for qualifying original
-first-party Eidovara expression (source, documentation, first-party UI assets,
-and release materials authored by Soul Consciousness Studios).
-
-This page is not a U.S. Copyright Office registration or certificate.
-This page is NOT:
-  - a U.S. Copyright Office registration or certificate
-  - a USPTO trademark registration (marks are unregistered; see TRADEMARKS.md)
-  - a patent, patent application, or patent license
-  - formation of a company
-  - legal advice, a court judgment, or an attorney opinion
-  - a license of Electron, Chromium, Node.js, Windows, Wikimedia content,
-    user content, or any other third-party material
-
-License: Eidovara Source-Available Evaluation License 1.0 (see LICENSE).
-Not MIT, Apache, GPL, or OSI open source. No trademark license. No patent
-license. Contributions are not accepted until a privately executed assignment
-(see docs/CONTRIBUTOR_ASSIGNMENT.md). Posting a pull request is not assignment.
-
-How to notice files: docs/COPYRIGHT.md
-How to register (owner-only, copyright.gov): docs/COPYRIGHT.md
-Repository self-attestation (not a government filing): docs/IP_CERTIFICATION.md
-Trademark usage: TRADEMARKS.md
-Trademark filing checklist (not filed): docs/TRADEMARK_FILING.md
-
+export default [
+  {
+    ignores: ['node_modules/', 'dist/', 'dist-mac/', '.wrangler/'],
+  },
+  js.configs.recommended,
+  {
+    languageOptions: {
+      ecmaVersion: 2024,
+      sourceType: 'module',
+      globals: {
+        ...globals.node,
+        ...globals.browser,
+      },
+    },
+    rules: {
+      'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      'no-console': 'off',
+      'no-empty': ['error', { allowEmptyCatch: true }],
+      // Sanitizer regexes legitimately match control characters (e.g. stripping NUL bytes)
+      'no-control-regex': 'off',
+    },
+  },
+  {
+    // TODO(refactor): STRINGS is one flat object holding repeated keys per
+    // language section (en/es/fr/de). Restructure into per-locale objects so
+    // no-dupe-keys can be re-enabled here.
+    files: ['src/renderer/localization.js'],
+    rules: {
+      'no-dupe-keys': 'off',
+    },
+  },
+  {
+    files: ['tests/**/*.test.js'],
+    rules: {
+      'no-unused-vars': 'warn',
+    },
+  },
+  {
+    files: ['**/*.cjs'],
+    languageOptions: {
+      sourceType: 'commonjs',
+      ecmaVersion: 2024,
+      globals: {
+        ...globals.node,
+        require: 'readonly',
+        module: 'readonly',
+        __dirname: 'readonly',
+        __filename: 'readonly',
+      },
+    },
+  },
+  {
+    files: ['tests/**/*.test.js'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+        test: 'readonly',
+        describe: 'readonly',
+        it: 'readonly',
+        before: 'readonly',
+        after: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+      },
+    },
+  },
+];
