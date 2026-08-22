@@ -23,9 +23,9 @@
     <aside class="sidebar" id="sidebar">
       <div class="brand-row">
         <div class="soul-mark" aria-hidden="true"><span></span></div>
-        <div><strong>Eidovara</strong><small>v1.0.0 Â· Soul Consciousness Studios Â· created and owned by Soul Consciousness Studios</small></div>
+        <div><strong>Eidovara</strong><small>v1.0.0 · Soul Consciousness Studios · created and owned by Soul Consciousness Studios</small></div>
       </div>
-      <button class="new-chat" id="newChatBtn" data-i18n="newConversation">ï¼‹ New conversation</button>
+      <button class="new-chat" id="newChatBtn" data-i18n="newConversation">＋ New conversation</button>
       <div class="conversation-list" id="conversationList" aria-label="Conversations"></div>
       <div class="sidebar-footer">
         <button class="nav-btn" data-view="dashboard" data-i18n="dashboard">Dashboard</button>
@@ -41,13 +41,13 @@
 
     <main class="workspace">
       <header class="topbar">
-        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">â˜°</button>
+        <button class="icon-btn mobile-only" id="menuBtn" aria-label="Toggle menu">☰</button>
         <div class="title-wrap"><strong id="viewTitle">Dashboard</strong><span id="modePill">Standard Soul</span></div>
         <div class="top-actions">
           <button type="button" class="icon-btn" id="paletteBtn" aria-label="Jump anywhere" aria-keyshortcuts="Control+K" title="Ctrl+K">Ctrl+K</button>
           <button type="button" class="icon-btn" id="shortcutBtn" aria-label="Keyboard shortcuts" aria-keyshortcuts="Control+/" title="Ctrl+/">Ctrl+/</button>
-          <button type="button" class="icon-btn" id="notifyOpenBtn" aria-label="In-app notices" title="Notices">â—</button>
-          <button type="button" class="icon-btn visually-hidden" id="paletteOpenBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette">âŒ˜K</button>
+          <button type="button" class="icon-btn" id="notifyOpenBtn" aria-label="In-app notices" title="Notices">●</button>
+          <button type="button" class="icon-btn visually-hidden" id="paletteOpenBtn" title="Command palette (Ctrl+K)" aria-label="Open command palette">⌘K</button>
           <button type="button" class="icon-btn visually-hidden" id="cheatsheetOpenBtn" title="Keyboard cheatsheet (Ctrl+/)" aria-label="Open keyboard cheatsheet">?</button>
           <button type="button" class="companion-avatar mode-3d" id="companionAvatar" aria-label="Open Soul companion"><span class="companion-face"><i></i><i></i></span></button>
           <span class="status-dot" id="providerDot"></span><span id="providerLabel">Offline</span>
@@ -72,7 +72,7 @@
           <div class="welcome" id="welcome">
             <div class="soul-mark large" aria-hidden="true"><span></span></div>
             <h1 data-i18n="welcomeTitle">You're in. Start on the Dashboard.</h1>
-            <p data-i18n="welcomeLead">Eidovara is this Windows workspace. Soul (right side) is the local assistant â€” a software self-model, not a mind. Assist is an optional Worker helper and stays off until you turn it on. They are not the same thing.</p>
+            <p data-i18n="welcomeLead">Eidovara is this Windows workspace. Soul (right side) is the local assistant — a software self-model, not a mind. Assist is an optional Worker helper and stays off until you turn it on. They are not the same thing.</p>
             <div class="starter-grid">
               <button type="button" id="welcomeDashboardBtn" data-i18n="welcomeDashboard">Open Dashboard</button>
               <button data-starter="Hello Soul. Tell me who you are.">Meet Soul</button>
@@ -86,10 +86,10 @@
           <div class="messages" id="messages" aria-live="polite"></div>
         </div>
         <form class="composer" id="chatForm">
-          <textarea id="messageInput" rows="1" maxlength="12000" placeholder="Message Soulâ€¦" aria-label="Message Soul"></textarea>
-          <button type="button" id="voiceInputBtn" class="voice-input hidden" aria-label="Hold to talk" title="Hold to talk">ðŸŽ™</button><button type="submit" id="sendBtn" aria-label="Send message">â†‘</button>
+          <textarea id="messageInput" rows="1" maxlength="12000" placeholder="Message Soul…" aria-label="Message Soul"></textarea>
+          <button type="button" id="voiceInputBtn" class="voice-input hidden" aria-label="Hold to talk" title="Hold to talk">🎙</button><button type="submit" id="sendBtn" aria-label="Send message">↑</button>
           <label class="check composer-assist hidden" id="assistThisWrap"><input type="checkbox" id="assistThisMessage" /> Also ask my Worker helper (one question, no chat history). Assist is not Soul.</label>
-          <div class="composer-note">Enter to send Â· Shift+Enter for a new line Â· Hold ðŸŽ™ to talk Â· Ctrl+K to jump Â· Ctrl+/ shortcuts</div>
+          <div class="composer-note">Enter to send · Shift+Enter for a new line · Hold 🎙 to talk · Ctrl+K to jump · Ctrl+/ shortcuts</div>
         </form>
       </section>
 
@@ -119,7 +119,7 @@
               </div>
             </div>
             <div class="dashboard-grid" id="dashboardGrid"></div>
-            <div class="card recents-card" id="recentsCard"><h3 data-i18n="recentsTitle">Recents</h3><p class="settings-help" data-i18n="recentsLead">Linked apps you confirm-launched, local media titles, and memories you opened â€” on this PC only. Not a whole-internet index.</p><div id="recentsList"></div></div>
+            <div class="card recents-card" id="recentsCard"><h3 data-i18n="recentsTitle">Recents</h3><p class="settings-help" data-i18n="recentsLead">Linked apps you confirm-launched, local media titles, and memories you opened — on this PC only. Not a whole-internet index.</p><div id="recentsList"></div></div>
             <div class="quick-grid" id="dashboardQuick">
               <button type="button" data-quick="Plan a focused session for my current priority." data-i18n="focusSession">Focus session</button>
               <button type="button" data-quick="Help me prepare my gaming or streaming setup." data-i18n="gamingStream">Gaming & stream</button>
@@ -151,7 +151,7 @@
             </div>
             <div class="companion-log" id="companionLog" aria-live="polite"></div>
             <div id="companionFollowups" class="companion-followups"></div>
-            <p class="composer-note" data-i18n="companionNote">Composer is on the Soul dock. Local only Â· Assist is not Soul Â· no live payments</p>
+            <p class="composer-note" data-i18n="companionNote">Composer is on the Soul dock. Local only · Assist is not Soul · no live payments</p>
           </aside>
         </div>
       </section>
@@ -173,9 +173,9 @@
           <canvas id="soulPresenceCanvas" width="240" height="240" hidden aria-hidden="true"></canvas>
           <img id="soulPresenceImage" alt="" hidden />
           <div class="soul-presence-figure" id="soulPresenceFigure" aria-hidden="true"></div>
-          <p class="presence-empty" id="soulPresenceEmpty" hidden>Choose a local image in Settings. Decorative only â€” not a live model.</p>
+          <p class="presence-empty" id="soulPresenceEmpty" hidden>Choose a local image in Settings. Decorative only — not a live model.</p>
         </div>
-        <p class="presence-caption" data-i18n="presenceCaption">Decorative presence â€” not a conscious figure.</p>
+        <p class="presence-caption" data-i18n="presenceCaption">Decorative presence — not a conscious figure.</p>
         <p class="soul-heartbeat" id="soulHeartbeat">Confirm 18+ to start the local kernel.</p>
         <p class="soul-online-copy" id="soulOnlineCopy">Online helper off. Local kernel stays the source of truth.</p>
         <div class="soul-module-list" id="soulModuleChips" aria-label="Feature modules"></div>
@@ -186,30 +186,30 @@
         <p class="companion-error hidden" id="companionError" role="status"></p>
         <form class="companion-form" id="companionForm">
           <label class="visually-hidden" for="companionInput" data-i18n="companionAskLabel">Ask Soul</label>
-          <textarea id="companionInput" name="companion" rows="2" maxlength="12000" placeholder="Ask Soul on this deviceâ€¦"></textarea>
-          <button type="button" id="companionTalkBtn" class="voice-input hidden" aria-label="Hold to talk">ðŸŽ™</button>
-          <button type="submit" id="companionSendBtn" aria-label="Send companion message">â†‘</button>
+          <textarea id="companionInput" name="companion" rows="2" maxlength="12000" placeholder="Ask Soul on this device…"></textarea>
+          <button type="button" id="companionTalkBtn" class="voice-input hidden" aria-label="Hold to talk">🎙</button>
+          <button type="submit" id="companionSendBtn" aria-label="Send companion message">↑</button>
         </form>
         <label class="check composer-assist hidden" id="companionAssistWrap"><input type="checkbox" id="companionAssistThis" /> Send this message to my pasted Eidovara service (Assist, not Soul). Default off.</label>
-        <p class="composer-note" data-i18n="companionNote">Local kernel Â· Assist is not Soul Â· no live payments Â· voices from Windows</p>
+        <p class="composer-note" data-i18n="companionNote">Local kernel · Assist is not Soul · no live payments · voices from Windows</p>
       </aside>
 
       <section class="view panel-view" id="appsView">
-        <div class="panel-head"><div><h2 data-i18n="appsTitle">Apps & Gaming Hub</h2><p data-i18n="appsLead">Organize trusted Windows applications and ask Windows to launch them. Compatibility varies; Eidovara does not inject into or control them.</p></div><div><button type="button" class="secondary" id="discoverAppsBtn" data-i18n="discoverApps">Discover installed apps</button> <button type="button" id="addAppBtn" data-i18n="chooseFile">ï¼‹ Choose file</button></div></div>
-        <div class="gaming-toolbar card"><div><strong data-i18n="gamingMode">Gaming mode</strong><p data-i18n="gamingModeLead">Reduces Eidovaraâ€™s animated lighting and transparency while you play. It does not change another gameâ€™s process or frame rate.</p></div><label class="switch-label"><input type="checkbox" id="gamingModeInput" /> <span data-i18n="lowOverhead">Low-overhead mode</span></label></div>
+        <div class="panel-head"><div><h2 data-i18n="appsTitle">Apps & Gaming Hub</h2><p data-i18n="appsLead">Organize trusted Windows applications and ask Windows to launch them. Compatibility varies; Eidovara does not inject into or control them.</p></div><div><button type="button" class="secondary" id="discoverAppsBtn" data-i18n="discoverApps">Discover installed apps</button> <button type="button" id="addAppBtn" data-i18n="chooseFile">＋ Choose file</button></div></div>
+        <div class="gaming-toolbar card"><div><strong data-i18n="gamingMode">Gaming mode</strong><p data-i18n="gamingModeLead">Reduces Eidovara’s animated lighting and transparency while you play. It does not change another game’s process or frame rate.</p></div><label class="switch-label"><input type="checkbox" id="gamingModeInput" /> <span data-i18n="lowOverhead">Low-overhead mode</span></label></div>
         <div class="card hidden" id="discoveredAppsCard"><h3>Start Menu applications</h3><p>Choose only applications you trust and are permitted to use. Discovery reads shortcut names locally and does not open them.</p><div class="apps-grid" id="discoveredAppsGrid"></div></div>
         <div class="apps-grid" id="appsGrid"></div>
         <p class="settings-status" id="appsStatus"></p>
         <div class="card" id="playDesk">
           <h3 data-i18n="playDeskTitle">Play desk</h3>
-          <p class="settings-help" data-i18n="playDeskLead">Confirm-launched library recents, Eidovara overlays, and this processâ€™s CPU/memory. Not a Steam overlay and not other-game telemetry.</p>
+          <p class="settings-help" data-i18n="playDeskLead">Confirm-launched library recents, Eidovara overlays, and this process’s CPU/memory. Not a Steam overlay and not other-game telemetry.</p>
           <div class="quick-grid" id="playRecents"></div>
           <p class="settings-help" id="eidovaraMetrics"></p>
           <div class="settings-actions"><button type="button" class="secondary" id="refreshMetricsBtn" data-i18n="overlayMetricsRefresh">Refresh Eidovara process metrics</button></div>
         </div>
         <div class="card" id="overlayPanel">
           <h3 data-i18n="overlayTitle">Workspace overlays</h3>
-          <p data-i18n="overlayLead">Floating Eidovara windows for Soul chat, HTTPS browsing, and Discordâ€™s own website. They are not official Discord overlays, do not inject into other games, and never send Discord tokens to Assist.</p>
+          <p data-i18n="overlayLead">Floating Eidovara windows for Soul chat, HTTPS browsing, and Discord’s own website. They are not official Discord overlays, do not inject into other games, and never send Discord tokens to Assist.</p>
           <div class="quick-grid">
             <button type="button" data-overlay="chat" data-i18n="overlayChat">Soul chat overlay</button>
             <button type="button" data-overlay="browse" data-i18n="overlayBrowse">Browse overlay</button>
@@ -226,7 +226,7 @@
         <div class="card"><h3>Graphics & media engine</h3><p>Eidovara uses Electron's hardware-accelerated Chromium renderer for its interface and media playback. GPU and codec details are available in Diagnostics. Games continue to use their own native graphics engines.</p></div>
       </section>
 
-      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, queue helpers, and lawful platform handoff â€” Spotify, YouTube, and Internet Archive stay official HTTPS searches.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This sessionâ€™s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div>
+      <section class="view panel-view" id="entertainmentView"><div class="panel-head"><div><h2 data-i18n="entertainmentTitle">Entertainment</h2><p data-i18n="entertainmentLead">Local taste, queue helpers, and lawful platform handoff — Spotify, YouTube, and Internet Archive stay official HTTPS searches.</p></div></div><div class="quick-grid"><button data-quick="Find music that fits my current mood and explain why." data-i18n="moodMix">Mood mix</button><button data-quick="Find something similar to my favorite music." data-i18n="fromFavorites">From favorites</button><button data-quick="Find a video worth watching about one of my interests." data-i18n="watchSomething">Watch something</button><button data-quick="Help me create a focused gaming soundtrack." data-i18n="gamingSoundtrack">Gaming soundtrack</button><button data-quick="Help me create a calm study soundtrack." data-i18n="studySoundtrack">Study soundtrack</button><button data-quick="Surprise me with lawful, properly sourced public media." data-i18n="surpriseMe">Surprise me</button></div><div class="identity-grid"><div class="card"><h3 data-i18n="favoriteMedia">Favorite media</h3><div id="entertainmentFavorites"></div></div><div class="card"><h3 data-i18n="recentActivity">Recent activity</h3><div id="entertainmentRecent"></div></div></div><div class="card"><h3 data-i18n="mixHelper">Queue helper</h3><p id="entertainmentMix"></p></div><div class="card"><h3 data-i18n="sessionLibrary">This session’s local library</h3><div id="entertainmentLibrary"></div></div><div class="card"><h3 data-i18n="discoveryTitle">Last discovery</h3><div id="entertainmentDiscovery"></div></div><div class="card"><h3 data-i18n="platformTitle">Platform connections</h3><p data-i18n="platformLead">Spotify, YouTube, and Internet Archive open official searches in your system browser. Eidovara does not capture credentials, bypass subscriptions, download protected streams, inject into other players, or imply affiliation.</p></div>
         <div class="card adult-media-desk hidden" id="adultMediaDesk">
           <h3>Adult Media</h3>
           <p class="settings-help" id="adultMediaHonesty">Local rails plus official HTTPS searches. Guest overlays stay closed in Adult Mode. Not an in-app tube player.</p>
@@ -311,7 +311,7 @@
             </div>
             <div class="card">
               <h3>Privacy</h3>
-              <p class="settings-help">VibeMate-style discreet lock. 4â€“8 digit PIN stored as a salted hash on this PC.</p>
+              <p class="settings-help">VibeMate-style discreet lock. 4–8 digit PIN stored as a salted hash on this PC.</p>
               <label>PIN <input id="adultPinInput" type="password" inputmode="numeric" maxlength="8" autocomplete="off" /></label>
               <label>Confirm <input id="adultPinConfirm" type="password" inputmode="numeric" maxlength="8" autocomplete="off" /></label>
               <div class="empty-actions">
@@ -326,7 +326,7 @@
                 <option value="120000">2 minutes</option>
               </select></label>
               <label class="check"><input type="checkbox" id="adultHideRecents" /> Hide adult recents on the dashboard</label>
-              <label class="check"><input type="checkbox" id="adultAutoClear" /> Donâ€™t keep adult play history</label>
+              <label class="check"><input type="checkbox" id="adultAutoClear" /> Don’t keep adult play history</label>
             </div>
             <div class="card adult-soul-locked hidden" id="adultStealthLock">
               <h3>Adult surfaces locked</h3>
@@ -374,7 +374,7 @@
           <h3 id="settings-service">Eidovara service</h3>
           <p class="settings-help">Official default is <code>https://api.eidovara.org</code>. Paste another HTTPS base to override. After 18+, the main process keeps a live Online / Reconnecting / Offline status with GET <code>/health</code> and <code>/v1/status</code> (Connect also uses <code>/v1/config</code>). Conversations stay on this PC. If the host is down, Offline Soul keeps working. Assist is not Soul and stays off unless you tick the box below.</p>
           <label>Service URL<input id="serviceUrlInput" type="url" maxlength="1000" placeholder="https://api.eidovara.org" autocomplete="off" /></label>
-          <label class="check assist-opt"><input type="checkbox" id="assistOptIn" /> Allow optional Worker helper (<code>/v1/assist</code>). Default off. Sends one question you choose â€” never this conversation.</label>
+          <label class="check assist-opt"><input type="checkbox" id="assistOptIn" /> Allow optional Worker helper (<code>/v1/assist</code>). Default off. Sends one question you choose — never this conversation.</label>
           <div class="settings-actions"><button type="submit">Save URL</button><button type="button" class="secondary" id="serviceConnectBtn">Connect</button><button type="button" class="secondary hidden" id="serviceSiteBtn">Open site</button></div>
           <p class="settings-status" id="serviceStatusText"></p>
           <div id="serviceDetails" class="service-details">
@@ -388,7 +388,7 @@
         <form id="settingsForm" class="settings-card settings-group">
           <h3>Models, language &amp; look</h3>
           <p class="settings-help">Soul Offline works with no extra software. A local model or Premium remote endpoint is optional. Free never applies a leftover Brave key.</p>
-          <label><span data-i18n="language">Interface language</span><select id="languageSelect"><option value="en">English</option><option value="es">EspaÃ±ol</option><option value="fr">FranÃ§ais</option><option value="de">Deutsch</option></select></label>
+          <label><span data-i18n="language">Interface language</span><select id="languageSelect"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option><option value="de">Deutsch</option></select></label>
           <label>Provider<select id="providerSelect"><option value="offline">Soul Offline</option><option value="local">Local model service (Ollama /api/chat)</option><option value="compatible">Compatible remote endpoint (Premium /chat/completions)</option></select></label>
           <label>Endpoint<input id="endpointInput" placeholder="http://127.0.0.1:11434 or HTTPS Premium base URL" /></label>
           <label>Model<input id="modelInput" placeholder="Model name" /></label>
@@ -396,14 +396,14 @@
           <label class="check"><input type="checkbox" id="clearKeyInput" /> Clear stored API key</label>
           <label>Broad web-search key (Premium)<input id="searchApiKeyInput" type="password" autocomplete="off" placeholder="Brave Search API key; leave blank to keep" /></label>
           <label class="check"><input type="checkbox" id="clearSearchKeyInput" /> Clear stored web-search key</label>
-          <p class="settings-help">Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Free never applies a stored Brave key. Brave remains a Premium local testing gate, not a live payment unlock. Local models stay on loopback; pasted /api/chat or /chat/completions paths are not doubled. Lookups stay in the desktop process â€” the renderer does not fetch YouTube or Spotify HTML.</p>
+          <p class="settings-help">Public web lookup after you ask. Not a full-internet index. Wikipedia/Wikimedia, Internet Archive, optional keyed search, pages you open, plus official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Free never applies a stored Brave key. Brave remains a Premium local testing gate, not a live payment unlock. Local models stay on loopback; pasted /api/chat or /chat/completions paths are not doubled. Lookups stay in the desktop process — the renderer does not fetch YouTube or Spotify HTML.</p>
           <p class="settings-status" id="premiumFieldsNote"></p>
           <div class="appearance-fields"><label>Background color<input id="themeBackground" type="color" value="#000000" /></label><label>Panel color<input id="themePanel" type="color" value="#1c1c1e" /></label><label>Accent color<input id="themeAccent" type="color" value="#0a84ff" /></label></div>
           <label>Window surface opacity <span id="themeTransparencyValue">96%</span><input id="themeTransparency" type="range" min="65" max="100" value="96" /></label>
           <label class="check"><input type="checkbox" id="themeRgb" /> Animated RGB lighting effects (Premium)</label>
           <h3>Window look</h3>
           <p class="settings-help">Colors apply to Eidovara only. RGB lighting is a Premium test gate.</p>
-          <fieldset class="companion-settings" id="settings-voices"><legend>Voices &amp; presence</legend><p class="settings-help">Playback uses voices already installed on this Windows PC. Eidovara does not ship a neural TTS engine. Presence is decorative CSS or a local image â€” not a live model, VRM, or MakeHuman. Diagnostics lists the first-party and Chromium engines that actually ship (Soul kernel, WebGL lathe, Web Audio, procedural ambient, Media Session, stay-awake). Three.js, React, Kokoro, Piper, and VRM stay off.</p><div class="appearance-fields"><label>Avatar<select id="avatarMode"><option value="3d">3D-styled orb</option><option value="2d">2D character</option><option value="hidden">Hidden</option></select></label><label>Motion<select id="avatarMotion"><option value="gentle">Gentle</option><option value="full">Lively</option><option value="reduced">Reduced</option></select></label><label>System voice<select id="voiceSelect"><option value="">OS default</option></select></label></div><label class="check"><input type="checkbox" id="voiceEnabled" /> Read new Soul replies aloud</label><label class="check"><input type="checkbox" id="voiceMute" /> Mute speech</label><div class="appearance-fields"><label>Voice speed<input id="voiceRate" type="range" min="0.5" max="2" step="0.1" value="1" /></label><label>Voice pitch<input id="voicePitch" type="range" min="0.5" max="2" step="0.1" value="1" /></label><button type="button" class="secondary" id="voicePreviewBtn">Preview voice</button></div><small id="voiceSupportStatus">Uses voices installed on this OS via speechSynthesis. Eidovara does not ship a neural TTS engine. Voice input is optional and requires microphone access.</small><div id="adultAvatarSettings" class="adult-avatar-settings hidden"><strong>Adult fictional avatar (18+ only)</strong><p>These local controls apply only to Soul's fictional avatar. Real-person likenesses, age-ambiguous characters, and imported-model sexualization are not supported.</p><label class="check"><input type="checkbox" id="adultPresentation" /> Allow optional non-photorealistic nude presentation</label><div class="appearance-fields"><label>Height<input id="bodyHeight" type="range" min="0" max="100" value="50" /></label><label>Build<input id="bodyBuild" type="range" min="0" max="100" value="50" /></label><label>Body shape<input id="bodyCurves" type="range" min="0" max="100" value="50" /></label></div><small>Visible only while legal-adult status, Adult Soul, and current consent are all active. Revoking consent disables presentation.</small></div>          </fieldset>
+          <fieldset class="companion-settings" id="settings-voices"><legend>Voices &amp; presence</legend><p class="settings-help">Playback uses voices already installed on this Windows PC. Eidovara does not ship a neural TTS engine. Presence is decorative CSS or a local image — not a live model, VRM, or MakeHuman. Diagnostics lists the first-party and Chromium engines that actually ship (Soul kernel, WebGL lathe, Web Audio, procedural ambient, Media Session, stay-awake). Three.js, React, Kokoro, Piper, and VRM stay off.</p><div class="appearance-fields"><label>Avatar<select id="avatarMode"><option value="3d">3D-styled orb</option><option value="2d">2D character</option><option value="hidden">Hidden</option></select></label><label>Motion<select id="avatarMotion"><option value="gentle">Gentle</option><option value="full">Lively</option><option value="reduced">Reduced</option></select></label><label>System voice<select id="voiceSelect"><option value="">OS default</option></select></label></div><label class="check"><input type="checkbox" id="voiceEnabled" /> Read new Soul replies aloud</label><label class="check"><input type="checkbox" id="voiceMute" /> Mute speech</label><div class="appearance-fields"><label>Voice speed<input id="voiceRate" type="range" min="0.5" max="2" step="0.1" value="1" /></label><label>Voice pitch<input id="voicePitch" type="range" min="0.5" max="2" step="0.1" value="1" /></label><button type="button" class="secondary" id="voicePreviewBtn">Preview voice</button></div><small id="voiceSupportStatus">Uses voices installed on this OS via speechSynthesis. Eidovara does not ship a neural TTS engine. Voice input is optional and requires microphone access.</small><div id="adultAvatarSettings" class="adult-avatar-settings hidden"><strong>Adult fictional avatar (18+ only)</strong><p>These local controls apply only to Soul's fictional avatar. Real-person likenesses, age-ambiguous characters, and imported-model sexualization are not supported.</p><label class="check"><input type="checkbox" id="adultPresentation" /> Allow optional non-photorealistic nude presentation</label><div class="appearance-fields"><label>Height<input id="bodyHeight" type="range" min="0" max="100" value="50" /></label><label>Build<input id="bodyBuild" type="range" min="0" max="100" value="50" /></label><label>Body shape<input id="bodyCurves" type="range" min="0" max="100" value="50" /></label></div><small>Visible only while legal-adult status, Adult Soul, and current consent are all active. Revoking consent disables presentation.</small></div>          </fieldset>
           <div class="settings-actions"><button type="submit" data-i18n="save">Save settings</button><button type="button" class="secondary" id="openDataBtn">Open local data folder</button><button type="button" class="secondary" id="diagnosticsBtn" data-i18n="diagShow">Show diagnostics</button></div>
           <p class="settings-status" id="settingsStatus"></p>
         </form>
@@ -436,7 +436,7 @@
           <label class="check"><input type="checkbox" id="openAtLoginInput" /> <span data-i18n="openAtLogin">Open at Windows sign-in</span></label>
           <label class="check"><input type="checkbox" id="pinCompanionInput" /> <span data-i18n="pinCompanion">Pin companion dock</span></label>
           <p class="settings-help" id="openAtLoginHelp">Open at login uses Electron's Windows login-item setting. It is not available on this host if you are not on Windows.</p>
-          <p class="settings-help" data-i18n="overlayHelp">Overlays are Eidovara windows. Discord is their website in a sandboxed guest session â€” not an official Discord overlay, not affiliated, and not injection into other games. Guest browsing is HTTPS you open. Assist never receives Discord tokens or guest DOM.</p>
+          <p class="settings-help" data-i18n="overlayHelp">Overlays are Eidovara windows. Discord is their website in a sandboxed guest session — not an official Discord overlay, not affiliated, and not injection into other games. Guest browsing is HTTPS you open. Assist never receives Discord tokens or guest DOM.</p>
           <div class="settings-actions"><button type="submit">Save desktop chrome</button></div>
           <p class="settings-status" id="desktopChromeStatus"></p>
         </form>
@@ -493,8 +493,8 @@
           <p class="np-honesty">Spotify-class transport in Eidovara chrome. Not a Spotify or YouTube embed. Local files use eidovara-media.</p>
           <h4>Playback</h4>
           <div class="np-extras">
-            <label>Rate <select id="mediaRate"><option value="0.5">0.5Ã—</option><option value="0.75">0.75Ã—</option><option value="1" selected>1Ã—</option><option value="1.25">1.25Ã—</option><option value="1.5">1.5Ã—</option><option value="2">2Ã—</option></select></label>
-            <button type="button" id="mediaLoopBtn" aria-label="Loop">ðŸ”ï¸Ž</button>
+            <label>Rate <select id="mediaRate"><option value="0.5">0.5×</option><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+            <button type="button" id="mediaLoopBtn" aria-label="Loop">🔁︎</button>
             <button type="button" id="mediaShuffleBtn" aria-label="Shuffle">Shuffle</button>
             <label class="sleep-timer"><span data-i18n="sleepTimer">Sleep</span>
               <select id="sleepTimerSelect" aria-label="Sleep timer for local media">
@@ -515,25 +515,25 @@
       </div>
     </div>
     <section class="media-dock now-playing-bar" id="mediaDock">
-      <button type="button" class="np-art" id="npArt" aria-label="Expand player"><span>â–¶</span></button>
+      <button type="button" class="np-art" id="npArt" aria-label="Expand player"><span>▶</span></button>
       <div class="media-now" id="mediaNow"><strong id="mediaTitle">Nothing playing</strong><small id="mediaKind"></small><span id="nowPlayingLabel" class="now-playing-tag" data-i18n="nowPlaying">Now playing</span></div>
       <div class="np-transport">
-        <button type="button" id="mediaPrevBtn" aria-label="Previous media">â®</button>
-        <button type="button" id="mediaPlayBtn" aria-label="Play or pause">â–¶</button>
-        <button type="button" id="mediaNextBtn" aria-label="Next media">â­</button>
+        <button type="button" id="mediaPrevBtn" aria-label="Previous media">⏮</button>
+        <button type="button" id="mediaPlayBtn" aria-label="Play or pause">▶</button>
+        <button type="button" id="mediaNextBtn" aria-label="Next media">⏭</button>
       </div>
       <div class="np-seek"><span id="mediaTime">0:00 / 0:00</span><input id="mediaSeek" type="range" min="0" max="0" value="0" step="0.1" aria-label="Seek" /></div>
       <div class="np-volume"><input id="mediaVolume" type="range" min="0" max="1" step="0.01" value="1" aria-label="Volume" /></div>
       <button type="button" id="mediaExpandBtn">Expand</button>
       <button type="button" id="mediaPopOutBtn">Pop out</button>
       <button type="button" id="mediaDockBtn">Dock</button>
-      <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">â™¡</button>
+      <button type="button" id="mediaFavoriteBtn" aria-label="Remember favorite">♡</button>
       <button type="button" id="mediaSimilarBtn">Similar</button>
       <button type="button" id="mediaSpotifyBtn">Spotify</button>
       <button type="button" id="mediaYouTubeBtn">YouTube</button>
       <button type="button" id="mediaArchiveBtn">Archive</button>
       <button type="button" id="mediaSourceBtn">Source</button>
-      <button type="button" id="mediaCloseBtn" aria-label="Close player">Ã—</button>
+      <button type="button" id="mediaCloseBtn" aria-label="Close player">×</button>
     </section>
   </section>
   <div class="setup-overlay hidden" id="adminOverlay" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
@@ -582,17 +582,17 @@
         <button type="button" class="secondary" data-legal="age">Age 18+</button>
       </div>
       <div class="legal-panel" id="legalAboutPanel">
-        <p>Â© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Created and owned by Soul Consciousness Studios. Published under the intended name Soul Consciousness Studiosâ„¢ (unregistered) â€” that name is the intended publisher only, not a formed entity that owns this IP unless a signed assignment exists. Eidovara is a trademark of Soul Consciousness Studios (unregistered). Source-available evaluation license â€” not OSI open source. Forks remain under LICENSE and may not be relicensed as MIT, Apache, GPL, or other open source. GitHub pull requests do not transfer ownership or trademark rights; contributor-assignment and entity-assignment files in the repository are unsigned templates only. Official product: unsigned Windows 10/11 x64 desktop software. The advertised download is the official unsigned installer Eidovara-v1.0.0-Windows-x64-Setup.exe from GitHub Releases, not a git clone. It is not Authenticode-signed or Microsoft-certified. Linux/macOS scripts are development targets.</p>
+        <p>© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Created and owned by Soul Consciousness Studios. Published under the intended name Soul Consciousness Studios™ (unregistered) — that name is the intended publisher only, not a formed entity that owns this IP unless a signed assignment exists. Eidovara is a trademark of Soul Consciousness Studios (unregistered). Source-available evaluation license — not OSI open source. Forks remain under LICENSE and may not be relicensed as MIT, Apache, GPL, or other open source. GitHub pull requests do not transfer ownership or trademark rights; contributor-assignment and entity-assignment files in the repository are unsigned templates only. Official product: unsigned Windows 10/11 x64 desktop software. The advertised download is the official unsigned installer Eidovara-v1.0.0-Windows-x64-Setup.exe from GitHub Releases, not a git clone. It is not Authenticode-signed or Microsoft-certified. Linux/macOS scripts are development targets.</p>
         <p>Soul is a software assistant with local continuity. It is not a human, therapy, medical/financial/legal advice, or proof of consciousness. Eidovara is not affiliated with Apple, Microsoft, Electron, GitHub, Spotify, YouTube, OBS, Marvel, or Disney, and is not an iOS or iPhone product, not Jarvis, and not a Marvel character. The interface uses a system font stack and does not require licensed SF Pro or SF Mono files. Eidovara, Soul, and the Soul kernel are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar. Electron, Chromium, Node.js, Windows, and Wikipedia/Wikimedia content remain their owners' property. Users own their own content. These notices are not legal advice or a government registration. Full LICENSE and TRADEMARKS.md ship with this installation.</p>
         <p>Premium in this version is local-admin testing only. There is no live payment, card storage, or automatic paid unlock. Neural TTS, VRM, MakeHuman, and OBS websocket control are not bundled. Playback uses voices already installed on this OS. Optional Worker <code>/v1/assist</code> is off unless you opt in; it is not Soul and never receives conversation history. v1.0.0 is a full free Alpha - all implemented capabilities are not blocked behind a paid entitlement.</p>
       </div>
       <div class="legal-panel hidden" id="legalTermsPanel">
-        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request â€” not a crawl or index of the whole internet. Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify/Archive chips open official HTTPS searches and do not rip streams or inject into other players.</p>
+        <p>Do not use Eidovara for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, or anti-cheat. Built-in research is a public web lookup after an explicit internet/web/online request — not a crawl or index of the whole internet. Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Local files play in Eidovara. Application launching asks Windows to open a local app you already have the right to use, after you confirm. YouTube/Spotify/Archive chips open official HTTPS searches and do not rip streams or inject into other players.</p>
         <p>Adult Mode stays off unless age-of-majority confirmation, enablement, and current revocable consent are all active. Until a later release, enablement is only in the private administrator panel (Ctrl+A, away from text fields). User-supplied media and apps remain your responsibility. Full terms ship as TERMS.md with the release.</p>
       </div>
       <div class="legal-panel hidden" id="legalPrivacyPanel">
         <p>Local-first: conversations, memories, settings, safety records, linked-app shortcuts, Adult Mode state, and the 18+ flag stay on this device. No owner-operated accounts, telemetry, or analytics.</p>
-        <p>What can leave: public web lookup after you ask (Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, and HTTPS pages you open â€” not a full-internet index); optional pasted model endpoints; official GitHub update checks; Spotify/YouTube/Archive HTTPS search chips you click; Eidovara service health/config/status after you confirm age (default https://api.eidovara.org, overridable in Settings); optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
+        <p>What can leave: public web lookup after you ask (Wikipedia/Wikimedia, Internet Archive catalog search, optional keyed search, and HTTPS pages you open — not a full-internet index); optional pasted model endpoints; official GitHub update checks; Spotify/YouTube/Archive HTTPS search chips you click; Eidovara service health/config/status after you confirm age (default https://api.eidovara.org, overridable in Settings); optional <code>/v1/assist</code> only after a separate opt-in (default off) with a single question you choose. Payment cards are not collected. Conversations are not sent to the Worker by default. See PRIVACY.md.</p>
       </div>
       <div class="legal-panel hidden" id="legalAgePanel">
         <p>You must be 18 or older. Declining this gate exits the app. Adult Mode is a separate triple gate. Local confirmation is not independent identity verification and is not a child-safety certification.</p>
@@ -603,16 +603,16 @@
   <div class="setup-overlay hidden" id="commandPalette" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
     <div class="setup-dialog palette-dialog">
       <div><h1 id="paletteTitle" data-i18n="paletteTitle">Jump in Eidovara</h1><p data-i18n="paletteLead">Local jump and search. No background crawler. Linked apps still confirm-launch. Assist is not Soul.</p></div>
-      <label class="setup-field"><span class="visually-hidden">Palette query</span><input id="paletteInput" type="search" maxlength="200" autocomplete="off" placeholder="Views, intents, settings, memory, 12 ft in mâ€¦" aria-label="Command palette" /></label>
+      <label class="setup-field"><span class="visually-hidden">Palette query</span><input id="paletteInput" type="search" maxlength="200" autocomplete="off" placeholder="Views, intents, settings, memory, 12 ft in m…" aria-label="Command palette" /></label>
       <ul class="palette-results" id="paletteResults" role="listbox" aria-label="Palette results"></ul>
       <div id="paletteList" class="palette-list hidden" role="listbox" aria-label="Commands"></div>
-      <p class="palette-hint" data-i18n="paletteHint">â†‘â†“ to move Â· Enter to run Â· Esc to close Â· Ctrl+K</p>
+      <p class="palette-hint" data-i18n="paletteHint">↑↓ to move · Enter to run · Esc to close · Ctrl+K</p>
       <div class="setup-actions"><button type="button" class="secondary" id="paletteCloseBtn">Close</button></div>
     </div>
   </div>
   <div class="setup-overlay hidden" id="cheatsheetOverlay" role="dialog" aria-modal="true" aria-labelledby="cheatsheetTitle">
     <div class="setup-dialog admin-dialog">
-      <div><h1 id="cheatsheetTitle" data-i18n="cheatsheetTitle">Keyboard cheatsheet</h1><p data-i18n="cheatsheetLead">Eidovara shortcuts. This overlay is in-app only â€” it does not inject into games or other processes.</p></div>
+      <div><h1 id="cheatsheetTitle" data-i18n="cheatsheetTitle">Keyboard cheatsheet</h1><p data-i18n="cheatsheetLead">Eidovara shortcuts. This overlay is in-app only — it does not inject into games or other processes.</p></div>
       <div id="cheatsheetList" class="cheatsheet-list"></div>
       <div class="setup-actions"><button type="button" class="secondary" id="cheatsheetCloseBtn" data-i18n="cancel">Close</button></div>
     </div>
@@ -626,7 +626,7 @@
         <div><dt>Ctrl+A</dt><dd>Private admin (not inside a text field)</dd></div>
         <div><dt>Enter</dt><dd>Send a message to Soul</dd></div>
         <div><dt>Shift+Enter</dt><dd>New line in the composer</dd></div>
-        <div><dt>Hold ðŸŽ™</dt><dd>Dictate on this PC. No neural TTS is bundled.</dd></div>
+        <div><dt>Hold 🎙</dt><dd>Dictate on this PC. No neural TTS is bundled.</dd></div>
         <div><dt>Ctrl+Shift+O</dt><dd data-i18n="shortcutOverlays">Jump to workspace overlays (chat, browse, Discord guest). In-app only.</dd></div>
         <div><dt>Esc</dt><dd>Close a dialog. Overlay chrome also closes on Esc unless the guest page is focused.</dd></div>
       </dl>
