@@ -1,4 +1,4 @@
-﻿# Security checks: full test suite, syntax checks, dependency audit, secret scan,
+# Security checks: full test suite, syntax checks, dependency audit, secret scan,
 # SPDX header coverage, and license inventory. Runs on every push to main,
 # every pull request, and weekly.
 # Note: this file previously held a copy of the Release Windows workflow, which
