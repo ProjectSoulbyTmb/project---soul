@@ -1,8 +1,10 @@
 node_modules/
 .pnpm-store/
 dist/
+dist-mac/
 .wrangler/
 **/.wrangler/
+coverage/
 private-patent/
 ip-evidence-private/
 copyright-deposit/
