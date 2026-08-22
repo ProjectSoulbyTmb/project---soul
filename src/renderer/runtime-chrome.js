@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { mapGamepadButtons, mapGamepadStick, nextFeelPattern, rumbleFromLevel } from '../core/adult-feel.js';
 import { probeRendererEngines } from '../core/runtime-engines.js';
@@ -79,3 +79,4 @@ export function attachFeelGamepad(opts = {}) {
 }
 
 export { probeRendererEngines };
+

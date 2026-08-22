@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { attachAdultFigure } from './adult-figure.js';
 import { createAdultAmbient } from './adult-ambient.js';
@@ -164,7 +164,7 @@ function renderVoices() {
       b.type = 'button';
       b.className = 'secondary';
       b.dataset.uri = voice.voiceURI;
-      b.textContent = `${voice.name} · ${voice.lang || ''} · ${voice.quality === 'os-neural' ? 'Windows Natural' : 'OS'} · ${voice.sexyScore}`;
+      b.textContent = `${voice.name} Â· ${voice.lang || ''} Â· ${voice.quality === 'os-neural' ? 'Windows Natural' : 'OS'} Â· ${voice.sexyScore}`;
       if (voice.voiceURI === view?.sounds?.coachVoiceURI) b.setAttribute('aria-current', 'true');
       list.append(b);
     }
@@ -197,7 +197,7 @@ function renderFeel() {
     pad.style.setProperty('--feel-y', `${100 - (feel.intensity || 55)}%`);
   }
   const level = $('#adultFeelLevel');
-  if (level) level.textContent = `Level ${Math.round((feel.lastLevel || 0) * 100)} · ${feel.pattern} · ${feel.syncMode}`;
+  if (level) level.textContent = `Level ${Math.round((feel.lastLevel || 0) * 100)} Â· ${feel.pattern} Â· ${feel.syncMode}`;
   const blank = $('#adultAutoBlank');
   if (blank) blank.value = String(feel.stealth?.autoBlankMs || 0);
   if ($('#adultHideRecents')) $('#adultHideRecents').checked = feel.stealth?.hideRecents === true;
@@ -259,7 +259,7 @@ function renderFigure() {
   if (meta && view.avatar) {
     const mesh = buildAdultMesh(view.avatar, view.avatar.render?.quality || 'ultra');
     const q = FIGURE_QUALITY[view.avatar.render?.quality] || FIGURE_QUALITY.ultra;
-    meta.textContent = `${q.label} · ${mesh.triangleCount.toLocaleString()} tris · score ${meshQualityScore(mesh)} · ${figure.backend.webgl ? (figure.backend.webgl2 ? 'WebGL2' : 'WebGL') : 'canvas'}${figure.backend.webgpu ? ' · WebGPU probed' : ''} · not VRM`;
+    meta.textContent = `${q.label} Â· ${mesh.triangleCount.toLocaleString()} tris Â· score ${meshQualityScore(mesh)} Â· ${figure.backend.webgl ? (figure.backend.webgl2 ? 'WebGL2' : 'WebGL') : 'canvas'}${figure.backend.webgpu ? ' Â· WebGPU probed' : ''} Â· not VRM`;
   }
 }
 
@@ -387,7 +387,7 @@ function bind() {
     ambient?.setFeelLevel(sample.level || 0);
     gamepadCtl?.rumble(sample.level || 0);
     const line = $('#adultFeelLevel');
-    if (line && sample) line.textContent = `Level ${Math.round((sample.level || 0) * 100)} · ${sample.pattern} · ${sample.syncMode}`;
+    if (line && sample) line.textContent = `Level ${Math.round((sample.level || 0) * 100)} Â· ${sample.pattern} Â· ${sample.syncMode}`;
     if (figure && view) {
       figure.setLife?.({
         behavior: view.session?.behavior || 'idle-breathe',
@@ -459,7 +459,7 @@ function bind() {
         const line = $('#adultGamepadStatus');
         if (!line) return;
         line.textContent = info.connected
-          ? `${info.connected} gamepad connected · ${view?.gamepadHonesty || GAMEPAD_HONESTY}`
+          ? `${info.connected} gamepad connected Â· ${view?.gamepadHonesty || GAMEPAD_HONESTY}`
           : (view?.gamepadHonesty || GAMEPAD_HONESTY);
       }
     });
@@ -488,3 +488,4 @@ window.eidovaraAdultSoul = {
 
 bind();
 void refresh();
+

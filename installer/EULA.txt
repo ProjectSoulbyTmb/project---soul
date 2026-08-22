@@ -1,11 +1,11 @@
-EIDOVARA WINDOWS INSTALLER NOTICE
+﻿EIDOVARA WINDOWS INSTALLER NOTICE
 Version 0.22.2 Stable Alpha
 
 This Setup program installs unsigned Windows 10/11 x64 desktop software.
 It is source-available for lawful evaluation, NOT open source, and is
 restricted to users 18 years of age or older.
 
-Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
+Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.
 Source-available; use governed by LICENSE + TERMS.
 Third-party material remains third-party.
 
@@ -46,16 +46,16 @@ program does not publish an export-license number.
 
 ======== LICENSE ========
 
-SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 
 Eidovara Source-Available Evaluation License 1.0
 
-Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
+Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.
 Source-available; use governed by this LICENSE and TERMS.md.
 Third-party material remains third-party.
 
-Soul Consciousness Studios is Tyler Michael Bosworth's intended publisher
+Soul Consciousness Studios is Soul Consciousness Studios's intended publisher
 name. This license does not form a company, transfer rights to an entity,
 register a copyright or trademark, or grant a patent. The SPDX identifier
 LicenseRef-Eidovara-Source-Available-1.0 names this file only. It is not an
@@ -65,7 +65,7 @@ OSI-approved, MIT, Apache, GPL, BSD, ISC, or Creative Commons license.
 
 Qualifying original expression in Eidovara's first-party source code,
 documentation, user-interface assets, and release materials may be
-protected by copyright and other applicable law. Tyler Michael Bosworth
+protected by copyright and other applicable law. Soul Consciousness Studios
 reserves all rights in that first-party material except the narrow
 permissions in section 2. Ideas, systems, methods, functionality, facts,
 names, titles, and short phrases are outside the copyright claim.
@@ -80,7 +80,7 @@ granted, whether expressly, by implication, estoppel, or otherwise.
 
 No patent license is granted. This LICENSE is not a patent, a patent
 application, or a covenant not to sue. Viewing or running the software
-does not license any patent claims Tyler Michael Bosworth may later file.
+does not license any patent claims Soul Consciousness Studios may later file.
 
 No trademark license is granted. Permission to view or run the software
 does not include permission to use Eidovara, Soul (as the name of
@@ -99,7 +99,7 @@ independent identity or age verification.
 
 3. Restrictions
 
-Without prior written permission from Tyler Michael Bosworth, you may not:
+Without prior written permission from Soul Consciousness Studios, you may not:
 
 - copy, modify, adapt, translate, redistribute, sublicense, sell, lease, host,
   or commercially exploit the source code or a derivative work;
@@ -127,7 +127,7 @@ The project does not accept source code, documentation, artwork, models, voices,
 or other copyrightable contributions without advance written approval. No issue,
 suggestion, patch, pull request, or other submission transfers ownership.
 Posting a pull request is not assignment. Material will be incorporated only
-after Tyler Michael Bosworth and the contributor execute a separate written
+after Soul Consciousness Studios and the contributor execute a separate written
 assignment (the unsigned template is docs/CONTRIBUTOR_ASSIGNMENT.md) or other
 agreement appropriate to that material. Unsolicited material may be declined
 or closed without incorporation. Platform terms governing material posted to
@@ -135,7 +135,7 @@ a hosting service remain independently applicable.
 
 A submission does not make the submitter a joint author, co-owner, licensee of
 the marks, or trademark owner of Eidovara, Soul Consciousness Studios, or
-other first-party names. Those marks remain claimed by Tyler Michael Bosworth
+other first-party names. Those marks remain claimed by Soul Consciousness Studios
 unless a privately executed assignment says otherwise. docs/CONTRIBUTOR_ASSIGNMENT.md
 and docs/ENTITY_IP_ASSIGNMENT.md are unsigned templates only.
 
@@ -182,3 +182,4 @@ maximum extent permitted by the law governing the particular user and claim.
 
 For commercial licensing or written permission, contact the repository owner
 through the official Eidovara repository.
+

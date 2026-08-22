@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * Procedural Adult Soul beds: heartbeat, breath, and a quiet drone.
- * Oscillator math only — not Kokoro/Piper and not imported porn audio.
+ * Oscillator math only â€” not Kokoro/Piper and not imported porn audio.
  */
 
 function clamp01(value) {
@@ -46,3 +46,4 @@ export function ambientLevels(tMs = 0, sounds = {}, feelLevel = 0) {
     mix: Math.round(master * 100)
   };
 }
+

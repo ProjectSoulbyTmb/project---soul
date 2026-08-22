@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 function trimSlash(s) { return String(s || '').replace(/\/+$/, ''); }
 
@@ -85,3 +85,4 @@ async function boundedJson(res, maxBytes = 5 * 1024 * 1024) {
   if (bytes.length > maxBytes) throw new Error('Provider response is too large.');
   try { return JSON.parse(bytes.toString('utf8')); } catch { return {}; }
 }
+

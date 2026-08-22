@@ -1,4 +1,4 @@
-# Eidovara terms of use
+﻿# Eidovara terms of use
 
 Last updated: August 21, 2026
 
@@ -14,7 +14,7 @@ Eidovara is restricted to users who are **18 years of age or older**. Adult Mode
 
 The public repository is source-available for lawful evaluation under the Eidovara Source-Available Evaluation License (`LicenseRef-Eidovara-Source-Available-1.0`). That is **not** an OSI open-source license and is not MIT, Apache, or GPL. Viewing, forking, or cloning the source does not grant rights to copy, modify, redistribute, sublicense, relicense as open source, or create competing products. A GitHub fork remains under LICENSE; it is not a donation of first-party rights. No patent, trademark, or trade-secret license is granted except the narrow run-and-evaluate permission in LICENSE.
 
-Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original first-party Eidovara expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name and does not own this IP unless a signed assignment to a formed entity exists. Electron, Chromium, Node.js, Windows, Wikimedia content, and user-created content remain their owners' property. See [OWNERSHIP.md](OWNERSHIP.md). This document is not legal advice, a court judgment, or a government registration.
+Copyright Â© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Qualifying original first-party Eidovara expression is claimed by Soul Consciousness Studios. Soul Consciousness Studios is an intended publisher name and does not own this IP unless a signed assignment to a formed entity exists. Electron, Chromium, Node.js, Windows, Wikimedia content, and user-created content remain their owners' property. See [OWNERSHIP.md](OWNERSHIP.md). This document is not legal advice, a court judgment, or a government registration.
 
 ## 3. Acceptable use
 
@@ -27,7 +27,7 @@ You may run an official unmodified Windows release for personal evaluation and l
 - scrape, rip, or download protected media catalogs;
 - misrepresent Eidovara as affiliated with Apple, Microsoft, Electron, GitHub, Spotify, YouTube, OBS, Wikimedia, or any other third party.
 
-**Research** is user-directed. Built-in research is a public web lookup after an explicit internet, web, or online request — Wikipedia/Wikimedia, an optional Internet Archive catalog search, optional keyed Brave Search (a key **you** supply, subject to Brave's terms), bounded HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Eidovara is not a general-purpose crawler.
+**Research** is user-directed. Built-in research is a public web lookup after an explicit internet, web, or online request â€” Wikipedia/Wikimedia, an optional Internet Archive catalog search, optional keyed Brave Search (a key **you** supply, subject to Brave's terms), bounded HTTPS pages you open, and official YouTube/Spotify/Archive search chips. Eidovara is not a general-purpose crawler.
 
 **Application launching** is user-confirmed: Eidovara asks Windows to open a user-selected local `.exe` or `.lnk` after on-screen confirmation. You must already have the right to install and use that application. Eidovara does not inject into games or confer third-party licenses.
 
@@ -53,7 +53,7 @@ Eidovara is not affiliated with, endorsed by, or a product of Apple Inc., Micros
 
 Eidovara, Soul, and the Soul kernel are first-party names. They are **not** Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and this software is not affiliated with those owners. Distinctive third-party slogans are not Eidovara wake words. Command-palette or quick-open UI, if present, is first-party workspace chrome.
 
-Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (the software self-model feature name) and Soul Consciousness Studios (intended publisher name) are claimed **unregistered** marks of Tyler Michael Bosworth. Do not use ® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
+Eidovara is a trademark of Soul Consciousness Studios (unregistered). Soul (the software self-model feature name) and Soul Consciousness Studios (intended publisher name) are claimed **unregistered** marks of Soul Consciousness Studios. Do not use Â® unless a registration covering the relevant goods or services actually issues. Soul Consciousness Studios is an intended publishing name; this document does not create a legal entity or government registration.
 
 ## 7. Platform, signing, and export
 
@@ -72,3 +72,4 @@ THE SOFTWARE IS PROVIDED "AS IS." Warranty and liability terms in LICENSE apply 
 ## 10. Contact
 
 For commercial licensing or written permission, contact the repository owner through the official Eidovara GitHub repository.
+

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 import path from 'node:path';
@@ -67,8 +67,8 @@ const rows = unique.map((full) => {
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const header = [
-  'Eidovara first-party deposit listing (local only — do not commit this directory).',
-  `Claimant: Tyler Michael Bosworth`,
+  'Eidovara first-party deposit listing (local only â€” do not commit this directory).',
+  `Claimant: Soul Consciousness Studios`,
   `Generated: ${new Date().toISOString()}`,
   `Files: ${rows.length}`,
   'This listing is not a U.S. Copyright Office registration.',
@@ -80,3 +80,4 @@ const body = rows.map((row) => `${row.sha256}  ${String(row.bytes).padStart(8, '
 fs.writeFileSync(path.join(OUT_DIR, 'MANIFEST.txt'), `${header}\n${body}\n`, 'utf8');
 fs.writeFileSync(path.join(OUT_DIR, 'README.txt'), `${header}\n\nUpload via copyright.gov yourself. Keep certificates private.\n`, 'utf8');
 console.log(`Wrote ${rows.length} first-party paths to ${path.relative(ROOT, OUT_DIR) || OUT_DIR}`);
+

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,3 +14,4 @@ if (!/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository)) throw new Error('Git
 const manifest = { version: pkg.version, url: `https://github.com/${repository}/releases/download/v${pkg.version}/${name}`, sha256, packageType: 'installer', notes: `Eidovara ${pkg.version} Windows installer` };
 fs.writeFileSync(path.join('dist', 'update.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 console.log(JSON.stringify(manifest, null, 2));
+

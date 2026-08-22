@@ -1,4 +1,5 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import { SoulEngine } from '../src/core/engine.js';import { JsonStore } from '../src/core/store.js';
 const dir=fs.mkdtempSync(path.join(os.tmpdir(),'soul-smoke-'));const s=new SoulEngine({store:new JsonStore({dataDir:dir})});const r=await s.respond('Hello Soul');if(!r.reply||r.state.conversations[0].messages.length!==2)process.exit(1);console.log('Eidovara core smoke test OK');
+

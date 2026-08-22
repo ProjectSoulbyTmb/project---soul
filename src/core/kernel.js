@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { classifyWorkspaceIntent } from './workspace.js';
 import { knowledgeEntry, matchProductIntent, shouldUseKnowledgeReply } from './knowledge.js';
@@ -420,7 +420,7 @@ export function soulOverlay(state = {}) {
     adultMode: Boolean(adult),
     sentience: false,
     label: enabled
-      ? `${name} is a software self-model on this device — not a claim of consciousness.`
+      ? `${name} is a software self-model on this device â€” not a claim of consciousness.`
       : 'Optional Soul setup is off. The workspace kernel is software, not a mind.'
   };
 }
@@ -489,7 +489,7 @@ export function researchResultActions(webResearch = {}, overlay = {}) {
       url: source.url,
       hostname: host,
       snippet: String(source.description || source.extract || '').slice(0, 180),
-      label: host ? `${title} · ${host}`.slice(0, 80) : title,
+      label: host ? `${title} Â· ${host}`.slice(0, 80) : title,
       auto: false
     }));
   }
@@ -540,9 +540,9 @@ export function disabledModuleReply(route, locale = 'en') {
   const title = route?.moduleId || 'that module';
   const copy = {
     en: `The ${title} module is turned off in Soul customization. Enable it in Settings when you want that workspace surface. Local Soul stays on this device.`,
-    es: `El módulo ${title} está desactivado en la personalización de Soul. Actívalo en Configuración. Soul local sigue en este dispositivo.`,
-    fr: `Le module ${title} est désactivé dans la personnalisation de Soul. Activez-le dans Paramètres. Soul local reste sur cet appareil.`,
-    de: `Das Modul ${title} ist in der Soul-Anpassung aus. Aktivieren Sie es unter Einstellungen. Lokales Soul bleibt auf diesem Gerät.`
+    es: `El mÃ³dulo ${title} estÃ¡ desactivado en la personalizaciÃ³n de Soul. ActÃ­valo en ConfiguraciÃ³n. Soul local sigue en este dispositivo.`,
+    fr: `Le module ${title} est dÃ©sactivÃ© dans la personnalisation de Soul. Activez-le dans ParamÃ¨tres. Soul local reste sur cet appareil.`,
+    de: `Das Modul ${title} ist in der Soul-Anpassung aus. Aktivieren Sie es unter Einstellungen. Lokales Soul bleibt auf diesem GerÃ¤t.`
   };
   return copy[locale] || copy.en;
 }
@@ -557,10 +557,10 @@ export function applyPhrasing(text, knobs, locale = 'en') {
   const near = (value, fallback) => Math.abs(value - fallback) < 15;
   if (!near(formality, defaults.formality) && formality >= 70) {
     const extra = {
-      en: 'Stated plainly, as software on this device — not a person.',
+      en: 'Stated plainly, as software on this device â€” not a person.',
       es: 'Dicho con claridad: software en este dispositivo, no una persona.',
       fr: 'Dit clairement : un logiciel sur cet appareil, pas une personne.',
-      de: 'Klar gesagt: Software auf diesem Gerät, keine Person.'
+      de: 'Klar gesagt: Software auf diesem GerÃ¤t, keine Person.'
     }[locale] || '';
     if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
   }
@@ -568,8 +568,8 @@ export function applyPhrasing(text, knobs, locale = 'en') {
     const extra = {
       en: 'I can keep the wording sharp without pretending to be alive.',
       es: 'Puedo ser directo sin fingir que estoy vivo.',
-      fr: 'Je peux rester vif sans prétendre être vivant.',
-      de: 'Ich kann prägnant bleiben, ohne lebendig zu wirken.'
+      fr: 'Je peux rester vif sans prÃ©tendre Ãªtre vivant.',
+      de: 'Ich kann prÃ¤gnant bleiben, ohne lebendig zu wirken.'
     }[locale] || '';
     if (extra && !out.includes(extra)) out = `${out}\n\n${extra}`;
   }
@@ -577,3 +577,4 @@ export function applyPhrasing(text, knobs, locale = 'en') {
 }
 
 export { builtinModules, createRuntimeRegistry, FUTURE_VOICE_BACKEND, runtimeEngineCatalog, ENGINE_HONESTY };
+

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * Release-consistency contract.
@@ -7,7 +7,7 @@
  * silently drifted apart (worker advertising installers that no longer exist,
  * stale test literals, mismatched certification JSON). This file makes drift
  * impossible to merge: every surface must agree with src/core/release.js.
- * To ship a new version, change release.js (+ package.json) — this suite then
+ * To ship a new version, change release.js (+ package.json) â€” this suite then
  * forces every other surface to follow before CI goes green.
  */
 import test from 'node:test';
@@ -97,3 +97,4 @@ test('release pipeline derives artifact names from the version instead of frozen
   assert.match(smoke, /Filter 'Eidovara-\*-Windows-x64-Setup\.exe'/, 'install smoke test must glob the installer instead of hardcoding a version');
   assert.doesNotMatch(smoke, /Eidovara-\d+\.\d+\.\d+-Windows-x64-Setup\.exe/, 'install smoke test must not pin an exact installer filename');
 });
+

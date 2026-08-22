@@ -1,9 +1,9 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * Lightweight Adult Soul / Adult Media intent classifiers.
  * Kept free of schema/kernel/workspace imports so workspace routing cannot
- * cycle through adult-soul → schema → kernel → workspace.
+ * cycle through adult-soul â†’ schema â†’ kernel â†’ workspace.
  */
 import { classifyAdultFeelIntent } from './adult-feel.js';
 
@@ -31,3 +31,4 @@ export function classifyAdultMediaIntent(input) {
   if (/\b(?:vibemate|adult browser|private adult browse|ai sync)\b/.test(t)) return 'adult-media';
   return '';
 }
+

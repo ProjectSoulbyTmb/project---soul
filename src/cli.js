@@ -1,5 +1,5 @@
-#!/usr/bin/env node
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿#!/usr/bin/env node
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 import os from 'node:os';
@@ -24,7 +24,7 @@ function argValue(name) {
 const HELP = `Eidovara v${VERSION} CLI
 
 Restricted to users 18 or older. Source-available, not open source.
-Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
+Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.
 Use governed by LICENSE + TERMS. Third-party stays third-party.
 Official advertised product: unsigned Windows 10/11 x64 desktop software.
 Pass --i-am-18-or-older to confirm age and accept TERMS.md. Confirmation is
@@ -71,7 +71,7 @@ async function replyTo(text) {
   const res = await engine.respond(text);
   console.log(`soul> ${res.reply}`);
   const actions = res.kernel?.actions || [];
-  if (actions.length) console.log(`next> ${actions.map(a => a.label || a.type).join(' · ')}`);
+  if (actions.length) console.log(`next> ${actions.map(a => a.label || a.type).join(' Â· ')}`);
   return res;
 }
 
@@ -109,3 +109,4 @@ while (true) {
   }
 }
 rl.close();
+

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { app, BrowserWindow, WebContentsView, ipcMain, dialog, safeStorage, shell, protocol, Tray, Menu, nativeImage, powerSaveBlocker } from 'electron';
 import fs from 'node:fs';
@@ -236,7 +236,7 @@ function pushServiceStatus() {
   if (tray) {
     try {
       tray.setToolTip(status.presence === SERVICE_PRESENCE_ONLINE || status.presence === SERVICE_PRESENCE_RECONNECTING
-        ? `Eidovara · ${status.presence}`
+        ? `Eidovara Â· ${status.presence}`
         : 'Eidovara');
     } catch {}
   }
@@ -853,3 +853,4 @@ function discoverStartMenuApplications(limit = 500) {
   for (const root of roots) visit(root);
   return [...new Map(found.map(item => [item.path.toLowerCase(), item])).values()].sort((a, b) => a.name.localeCompare(b.name)).slice(0, limit);
 }
+

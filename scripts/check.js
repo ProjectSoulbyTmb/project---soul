@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import fs from 'node:fs';
 import path from 'node:path';
@@ -21,3 +21,4 @@ for (const file of files) {
   if (result.status !== 0) process.exit(result.status || 1);
 }
 console.log(`Syntax check OK (${files.length} files)`);
+

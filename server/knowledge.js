@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 export {
   ASSIST_VERSION,
@@ -12,3 +12,4 @@ export {
   isAbuseQuery,
   safePublicHref
 } from '../docs/knowledge.js';
+

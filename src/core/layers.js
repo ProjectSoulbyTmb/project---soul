@@ -1,11 +1,11 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * In-app consumer workspace layers for the Soul kernel.
  *
  * Patterns taken (not brands): command-palette jump, unified local search,
  * pin/reorder dashboard tiles, a timed focus block, on-device scratch capture,
- * and a keyboard cheatsheet. This is Eidovara chrome — not a fake OS shell,
+ * and a keyboard cheatsheet. This is Eidovara chrome â€” not a fake OS shell,
  * not an overlay injected into other processes, and not a cloud crawler.
  */
 
@@ -22,7 +22,7 @@ export const FOCUS_MAX_MINUTES = 90;
 export const FOCUS_DEFAULT_MINUTES = 25;
 
 export const SETTINGS_LABELS = Object.freeze([
-  { id: 'set-language', title: 'Interface language', keywords: ['locale', 'español', 'français', 'deutsch'], view: 'settings', panel: 'assistantBehaviorForm' },
+  { id: 'set-language', title: 'Interface language', keywords: ['locale', 'espaÃ±ol', 'franÃ§ais', 'deutsch'], view: 'settings', panel: 'assistantBehaviorForm' },
   { id: 'set-provider', title: 'Conversation engine provider', keywords: ['offline', 'ollama', 'endpoint'], view: 'settings' },
   { id: 'set-service', title: 'Eidovara service URL', keywords: ['worker', 'connect', 'health'], action: { type: 'open-service' } },
   { id: 'set-assist', title: 'Optional Worker helper /v1/assist', keywords: ['soul-online', 'opt-in', 'assist'], action: { type: 'open-service' } },
@@ -35,8 +35,8 @@ export const SETTINGS_LABELS = Object.freeze([
 ]);
 
 export const CHEATSHEET_ENTRIES = Object.freeze([
-  { keys: 'Ctrl+K', also: 'Ctrl+P', id: 'palette', summary: 'Command palette — jump to views, intents, settings, legal, modules, overlays, and linked apps.' },
-  { keys: 'Ctrl+Shift+O', id: 'overlays', summary: 'Jump to the Play desk overlay menu (chat, browse, Discord guest). In-app only — does not fire inside other games.' },
+  { keys: 'Ctrl+K', also: 'Ctrl+P', id: 'palette', summary: 'Command palette â€” jump to views, intents, settings, legal, modules, overlays, and linked apps.' },
+  { keys: 'Ctrl+Shift+O', id: 'overlays', summary: 'Jump to the Play desk overlay menu (chat, browse, Discord guest). In-app only â€” does not fire inside other games.' },
   { keys: 'Ctrl+/', also: '?', id: 'cheatsheet', summary: 'Keyboard cheatsheet. ? is ignored while a text field is focused.' },
   { keys: 'Ctrl+A', id: 'admin', summary: 'Private administrator panel. Does not steal select-all from input, textarea, or select fields.' },
   { keys: 'Esc', id: 'escape', summary: 'Close palette, cheatsheet, legal, admin, or cancelable setup overlays.' },
@@ -443,7 +443,7 @@ export function cheatsheetEntries({ voiceInput = false } = {}) {
   const rows = [...CHEATSHEET_ENTRIES];
   if (voiceInput) {
     rows.push({
-      keys: 'Hold 🎙',
+      keys: 'Hold ðŸŽ™',
       id: 'dictate',
       summary: 'Hold the dictation control to talk; release to stop. Uses OS speech recognition. Eidovara does not ship a neural TTS engine.'
     });
@@ -468,3 +468,4 @@ export function workspacePublicView(workspace, now = Date.now()) {
     favorites: layers.favorites
   };
 }
+

@@ -1,4 +1,4 @@
-/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+﻿/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 
 .adult-soul-studio {
@@ -147,3 +147,4 @@ body.adult-blanked #adultStealthLock {
   .adult-soul-studio { grid-template-columns: 1fr; }
   #adultFigureCanvas { height: 420px; }
 }
+

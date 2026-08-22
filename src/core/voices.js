@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /** OS-installed speechSynthesis voices. Eidovara does not ship a neural TTS engine. */
 
@@ -65,3 +65,4 @@ export const FUTURE_VOICE_BACKEND = Object.freeze({
   available: false,
   note: 'Eidovara does not ship a neural TTS engine. Playback uses speechSynthesis voices already installed on this OS. A future backend may plug in here; Piper, ElevenLabs, and similar engines are not vendored.'
 });
+

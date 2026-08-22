@@ -1,14 +1,14 @@
-# Copyright notices and U.S. registration (owner checklist)
+﻿# Copyright notices and U.S. registration (owner checklist)
 
 This file tells the owner how to **notice** first-party files and, separately, how to **register** a work at the U.S. Copyright Office. It is **not legal advice**, not a filing, and not a claim that Eidovara is registered.
 
-Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](../LICENSE) + [TERMS.md](../TERMS.md). Third-party stays third-party.
+Copyright Â© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](../LICENSE) + [TERMS.md](../TERMS.md). Third-party stays third-party.
 
-**This repository is not a U.S. Copyright Office registration.** There is no registration number, certificate, or deposit receipt in git. A `©` line, LICENSE, git history, and SHA-256 hashes are evidence of a claim, not a registration.
+**This repository is not a U.S. Copyright Office registration.** There is no registration number, certificate, or deposit receipt in git. A `Â©` line, LICENSE, git history, and SHA-256 hashes are evidence of a claim, not a registration.
 
 ## Claimant
 
-- **Copyright claimant:** Tyler Michael Bosworth
+- **Copyright claimant:** Soul Consciousness Studios
 - **Intended publisher name:** Soul Consciousness Studios (does not own copyright unless a formed entity receives a signed assignment)
 - **Works claimed:** qualifying original first-party Eidovara expression (source, tests, first-party docs, first-party UI assets, release materials he authored)
 - **Not claimed:** ideas, methods, systems, facts, names, titles, short phrases; Electron, Chromium, Node.js, Windows; Wikipedia/Wikimedia content; user content; third-party marks and media
@@ -20,7 +20,7 @@ See [OWNERSHIP.md](../OWNERSHIP.md), [NOTICE.md](../NOTICE.md), [COPYRIGHT.txt](
 Use **one** header. Do not stack multiple copyright blocks or paste third-party licenses into first-party files. JavaScript / CSS / CJS (first two lines):
 
 ```
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 ```
 
@@ -29,7 +29,7 @@ That SPDX identifier names the Eidovara Source-Available Evaluation License in L
 HTML (comment after `<!doctype html>` on first-party pages):
 
 ```
-<!-- SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth -->
+<!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
 <!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
 ```
 
@@ -38,18 +38,18 @@ Markdown / text legal instruments already carry a copyright line in the body; do
 Rules:
 
 1. Apply only to **first-party** files. Do not stamp Electron, Chromium, Node.js, or other third-party trees.
-2. Do not add a second header to files that already carry the SPDX pair or an equivalent Tyler Michael Bosworth copyright line.
+2. Do not add a second header to files that already carry the SPDX pair or an equivalent Soul Consciousness Studios copyright line.
 3. Absence of a header does **not** mean a first-party file is unlicensed or third-party; LICENSE still governs.
 4. First-party `src/`, `docs/` HTML/CSS/JS, `scripts/`, and `server/` already carry this SPDX pair as of the IP self-attestation. **Do not restamp** those files with a second header.
-5. Do not add ®, a copyright-office registration number, or a patent number. Do not change the SPDX identifier to MIT or GPL.
+5. Do not add Â®, a copyright-office registration number, or a patent number. Do not change the SPDX identifier to MIT or GPL.
 
 ## How to put a copyright notice on a work
 
 A notice is optional for works first published on or after 1 March 1989 under U.S. law, but it is useful. A conventional notice has three parts:
 
-1. The symbol ©, the word "Copyright", or "Copr."
+1. The symbol Â©, the word "Copyright", or "Copr."
 2. The year of first publication of this version
-3. The name of the copyright owner (here: Tyler Michael Bosworth)
+3. The name of the copyright owner (here: Soul Consciousness Studios)
 
 Place it on LICENSE, NOTICE, About screens, installer EULA, website footers, and (when adding new files) the standard header above.
 
@@ -57,7 +57,7 @@ Do **not** write "registered with the Copyright Office" unless a registration ha
 
 ## U.S. Copyright Office registration (owner-only)
 
-Registration, if desired, is done by the **owner or the owner's agent** at [https://www.copyright.gov](https://www.copyright.gov) (electronic registration through the Copyright Office's eCO / current portal). **This commit does not register anything.** A Cloud Agent cannot log into copyright.gov as Tyler Michael Bosworth, pay the fee, or upload a deposit.
+Registration, if desired, is done by the **owner or the owner's agent** at [https://www.copyright.gov](https://www.copyright.gov) (electronic registration through the Copyright Office's eCO / current portal). **This commit does not register anything.** A Cloud Agent cannot log into copyright.gov as Soul Consciousness Studios, pay the fee, or upload a deposit.
 
 ### Checklist (complete privately with counsel)
 
@@ -81,3 +81,4 @@ Copyright does not protect ideas, procedures, processes, systems, methods of ope
 - Do not invent a registration number or "Txu" / "VAu" identifier.
 - Do not apply GPL, MIT, Apache, or CC-BY to first-party Eidovara code; LICENSE is the Eidovara Source-Available Evaluation License.
 - Do not include other people's lyrics, novels, or copied product licenses as if they were first-party.
+

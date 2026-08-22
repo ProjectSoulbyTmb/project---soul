@@ -1,4 +1,4 @@
-# Security checks: full test suite, syntax checks, dependency audit, secret scan,
+﻿# Security checks: full test suite, syntax checks, dependency audit, secret scan,
 # SPDX header coverage, and license inventory. Runs on every push to main,
 # every pull request, and weekly.
 # Note: this file previously held a copy of the Release Windows workflow, which
@@ -49,7 +49,7 @@ jobs:
           $files = Get-ChildItem -Recurse -Path . -File -Include *.js,*.cjs | Where-Object { $_.FullName -notmatch 'node_modules|\\.github|\\tests\\' }
           foreach ($file in $files) {
             $header = (Get-Content -LiteralPath $file.FullName -TotalCount 6) -join "`n"
-            if (-not ($header -match 'SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth')) { $missing += $file.FullName }
+            if (-not ($header -match 'SPDX-FileCopyrightText: 2026 Soul Consciousness Studios')) { $missing += $file.FullName }
             if (-not ($header -match 'SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0')) { $missing += $file.FullName }
           }
           if ($missing.Count -gt 0) { throw "Missing SPDX headers in: $($missing -join ', ')" }
@@ -60,3 +60,4 @@ jobs:
         with:
           name: spdx-licenses
           path: sbom/spdx-licenses.json
+

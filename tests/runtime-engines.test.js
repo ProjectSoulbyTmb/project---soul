@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -81,7 +81,7 @@ test('kernel status exposes the engine catalog', () => {
   assert.match(kernel.engineHonesty, /Soul kernel/);
 });
 
-test('procedural ambient envelopes stay in 0–1 and honor mute', () => {
+test('procedural ambient envelopes stay in 0â€“1 and honor mute', () => {
   const live = ambientLevels(800, { ambient: { heartbeat: true, breath: true, drone: true }, mix: { ambient: 80 }, mute: false }, 0.6);
   assert.ok(live.heartbeat >= 0 && live.heartbeat <= 1);
   assert.ok(live.breath >= 0 && live.breath <= 1);
@@ -116,3 +116,4 @@ test('blocked engines are not imported and stay-awake uses Electron powerSaveBlo
   assert.match(pkg, /"version": "0\.22\.2"/);
   assert.doesNotMatch(pkg, /"react"|"vue"|"three"|"babylonjs"/);
 });
+

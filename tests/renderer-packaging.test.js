@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -28,3 +28,4 @@ test('Windows executable metadata uses the electron-builder 26 option', () => {
   assert.equal(pkg.build.win.signExecutable, false);
   assert.equal(Object.hasOwn(pkg.build.win, 'signAndEditExecutable'), false);
 });
+

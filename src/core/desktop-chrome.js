@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * Next-layer desktop chrome for Eidovara (not a cloned brand).
@@ -127,7 +127,7 @@ function convertTemp(value, from, to) {
 }
 
 export function evaluateConversion(query) {
-  const text = String(query || '').trim().toLowerCase().replace(/°/g, '');
+  const text = String(query || '').trim().toLowerCase().replace(/Â°/g, '');
   const match = text.match(/^(-?\d+(?:\.\d+)?)\s*([a-z]+)\s+(?:in|to|as)\s+([a-z]+)$/i);
   if (!match) return null;
   const value = Number(match[1]);
@@ -150,7 +150,7 @@ export function evaluateConversion(query) {
 }
 
 export function evaluateArithmetic(query) {
-  const text = String(query || '').trim().replace(/×/g, '*').replace(/÷/g, '/').replace(/,/g, '');
+  const text = String(query || '').trim().replace(/Ã—/g, '*').replace(/Ã·/g, '/').replace(/,/g, '');
   if (!/^[-+*/().\s0-9]+$/.test(text) || !/\d/.test(text)) return null;
   if (!/[-+*/]/.test(text)) return null;
   try {
@@ -189,3 +189,4 @@ export function loginItemPayload(openAtLogin, { platform = process.platform } = 
     openAsHidden: false
   };
 }
+

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { defaultKernelState, migrateKernel } from './kernel.js';
 
@@ -90,3 +90,4 @@ export function migrateProfile(input, profileId = 'default') {
 
 export function clamp01(value) { return Math.max(0, Math.min(1, Number(value))); }
 export function uid(prefix = 'id') { return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 10)}`; }
+

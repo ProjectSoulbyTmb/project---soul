@@ -1,8 +1,8 @@
-# Eidovara brand use (short, safe)
+﻿# Eidovara brand use (short, safe)
 
-This is a **usage note** for Tyler Michael Bosworth and anyone given written permission. It is not a license to the public, not a registration, and not legal advice.
+This is a **usage note** for Soul Consciousness Studios and anyone given written permission. It is not a license to the public, not a registration, and not legal advice.
 
-Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (feature name) and Soul Consciousness Studios (intended publisher name) are likewise unregistered marks of Tyler Michael Bosworth. See [TRADEMARKS.md](../TRADEMARKS.md).
+Eidovara is a trademark of Soul Consciousness Studios (unregistered). Soul (feature name) and Soul Consciousness Studios (intended publisher name) are likewise unregistered marks of Soul Consciousness Studios. See [TRADEMARKS.md](../TRADEMARKS.md).
 
 ## Name
 
@@ -13,8 +13,8 @@ Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (feature 
 
 ## Marks and symbols
 
-- Unregistered claim: ™ is optional in running text; if used, it means unregistered.
-- Never use ® unless a registration covering that mark and those goods/services has issued.
+- Unregistered claim: â„¢ is optional in running text; if used, it means unregistered.
+- Never use Â® unless a registration covering that mark and those goods/services has issued.
 - Never invent a USPTO number.
 
 ## Fonts and look
@@ -39,4 +39,5 @@ Eidovara is a trademark of Tyler Michael Bosworth (unregistered). Soul (feature 
 - Assist (website/Worker helper) is not Soul.
 - No live payments in the current release; no Authenticode claim; no patent-pending claim.
 
-Written permission from Tyler Michael Bosworth is required for any other branding use. See [BRAND_ASSET_POLICY.md](BRAND_ASSET_POLICY.md).
+Written permission from Soul Consciousness Studios is required for any other branding use. See [BRAND_ASSET_POLICY.md](BRAND_ASSET_POLICY.md).
+

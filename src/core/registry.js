@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { builtinModules, validateModule } from './modules.js';
 
@@ -90,3 +90,4 @@ export function matchCustomAction(input, actions = []) {
     return command && (text === command || text.includes(command));
   }) || null;
 }
+

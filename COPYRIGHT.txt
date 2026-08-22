@@ -1,15 +1,15 @@
-COPYRIGHT CLAIM (ONE PAGE)
+﻿COPYRIGHT CLAIM (ONE PAGE)
 Product: Eidovara (Windows desktop software; Soul is a software self-model feature)
-Claimant: Tyler Michael Bosworth
+Claimant: Soul Consciousness Studios
 Intended publisher name: Soul Consciousness Studios
   (not a formed company; does not own this copyright unless a signed assignment exists)
 
-Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved.
+Copyright (c) 2026 Soul Consciousness Studios. All rights reserved.
 Source-available; use governed by LICENSE + TERMS. Third-party stays third-party.
 
 This page is a copyright notice and ownership claim for qualifying original
 first-party Eidovara expression (source, documentation, first-party UI assets,
-and release materials authored by Tyler Michael Bosworth).
+and release materials authored by Soul Consciousness Studios).
 
 This page is not a U.S. Copyright Office registration or certificate.
 This page is NOT:
@@ -31,3 +31,4 @@ How to register (owner-only, copyright.gov): docs/COPYRIGHT.md
 Repository self-attestation (not a government filing): docs/IP_CERTIFICATION.md
 Trademark usage: TRADEMARKS.md
 Trademark filing checklist (not filed): docs/TRADEMARK_FILING.md
+

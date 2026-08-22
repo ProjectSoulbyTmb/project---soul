@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -34,3 +34,4 @@ test('player loadMedia function exists after Feel analyser', () => {
   assert.match(player, /function loadMedia\(nextIndex, autoplay = true\)/);
   assert.match(player, /function attachFeel\(player\)/);
 });
+

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { isExplicitInternetRequest } from '../core/workspace.js';
 import { officialSearchHandoffs } from '../core/entertainment.js';
@@ -672,7 +672,7 @@ export function researchOpenActions(webResearch) {
       url,
       hostname,
       snippet: sanitizeSnippet(source.description || source.extract || '', 180),
-      label: `${title} · ${hostname}`.slice(0, 80),
+      label: `${title} Â· ${hostname}`.slice(0, 80),
       auto: false
     };
   }).filter(Boolean);
@@ -685,7 +685,7 @@ export function researchOpenActions(webResearch) {
       url,
       hostname,
       snippet: sanitizeSnippet(item.title || item.provider || '', 180),
-      label: `${item.provider || 'Search'} · ${hostname}`.slice(0, 80),
+      label: `${item.provider || 'Search'} Â· ${hostname}`.slice(0, 80),
       auto: false
     };
   }).filter(Boolean);
@@ -713,7 +713,7 @@ export function citeResearchInReply(reply, webResearch, internetError) {
     const block = sources.slice(0, 4).map((source, index) => {
       const host = source.hostname ? ` (${source.hostname})` : '';
       const snippet = sanitizeSnippet(source.description || source.extract || '', 240);
-      return `${index + 1}. ${source.title || 'Source'}${host}${snippet ? ` — ${snippet}` : ''}`;
+      return `${index + 1}. ${source.title || 'Source'}${host}${snippet ? ` â€” ${snippet}` : ''}`;
     }).join('\n');
     text = `${text}\n\n${disclaimer}\n${block}`.trim();
   } else if (disclaimer && sources.length && !/full-internet index/i.test(text)) {
@@ -727,3 +727,4 @@ export function citeResearchInReply(reply, webResearch, internetError) {
   }
   return text;
 }
+

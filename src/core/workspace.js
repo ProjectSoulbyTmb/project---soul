@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { classifyAdultSoulIntent, classifyAdultMediaIntent } from './adult-intents.js';
 
@@ -110,3 +110,4 @@ export function isLocalWorkspaceIntent(input) {
 }
 
 export const detectOfflineIntent = classifyWorkspaceIntent;
+

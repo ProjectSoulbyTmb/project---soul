@@ -1,7 +1,7 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
- * Adult Soul life layer — first-party vertex animation, not VRM / Mixamo / mocap.
+ * Adult Soul life layer â€” first-party vertex animation, not VRM / Mixamo / mocap.
  *
  * After 18+ and Adult Mode, the lathe figure breathes, looks, presents, and
  * performs sexual behaviors in lockstep with guided session beats. This is
@@ -396,3 +396,4 @@ export function adultLifeStatus(profile) {
     heat: unit(heat, 0.45),
   };
 }
+

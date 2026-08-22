@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { answerAssist, STORAGE_KEY, DEFAULT_SERVICE_BASE, safePublicHref } from './knowledge.js';
 
@@ -132,7 +132,7 @@ function mount() {
     rows: '2',
     maxlength: '800',
     required: true,
-    placeholder: 'Ask about download, 18+, or what Eidovara is…'
+    placeholder: 'Ask about download, 18+, or what Eidovara isâ€¦'
   });
   const send = el('button', { className: 'assist-send', type: 'submit', text: 'Send' });
   const tools = el('details', { className: 'assist-service' });
@@ -205,7 +205,7 @@ function mount() {
     let base = '';
     try { base = normalizeBase(serviceInput.value || readBase()); } catch { base = ''; }
     if (base) {
-      sourceNote.textContent = 'Trying optional online assist…';
+      sourceNote.textContent = 'Trying optional online assistâ€¦';
       const remote = await onlineAnswer(base, query, mode);
       if (remote && remote.reply) {
         result = remote;
@@ -229,3 +229,4 @@ function modeRadio(value, label, checked = false) {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount);
 else mount();
+

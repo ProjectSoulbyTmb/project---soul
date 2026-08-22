@@ -1,7 +1,7 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
- * Adult Feel desk — popular settings from Vibease-style pattern pads and
+ * Adult Feel desk â€” popular settings from Vibease-style pattern pads and
  * VibeMate-style private adult browsers, implemented first-party.
  *
  * Ships: XY intensity/speed, 11 pulse patterns, loop/float, media/fantasy
@@ -13,9 +13,9 @@ const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value)));
 const slider = value => Math.round(clamp(Number.isFinite(Number(value)) ? Number(value) : 50, 0, 100));
 const pick = (value, allowed, fallback) => (allowed.includes(value) ? value : fallback);
 
-export const FEEL_HONESTY = 'Feel Sync is on-screen only: it maps local eidovara-media loudness and Adult Soul session beats to the figure, voice coach, and intensity pad. Eidovara does not pair Lovense, Vibease, or other toys, does not record the screen, does not auto-tip cam sites, and does not embed Pornhub. Hardware toys stay in their vendor app. PIN lock is local digits on this PC — not fingerprint or cloud. Revoke Adult Mode anytime.';
+export const FEEL_HONESTY = 'Feel Sync is on-screen only: it maps local eidovara-media loudness and Adult Soul session beats to the figure, voice coach, and intensity pad. Eidovara does not pair Lovense, Vibease, or other toys, does not record the screen, does not auto-tip cam sites, and does not embed Pornhub. Hardware toys stay in their vendor app. PIN lock is local digits on this PC â€” not fingerprint or cloud. Revoke Adult Mode anytime.';
 
-export const GAMEPAD_HONESTY = 'A connected Chromium-visible gamepad can steer this pad and dual-rumble that same controller. That is the Gamepad API — not Lovense, not XInput injection into a game, and not in-game haptics.';
+export const GAMEPAD_HONESTY = 'A connected Chromium-visible gamepad can steer this pad and dual-rumble that same controller. That is the Gamepad API â€” not Lovense, not XInput injection into a game, and not in-game haptics.';
 
 export const FEEL_PATTERNS = Object.freeze([
   { id: 'pulse', title: 'Pulse', hint: 'Even on/off beats' },
@@ -34,7 +34,7 @@ export const FEEL_PATTERNS = Object.freeze([
 export const FEEL_PATTERN_IDS = Object.freeze(FEEL_PATTERNS.map(item => item.id));
 
 export const FEEL_SYNC_MODES = Object.freeze([
-  { id: 'off', title: 'Off', hint: 'Pad only — you drag intensity' },
+  { id: 'off', title: 'Off', hint: 'Pad only â€” you drag intensity' },
   { id: 'media', title: 'Sync to local media', hint: 'Loudness of eidovara-media audio/video. Not a tube embed.' },
   { id: 'fantasy', title: 'Fantasy / session', hint: 'Adult Soul beats drive the pad, like a story-sync mode' },
   { id: 'voice', title: 'Voice coach', hint: 'Peaks when the OS voice is speaking' }
@@ -47,7 +47,7 @@ export const FEEL_BLANK_MS = Object.freeze([0, 15000, 30000, 60000, 120000]);
 export const BOOKMARK_FOLDERS = Object.freeze([
   { id: 'videos', title: 'Videos', hint: 'Local playable files and HTTPS pages you pasted' },
   { id: 'audio', title: 'Audio', hint: 'Moans, beds, stories you imported' },
-  { id: 'sites', title: 'Sites', hint: 'Official HTTPS homepages — opens in the system browser' },
+  { id: 'sites', title: 'Sites', hint: 'Official HTTPS homepages â€” opens in the system browser' },
   { id: 'streamers', title: 'Streamers', hint: 'Creator pages you bookmarked. No live embed.' },
   { id: 'wellness', title: 'Wellness', hint: 'Local aftercare notes. Not medical advice.' }
 ]);
@@ -55,7 +55,7 @@ export const BOOKMARK_FOLDERS = Object.freeze([
 export const WELLNESS_CARDS = Object.freeze([
   { id: 'aftercare', title: 'Aftercare', body: 'Water, a blanket, and a pause. Adult Soul aftercare is a local session, not a clinician.' },
   { id: 'safeword', title: 'Safeword', body: 'Red / your safeword stops the session immediately. Consent stays revocable on Identity.' },
-  { id: 'privacy', title: 'Discreet lock', body: 'A 4–8 digit PIN blanks Adult Soul and Adult Media on this PC. Not Windows Hello, not a vendor cloud lock.' },
+  { id: 'privacy', title: 'Discreet lock', body: 'A 4â€“8 digit PIN blanks Adult Soul and Adult Media on this PC. Not Windows Hello, not a vendor cloud lock.' },
   { id: 'hardware', title: 'Toys stay vendor-side', body: 'Pattern, speed, and sync here move the on-screen figure and coach. Pair hardware in Lovense Remote or Vibease if you own those toys.' },
   { id: 'browser', title: 'Adult search', body: 'Tube/creator chips open official HTTPS pages in your system browser. Guest overlays stay closed in Adult Mode.' }
 ]);
@@ -317,3 +317,4 @@ export function adultFeelReply(feelInput) {
   const pattern = FEEL_PATTERNS.find(item => item.id === feel.pattern)?.title || feel.pattern;
   return `Feel Sync is ${feel.syncMode === 'off' ? 'manual' : feel.syncMode}. Pattern ${pattern}, intensity ${feel.intensity}, speed ${feel.speed}, sensitivity ${feel.sensitivity}. ${FEEL_HONESTY}`;
 }
+

@@ -1,10 +1,10 @@
-# Trademark filing checklist (not filed)
+﻿# Trademark filing checklist (not filed)
 
 This is an **owner checklist** for a possible later filing at the [United States Patent and Trademark Office](https://www.uspto.gov) and, if relevant, other offices. It is **not legal advice**, not a clearance opinion, and **not a trademark application**.
 
-**No trademark application is filed by this commit.** This repository has no USPTO serial number, no registration number, and no ® claim. Publishing TRADEMARKS.md does not file anything.
+**No trademark application is filed by this commit.** This repository has no USPTO serial number, no registration number, and no Â® claim. Publishing TRADEMARKS.md does not file anything.
 
-Claimant of the unregistered marks: **Tyler Michael Bosworth**. Intended publisher name: **Soul Consciousness Studios** (not automatically an owner entity).
+Claimant of the unregistered marks: **Soul Consciousness Studios**. Intended publisher name: **Soul Consciousness Studios** (not automatically an owner entity).
 
 ## Marks under consideration (unregistered)
 
@@ -14,13 +14,13 @@ Claimant of the unregistered marks: **Tyler Michael Bosworth**. Intended publish
 | Soul | Software self-model **feature** name inside Eidovara | Ordinary English word; likely a narrower and harder claim |
 | Soul Consciousness Studios | Intended publisher / brand-house name | Not a formed company until state formation + assignment |
 
-Use: "Eidovara is a trademark of Tyler Michael Bosworth (unregistered)." Do not use ®.
+Use: "Eidovara is a trademark of Soul Consciousness Studios (unregistered)." Do not use Â®.
 
 ## Before anyone files
 
 1. **Retain a U.S. trademark attorney.** Identification of goods/services, class choice, specimens, and likelihood-of-confusion analysis are professional work. This file cannot substitute.
 2. **Search.** A preliminary exact-word internet search is a knockout screen only. Before filing, search USPTO (TESS / Trademark Search), relevant state trademark and business-name databases, common-law web use, domains, app stores, software directories, and any foreign markets where sales are planned. Compare sound, appearance, meaning, translation, and commercial impression in **related** goods/services, not only identical names. Preserve dated queries and results privately. See [TRADEMARK_CLEARANCE_LOG.md](TRADEMARK_CLEARANCE_LOG.md) and [NAME_CLEARANCE.md](NAME_CLEARANCE.md).
-3. **Decide the applicant.** File in the name of whoever actually owns the mark. Until a formed entity exists **and** a signed assignment is executed, that is Tyler Michael Bosworth personally—not "Soul Consciousness Studios" as a company.
+3. **Decide the applicant.** File in the name of whoever actually owns the mark. Until a formed entity exists **and** a signed assignment is executed, that is Soul Consciousness Studios personallyâ€”not "Soul Consciousness Studios" as a company.
 4. **Decide the filing basis** with counsel (use in commerce vs. intent-to-use). Do not declare use in commerce that has not occurred. Do not declare dates you cannot prove.
 5. **Specimens.** For downloadable software, USPTO typically expects a specimen showing the mark as used on the goods or in a manner that creates an association with the software (for example a screenshot of the app title bar / About screen, or a download page that displays the mark in connection with the installer). A LICENSE file alone is often a poor specimen. Do not fabricate screenshots that misstate registration.
 6. **International.** USPTO registration is United States-only. Madrid Protocol / foreign offices are separate, need local advice, and are not started by this commit.
@@ -47,6 +47,7 @@ Do **not** copy another company's identification of goods word-for-word. Do **no
 - Submit a specimen
 - Respond to an office action
 - Record an assignment
-- Authorize ®
+- Authorize Â®
 
-After a registration **issues** for identified goods/services, ® may be used **for those goods/services**. Until then, ™ only. See [TRADEMARKS.md](../TRADEMARKS.md) and [BRAND_GUIDE.md](BRAND_GUIDE.md).
+After a registration **issues** for identified goods/services, Â® may be used **for those goods/services**. Until then, â„¢ only. See [TRADEMARKS.md](../TRADEMARKS.md) and [BRAND_GUIDE.md](BRAND_GUIDE.md).
+

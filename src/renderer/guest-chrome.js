@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const params = new URLSearchParams(location.search);
 const kind = params.get('kind') === 'discord' ? 'discord' : 'browse';
@@ -51,3 +51,4 @@ void window.overlay.status().then(status => {
   if (status?.url && status.url !== 'about:blank') $('overlayUrl').value = status.url;
   $('topBtn').classList.toggle('is-on', status?.alwaysOnTop !== false);
 }).catch(() => {});
+

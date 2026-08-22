@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { uid } from './schema.js';
 
@@ -63,3 +63,4 @@ export function forgetMemory(state, idOrText) {
 export function activeMemories(state, limit = 20) {
   return state.memories.filter(m => m.active).slice(-limit).reverse();
 }
+

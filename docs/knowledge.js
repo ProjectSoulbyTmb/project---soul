@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /** Eidovara website helper knowledge pack for the current v1.0.0 release. Same answers for Pages and Worker. */
 export const ASSIST_VERSION = '1.0.0';
@@ -28,7 +28,7 @@ export const ENTRIES = [
   {
     id: 'hosted', modes: ['help', 'legal'], tags: ['hosted', 'cloud', 'account', 'saas', 'webapp', 'browser', 'login', 'sign'],
     title: 'Local-first, not a hosted account',
-    reply: 'This site is documentation, download, status, and product assistance—not a hosted Soul account. Conversations, memories, and workspace settings stay on the Windows PC by default. The desktop can optionally use the official service for health/config/status and can use user-directed online research, media, update, and provider functions. Service outages do not disable the local workspace.',
+    reply: 'This site is documentation, download, status, and product assistanceâ€”not a hosted Soul account. Conversations, memories, and workspace settings stay on the Windows PC by default. The desktop can optionally use the official service for health/config/status and can use user-directed online research, media, update, and provider functions. Service outages do not disable the local workspace.',
     links: [{ href: 'privacy.html', label: 'Privacy' }, { href: 'status.html', label: 'Status' }]
   },
   {
@@ -70,7 +70,7 @@ export const ENTRIES = [
   {
     id: 'connect', modes: ['help'], tags: ['connect', 'worker', 'service', 'health', 'config', 'status', 'settings', 'url', 'https', 'offline'],
     title: 'Connect service in Settings',
-    reply: 'After the 18+ gate, Settings → Eidovara service uses https://api.eidovara.org by default. Connect calls health/config/status endpoints and the desktop keeps Online / Reconnecting / Offline state. Conversations are not sent by the status heartbeat. A valid HTTPS base can be supplied as an override. If the service is down, the local workspace keeps working.',
+    reply: 'After the 18+ gate, Settings â†’ Eidovara service uses https://api.eidovara.org by default. Connect calls health/config/status endpoints and the desktop keeps Online / Reconnecting / Offline state. Conversations are not sent by the status heartbeat. A valid HTTPS base can be supplied as an override. If the service is down, the local workspace keeps working.',
     links: [{ href: 'faq.html', label: 'FAQ' }, { href: 'status.html', label: 'Status' }]
   },
   {
@@ -130,7 +130,7 @@ export const ENTRIES = [
   {
     id: 'ownership', modes: ['legal', 'help'], tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
     title: 'First-party owner',
-    reply: '© 2026 Tyler Michael Bosworth. All rights reserved. Qualifying original Eidovara first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is an intended publisher name. Third-party software, services, models, marks, and media retain their respective rights. Repository records are not government registrations or legal advice.',
+    reply: 'Â© 2026 Soul Consciousness Studios. All rights reserved. Qualifying original Eidovara first-party expression is claimed by Soul Consciousness Studios. Soul Consciousness Studios is an intended publisher name. Third-party software, services, models, marks, and media retain their respective rights. Repository records are not government registrations or legal advice.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {

@@ -1,12 +1,12 @@
-# Eidovara v1.0.0
+﻿# Eidovara v1.0.0
 
-Eidovara is a customizable Windows desktop workspace for applications, gaming, media, research, accessibility, and optional personal assistance. It is created and owned by Tyler Michael Bosworth and published under the intended business name Soul Consciousness Studios™.
+Eidovara is a customizable Windows desktop workspace for applications, gaming, media, research, accessibility, and optional personal assistance. It is created and owned by Soul Consciousness Studios and published under the intended business name Soul Consciousness Studiosâ„¢.
 
 > **Release status:** Stable Alpha for Windows 10/11 x64, restricted to users age 18 or older. This label means the documented alpha surface passed the repository's automated and packaged-runtime checks; it is not a claim of universal compatibility or production certification.
 
-[Download the official Windows installer (Eidovara-v1.0.0-Windows-x64-Setup.exe)](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe) · [Website](https://eidovara.org/) · [Release notes](CHANGELOG.md)
+[Download the official Windows installer (Eidovara-v1.0.0-Windows-x64-Setup.exe)](https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe) Â· [Website](https://eidovara.org/) Â· [Release notes](CHANGELOG.md)
 
-**Public online path:** anyone can open the HTTPS site at [eidovara.org](https://eidovara.org/) (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the official Authenticode-unsigned Windows installer `Eidovara-v1.0.0-Windows-x64-Setup.exe` (18+) from GitHub Releases, or build from source with `npm run dist:win:installer` on Windows. The `.exe` is the advertised download — not the GitHub source tree. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; after 18+ it defaults to `https://api.eidovara.org` for status/config (`/health`, `/v1/config`, `/v1/status`) and remains usable offline if that host is down. Conversations are not sent by the status heartbeat. Cloudflare Pages project `eidovara` serves the same `docs/` at `https://eidovara.org/`, and GitHub Pages publishes the `docs/` mirror from `main`.
+**Public online path:** anyone can open the HTTPS site at [eidovara.org](https://eidovara.org/) (Home, Product, Download, Assist, Help, FAQ, Status, Legal), download the official Authenticode-unsigned Windows installer `Eidovara-v1.0.0-Windows-x64-Setup.exe` (18+) from GitHub Releases, or build from source with `npm run dist:win:installer` on Windows. The `.exe` is the advertised download â€” not the GitHub source tree. Ask Eidovara on the site is a website helper over a fixed knowledge pack (no API key); it is not Soul. The desktop app is the product and stays local-first; after 18+ it defaults to `https://api.eidovara.org` for status/config (`/health`, `/v1/config`, `/v1/status`) and remains usable offline if that host is down. Conversations are not sent by the status heartbeat. Cloudflare Pages project `eidovara` serves the same `docs/` at `https://eidovara.org/`, and GitHub Pages publishes the `docs/` mirror from `main`.
 
 ## Current v1.0.0 release facts
 
@@ -30,7 +30,7 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 - Compatible remote-model endpoints, keyed search, RGB appearance, and linked-app capabilities are included in the full free v1.0.0 Alpha; no Premium entitlement is required.
 - English, Spanish, French, and German language preference foundation with English fallback.
 
-Soul is an optional assistant layer with configurable tone, memory, initiative, voice, avatar, boundaries, and consent state. It is software with persistent simulated continuity—not a human, professional authority, or proof of consciousness.
+Soul is an optional assistant layer with configurable tone, memory, initiative, voice, avatar, boundaries, and consent state. It is software with persistent simulated continuityâ€”not a human, professional authority, or proof of consciousness.
 
 ## Adult Mode
 
@@ -40,7 +40,7 @@ Adult Mode is off by default and appears only after legal-adult confirmation, ex
 
 Eidovara is **source-available, not open source**, and restricted to users **18 or older**. Official advertised distribution is an **Authenticode-unsigned Windows 10/11 x64** desktop build. Linux/macOS scripts are development targets, not official products. The current source and live advertised Windows installer are both **v1.0.0**. The v1.0.0 Alpha is currently a full free release; no live payment or automatic paid unlock is required for implemented features.
 
-Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is user-directed public retrieval. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistance—not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, Electron, or third-party media/service providers referenced for interoperability or user-directed handoff.
+Acceptable use: no criminal use, no unauthorized access, no ripping protected media. Built-in research is user-directed public retrieval. Application launching is user-confirmed local Windows apps you already have the right to use. Soul is software assistanceâ€”not therapy, medical care, or a claim of consciousness. Eidovara is not affiliated with Apple, Microsoft, Electron, or third-party media/service providers referenced for interoperability or user-directed handoff.
 
 Read [Terms](TERMS.md), [Privacy](PRIVACY.md), [Age 18+](AGE.md), [Legal Notices](LEGAL_NOTICES.md), [Security](SECURITY.md), [Network Usage](NETWORK-USAGE.md), and [Third-Party Notices](THIRD_PARTY_NOTICES.md).
 
@@ -68,6 +68,6 @@ npm run dist:win:installer
 
 ## Rights and project records
 
-Copyright © 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party. Soul Consciousness Studios is the intended publisher name only.
+Copyright Â© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by [LICENSE](LICENSE) + [TERMS.md](TERMS.md). Third-party stays third-party. Soul Consciousness Studios is the intended publisher name only.
 
 See [Ownership limits](OWNERSHIP.md), [Authors](AUTHORS.md), [Trademarks](TRADEMARKS.md), [Copyright notices](docs/COPYRIGHT.md), [IP self-attestation](docs/IP_CERTIFICATION.md) (not a government registration), [Trademark filing checklist](docs/TRADEMARK_FILING.md) (not filed), [Brand guide](docs/BRAND_GUIDE.md), [Contribution Policy](CONTRIBUTING.md), and the evidence-based [Marketing Claims Policy](docs/MARKETING_CLAIMS_POLICY.md). First-party JavaScript, HTML, CSS, site scripts, and packaging helpers carry SPDX `LicenseRef-Eidovara-Source-Available-1.0` headers. Forks remain under LICENSE and may not be relicensed as open source. GitHub pull requests do not transfer ownership. These records do not constitute patent, trademark, or copyright registration or a legal clearance opinion. They are not legal advice.

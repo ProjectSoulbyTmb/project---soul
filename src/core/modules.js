@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * First-party feature modules for the in-app Soul kernel.
@@ -48,7 +48,7 @@ const catalog = [
   {
     id: 'workspace-apps',
     title: 'Apps & Gaming',
-    summary: 'Windows shelf of titles you already trust. Confirm-launch only — no injection.',
+    summary: 'Windows shelf of titles you already trust. Confirm-launch only â€” no injection.',
     intents: ['apps', 'overlays', 'overlay-chat', 'overlay-browse', 'overlay-discord'],
     commands: ['open apps', 'launch an app', 'discover installed apps', 'open discord overlay', 'open browse overlay', 'open chat overlay'],
     workspace: 'apps',
@@ -75,7 +75,7 @@ const catalog = [
   {
     id: 'workspace-help',
     title: 'Help',
-    summary: 'Honest product facts: 18+, unsigned Windows, payments off, Assist ≠ Soul.',
+    summary: 'Honest product facts: 18+, unsigned Windows, payments off, Assist â‰  Soul.',
     intents: ['help', 'what', 'hosted', 'download', 'unsigned', 'payments', 'premium', 'platforms', 'brands', 'forbidden', 'offline', 'connect', 'age', 'privacy', 'legal', 'status'],
     commands: ['what can you do', 'what is eidovara', 'help'],
     workspace: 'chat',
@@ -174,7 +174,7 @@ const catalog = [
   {
     id: 'gaming-prep',
     title: 'Gaming prep',
-    summary: 'Checklists plus Eidovara glass overlays (chat, browse, Discord’s website). No game injection and no OBS websocket control.',
+    summary: 'Checklists plus Eidovara glass overlays (chat, browse, Discordâ€™s website). No game injection and no OBS websocket control.',
     intents: ['gaming', 'overlays', 'overlay-chat', 'overlay-browse', 'overlay-discord'],
     commands: ['prepare my gaming', 'stream helper', 'open discord overlay', 'open browse overlay'],
     workspace: 'apps',
@@ -245,3 +245,4 @@ export function moduleById(id) {
 export function moduleForIntent(intent, list = builtinModules) {
   return list.find(mod => (mod.intents || []).includes(intent)) || null;
 }
+

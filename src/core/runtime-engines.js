@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
  * Honest inventory of engines and frameworks Eidovara actually ships versus
- * adapters that stay document-only. Vanilla Electron ESM — no React/Vue/Three.js.
+ * adapters that stay document-only. Vanilla Electron ESM â€” no React/Vue/Three.js.
  */
 
 export const ENGINE_RESEARCH_DATE = '2026-08-21';
@@ -141,3 +141,4 @@ export function probeRendererEngines(host = {}) {
 }
 
 export const ENGINE_HONESTY = 'Eidovara ships a first-party Soul kernel, WebGL lathe, Web Audio Feel, procedural ambient beds, Chromium HTML5 media, OS speechSynthesis, optional SpeechRecognition, Media Session, Electron stay-awake, and an optional Chromium gamepad for the Feel pad. It does not ship neural TTS, VRM, Three.js, Babylon, React, ffmpeg, OBS websocket control, or Lovense hardware.';
+

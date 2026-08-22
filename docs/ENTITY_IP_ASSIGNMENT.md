@@ -1,8 +1,8 @@
-# Unsigned entity IP assignment template
+﻿# Unsigned entity IP assignment template
 
-**Status: template only — not executed.**
+**Status: template only â€” not executed.**
 
-Soul Consciousness Studios is currently an **intended publisher name**, not a formed company that owns Eidovara intellectual property. Formation of an LLC or corporation does **not** automatically transfer pre-formation copyrights, marks, or other rights. If Tyler Michael Bosworth later wants a formed entity to own first-party Eidovara IP, counsel should complete a signed assignment **after** the entity exists.
+Soul Consciousness Studios is currently an **intended publisher name**, not a formed company that owns Eidovara intellectual property. Formation of an LLC or corporation does **not** automatically transfer pre-formation copyrights, marks, or other rights. If Soul Consciousness Studios later wants a formed entity to own first-party Eidovara IP, counsel should complete a signed assignment **after** the entity exists.
 
 This file is a blank form for that future step. It is **not** a signed agreement, not evidence that an entity has been formed, and not a USPTO or Copyright Office filing. **Do not commit completed copies to this public repository.** This template is not legal advice.
 
@@ -20,13 +20,13 @@ See [COMPANY_FORMATION.md](COMPANY_FORMATION.md) and [CHAIN_OF_TITLE.md](CHAIN_O
 
 **Consideration:** Assignor acknowledges [describe: equity / $1.00 / other], the sufficiency of which Assignor acknowledges.
 
-**Assignor:** Tyler Michael Bosworth, an individual.
+**Assignor:** Soul Consciousness Studios, an individual.
 
-**Assignee (“Company”) — complete only after formation:**
+**Assignee (â€œCompanyâ€) â€” complete only after formation:**
 
 | Field | Complete privately |
 | --- | --- |
-| Legal entity name | [Legal entity name — do not treat “Soul Consciousness Studios” as formed unless it is] |
+| Legal entity name | [Legal entity name â€” do not treat â€œSoul Consciousness Studiosâ€ as formed unless it is] |
 | Entity type | [LLC / corporation / other] |
 | Formation jurisdiction | [State / country] |
 | Formation date | [YYYY-MM-DD] |
@@ -39,13 +39,13 @@ See [COMPANY_FORMATION.md](COMPANY_FORMATION.md) and [CHAIN_OF_TITLE.md](CHAIN_O
 
 ### 1. Assigned first-party rights
 
-Assignor assigns to Company all of Assignor’s right, title, and interest in qualifying original first-party Eidovara expression and in the claimed unregistered marks Eidovara, Soul (as used for Eidovara’s software self-model feature), and Soul Consciousness Studios, including associated first-party brand assets listed in the project copyright asset register, together with related goodwill, solely to the extent Assignor owns them as of the effective date.
+Assignor assigns to Company all of Assignorâ€™s right, title, and interest in qualifying original first-party Eidovara expression and in the claimed unregistered marks Eidovara, Soul (as used for Eidovaraâ€™s software self-model feature), and Soul Consciousness Studios, including associated first-party brand assets listed in the project copyright asset register, together with related goodwill, solely to the extent Assignor owns them as of the effective date.
 
-This assignment does not create registrations, patents, or clearance. Company takes the rights subject to the public Eidovara Source-Available Evaluation License and TERMS already granted to users, GitHub’s then-applicable terms for the public repository, and third-party licenses.
+This assignment does not create registrations, patents, or clearance. Company takes the rights subject to the public Eidovara Source-Available Evaluation License and TERMS already granted to users, GitHubâ€™s then-applicable terms for the public repository, and third-party licenses.
 
 ### 2. Further assurances
 
-Assignor will execute documents reasonably requested to evidence or record this assignment (including optional recordation at the U.S. Copyright Office or USPTO if counsel later files there), at Company’s expense, without representing that any government office will accept them. This clause does not file those recordations.
+Assignor will execute documents reasonably requested to evidence or record this assignment (including optional recordation at the U.S. Copyright Office or USPTO if counsel later files there), at Companyâ€™s expense, without representing that any government office will accept them. This clause does not file those recordations.
 
 ### 3. No public-repo execution
 
@@ -57,11 +57,11 @@ This public file has **no signatures**.
 
 | | Assignor | Company |
 | --- | --- | --- |
-| Name | Tyler Michael Bosworth | [Authorized signatory / title] |
+| Name | Soul Consciousness Studios | [Authorized signatory / title] |
 | Signature | ______________________________ | ______________________________ |
 | Date | [date] | [date] |
 
-### Exhibit A — Assigned first-party schedule (complete privately)
+### Exhibit A â€” Assigned first-party schedule (complete privately)
 
 Leave this exhibit blank in the public repository. On a private original, attach or list:
 
@@ -72,3 +72,4 @@ Leave this exhibit blank in the public repository. On a private original, attach
 **Still excluded:** Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created content, and all other third-party or public-domain material.
 
 Store executed originals in private storage. Do not commit them here.
+

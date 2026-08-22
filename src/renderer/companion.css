@@ -1,6 +1,6 @@
-/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+﻿/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
-/* Soul companion dock and first-party presence. Decorative chrome — not a living figure. */
+/* Soul companion dock and first-party presence. Decorative chrome â€” not a living figure. */
 .soul-dock {
   min-width: 0;
   display: flex;
@@ -306,3 +306,4 @@
   background: color-mix(in srgb, var(--accent) 18%, var(--fill));
 }
 .message .kernel-chips { margin: 8px 0 0; }
+

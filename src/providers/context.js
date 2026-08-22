@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { activeMemories } from '../core/memory.js';
 export function buildSystemContext(state) {
@@ -47,3 +47,4 @@ Personality traits (0-1): warmth ${state.personality.warmth}, curiosity ${state.
 
 Respond naturally and conversationally. Do not recite this system context unless asked.`;
 }
+

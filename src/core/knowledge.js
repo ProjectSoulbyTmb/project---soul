@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /** Desktop product knowledge for the in-app Soul kernel. Not the website helper. */
 
@@ -42,7 +42,7 @@ const ENTRIES = {
   },
   download: {
     title: 'You are already in the app',
-    reply: `This window is the installed Eidovara v${DESKTOP_KNOWLEDGE_VERSION} workspace, not the public Download page. The advertised unsigned Windows installer remains ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases until a newer tagged Setup.exe exists — an 18+ site concern. In this app, Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Soul does not fetch Setup.exe itself.`,
+    reply: `This window is the installed Eidovara v${DESKTOP_KNOWLEDGE_VERSION} workspace, not the public Download page. The advertised unsigned Windows installer remains ${INSTALLER_NAME} (${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}) from GitHub Releases until a newer tagged Setup.exe exists â€” an 18+ site concern. In this app, Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it. Builds are Authenticode-unsigned. Soul does not fetch Setup.exe itself.`,
     actions: [{ type: 'open-updates', label: 'Software updates' }, { type: 'check-updates', label: 'Check for updates' }]
   },
   platforms: {
@@ -52,27 +52,27 @@ const ENTRIES = {
   },
   brands: {
     title: 'First-party names only',
-    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Architecture is a session kernel / Soul kernel only. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use — not bundled apps or logos.',
+    reply: 'Eidovara, Soul, and the Soul kernel are first-party software names. They are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar, and Eidovara is not affiliated with those owners. Architecture is a session kernel / Soul kernel only. Nominative mentions of Windows, GitHub, Electron, Cloudflare, Wikipedia/Wikimedia, Spotify, and YouTube are platform facts you may already use â€” not bundled apps or logos.',
     actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }]
   },
   connect: {
     title: 'Optional service',
-    reply: 'Settings → Eidovara service defaults to https://api.eidovara.org. Empty/default still resolves there; paste another HTTPS base to override. Connect GETs /v1/health (and /health), /v1/config, and /v1/status. After 18+ the main process keeps Online / Reconnecting / Offline current with /health and /v1/status. An extra opt-in (off by default) can POST a single question to /v1/assist — never the conversation transcript. No workers.dev host is compiled into the app. Your Worker is not a cloud mind. Assist is not Soul. If the service is down, this workspace keeps working offline.',
+    reply: 'Settings â†’ Eidovara service defaults to https://api.eidovara.org. Empty/default still resolves there; paste another HTTPS base to override. Connect GETs /v1/health (and /health), /v1/config, and /v1/status. After 18+ the main process keeps Online / Reconnecting / Offline current with /health and /v1/status. An extra opt-in (off by default) can POST a single question to /v1/assist â€” never the conversation transcript. No workers.dev host is compiled into the app. Your Worker is not a cloud mind. Assist is not Soul. If the service is down, this workspace keeps working offline.',
     actions: [{ type: 'open-service', label: 'Service settings' }]
   },
   hosted: {
     title: 'Not a hosted chat',
-    reply: 'Eidovara is local-first Windows software. Conversations stay on this PC. Soul is the on-device software self-model — not the public-site Assist widget and not a claim of consciousness. Optional service attach is health, config, and status. Optional /v1/assist is a separate opt-in, default off, and still refuses conversation history.',
+    reply: 'Eidovara is local-first Windows software. Conversations stay on this PC. Soul is the on-device software self-model â€” not the public-site Assist widget and not a claim of consciousness. Optional service attach is health, config, and status. Optional /v1/assist is a separate opt-in, default off, and still refuses conversation history.',
     actions: [{ type: 'open-service', label: 'Service settings' }, { type: 'open-legal', legal: 'privacy', label: 'Privacy notice' }]
   },
   what: {
     title: 'What Eidovara is',
-    reply: `Eidovara v${DESKTOP_KNOWLEDGE_VERSION} is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device — not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.`,
+    reply: `Eidovara v${DESKTOP_KNOWLEDGE_VERSION} is a local-first Windows 10/11 x64 desktop workspace for adults 18 or older. It is for apps, gaming tools, media, research, backups, and optional Soul. It is Stable Alpha, source-available (not open source), Authenticode-unsigned, and 18+. Soul is an optional software self-model on this device â€” not a person, not therapy, and not a claim of consciousness. The in-app kernel answers from local knowledge and your on-device profile. It is not the website helper.`,
     actions: [{ type: 'open-setup', label: 'Configure Soul' }, { type: 'open-view', view: 'apps', label: 'Apps & Gaming' }]
   },
   help: {
     title: 'What this kernel can do',
-    reply: `I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. Ctrl+K (or Ctrl+P) opens a local command palette with a calculator and unit conversions; Ctrl+/ opens the keyboard cheatsheet; Ctrl+Shift+O jumps to Eidovara overlays (Soul chat, HTTPS browse, Discord’s own site in a guest window — not an official Discord overlay and not injection into other games). Recents lists confirm-launched apps, local media titles, and memories on this PC. Tray stay-running, always-on-top, and open-at-login are Windows window settings for Eidovara only. Local search covers linked apps, memories, settings labels, and product intents — no background crawler and no injection into other processes. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v${DESKTOP_KNOWLEDGE_VERSION}. Assist is not Soul.`,
+    reply: `I can open workspace surfaces, answer honest product facts (18+, unsigned, payments off, local-first), speak with OS-installed voices, show a decorative presence, and run local intents: focus, apps, study, entertainment, memory, and gaming checklists. Ctrl+K (or Ctrl+P) opens a local command palette with a calculator and unit conversions; Ctrl+/ opens the keyboard cheatsheet; Ctrl+Shift+O jumps to Eidovara overlays (Soul chat, HTTPS browse, Discordâ€™s own site in a guest window â€” not an official Discord overlay and not injection into other games). Recents lists confirm-launched apps, local media titles, and memories on this PC. Tray stay-running, always-on-top, and open-at-login are Windows window settings for Eidovara only. Local search covers linked apps, memories, settings labels, and product intents â€” no background crawler and no injection into other processes. I do not control other apps, OBS, or anti-cheat. Neural TTS, VRM, MakeHuman, and OBS websocket control are not in v${DESKTOP_KNOWLEDGE_VERSION}. Assist is not Soul.`,
     actions: [
       { type: 'open-view', view: 'apps', label: 'Apps & Gaming' },
       { type: 'open-view', view: 'entertainment', label: 'Entertainment' },
@@ -82,12 +82,12 @@ const ENTRIES = {
   },
   legal: {
     title: 'Legal pointers',
-    reply: 'This is not legal advice. Eidovara is 18+, source-available not open source, and Authenticode-unsigned. Copyright in qualifying original first-party expression is claimed by Tyler Michael Bosworth. Soul Consciousness Studios is the intended publisher only. The dated IP self-attestation in this installation is a repository record, not a Copyright Office or USPTO registration. Do not use it for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, anti-cheat, or authentication. Full TERMS, PRIVACY, AGE, and LICENSE ship with this installation and are also in the in-app legal overlay. GitHub pull requests do not transfer ownership.',
+    reply: 'This is not legal advice. Eidovara is 18+, source-available not open source, and Authenticode-unsigned. Copyright in qualifying original first-party expression is claimed by Soul Consciousness Studios. Soul Consciousness Studios is the intended publisher only. The dated IP self-attestation in this installation is a repository record, not a Copyright Office or USPTO registration. Do not use it for criminal activity or unauthorized access. Do not bypass subscriptions, DRM, anti-cheat, or authentication. Full TERMS, PRIVACY, AGE, and LICENSE ship with this installation and are also in the in-app legal overlay. GitHub pull requests do not transfer ownership.',
     actions: [{ type: 'open-legal', legal: 'terms', label: 'Terms' }, { type: 'open-legal', legal: 'privacy', label: 'Privacy' }]
   },
   privacy: {
     title: 'Privacy pointers',
-    reply: 'This is not legal advice. Conversations, memories, settings, and the 18+ flag stay on this device. No owner-operated accounts or telemetry. What can leave: public web lookup after you ask (Wikipedia/Wikimedia, optional keyed search, and HTTPS pages you open — not a full-internet index), optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /v1/health /v1/config /v1/status after you paste a service URL, and optional /v1/assist only after a separate opt-in. Conversations are not sent by default. No payment-card collection.',
+    reply: 'This is not legal advice. Conversations, memories, settings, and the 18+ flag stay on this device. No owner-operated accounts or telemetry. What can leave: public web lookup after you ask (Wikipedia/Wikimedia, optional keyed search, and HTTPS pages you open â€” not a full-internet index), optional pasted model endpoints, official GitHub update checks, Spotify/YouTube HTTPS searches you click, optional /v1/health /v1/config /v1/status after you paste a service URL, and optional /v1/assist only after a separate opt-in. Conversations are not sent by default. No payment-card collection.',
     actions: [{ type: 'open-legal', legal: 'privacy', label: 'Privacy notice' }]
   },
   status: {
@@ -102,7 +102,7 @@ const ENTRIES = {
   },
   offline: {
     title: 'Offline workspace',
-    reply: 'Free / Offline Soul and this workspace work with no cloud URL. Profiles, conversations, memories, and backups stay in the Windows application-data directory. Public web lookup after you ask is the exception — not a full-internet index — and only after an explicit internet/web/online request. If a connected model endpoint fails, replies fall back to offline mode. The kernel stays the source of truth even when a Worker is attached.',
+    reply: 'Free / Offline Soul and this workspace work with no cloud URL. Profiles, conversations, memories, and backups stay in the Windows application-data directory. Public web lookup after you ask is the exception â€” not a full-internet index â€” and only after an explicit internet/web/online request. If a connected model endpoint fails, replies fall back to offline mode. The kernel stays the source of truth even when a Worker is attached.',
     actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }]
   }
 };
@@ -144,3 +144,4 @@ export function shouldUseKnowledgeReply(intent) {
 }
 
 export { ENTRIES as DESKTOP_KNOWLEDGE_ENTRIES };
+

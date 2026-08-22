@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 
 export const OVERLAY_INVENTORY = Object.freeze([
@@ -81,3 +81,4 @@ export function overlayPaletteItems() {
     { id: 'cmd-always-on-top', kind: 'command', title: 'Keep Eidovara on top', keywords: ['always on top', 'pin window'], action: { type: 'set-always-on-top', on: true, label: 'Always on top' } }
   ];
 }
+

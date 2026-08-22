@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -157,7 +157,7 @@ test('chatbot knowledge answers golden product questions', () => {
 
   const owner = answerAssist('Who owns Eidovara copyright?');
   assert.equal(owner.ok, true);
-  assert.match(owner.reply, /Tyler Michael Bosworth/);
+  assert.match(owner.reply, /Soul Consciousness Studios/);
   assert.match(owner.reply, /does not own Electron|Third-party stays third-party/);
   assert.match(owner.reply, /not legal advice/);
   assert.match(owner.reply, /unregistered/);
@@ -259,3 +259,4 @@ test('website helper hrefs stay HTTPS or same-origin html', () => {
   assert.doesNotMatch(read('docs/404.html'), /data-page="home"/);
   assert.match(read('docs/404.html'), /<base href="https:\/\/eidovara\.org\/">/);
 });
+

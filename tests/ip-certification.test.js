@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -23,7 +23,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   const cert = JSON.parse(read('docs/ip-certification.json'));
   const md = read('docs/IP_CERTIFICATION.md');
   assert.equal(cert.kind, 'repository-self-attestation');
-  assert.equal(cert.claimant, 'Tyler Michael Bosworth');
+  assert.equal(cert.claimant, 'Soul Consciousness Studios');
   assert.equal(cert.licenseSpdx, 'LicenseRef-Eidovara-Source-Available-1.0');
   assert.equal(cert.notLegalAdvice, true);
   assert.equal(cert.product.version, '1.0.0');
@@ -60,7 +60,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
   assert.match(md, /LicenseRef-Eidovara-Source-Available-1\.0/);
   assert.doesNotMatch(md, FAKE);
   assert.doesNotMatch(JSON.stringify(cert), FAKE);
-  assert.doesNotMatch(md, /®/);
+  assert.doesNotMatch(md, /Â®/);
   assert.match(read('docs/INFRINGEMENT.md'), /DMCA/);
   assert.match(read('docs/INFRINGEMENT.md'), /not legal advice/i);
   assert.match(read('docs/COPYRIGHT_DEPOSIT.md'), /copyright\.gov/);
@@ -73,7 +73,7 @@ test('ip-certification inventory exists, is honest, and every listed path is pre
 });
 
 test('first-party HTML, CSS, scripts, and server files carry source-available SPDX', () => {
-  const header = /SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth/;
+  const header = /SPDX-FileCopyrightText: 2026 Soul Consciousness Studios/;
   const spdx = /SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0/;
   const files = [
     ...walk('src', name => /\.(?:js|cjs|css|html)$/.test(name)),
@@ -135,3 +135,4 @@ test('copyright deposit helper writes a gitignored listing and refuses secrets',
   assert.doesNotMatch(manifest, /node_modules/);
   fs.rmSync('copyright-deposit', { recursive: true, force: true });
 });
+

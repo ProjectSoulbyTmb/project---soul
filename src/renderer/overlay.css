@@ -1,4 +1,4 @@
-/* SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth */
+﻿/* SPDX-FileCopyrightText: 2026 Soul Consciousness Studios */
 /* SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 */
 html, body {
   margin: 0;
@@ -101,3 +101,4 @@ html, body {
 @media (prefers-reduced-motion: reduce) {
   .overlay-bar, .chat-float-log { backdrop-filter: none; }
 }
+

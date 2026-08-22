@@ -1,10 +1,10 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-/** First-party companion looks. Decorative interface chrome — not a living figure. */
+/** First-party companion looks. Decorative interface chrome â€” not a living figure. */
 
 export const PRESENCE_LOOKS = Object.freeze([
   { id: 'orb', title: 'Orb', kind: 'css', description: 'A compact light figure using the accent color. Decorative, not alive.' },
-  { id: 'hologram', title: 'Hologram', kind: 'css', description: 'Scan-line silhouette chrome. Interface only — not a body and not a person.' },
+  { id: 'hologram', title: 'Hologram', kind: 'css', description: 'Scan-line silhouette chrome. Interface only â€” not a body and not a person.' },
   { id: 'ambient', title: 'Ambient', kind: 'css', description: 'A soft glow that follows the workspace accent. No implied anatomy.' },
   { id: 'pulse', title: 'Pulse', kind: 'canvas', description: 'A canvas heartbeat ring. Pauses when you prefer reduced motion.' },
   { id: 'silhouette', title: 'Silhouette', kind: 'css', description: 'A still outline. No implied life, voice, or consciousness.' },
@@ -47,3 +47,4 @@ export function presenceFrame(lookId, timeMs = 0, { reducedMotion = false } = {}
     label: look.title
   };
 }
+

@@ -1,16 +1,16 @@
-# Rights registration checklist
+﻿# Rights registration checklist
 
-This project record identifies Tyler Michael Bosworth as the sole creator and original author of Eidovara's first-party material. It does not replace a registration, clearance search, assignment, or attorney opinion. No U.S. Copyright Office registration number, USPTO serial, or patent is claimed here.
+This project record identifies Soul Consciousness Studios as the sole creator and original author of Eidovara's first-party material. It does not replace a registration, clearance search, assignment, or attorney opinion. No U.S. Copyright Office registration number, USPTO serial, or patent is claimed here.
 
 ## Copyright
 
 - Preserve dated source snapshots, release hashes, Git history, design files, and authorship records.
 - Register qualifying computer-program code through the U.S. Copyright Office registration portal. Follow Circular 61 for the correct source-code deposit and exclude preexisting or third-party material from the claim.
-- A name cannot be copyrighted. Copyright may protect qualifying original code, prose, art, and screen displays—not ideas, systems, names, titles, or short phrases.
+- A name cannot be copyrighted. Copyright may protect qualifying original code, prose, art, and screen displaysâ€”not ideas, systems, names, titles, or short phrases.
 
 ## Trademark and personal name
 
-- Use Eidovara™ consistently while the mark is unregistered. Do not use ® without a registration covering the relevant goods or services.
+- Use Eidovaraâ„¢ consistently while the mark is unregistered. Do not use Â® without a registration covering the relevant goods or services.
 - Conduct a professional clearance search before investing heavily in the name.
 - Consider a federal trademark application for the product mark and relevant software/services. If an application includes a living person's name or likeness, follow USPTO consent requirements.
 
@@ -24,3 +24,4 @@ This project record identifies Tyler Michael Bosworth as the sole creator and or
 
 - Publish SHA-256 checksums, an SBOM, and GitHub build-provenance attestations with each release.
 - Obtain an Authenticode certificate from a recognized certificate authority when financially practical. Never publish the private key or a private certificate bundle.
+

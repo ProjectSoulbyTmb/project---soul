@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const log = document.getElementById('chatLog');
 const form = document.getElementById('chatForm');
@@ -48,3 +48,4 @@ void (async () => {
     line('soul', String(err?.message || err));
   }
 })();
+

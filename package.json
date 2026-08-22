@@ -1,10 +1,10 @@
-{
+﻿{
   "name": "eidovara",
   "version": "1.0.0",
   "description": "Eidovara privacy-focused desktop assistant and media workspace.",
-  "author": "Tyler Michael Bosworth, project creator and product director. Soul Consciousness Studios is the intended publisher name, not a formed IP-owning entity.",
+  "author": "Soul Consciousness Studios, project creator and product director. Soul Consciousness Studios is the intended publisher name, not a formed IP-owning entity.",
   "license": "SEE LICENSE IN LICENSE",
-  "copyright": "Copyright (c) 2026 Tyler Michael Bosworth. All rights reserved. Source-available; use governed by LICENSE + TERMS.",
+  "copyright": "Copyright (c) 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS.",
   "repository": {
     "type": "git",
     "url": "https://github.com/ProjectSoulbyTmb/project---soul.git"
@@ -152,3 +152,4 @@
   },
   "packageManager": "pnpm@10.33.3"
 }
+

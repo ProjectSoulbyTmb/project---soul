@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -96,3 +96,4 @@ test('hydrate keeps adultSoul schema 3', () => {
   assert.equal(view.ambientEngine.neuralTts, false);
   assert.equal(view.engines.find(item => item.id === 'neural-tts').bundled, false);
 });
+

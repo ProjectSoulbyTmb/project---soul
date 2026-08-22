@@ -1,4 +1,4 @@
-import test from 'node:test';
+﻿import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
@@ -36,7 +36,7 @@ test('cli help documents message, snapshot, and 18+ confirmation', () => {
   assert.match(result.stdout, /--snapshot/);
   assert.match(result.stdout, /--i-am-18-or-older/);
   assert.match(result.stdout, /18 or older/);
-  assert.match(result.stdout, /Tyler Michael Bosworth/);
+  assert.match(result.stdout, /Soul Consciousness Studios/);
   assert.match(result.stdout, /Source-available, not open source/);
   assert.match(result.stdout, new RegExp(`Eidovara v${version.replace(/\./g, '\\.')}`));
 });
@@ -75,3 +75,4 @@ test('cli empty --message exits with an error', () => {
   assert.equal(result.status, 1);
   assert.match(result.stderr, /empty/i);
 });
+

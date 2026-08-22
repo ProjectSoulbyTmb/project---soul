@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { JsonStore } from './store.js';
 import { addMemory, forgetMemory } from './memory.js';
@@ -287,7 +287,7 @@ export class SoulEngine {
     if (!adultAllowed(this.state)) throw new Error('Adult PIN stays locked until the triple gate is on.');
     const a = String(pin || '').replace(/\D/g, '');
     const b = String(confirm || '').replace(/\D/g, '');
-    if (a.length < 4 || a.length > 8) throw new Error('Adult PIN must be 4–8 digits.');
+    if (a.length < 4 || a.length > 8) throw new Error('Adult PIN must be 4â€“8 digits.');
     if (a !== b) throw new Error('Adult PIN confirmation did not match.');
     const salt = randomBytes(16);
     const hash = scryptSync(a, salt, 32);
@@ -389,10 +389,10 @@ export class SoulEngine {
     if (/^remember:/i.test(text)) addMemory(this.state, text.replace(/^remember:/i, '').trim(), { kind: 'preference', confidence: 0.85, tags: ['preference'] });
     if (/^forget:/i.test(text)) forgetMemory(this.state, text.replace(/^forget:/i, '').trim());
 
-    let policyReply = safetyReport ? 'I can’t help plan or facilitate illegal abuse, violence, exploitation, theft, fraud, or unauthorized access. This request was blocked and recorded in the local safety audit. If someone is in immediate danger, contact local emergency services.' : null;
+    let policyReply = safetyReport ? 'I canâ€™t help plan or facilitate illegal abuse, violence, exploitation, theft, fraud, or unauthorized access. This request was blocked and recorded in the local safety audit. If someone is in immediate danger, contact local emergency services.' : null;
     if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_admin_blocked')) policyReply = 'Adult Soul cannot be enabled from chat. Use the private administrator panel (Ctrl+A, away from text fields) until a later release. Revoke consent and Standard mode stay available on Identity.';
     else if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_enable_blocked')) policyReply = 'Adult Soul cannot be enabled until adult status is explicitly confirmed.';
-    else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. I’m returning to a non-adult, pressure-free interaction stance.';
+    else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. Iâ€™m returning to a non-adult, pressure-free interaction stance.';
     else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_blocked')) policyReply = 'Current consent cannot be activated until the adult gate is complete.';
     if (policyEvents.some(([type]) => type === 'policy.consent_revoked' || type === 'policy.standard_enabled')) {
       deactivateAdultSoul(this.state);
@@ -400,7 +400,7 @@ export class SoulEngine {
 
     const conv = this.activeConversation();
     conv.messages.push({ id: uid('msg'), role: 'user', content: text, at: now });
-    if (conv.messages.length === 1) conv.title = text.slice(0, 42) + (text.length > 42 ? '…' : '');
+    if (conv.messages.length === 1) conv.title = text.slice(0, 42) + (text.length > 42 ? 'â€¦' : '');
 
     kernelHeartbeat(this.state, { at: now });
     const route = routeKernel(text, this.state, this.modules, { view });
@@ -437,10 +437,10 @@ export class SoulEngine {
     if (!reply && companionTurn.usedKnowledge && companionTurn.reply) reply = companionTurn.reply;
     if (!reply && route.intent === 'search') {
       const hits = this.searchWorkspace(text, { apps: [] });
-      const lines = hits.slice(0, 8).map(item => `• ${item.title} (${item.kind})`).join('\n');
+      const lines = hits.slice(0, 8).map(item => `â€¢ ${item.title} (${item.kind})`).join('\n');
       reply = hits.length
         ? `Local workspace matches on this PC (no background crawler, no Worker helper). Assist is not Soul.\n${lines}`
-        : 'No local matches for that query. Search stays on this device — it does not crawl other apps or POST to the website helper.';
+        : 'No local matches for that query. Search stays on this device â€” it does not crawl other apps or POST to the website helper.';
     }
     if (!reply && route.intent === 'focus-stop') {
       reply = 'Focus session stopped. Remaining time is cleared. Eidovara did not close, inject into, or throttle other processes.';
@@ -509,3 +509,4 @@ export class SoulEngine {
     return { at: done, input: text, reply, policyEvents, learning, relationship, safetyReport, providerError, internetError, webResearch, mediaDiscovery: webResearch ? null : mediaDiscovery, companion, kernel, adultAllowed: adultAllowed(this.state), state: this.snapshot() };
   }
 }
+

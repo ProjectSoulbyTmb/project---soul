@@ -1,10 +1,10 @@
-# Unsigned contributor assignment template
+﻿# Unsigned contributor assignment template
 
-**Status: template only — not executed.**
+**Status: template only â€” not executed.**
 
 This file is a blank form the first-party owner may print or copy and complete **privately** with a contributor after independent legal review. It is **not** a signed agreement. Publishing it does not mean any contributor has assigned rights. The repository does not store executed copies, wet-ink signatures, or a roster of unknown signers.
 
-**Sign privately; posting a PR is not assignment.** **Do not “sign” this by opening a GitHub pull request.** Eidovara does not accept copyrightable contributions through issues, suggestions, or PRs until Tyler Michael Bosworth gives prior written approval **and** both parties execute a separate written agreement appropriate to that material. Platform terms that apply to material posted on GitHub remain independently applicable and are not a substitute for this assignment. See [CONTRIBUTING.md](../CONTRIBUTING.md).
+**Sign privately; posting a PR is not assignment.** **Do not â€œsignâ€ this by opening a GitHub pull request.** Eidovara does not accept copyrightable contributions through issues, suggestions, or PRs until Soul Consciousness Studios gives prior written approval **and** both parties execute a separate written agreement appropriate to that material. Platform terms that apply to material posted on GitHub remain independently applicable and are not a substitute for this assignment. See [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 This template is **not legal advice** and is not a court judgment. Have qualified counsel review it before use. Replace bracketed placeholders. Do not commit completed or signed copies to this public repository.
 
@@ -18,7 +18,7 @@ This template is **not legal advice** and is not a court judgment. Have qualifie
 
 **Consideration:** Contributor acknowledges receipt of [describe: $1.00 / other bargained consideration / opportunity to have the Contribution considered for incorporation], the sufficiency of which Contributor acknowledges.
 
-**Owner (assignee):** Tyler Michael Bosworth, an individual, claiming first-party rights in the Eidovara project (“Owner”). Soul Consciousness Studios is an intended publisher name only and is not a party unless a formed entity is named in a separate signed writing.
+**Owner (assignee):** Soul Consciousness Studios, an individual, claiming first-party rights in the Eidovara project (â€œOwnerâ€). Soul Consciousness Studios is an intended publisher name only and is not a party unless a formed entity is named in a separate signed writing.
 
 **Contributor (assignor):**
 
@@ -28,11 +28,11 @@ This template is **not legal advice** and is not a court judgment. Have qualifie
 | Address | [street, city, state/province, postal code, country] |
 | Email | [email] |
 | Age | Contributor is at least 18: [yes / no] |
-| GitHub username (optional, identification only) | [username — posting under this name is still not assignment] |
+| GitHub username (optional, identification only) | [username â€” posting under this name is still not assignment] |
 
 ### 1. Contribution
 
-“Contribution” means the copyrightable material described below, including source code, documentation, artwork, configuration, and related original expression, whether submitted privately or (after approval) incorporated into Eidovara:
+â€œContributionâ€ means the copyrightable material described below, including source code, documentation, artwork, configuration, and related original expression, whether submitted privately or (after approval) incorporated into Eidovara:
 
 [Describe files, commit SHAs, or attach Exhibit A. Do not paste secrets.]
 
@@ -46,7 +46,7 @@ If applicable law treats the Contribution as a work made for hire in favor of Ow
 
 ### 3. Moral rights
 
-To the maximum extent permitted by applicable law, Contributor waives (and agrees not to assert) moral rights, rights of attribution or integrity, and similar rights in the Contribution, solely as needed for Owner to use, modify, license, and commercialize Eidovara. Where a waiver is not permitted, Contributor consents to Owner’s reasonable uses.
+To the maximum extent permitted by applicable law, Contributor waives (and agrees not to assert) moral rights, rights of attribution or integrity, and similar rights in the Contribution, solely as needed for Owner to use, modify, license, and commercialize Eidovara. Where a waiver is not permitted, Contributor consents to Ownerâ€™s reasonable uses.
 
 ### 4. Patents
 
@@ -62,15 +62,15 @@ Material Contributor does not own (including Electron, Chromium, Node.js, Window
 
 ### 7. No GitHub acceptance
 
-A pull request, issue, or uploaded patch is not acceptance of the Contribution and does not transfer ownership. **Sign privately; posting a PR is not assignment.** Owner may decline the Contribution. Only a fully executed copy of this form (or another written agreement Owner accepts) plus Owner’s written approval authorizes incorporation.
+A pull request, issue, or uploaded patch is not acceptance of the Contribution and does not transfer ownership. **Sign privately; posting a PR is not assignment.** Owner may decline the Contribution. Only a fully executed copy of this form (or another written agreement Owner accepts) plus Ownerâ€™s written approval authorizes incorporation.
 
 ### 8. Further assurances
 
-Contributor will execute documents reasonably requested to evidence or record this assignment, at Owner’s expense, without representing that any government office will accept them.
+Contributor will execute documents reasonably requested to evidence or record this assignment, at Ownerâ€™s expense, without representing that any government office will accept them.
 
 ### 9. Governing law; miscellaneous
 
-[Governing law and venue — to be completed with counsel.] This is the entire agreement for the Contribution. Amendments must be in writing and signed by both parties. If a provision is unenforceable, the remainder remains in effect. This template creates no obligation until both parties have signed a private original.
+[Governing law and venue â€” to be completed with counsel.] This is the entire agreement for the Contribution. Amendments must be in writing and signed by both parties. If a provision is unenforceable, the remainder remains in effect. This template creates no obligation until both parties have signed a private original.
 
 ### Signatures (leave blank in the repository)
 
@@ -78,16 +78,17 @@ This public file has **no signatures**. Complete only on a private original.
 
 | | Owner | Contributor |
 | --- | --- | --- |
-| Name | Tyler Michael Bosworth | [Legal name] |
+| Name | Soul Consciousness Studios | [Legal name] |
 | Signature | ______________________________ | ______________________________ |
 | Date | [date] | [date] |
 
 Store executed originals in private storage controlled by the Owner. Do not commit them here.
 
-### Exhibit A — Contribution schedule (complete privately)
+### Exhibit A â€” Contribution schedule (complete privately)
 
 Leave this exhibit blank in the public repository. On a private original, list files, commit SHAs, or attach a schedule. Do not paste secrets, credentials, or third-party code the Contributor does not own.
 
 | Item | Description / path / SHA | Notes |
 | --- | --- | --- |
 | [item] | [description] | [original to Contributor / third-party excluded] |
+

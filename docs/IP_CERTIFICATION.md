@@ -1,7 +1,7 @@
-# Eidovara repository self-attestation
+﻿# Eidovara repository self-attestation
 
 Record date: 21 August 2026  
-Claimant: Tyler Michael Bosworth  
+Claimant: Soul Consciousness Studios  
 Intended publisher name: Soul Consciousness Studios (does not own this IP unless a formed entity receives a signed assignment)
 
 This file **certifies the contents of this public repository** as of the record date: which legal instruments exist, what they do, and what they do not do. It is a dated project record and automated-test target.
@@ -14,10 +14,10 @@ Machine-readable companion: [ip-certification.json](ip-certification.json).
 
 | Layer | Attested here | Not attested here |
 | --- | --- | --- |
-| First-party copyright **claim** in qualifying original Eidovara expression | Yes — claimant Tyler Michael Bosworth; notice in LICENSE, COPYRIGHT.txt, NOTICE.md, SPDX headers | U.S. Copyright Office **registration** |
-| Source-available evaluation license | Yes — `LicenseRef-Eidovara-Source-Available-1.0` in LICENSE; not MIT/Apache/GPL/OSI | A right to relicense forks as open source |
-| Unregistered marks Eidovara™, Soul (feature name), Soul Consciousness Studios™ | Yes — ™ usage and TRADEMARKS.md | registered-mark symbol, USPTO serial, or federal registration |
-| Chain of title vs third-party layers | Yes — Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded | Ownership of those third-party layers |
+| First-party copyright **claim** in qualifying original Eidovara expression | Yes â€” claimant Soul Consciousness Studios; notice in LICENSE, COPYRIGHT.txt, NOTICE.md, SPDX headers | U.S. Copyright Office **registration** |
+| Source-available evaluation license | Yes â€” `LicenseRef-Eidovara-Source-Available-1.0` in LICENSE; not MIT/Apache/GPL/OSI | A right to relicense forks as open source |
+| Unregistered marks Eidovaraâ„¢, Soul (feature name), Soul Consciousness Studiosâ„¢ | Yes â€” â„¢ usage and TRADEMARKS.md | registered-mark symbol, USPTO serial, or federal registration |
+| Chain of title vs third-party layers | Yes â€” Electron, Chromium, Node.js, Windows, Wikimedia, user content excluded | Ownership of those third-party layers |
 | Contributor / entity assignments | Templates exist and are **unsigned** | Any executed CLA or company assignment |
 | Advertised Windows installer v1.0.0 | Filename, measured SHA-256, Authenticode-**unsigned**, GitHub/Sigstore provenance | Microsoft certification, EV signing, SmartScreen pre-approval |
 | Source version 0.22.2 | `package.json` / Worker health / website helper | A claim that provenance is Authenticode signing |
@@ -50,10 +50,10 @@ These facts match the published unsigned Windows installer plus this source cut.
 
 Status values used below:
 
-- **in-repo** — the instrument is published here and is what it claims to be
-- **unsigned-template** — a form the owner may execute privately; git does not contain signatures
-- **not-filed** — a checklist only; no application has been sent
-- **owner-action-required** — cannot be completed by a commit
+- **in-repo** â€” the instrument is published here and is what it claims to be
+- **unsigned-template** â€” a form the owner may execute privately; git does not contain signatures
+- **not-filed** â€” a checklist only; no application has been sent
+- **owner-action-required** â€” cannot be completed by a commit
 
 | Instrument | Path | Status |
 | --- | --- | --- |
@@ -93,11 +93,11 @@ Status values used below:
 | CodeQL workflow | [.github/workflows/codeql.yml](../.github/workflows/codeql.yml) | in-repo |
 | OpenSSF Scorecards workflow | [.github/workflows/scorecards.yml](../.github/workflows/scorecards.yml) | in-repo |
 | Dependency review workflow | [.github/workflows/dependency-review.yml](../.github/workflows/dependency-review.yml) | in-repo (needs Dependency graph owner click) |
-| U.S. Copyright Office registration | — | owner-action-required |
-| USPTO trademark application | — | owner-action-required |
-| Patent application | — | owner-action-required (do not claim a filing until one exists) |
-| Authenticode code-signing identity | — | owner-action-required |
-| Executed CLA or entity assignment | — | owner-action-required (keep executed copies **out** of this public repo) |
+| U.S. Copyright Office registration | â€” | owner-action-required |
+| USPTO trademark application | â€” | owner-action-required |
+| Patent application | â€” | owner-action-required (do not claim a filing until one exists) |
+| Authenticode code-signing identity | â€” | owner-action-required |
+| Executed CLA or entity assignment | â€” | owner-action-required (keep executed copies **out** of this public repo) |
 
 ## What automated tests certify
 
@@ -118,7 +118,7 @@ Passing tests certify **repository honesty and presence**, not a government gran
 Complete these privately with qualified counsel. Do not paste certificates, serials, or signed PDFs back into this public repository until you are ready to state a **true** registration number.
 
 1. **Copyright Office.** Register qualifying source-code and first-party visual works at [copyright.gov](https://www.copyright.gov) using [COPYRIGHT.md](COPYRIGHT.md) and [COPYRIGHT_DEPOSIT.md](COPYRIGHT_DEPOSIT.md). Run `npm run ip:deposit` locally; the output directory is gitignored.
-2. **Trademark.** Retain a U.S. trademark attorney; complete a comprehensive search; file only in the name of the actual owner (today: Tyler Michael Bosworth personally). See [TRADEMARK_FILING.md](TRADEMARK_FILING.md). Use ™ until a registration **issues**.
+2. **Trademark.** Retain a U.S. trademark attorney; complete a comprehensive search; file only in the name of the actual owner (today: Soul Consciousness Studios personally). See [TRADEMARK_FILING.md](TRADEMARK_FILING.md). Use â„¢ until a registration **issues**.
 3. **Entity.** Form a company only if desired, then execute [ENTITY_IP_ASSIGNMENT.md](ENTITY_IP_ASSIGNMENT.md) privately. Formation alone does not transfer IP.
 4. **Contributors.** Do not merge inbound copyrightable work until a privately signed assignment exists.
 5. **Authenticode.** Obtain an identity-validated code-signing certificate. Never commit the private key.
@@ -129,7 +129,7 @@ Complete these privately with qualified counsel. Do not paste certificates, seri
 
 - Source-available license that **forbids** relicensing first-party material as open source
 - SPDX `LicenseRef-Eidovara-Source-Available-1.0` on first-party source, site scripts, HTML, CSS, and packaging helpers
-- Honest ™-only marks; no registered-mark symbol
+- Honest â„¢-only marks; no registered-mark symbol
 - Unsigned CLA/entity templates so git cannot be mistaken for executed title
 - Brand-asset SHA-256 register
 - Public/private split and gitignore for keys, deposits, and executed paperwork
@@ -144,3 +144,4 @@ Complete these privately with qualified counsel. Do not paste certificates, seri
 - Do not describe Soul as consciousness or Eidovara as an Apple/Microsoft/Electron product.
 - Do not claim this self-attestation **is** a Copyright Office or USPTO registration.
 - Update the record date and inventory when a **real** filing or assignment happens; until then keep status `not-filed` / `unsigned-template` / `owner-action-required`.
+

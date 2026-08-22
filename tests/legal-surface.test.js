@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -34,7 +34,7 @@ test('LICENSE, TERMS, and NOTICE reserve first-party rights and are not OSI open
   const notice = read('NOTICE.md');
   const eula = read('installer/EULA.txt');
   for (const text of [license, terms, notice, eula, read('OWNERSHIP.md'), read('LEGAL_NOTICES.md')]) {
-    assert.match(text, /Copyright .{0,6}2026 Tyler Michael Bosworth\. All rights reserved/i);
+    assert.match(text, /Copyright .{0,6}2026 Soul Consciousness Studios\. All rights reserved/i);
     assert.match(text, /Source-available/i);
     assert.match(text, /LICENSE/);
     assert.match(text, /TERMS/);
@@ -83,7 +83,7 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(cla, /template only/i);
   assert.match(cla, /not executed/i);
   assert.match(cla, /Do not .*GitHub pull request/i);
-  assert.match(cla, /Tyler Michael Bosworth/);
+  assert.match(cla, /Soul Consciousness Studios/);
   assert.match(cla, /no signatures/i);
   assert.doesNotMatch(cla, /signed on August 21, 2026|Contributor: Jane Doe/);
   const entity = read('docs/ENTITY_IP_ASSIGNMENT.md');
@@ -92,7 +92,7 @@ test('ownership record is honest: GitHub ToS, user content, unsigned templates, 
   assert.match(entity, /does \*\*not\*\* automatically transfer|does not automatically transfer/i);
   assert.match(read('CONTRIBUTING.md'), /prior written approval|first approves the work in writing/i);
   assert.match(read('CONTRIBUTING.md'), /docs\/CONTRIBUTOR_ASSIGNMENT\.md/);
-  assert.match(read('.github/pull_request_template.md'), /Tyler Michael Bosworth/);
+  assert.match(read('.github/pull_request_template.md'), /Soul Consciousness Studios/);
   assert.match(read('.github/pull_request_template.md'), /does not transfer ownership/);
   assert.match(read('docs/CHAIN_OF_TITLE.md'), /Electron/);
   assert.match(read('docs/CHAIN_OF_TITLE.md'), /Chromium/);
@@ -130,10 +130,10 @@ test('legal-instrument pack is templates and notices, not registrations or OSI g
   assert.match(brand, /SF Pro/);
   assert.match(brand, /Do not/);
   assert.match(brand, /Jarvis|Marvel/i);
-  assert.match(claim, /Tyler Michael Bosworth/);
+  assert.match(claim, /Soul Consciousness Studios/);
   assert.match(claim, /not a U\.S\. Copyright Office registration/i);
   assert.match(claim, /Eidovara Source-Available Evaluation License/);
-  assert.match(marks, /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(marks, /Eidovara is a trademark of Soul Consciousness Studios \(unregistered\)/);
   assert.match(marks, /Windows/);
   assert.match(marks, /GitHub/);
   assert.match(marks, /Electron/);
@@ -147,7 +147,7 @@ test('legal-instrument pack is templates and notices, not registrations or OSI g
   assert.match(read('docs/CONTRIBUTOR_ASSIGNMENT.md'), /Sign privately; posting a PR is not assignment/i);
   assert.match(read('docs/legal.html'), /COPYRIGHT\.md/);
   assert.match(read('docs/legal.html'), /TRADEMARK_FILING\.md/);
-  assert.match(read('docs/licensing.html'), /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(read('docs/licensing.html'), /Eidovara is a trademark of Soul Consciousness Studios \(unregistered\)/);
   assert.match(read('src/renderer/index.html'), /LICENSE and TRADEMARKS\.md/);
   assert.match(read('NOTICE.md'), /Electron/);
   assert.match(read('NOTICE.md'), /43\.4\.1/);
@@ -166,13 +166,13 @@ test('website legal pages cover terms, privacy, age, and Apple disclaimer', () =
   assert.match(site, /not an iOS or iPhone product/i);
   assert.match(site, /id="download"/);
   assert.match(site, /Get Eidovara/);
-  assert.match(site, /Tyler Michael Bosworth/);
+  assert.match(site, /Soul Consciousness Studios/);
   assert.match(terms, /Acceptable use/);
   assert.match(terms, /Wikipedia\/Wikimedia/);
   assert.match(privacy, /What can leave this device/);
   assert.match(age, /Eidovara is for adults 18+/);
   assert.match(age, /--i-am-18-or-older/);
-  assert.match(licensing, /Tyler Michael Bosworth/);
+  assert.match(licensing, /Soul Consciousness Studios/);
   assert.match(licensing, /Source-available; use governed by LICENSE \+ TERMS/);
   assert.match(licensing, /not an OSI open-source license/);
   assert.match(licensing, /not community OSI open source|not a formed entity/);
@@ -180,7 +180,7 @@ test('website legal pages cover terms, privacy, age, and Apple disclaimer', () =
     assert.match(page, /Content-Security-Policy/i);
     assert.match(page, /script-src '(?:self|none)'/);
     assert.doesNotMatch(page, /unsafe-inline|unsafe-eval/);
-    assert.match(page, /Tyler Michael Bosworth/);
+    assert.match(page, /Soul Consciousness Studios/);
     assert.doesNotMatch(page, /official iOS app|Apple Inc\. product|licensed SF Pro files are required/i);
     assert.doesNotMatch(page, /owned by Apple|community OSS|OSI-approved/i);
   }
@@ -212,7 +212,7 @@ test('in-app legal overlay does not claim Apple, payments, or consciousness', ()
   assert.match(html, /does not require licensed SF Pro/);
   assert.match(html, /not Jarvis/);
   assert.match(html, /local-admin testing only/);
-  assert.match(html, /Â© 2026 Tyler Michael Bosworth\. All rights reserved/);
+  assert.match(html, /Â© 2026 Soul Consciousness Studios\. All rights reserved/);
   assert.match(html, /Source-available; use governed by LICENSE \+ TERMS/);
   assert.match(html, /Users own their own content/);
   assert.match(html, /not legal advice/);
@@ -240,9 +240,9 @@ test('legal-instrument pack is templates and notices, not registrations', () => 
   assert.match(brand, /system font/i);
   assert.match(brand, /SF Pro/);
   assert.match(brand, /Jarvis|Marvel/i);
-  assert.match(claim, /Tyler Michael Bosworth/);
+  assert.match(claim, /Soul Consciousness Studios/);
   assert.match(claim, /not a U\.S\. Copyright Office registration/i);
-  assert.match(marks, /Eidovara is a trademark of Tyler Michael Bosworth \(unregistered\)/);
+  assert.match(marks, /Eidovara is a trademark of Soul Consciousness Studios \(unregistered\)/);
   assert.match(marks, /Marvel/);
   assert.match(marks, /Jarvis/i);
 });
@@ -339,7 +339,7 @@ test('first-party JS carries SPDX source-available headers and does not donate O
   };
   const files = [...walk('src'), ...fs.readdirSync('docs').filter(n => n.endsWith('.js')).map(n => `docs/${n}`)];
   assert.ok(files.length >= 30, files.length);
-  const header = /SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth/;
+  const header = /SPDX-FileCopyrightText: 2026 Soul Consciousness Studios/;
   const spdx = /SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0/;
   for (const file of files) {
     const text = read(file);
@@ -353,7 +353,7 @@ test('first-party JS carries SPDX source-available headers and does not donate O
   assert.match(read('CONTRIBUTING.md'), /LicenseRef-Eidovara-Source-Available-1\.0/);
   assert.match(read('TRADEMARKS.md'), /does not grant the submitter trademark rights/i);
   const pkg = JSON.parse(read('package.json'));
-  assert.match(pkg.author, /Tyler Michael Bosworth/);
+  assert.match(pkg.author, /Soul Consciousness Studios/);
   assert.match(pkg.author, /intended publisher/);
   assert.doesNotMatch(pkg.author, /published by Soul Consciousness Studios$/);
   assert.equal(pkg.build.appId, 'com.soulconsciousnessstudios.eidovara');
@@ -363,7 +363,7 @@ test('first-party JS carries SPDX source-available headers and does not donate O
   assert.doesNotMatch(owners, /@(?!ProjectSoulbyTmb)\S+/);
   const footerPages = ['docs/index.html', 'docs/legal.html', 'docs/licensing.html', 'docs/help.html', 'docs/faq.html'];
   for (const page of footerPages) {
-    assert.match(read(page), /Â© 2026 Tyler Michael Bosworth\. All rights reserved/);
+    assert.match(read(page), /Â© 2026 Soul Consciousness Studios\. All rights reserved/);
     assert.match(read(page), /Source-available, not open source/);
     assert.match(read(page), /intended publisher only/);
   }
@@ -383,7 +383,7 @@ test('first-party legal stack is kept; third-party brands are not product names'
     assert.equal(fs.existsSync(file), true, file);
   }
   for (const file of ['LICENSE', 'NOTICE.md', 'TERMS.md', 'LEGAL_NOTICES.md', 'OWNERSHIP.md', 'installer/EULA.txt']) {
-    assert.match(read(file), /Copyright .{0,8}2026 Tyler Michael Bosworth/i, file);
+    assert.match(read(file), /Copyright .{0,8}2026 Soul Consciousness Studios/i, file);
   }
   const trademarks = read('TRADEMARKS.md');
   assert.match(trademarks, /not affiliated/i);
@@ -462,7 +462,7 @@ test('source-available headers present and correct in all first-party JS', () =>
   };
   const jsFiles = [...walk('src'), ...fs.readdirSync('docs').filter(n => n.endsWith('.js')).map(n => `docs/${n}`)];
   assert.ok(jsFiles.length >= 30, jsFiles.length);
-  const header = /SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth/;
+  const header = /SPDX-FileCopyrightText: 2026 Soul Consciousness Studios/;
   const spdx = /SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1\.0/;
   for (const file of jsFiles) {
     const text = read(file);
@@ -530,7 +530,7 @@ test('footer pages have consistent source-available claims', () => {
   const footerPages = ['docs/index.html', 'docs/legal.html', 'docs/licensing.html', 'docs/help.html', 'docs/faq.html'];
   for (const page of footerPages) {
     const content = read(page);
-    assert.match(content, /Â© 2026 Tyler Michael Bosworth\. All rights reserved/);
+    assert.match(content, /Â© 2026 Soul Consciousness Studios\. All rights reserved/);
     assert.match(content, /Source-available, not open source/);
     assert.match(content, /intended publisher only/);
   }
@@ -542,7 +542,7 @@ test('contributor assignment document is template only and not executed', () => 
   assert.match(cla, /template only/i);
   assert.match(cla, /not executed/i);
   assert.match(cla, /Do not .*GitHub pull request/i);
-  assert.match(cla, /Tyler Michael Bosworth/);
+  assert.match(cla, /Soul Consciousness Studios/);
   assert.match(cla, /no signatures/i);
   assert.doesNotMatch(cla, /signed on /);
   assert.doesNotMatch(cla, /executed copy attached/i);
@@ -744,7 +744,7 @@ test('all legal documents have 2026 copyright', () => {
   const docs = ['LICENSE', 'TERMS.md', 'AGE.md', 'OWNERSHIP.md', 'TRADEMARKS.md', 'COPYRIGHT.md', 'NOTICE.md'];
   for (const doc of docs) {
     const content = read(doc);
-    assert.match(content, /Copyright \(c\) 2026 Tyler Michael Bosworth/, doc);
+    assert.match(content, /Copyright \(c\) 2026 Soul Consciousness Studios/, doc);
   }
 });
 
@@ -764,3 +764,4 @@ test('no dreambot333 references in configuration or schema files', () => {
     }
   }
 });
+

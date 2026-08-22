@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const path = require('node:path');
 
@@ -9,3 +9,4 @@ exports.default = async function afterPack(context) {
   const icon = path.resolve(context.packager.projectDir, 'assets', 'branding', 'eidovara.ico');
   await rcedit(executable, { icon });
 };
+

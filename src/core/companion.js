@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import { classifyWorkspaceIntent } from './workspace.js';
 import { knowledgeEntry, matchProductIntent, shouldUseKnowledgeReply } from './knowledge.js';
@@ -44,7 +44,7 @@ export function soulOverlay(state = {}) {
     adultMode: Boolean(adult),
     sentience: false,
     label: enabled
-      ? `${name} is a software self-model on this device — not a claim of consciousness.`
+      ? `${name} is a software self-model on this device â€” not a claim of consciousness.`
       : 'Optional Soul setup is off. This workspace companion is not Soul and is not conscious.'
   };
 }
@@ -186,3 +186,4 @@ export function companionPublicMeta(result) {
     transcriptsUploaded: false
   };
 }
+

@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 const $ = id => document.getElementById(id);
 let item = null;
@@ -49,3 +49,4 @@ $('popPrev').addEventListener('click', () => window.soul?.playerCommand?.('previ
 $('popNext').addEventListener('click', () => window.soul?.playerCommand?.('next'));
 $('popDock').addEventListener('click', () => window.soul?.dockPlayer?.());
 if (window.soul?.onPlayerPopout) window.soul.onPlayerPopout(load);
+

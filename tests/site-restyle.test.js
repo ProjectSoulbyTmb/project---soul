@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2026 Tyler Michael Bosworth
+﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -53,3 +53,4 @@ test('public release pages advertise the real current installer', () => {
   assert.match(read('docs/site.css'), /\.benefit-grid/);
   assert.equal(read('docs/tokens.css'), read('src/renderer/tokens.css'));
 });
+
