@@ -3,7 +3,7 @@
 /**
  * Lightweight Adult Soul / Adult Media intent classifiers.
  * Kept free of schema/kernel/workspace imports so workspace routing cannot
- * cycle through adult-soul → schema → kernel → workspace.
+ * cycle through adult-soul â†’ schema â†’ kernel â†’ workspace.
  */
 import { classifyAdultFeelIntent } from './adult-feel.js';
 
