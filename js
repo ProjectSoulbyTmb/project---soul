@@ -1,91 +1,38 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-export function attachPlayerWindows({
-  BrowserWindow,
-  ipcMain,
-  getMainWindow,
-  requireAgeGate,
-  log = () => {}
-}) {
-  let popout = null;
-
-  function closePopout() {
-    try { if (popout && !popout.isDestroyed()) popout.close(); } catch {}
-    popout = null;
-  }
-
-  function adultHides(payload = {}) {
-    return payload.ageGated === true || payload.adultMode === true;
-  }
-
-  function glassPrefs() {
-    return {
-      preload: path.join(__dirname, 'preload.cjs'),
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-      webSecurity: true,
-      allowRunningInsecureContent: false,
-      spellcheck: false
-    };
-  }
-
-  ipcMain.handle('soul:popOutPlayer', async (_e, payload = {}) => {
-    requireAgeGate();
-    if (adultHides(payload)) {
-      closePopout();
-      return { poppedOut: false, hidden: true };
-    }
-    const video = payload.kind === 'video';
-    if (!popout || popout.isDestroyed()) {
-      popout = new BrowserWindow({
-        width: video ? 640 : 380,
-        height: video ? 420 : 156,
-        minWidth: 280,
-        minHeight: 120,
-        frame: false,
-        transparent: true,
-        backgroundColor: '#00000000',
-        alwaysOnTop: true,
-        skipTaskbar: false,
-        title: 'Eidovara',
-        show: false,
-        webPreferences: glassPrefs()
-      });
-      popout.setMenuBarVisibility(false);
-      popout.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-      popout.webContents.on('will-navigate', e => e.preventDefault());
-      popout.on('closed', () => { popout = null; try { getMainWindow()?.webContents.send('soul:playerDocked'); } catch {} });
-      await popout.loadFile(path.join(__dirname, '../renderer/player-popout.html'));
-    }
-    try { popout.webContents.send('soul:playerPopout', payload); } catch (err) { log(String(err?.message || err)); }
-    popout.show();
-    return { poppedOut: true, hidden: false };
-  });
-
-  ipcMain.handle('soul:dockPlayer', async () => {
-    requireAgeGate();
-    closePopout();
-    return { poppedOut: false };
-  });
-
-  ipcMain.handle('soul:listAudioOutputs', async () => {
-    requireAgeGate();
-    return {
-      available: false,
-      devices: [],
-      reason: 'Output picker uses Chromium setSinkId in the player when the OS exposes devices.'
-    };
-  });
-
-  return {
-    closePopout,
-    hideIfAdult(payload) { if (adultHides(payload)) closePopout(); }
-  };
-}
+const { contextBridge, ipcRenderer } = require('electron');
+contextBridge.exposeInMainWorld('soul', {
+  send: (m, opts) => ipcRenderer.invoke('soul:send', m, opts || {}), snapshot: () => ipcRenderer.invoke('soul:snapshot'), reset: () => ipcRenderer.invoke('soul:reset'),
+  recordMedia: input => ipcRenderer.invoke('soul:recordMedia', input), entertainment: () => ipcRenderer.invoke('soul:entertainment'),
+  remember: (c, opts) => ipcRenderer.invoke('soul:remember', c, opts), forget: x => ipcRenderer.invoke('soul:forget', x),
+  newConversation: () => ipcRenderer.invoke('soul:newConversation'), selectConversation: id => ipcRenderer.invoke('soul:selectConversation', id), deleteConversation: id => ipcRenderer.invoke('soul:deleteConversation', id),
+  getSettings: () => ipcRenderer.invoke('soul:getSettings'), acceptAgeGate: confirmed => ipcRenderer.invoke('soul:acceptAgeGate', confirmed), declineAgeGate: () => ipcRenderer.invoke('soul:declineAgeGate'), saveSettings: s => ipcRenderer.invoke('soul:saveSettings', s), diagnostics: () => ipcRenderer.invoke('soul:diagnostics'), openDataFolder: () => ipcRenderer.invoke('soul:openDataFolder'), selectLocalMedia: () => ipcRenderer.invoke('soul:selectLocalMedia'), listLocalMedia: () => ipcRenderer.invoke('soul:listLocalMedia'),
+  createBackup: () => ipcRenderer.invoke('soul:createBackup'), listBackups: () => ipcRenderer.invoke('soul:listBackups'), restoreBackup: name => ipcRenderer.invoke('soul:restoreBackup', name), configureSetup: input => ipcRenderer.invoke('soul:configureSetup', input), configureAssistant: input => ipcRenderer.invoke('soul:configureAssistant', input), configureKernel: input => ipcRenderer.invoke('soul:configureKernel', input), kernelStatus: () => ipcRenderer.invoke('soul:kernelStatus'), workspace: (op, payload) => ipcRenderer.invoke('soul:workspace', op, payload), assistQuery: query => ipcRenderer.invoke('soul:assistQuery', query), selectCompanionImage: () => ipcRenderer.invoke('soul:selectCompanionImage'), addApplication: () => ipcRenderer.invoke('soul:addApplication'), discoverApplications: () => ipcRenderer.invoke('soul:discoverApplications'), addDiscoveredApplication: id => ipcRenderer.invoke('soul:addDiscoveredApplication', id), launchApplication: id => ipcRenderer.invoke('soul:launchApplication', id), removeApplication: id => ipcRenderer.invoke('soul:removeApplication', id), openExternal: url => ipcRenderer.invoke('soul:openExternal', url), checkForUpdates: () => ipcRenderer.invoke('soul:checkForUpdates'), installUpdate: () => ipcRenderer.invoke('soul:installUpdate'), setAutoCheckUpdates: enabled => ipcRenderer.invoke('soul:setAutoCheckUpdates', enabled), onUpdateStatus: handler => ipcRenderer.on('soul:updateStatus', (_e, payload) => handler(payload)),
+  popOutPlayer: payload => ipcRenderer.invoke('soul:popOutPlayer', payload), dockPlayer: () => ipcRenderer.invoke('soul:dockPlayer'), listAudioOutputs: () => ipcRenderer.invoke('soul:listAudioOutputs'), playerCommand: command => ipcRenderer.send('soul:playerCommand', command), onPlayerPopout: handler => ipcRenderer.on('soul:playerPopout', (_e, payload) => handler(payload)), onPlayerDocked: handler => ipcRenderer.on('soul:playerDocked', () => handler()), onPlayerCommand: handler => ipcRenderer.on('soul:playerCommand', (_e, command) => handler(command)),
+  adminLogin: password => ipcRenderer.invoke('soul:adminLogin', password), adminConfigure: password => ipcRenderer.invoke('soul:adminConfigure', password), adminStatus: () => ipcRenderer.invoke('soul:adminStatus'), adminSave: input => ipcRenderer.invoke('soul:adminSave', input), adminLogout: () => ipcRenderer.invoke('soul:adminLogout'), checkService: () => ipcRenderer.invoke('soul:checkService'), connectService: input => ipcRenderer.invoke('soul:connectService', input), onServiceStatus: handler => ipcRenderer.on('soul:serviceStatus', (_e, payload) => handler(payload)),
+  evalCalc: query => ipcRenderer.invoke('soul:evalCalc', query),
+  openOverlay: input => ipcRenderer.invoke('soul:openOverlay', input || {}),
+  closeOverlay: input => ipcRenderer.invoke('soul:closeOverlay', input || {}),
+  overlayNavigate: url => ipcRenderer.invoke('soul:overlayNavigate', url),
+  overlayChrome: input => ipcRenderer.invoke('soul:overlayChrome', input || {}),
+  overlayState: () => ipcRenderer.invoke('soul:overlayState'),
+  overlayStatus: () => ipcRenderer.invoke('soul:overlayState'),
+  overlayOpenExternal: url => ipcRenderer.invoke('soul:overlayOpenExternal', url),
+  processMetrics: () => ipcRenderer.invoke('soul:processMetrics'),
+  adultSoulStatus: () => ipcRenderer.invoke('soul:adultSoulStatus'),
+  configureAdultSoul: input => ipcRenderer.invoke('soul:configureAdultSoul', input || {}),
+  startAdultSession: input => ipcRenderer.invoke('soul:startAdultSession', input || {}),
+  stopAdultSession: () => ipcRenderer.invoke('soul:stopAdultSession'),
+  tickAdultSession: atMs => ipcRenderer.invoke('soul:tickAdultSession', atMs),
+  adultSoulCommand: command => ipcRenderer.invoke('soul:adultSoulCommand', command),
+  selectAdultSound: () => ipcRenderer.invoke('soul:selectAdultSound'),
+  adultMediaDesk: input => ipcRenderer.invoke('soul:adultMediaDesk', input || {}),
+  configureAdultMedia: input => ipcRenderer.invoke('soul:configureAdultMedia', input || {}),
+  setAdultPin: (pin, confirm) => ipcRenderer.invoke('soul:setAdultPin', pin, confirm),
+  unlockAdultStealth: pin => ipcRenderer.invoke('soul:unlockAdultStealth', pin),
+  lockAdultStealth: () => ipcRenderer.invoke('soul:lockAdultStealth'),
+  applyFeelLevel: (level, atMs) => ipcRenderer.invoke('soul:applyFeelLevel', level, atMs),
+  addAdultFolderBookmark: (folderId, item) => ipcRenderer.invoke('soul:addAdultFolderBookmark', folderId, item),
+  stayAwake: input => ipcRenderer.invoke('soul:stayAwake', input || {})
+});
 
