@@ -75,6 +75,57 @@ const sitePages = fs
     return `${f} -- ${t ? ascii(t[1].trim()) : f}`;
   });
 
+// --- tier-1 extractions ------------------------------------------------------
+const schemaSrc = read(path.join('src', 'core', 'schema.js'));
+const schemaVersion = (schemaSrc.match(/CURRENT_SCHEMA_VERSION\s*=\s*(\d+)/) || [])[1] || '?';
+
+const ELECTRON_FILES = [
+  'src/electron/main.js',
+  'src/electron/auto-update.js',
+  'src/electron/overlay-windows.js',
+  'src/electron/player-windows.js',
+];
+const ipcChannels = [
+  ...new Set(
+    ELECTRON_FILES.flatMap(f =>
+      [...read(f).matchAll(/ipcMain\.(?:handle|on)\(\s*['"]([^'"]+)['"]/g)].map(m => m[1])
+    )
+  ),
+].sort();
+
+const intentCases = [
+  ...new Set(
+    [...read(path.join('src', 'core', 'kernel.js')).matchAll(/case '([a-z][a-z0-9-]*)':/g)].map(m => m[1])
+  ),
+].sort();
+
+const legalSummaries = ['AGE.md', 'PRIVACY.md', 'TERMS.md'].map(f => {
+  const body = read(f);
+  const para =
+    body
+      .split(/\n\s*\n/)
+      .map(s => s.replace(/^#.*$/m, '').trim())
+      .find(s => s.length > 60 && !s.startsWith('![')) || 'see the full document';
+  return `${path.basename(f, '.md')}: ${ascii(para).replace(/\s+/g, ' ').slice(0, 180)}`;
+});
+
+const runtimeDeps = Object.entries(pkg.dependencies || {}).map(([n, v]) => `${n}@${v}`);
+const devDepCount = Object.keys(pkg.devDependencies || {}).length;
+
+const workflows = fs.existsSync(path.join(ROOT, '.github', 'workflows'))
+  ? fs
+      .readdirSync(path.join(ROOT, '.github', 'workflows'))
+      .filter(f => f.endsWith('.yml'))
+      .sort()
+      .map(f => {
+        const n = read(path.join('.github', 'workflows', f)).match(/^name:\s*(.+)$/m);
+        return `${path.basename(f, '.yml')}${n ? ` (${ascii(n[1]).trim()})` : ''}`;
+      })
+  : [];
+
+const locSrc = read(path.join('src', 'renderer', 'localization.js'));
+const locales = [...new Set([...locSrc.matchAll(/\b(en|es|fr|de)\b\s*:/g)].map(m => m[1]))];
+
 // --- entries ---------------------------------------------------------------
 // Shape mirrors knowledge.js ENTRIES plus "patterns" (regex sources used for routing).
 const entries = [
@@ -154,6 +205,53 @@ const entries = [
     reply:
       'Thoth follows only your specific commands. Authorization is exact-match against a frozen catalog of read-class actions ("run diagnostics", "service status", "check for updates", "open settings", "open backups", "open privacy notice"), bound to an active operator session from the scrypt admin gate. Anything else - rephrased, injected, escalated, or unknown - is refused by default and written to the audit trail. There is no fuzzy matching and no way for conversation content to mint new permissions.',
     actions: [{ type: 'open-view', view: 'identity', label: 'Identity & consent' }],
+  },
+  {
+    id: 'thoth:settings-schema',
+    title: 'Profile schema',
+    patterns: ['settings?\\s+schema', 'profile\\s+schema', 'what\\s+(?:is\\s+)?stored\\s+about\\s+me', 'schema\\s+version'],
+    reply: `Profiles follow schema v${schemaVersion}: one JSON profile holding identity/consent state, assistant preferences, continuity and self-model, conversations, memories, and workspace layers. Everything stays local in the Windows application-data directory, encrypted with safeStorage when Windows protection is available.`,
+    actions: [{ type: 'open-view', view: 'settings', label: 'Open Settings' }],
+  },
+  {
+    id: 'thoth:ipc-surface',
+    title: 'Internal capability surface',
+    patterns: ['ipc\\s+channels?', 'internal\\s+capabilit(?:y|ies)', 'what\\s+can\\s+the\\s+app\\s+do\\s+internally'],
+    reply: `The Electron main process exposes ${ipcChannels.length} whitelisted IPC channels, and sandboxed renderers can reach nothing beyond them. Highlights: ${ipcChannels.slice(0, 12).join(', ')}.`,
+  },
+  {
+    id: 'thoth:intents-catalog',
+    title: 'Intent catalog',
+    patterns: ['intent\\s+catalog', 'which\\s+intents', 'what\\s+can\\s+you\\s+open', 'supported\\s+intents?'],
+    reply: `The Soul kernel routes ${intentCases.length} intents (for example: ${intentCases.slice(0, 16).join(', ')}). Each maps to safe UI actions through actionsForIntent in the kernel.`,
+  },
+  {
+    id: 'thoth:legal-summaries',
+    title: 'Plain-language legal summaries',
+    patterns: ['plain[- ]language\\s+legal', 'summarize\\s+(?:terms|privacy|age)', 'can\\s+i\\s+use\\s+(?:this|eidovara)\\s+commercially'],
+    reply: `Short versions, not legal advice -- ${legalSummaries.join(' | ')}`,
+    actions: [{ type: 'open-legal', legal: 'about', label: 'About & legal' }],
+  },
+  {
+    id: 'thoth:dependencies',
+    title: 'Dependency inventory',
+    patterns: ['dependenc(?:ies|y)', 'third[- ]party\\s+(?:code|packages)', 'supply\\s+chain'],
+    reply: `Runtime dependencies stay minimal by policy: ${runtimeDeps.join(', ') || 'none'}. Dev tooling adds ${devDepCount} pinned packages (runner, lint, packaging). CI runs dependency review, CodeQL, and scorecards on every change.`,
+  },
+  {
+    id: 'thoth:pipeline',
+    title: 'CI and release pipeline',
+    patterns: ['ci\\s+pipeline', 'how\\s+(?:is\\s+)?(?:it\\s+)?(?:built|shipped|released)', 'release\\s+pipeline', 'github\\s+actions?'],
+    reply: `${workflows.length} GitHub Actions pipelines guard this repo (${workflows.join('; ')}). Releases build a Windows installer, pin its SHA-256, attest build provenance, and publish an SBOM.`,
+  },
+  {
+    id: 'thoth:localization',
+    title: 'Language support',
+    patterns: ['languages?\\s+(?:are\\s+)?(?:supported|available)', 'translat(?:ions?|ed)', '\\bi18n\\b', '\\blocalization\\b'],
+    reply:
+      locales.length > 0
+        ? `The workspace UI localizes to ${locales.join(', ').toUpperCase()} with English fallback; locale strings live in src/renderer/localization.js.`
+        : 'The workspace UI localizes with English as the fallback language; strings live in src/renderer/localization.js.',
   },
 ];
 
