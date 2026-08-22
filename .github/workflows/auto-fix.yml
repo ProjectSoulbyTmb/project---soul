@@ -1,0 +1,116 @@
+# Automated code & error fixer.
+# Applies safe, mechanical repairs (lint autofix, formatting, dependency
+# patches), validates them against the full test suite, and opens a PR with
+# the result. Never pushes directly to main. If validation fails, the run
+# self-reverts and files an issue instead.
+name: Auto-Fix
+
+on:
+  schedule:
+    - cron: '30 4 * * *' # daily, after Auto-Debug's window
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: auto-fix
+  cancel-in-progress: true
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 24
+
+      - name: Enable pinned pnpm
+        shell: bash
+        run: |
+          corepack enable
+          corepack prepare pnpm@10.33.3 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Apply safe automatic fixes
+        shell: bash
+        run: |
+          set +e
+          pnpm exec eslint . --fix > auto-fix-eslint.log 2>&1
+          pnpm exec prettier --write . > auto-fix-format.log 2>&1
+          # compatible-range dependency patches only; never major bumps
+          pnpm update --prod 2>&1 | tail -n 40 > auto-fix-deps.log || true
+          git add -A
+          if git diff --cached --quiet; then
+            echo "NOTHING_TO_FIX=true" >> "$GITHUB_ENV"
+            echo "No mechanical fixes were applicable."
+          fi
+
+      - name: Validate fixed tree
+        if: env.NOTHING_TO_FIX != 'true'
+        id: validate
+        shell: bash
+        run: |
+          set +e
+          FAILED=""
+          for gate in "lint|pnpm run lint" "format|pnpm run format:check" "syntax|pnpm run check" "tests|pnpm test" "smoke|pnpm run smoke"; do
+            name="${gate%%|*}"; cmd="${gate#*|}"
+            echo "::group::$name"; bash -lc "$cmd"; code=$?; echo "::endgroup::"
+            [ $code -ne 0 ] && FAILED="$FAILED $name"
+          done
+          if [ -n "$FAILED" ]; then
+            echo "validation_failed=$FAILED" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+      - name: Revert if validation failed
+        if: failure() && steps.validate.outputs.validation_failed != ''
+        shell: bash
+        run: |
+          git checkout -- .
+          git clean -fd
+          echo "Validation failed:${{ steps.validate.outputs.validation_failed }} — all fixes reverted."
+
+      - name: File issue about unfixable failures
+        if: failure() && steps.validate.outputs.validation_failed != ''
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh label create auto-fix --color 0e8a16 2>/dev/null || true
+          existing=$(gh issue list --state open --label auto-fix --limit 1 --json number --jq '.[0].number')
+          body="🤖 Auto-Fix applied mechanical repairs but validation still fails:${{ steps.validate.outputs.validation_failed }}
+
+          Run log: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}
+          These need human attention."
+          if [ -n "$existing" ]; then gh issue comment "$existing" --body "$body";
+          else gh issue create --title "🤖 Auto-Fix could not fully repair $(date -u +%F)" --body "$body" --label auto-fix; fi
+
+      - name: Create fix PR
+        if: env.NOTHING_TO_FIX != 'true' && success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="auto-fix/$(date -u +%Y-%m-%d-%H%M)"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git commit -m "chore: automated lint/format/dependency fixes [skip ci]" || exit 0
+          git push origin "$BRANCH"
+          {
+            echo "## 🤖 Automated fixes"
+            echo "- ESLint \`--fix\` + Prettier formatting"
+            echo "- Compatible-range production dependency updates"
+            echo ""
+            echo "Full gates (lint · format · syntax · tests · smoke) passed on this tree."
+          } > pr-body.md
+          gh pr create --title "chore: automated code fixes $(date -u +%F)" \
+            --body-file pr-body.md --base main --head "$BRANCH" \
+            --label "auto-fix"
