@@ -1,16 +1,175 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://eidovara.org/</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/product.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/download.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/assist.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/faq.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/help.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/status.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/legal.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/terms.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/privacy.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/age.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/licensing.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
-  <url><loc>https://eidovara.org/security.html</loc><lastmod>2026-08-21</lastmod><changefreq>weekly</changefreq></url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  <url>
+    <loc>https://eidovara.org/</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/" />
+    <image:image>
+      <image:loc>https://eidovara.org/eidovara-og.png</image:loc>
+      <image:title>Eidovara v1.0.0 Dashboard</image:title>
+      <image:caption>Eidovara v1.0.0 Windows desktop workspace</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://eidovara.org/product.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/product.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/product.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/product.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/product.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/product.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/download.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/download.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/download.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/download.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/download.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/download.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/assist.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/assist.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/assist.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/assist.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/assist.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/assist.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/help.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/help.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/help.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/help.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/help.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/help.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/faq.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/faq.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/faq.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/faq.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/faq.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/faq.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/status.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/status.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/status.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/status.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/status.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/status.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/legal.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/legal.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/legal.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/legal.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/legal.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/legal.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/terms.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/terms.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/terms.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/terms.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/terms.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/terms.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/privacy.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/privacy.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/privacy.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/age.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/age.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/age.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/age.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/age.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/age.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/licensing.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/licensing.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/licensing.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/licensing.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/licensing.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/licensing.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/security.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/security.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/security.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/security.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/security.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/security.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/version-history.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/version-history.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/version-history.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/version-history.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/version-history.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/version-history.html" />
+  </url>
+  <url>
+    <loc>https://eidovara.org/roadmap.html</loc>
+    <lastmod>2026-08-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://eidovara.org/roadmap.html" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://eidovara.org/es/roadmap.html" />
+    <xhtml:link rel="alternate" hreflang="fr" href="https://eidovara.org/fr/roadmap.html" />
+    <xhtml:link rel="alternate" hreflang="de" href="https://eidovara.org/de/roadmap.html" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://eidovara.org/roadmap.html" />
+  </url>
 </urlset>

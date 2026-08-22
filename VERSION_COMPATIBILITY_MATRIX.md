@@ -33,8 +33,9 @@ Released: August 21, 2026
 
 | Installer Version | Electron | Node | Status | SHA-256 |
 |-------------------|----------|------|--------|---------|
-| **v1.0.0** | 43.4.1 | 20+ | ✅ Current | F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675 |
-| v0.22.2 | 43.4.1 | 20+ | ⚠️ Historical | A26B8232E6B81A77566610AFF110197022850AB4348F86D390663831584B5DEE |
+| **v1.0.0** | 43.4.1 | 20+ | 🚧 Staged — publishes when tag `v1.0.0` passes release CI | pending first tagged build (see release SHA256SUMS.txt) |
+| v0.22.3 | 43.4.1 | 20+ | ⚠️ Latest published tag | 36BFC6F02161E4E4E599DC6219B3B6718804F1FE6B1554A5906D827D4FE1F145 |
+| v0.22.2 | 43.4.1 | 20+ | ⚠️ Historical | F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675 |
 | v0.19.1 | 43.x | 20+ | ⚠️ Historical | 72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8 |
 
 **Note**: Only v1.0.0 installer should be downloaded from `releases/latest`. Historical versions remain for reference only.
@@ -193,7 +194,7 @@ Released: August 21, 2026
 ## Verification Checklist for v1.0.0
 
 - [x] All 9 website HTML pages display v1.0.0
-- [x] SHA-256 F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675 consistent
+- [x] Installer SHA-256 facts corrected against GitHub Releases: no v1.0.0 artifact exists yet; v0.22.2 = F29A52F0…, v0.22.3 = 36BFC6F0…; measured v1.0.0 values land in the tagged release's SHA256SUMS.txt
 - [x] Installer filename: Eidovara-v1.0.0-Windows-x64-Setup.exe
 - [x] 18+ age gate on all touchpoints
 - [x] Source-available license headers on all first-party files

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
   INSTALLER_NAME,
+  INSTALLER_MEASURED,
   INSTALLER_SHA256,
   INSTALLER_SIZE_BYTES,
   INSTALLER_LATEST_URL,
@@ -22,7 +23,8 @@ test('public site presents the published local-first Windows release', () => {
   assert.match(site, /local-first Windows desktop app/);
   assert.match(site, /href="download.html"/);
   assert.match(site, new RegExp(escapeRe(INSTALLER_NAME)));
-  assert.match(site, new RegExp(INSTALLER_SHA256));
+  if (INSTALLER_SHA256) assert.match(site, new RegExp(INSTALLER_SHA256));
+  else assert.match(site, /SHA256SUMS\.txt/);
   assert.match(site, /Authenticode-unsigned/);
   assert.match(site, /18\+/);
   assert.doesNotMatch(site, /dreambot333\.workers\.dev/);
@@ -32,7 +34,9 @@ test('public site presents the published local-first Windows release', () => {
 test('primary download CTA points at the published installer and keeps the age gate', () => {
   assert.equal(JSON.parse(read('package.json')).version, SOURCE_VERSION);
   assert.equal(INSTALLER_NAME, `Eidovara-v${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`);
-  assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
+  // Pending tagged build: digest stays null; once measured it must be well-formed.
+  if (!INSTALLER_MEASURED) assert.equal(INSTALLER_SHA256, null);
+  else assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
   assert.equal(INSTALLER_LATEST_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`);
   assert.equal(INSTALLER_PINNED_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`);
 
@@ -40,8 +44,9 @@ test('primary download CTA points at the published installer and keeps the age g
   const primary = downloadPage.match(/<a class="primary[^"]*" href="([^"]+)"/);
   assert.ok(primary, 'download page has a primary button');
   assert.equal(primary[1], INSTALLER_LATEST_URL);
-  assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_SIZE_BYTES.toLocaleString('en-US')) + ' bytes'));
-  assert.match(downloadPage, /101\.75 MiB/);
+  if (INSTALLER_SIZE_BYTES !== null) {
+    assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_SIZE_BYTES.toLocaleString('en-US')) + ' bytes'));
+  }
   assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.match(downloadPage, /id="ageConfirm"/);
   assert.match(downloadPage, /aria-disabled="true"/);

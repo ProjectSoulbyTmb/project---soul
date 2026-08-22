@@ -4,8 +4,10 @@ import { answerAssist, assistMeta, MAX_ASSIST_BODY, ASSIST_VERSION } from './kno
 
 const LIVE_INSTALLER_VERSION = '1.0.0';
 const LIVE_INSTALLER = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
-const LIVE_INSTALLER_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
-const LIVE_INSTALLER_SIZE = 106691524;
+// No tagged v1.0.0 build exists yet: measured facts stay null until the
+// Release Windows workflow publishes the artifact with SHA256SUMS.txt.
+const LIVE_INSTALLER_SHA256 = null;
+const LIVE_INSTALLER_SIZE = null;
 const LIVE_INSTALLER_URL = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe';
 
 const CORS_METHODS = 'GET, HEAD, POST, OPTIONS';

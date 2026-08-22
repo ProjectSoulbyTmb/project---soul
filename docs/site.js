@@ -489,7 +489,21 @@
     const resultEl = $('#verifyResult');
     if (!fileInput || !resultEl) return;
 
-    const EXPECTED_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
+    const SUMS_URL =
+      'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/SHA256SUMS.txt';
+
+    const fetchExpectedSha256 = async () => {
+      const res = await fetch(SUMS_URL, { cache: 'no-store' });
+      if (!res.ok) throw new Error('SHA256SUMS.txt HTTP ' + res.status);
+      const text = await res.text();
+      for (const line of text.split('\n')) {
+        const m = line.match(/^([0-9A-Fa-f]{64})\s+\*?(.+)$/);
+        if (m && /Eidovara-.*-Windows-x64-Setup\.exe$/.test(m[2].trim())) {
+          return { hash: m[1].toUpperCase(), file: m[2].trim() };
+        }
+      }
+      throw new Error('No Windows Setup.exe entry in SHA256SUMS.txt');
+    };
 
     fileInput.addEventListener('change', async e => {
       const file = e.target.files[0];
@@ -504,10 +518,22 @@
           .map(b => b.toString(16).padStart(2, '0'))
           .join('')
           .toUpperCase();
-        const match = hashHex === EXPECTED_SHA256;
+        let expected;
+        try {
+          expected = await fetchExpectedSha256();
+        } catch (fetchErr) {
+          resultEl.innerHTML =
+            `<span class="verify-fail">✗ Checksum unavailable</span> Computed SHA-256: <code>${hashHex}</code>. ` +
+            'Could not fetch the release SHA256SUMS.txt automatically (' +
+            String(fetchErr && fetchErr.message ? fetchErr.message : fetchErr) +
+            '). Compare manually against the checksums published with the release.';
+          resultEl.className = 'verify-result failed';
+          return;
+        }
+        const match = hashHex === expected.hash;
         resultEl.innerHTML = match
-          ? `<span class="verify-ok">✓ Verified</span> SHA-256 matches: <code>${hashHex}</code>`
-          : `<span class="verify-fail">✗ Mismatch</span> Expected: <code>${EXPECTED_SHA256}</code>, Got: <code>${hashHex}</code>`;
+          ? `<span class="verify-ok">✓ Verified</span> SHA-256 matches ${expected.file}: <code>${hashHex}</code>`
+          : `<span class="verify-fail">✗ Mismatch</span> Expected (${expected.file}): <code>${expected.hash}</code>, Got: <code>${hashHex}</code>`;
         resultEl.className = 'verify-result ' + (match ? 'verified' : 'failed');
       } catch (err) {
         resultEl.textContent = 'Error computing hash: ' + err.message;

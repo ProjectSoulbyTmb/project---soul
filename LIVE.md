@@ -10,7 +10,7 @@ This is an operator note, not a consumer marketing page. It does not claim Authe
 | GitHub Pages | `docs/` from **main only** via `.github/workflows/pages.yml`. Mirror: `https://projectsoulbytmb.github.io/project---soul/`. |
 | Cloudflare Pages | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). `.github/workflows/cloudflare-pages.yml` deploys `docs/` after website changes reach `main` when production credentials are available. |
 | Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Health/config/status source version and live installer version are `1.0.0`. |
-| Windows installer | Tag `v1.0.0` publishes unsigned `Eidovara-v1.0.0-Windows-x64-Setup.exe` (106,691,524 bytes, about 101.75 MiB). SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. |
+| Windows installer | Tag `v1.0.0` publishes unsigned `Eidovara-v1.0.0-Windows-x64-Setup.exe`; its measured size and SHA-256 land in the release’s SHA256SUMS.txt and latest.yml when CI builds it. SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. |
 | Edition | v1.0.0 is a full free Alpha. Currently implemented features are not blocked by paid entitlement; live checkout/subscription processing remains off. |
 
 Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service accepts another HTTPS base as an override. Conversations are not sent automatically.
@@ -27,8 +27,7 @@ Expected public pages include Home, Download, Assist, Product, Legal, Status, He
 
 - version `1.0.0`
 - installer `Eidovara-v1.0.0-Windows-x64-Setup.exe`
-- 106,691,524 bytes / about 101.75 MiB
-- SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`
+- measured installer size / SHA-256: recorded per tagged build in that release's SHA256SUMS.txt + latest.yml (no v1.0.0 artifact exists yet; the F29A52F0… digest belongs to v0.22.2's Setup.exe)
 - Authenticode-unsigned
 - GitHub/Sigstore provenance available
 - Windows 10/11 x64

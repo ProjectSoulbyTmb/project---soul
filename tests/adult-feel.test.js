@@ -7,7 +7,7 @@ import {
   mapGamepadStick, mapGamepadButtons, nextFeelPattern, rumbleFromLevel, GAMEPAD_HONESTY
 } from '../src/core/adult-feel.js';
 
-test('Feel Sync ships eleven named patterns in 0â€“1', () => {
+test('Feel Sync ships eleven named patterns in 0–1', () => {
   assert.equal(FEEL_PATTERNS.length, 11);
   const feel = defaultAdultFeel();
   for (const pattern of FEEL_PATTERNS) {
@@ -16,7 +16,7 @@ test('Feel Sync ships eleven named patterns in 0â€“1', () => {
   }
 });
 
-test('gamepad stick maps into Feel 0â€“100 and rumble stays dual-rumble math', () => {
+test('gamepad stick maps into Feel 0–100 and rumble stays dual-rumble math', () => {
   const idle = mapGamepadStick([0.02, -0.01], { speed: 40, intensity: 70 });
   assert.equal(idle.moved, false);
   assert.equal(idle.speed, 40);

@@ -4,7 +4,7 @@ This is the advertised path linked from README, PRIVACY.md, and LEGAL_NOTICES.md
 
 This self-declared network inventory is included in signed release provenance.
 
-## Current egress (v0.19.1)
+## Current egress (v1.0.0)
 
 Network access is user-directed except the official GitHub update-manifest check (default on; Settings can disable automatic checks). No `workers.dev` host is compiled into the Electron app or the public site. The official Eidovara service default is `https://api.eidovara.org` (overridable). Payments stay **fail-closed**: `paymentsEnabled` and `checkoutEnabled` remain false even if a remote `/v1/config` payload claims otherwise.
 
@@ -26,7 +26,7 @@ Network access is user-directed except the official GitHub update-manifest check
 | Spotify, YouTube, or Internet Archive official search | User clicks a media-dock button or an official search chip in companion, Research, or Entertainment (constructed HTTPS search URLs; Eidovara does not fetch those sites’ HTML or inject into their apps) | Search terms, IP address, platform cookies/account state |
 | Adult official tube/creator search (Pornhub, XVideos, and similar constructed HTTPS search URLs) | After Adult Mode triple gate: user confirms an Adult Media chip. System browser only. Guest overlays stay closed. Eidovara does not fetch those sites’ HTML, embed players, or pair toys. | Search terms, IP address, platform cookies/account state |
 
-No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Empty/default Settings → Eidovara service resolves to `https://api.eidovara.org`. If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v0.19.1; the app never enables live checkout from a remote flag.
+No general background crawler, telemetry service, advertising endpoint, or automatic external safety-reporting endpoint is present. Empty/default Settings → Eidovara service resolves to `https://api.eidovara.org`. If the service is unreachable, Offline Soul continues locally. Store URLs on `/v1/config` stay empty in v1.0.0; the app never enables live checkout from a remote flag.
 
 ## Enhancement-allowed vs blocked
 
@@ -50,7 +50,7 @@ Documentation may describe the implemented surfaces above. It must not enable ne
 - Fail-closed payments (`paymentsEnabled: false`)
 - Sandboxed renderer, 18+ gates, source-available evaluation license, Authenticode-unsigned disclosure
 
-**Blocked in v0.19.1 (screening records only — do not enable):**
+**Blocked in v1.0.0 (screening records only — do not enable):**
 
 - Bundled neural TTS (Kokoro, Piper, sherpa-onnx) or cloud voice credentials
 - VRM / MakeHuman character engines or imported anatomical models

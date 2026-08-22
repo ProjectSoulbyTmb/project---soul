@@ -59,7 +59,7 @@ async function refresh(query = '') {
       b.className = 'secondary';
       b.textContent = item.title || item.provider;
       b.addEventListener('click', async () => {
-        if (!window.confirm(`Open ${item.provider} in your system browser? Eidovara does not fetch that siteâ€™s HTML or embed its player.`)) return;
+        if (!window.confirm(`Open ${item.provider} in your system browser? Eidovara does not fetch that site’s HTML or embed its player.`)) return;
         await window.soul.openExternal(item.url);
       });
       chips.append(b);

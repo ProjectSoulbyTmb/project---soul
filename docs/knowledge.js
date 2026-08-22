@@ -12,8 +12,8 @@ const RELEASES = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/la
 const INSTALLER = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe';
 const INSTALLER_PINNED = 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v1.0.0/Eidovara-v1.0.0-Windows-x64-Setup.exe';
 const INSTALLER_NAME = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
-const INSTALLER_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
-const INSTALLER_SIZE = '106,691,524 bytes (about 101.75 MiB)';
+const INSTALLER_SHA256 = null;
+const INSTALLER_SIZE = 'measured size published in the release SHA256SUMS.txt';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
 const SITE = 'https://eidovara.org/';
 
@@ -40,7 +40,7 @@ export const ENTRIES = [
   {
     id: 'download', modes: ['download', 'help'], tags: ['download', 'install', 'installer', 'setup', 'release', 'get', 'windows', 'alpha', 'exe', 'nsis', 'update', 'updates', 'auto-update'],
     title: 'Download Windows v1.0.0',
-    reply: `The official download is ${INSTALLER_NAME}, an Authenticode-unsigned Windows 10/11 x64 NSIS installer from GitHub Releases. Size: ${INSTALLER_SIZE}. SHA-256: ${INSTALLER_SHA256}. Latest alias: ${INSTALLER}. Pinned asset: ${INSTALLER_PINNED}. Windows SmartScreen may warn. GitHub/Sigstore provenance records build origin but is not Authenticode signing.`,
+    reply: `The official download is ${INSTALLER_NAME}, an Authenticode-unsigned Windows 10/11 x64 NSIS installer from GitHub Releases. Its measured size and SHA-256 are published in the release's SHA256SUMS.txt. Latest alias: ${INSTALLER}. Pinned asset: ${INSTALLER_PINNED}. Windows SmartScreen may warn. GitHub/Sigstore provenance records build origin but is not Authenticode signing.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: INSTALLER, label: INSTALLER_NAME }]
   },
   {
@@ -52,7 +52,7 @@ export const ENTRIES = [
   {
     id: 'unsigned', modes: ['download', 'help', 'legal'], tags: ['unsigned', 'authenticode', 'smartscreen', 'sign', 'certificate', 'checksum', 'sha', 'microsoft'],
     title: 'Unsigned Windows build',
-    reply: `The current ${INSTALLER_NAME} is Authenticode-unsigned. Windows SmartScreen may warn. Verify SHA-256 ${INSTALLER_SHA256} and the GitHub release provenance. The project does not claim Microsoft certification or SmartScreen preapproval.`,
+    reply: `The current ${INSTALLER_NAME} is Authenticode-unsigned. Windows SmartScreen may warn. Verify the downloaded file against the release's SHA256SUMS.txt and GitHub provenance. The project does not claim Microsoft certification or SmartScreen preapproval.`,
     links: [{ href: 'download.html', label: 'Download page (18+)' }, { href: 'security.html', label: 'Security' }]
   },
   {
@@ -178,7 +178,7 @@ export const ENTRIES = [
   {
     id: 'status', modes: ['help'], tags: ['status', 'pages', 'outage', 'uptime', 'releases'],
     title: 'Public status',
-    reply: `Public surfaces are ${SITE}, the GitHub Pages mirror, and the official Windows release on GitHub Releases (${INSTALLER_NAME}, ${INSTALLER_SIZE}, SHA-256 ${INSTALLER_SHA256}). The Status page uses https://api.eidovara.org by default for health/status. Invalid URLs fail closed.`,
+    reply: `Public surfaces are ${SITE}, the GitHub Pages mirror, and the official Windows release on GitHub Releases (${INSTALLER_NAME}; measured size and SHA-256 in its SHA256SUMS.txt). The Status page uses https://api.eidovara.org by default for health/status. Invalid URLs fail closed.`,
     links: [{ href: 'status.html', label: 'Status' }, { href: 'download.html', label: 'Download (18+)' }]
   },
   {
