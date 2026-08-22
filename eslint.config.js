@@ -83,4 +83,15 @@ export default [
       },
     },
   },
+  {
+    files: ['docs/sw.js'],
+    languageOptions: {
+      globals: {
+        clients: 'readonly',
+        skipWaiting: 'readonly',
+        caches: 'readonly',
+        self: 'readonly',
+      },
+    },
+  },
 ];
