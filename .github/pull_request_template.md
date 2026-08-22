@@ -1,4 +1,4 @@
-﻿## Authorized contribution declaration
+## Authorized contribution declaration
 
 - [ ] I obtained written approval from Soul Consciousness Studios before submitting this contribution.
 - [ ] I created the contribution or have authority to submit it.
