@@ -15,7 +15,7 @@ let config = {
   autoSync: false,
   syncIntervalMs: 5 * 60_000,
   lastSyncAt: null,
-  pendingQueue: []
+  pendingQueue: [],
 };
 
 let syncTimer = null;
@@ -32,7 +32,9 @@ export default {
     try {
       const stored = localStorage.getItem('plugin_notion_sync_config');
       if (stored) config = { ...config, ...JSON.parse(stored) };
-    } catch { /* private mode */ }
+    } catch {
+      /* private mode */
+    }
 
     if (config.apiKey && config.databaseId && config.autoSync) {
       startSyncInterval();
@@ -90,7 +92,7 @@ export default {
 
   async onMemoryDeleted(memory) {
     queueMemory(memory, 'delete');
-  }
+  },
 };
 
 function checkConfigured() {
@@ -101,23 +103,32 @@ function checkConfigured() {
 
 function saveConfig() {
   try {
-    localStorage.setItem('plugin_notion_sync_config', JSON.stringify({
-      ...config,
-      apiKey: config.apiKey // stored per-plugin in sandbox-prefixed key
-    }));
-  } catch { /* private mode */ }
+    localStorage.setItem(
+      'plugin_notion_sync_config',
+      JSON.stringify({
+        ...config,
+        apiKey: config.apiKey, // stored per-plugin in sandbox-prefixed key
+      })
+    );
+  } catch {
+    /* private mode */
+  }
 }
 
 function startSyncInterval() {
   stopSyncInterval();
   syncTimer = setInterval(() => {
     void pushMemories(config.databaseId).catch(err =>
-      console.error('[Notion Sync] Auto-sync failed:', err?.message || err));
+      console.error('[Notion Sync] Auto-sync failed:', err?.message || err)
+    );
   }, config.syncIntervalMs);
 }
 
 function stopSyncInterval() {
-  if (syncTimer) { clearInterval(syncTimer); syncTimer = null; }
+  if (syncTimer) {
+    clearInterval(syncTimer);
+    syncTimer = null;
+  }
 }
 
 function queueMemory(memory, operation) {
@@ -130,12 +141,12 @@ async function notionFetch(path, options = {}) {
   const res = await fetch(`${NOTION_API_BASE}${path}`, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${config.apiKey}`,
+      Authorization: `Bearer ${config.apiKey}`,
       'Notion-Version': NOTION_VERSION,
       'Content-Type': 'application/json',
-      ...options.headers
+      ...options.headers,
     },
-    redirect: 'error'
+    redirect: 'error',
   });
   if (!res.ok) {
     const body = await res.text().catch(() => '');
@@ -156,12 +167,14 @@ async function pushMemories(databaseId) {
         body: JSON.stringify({
           parent: { database_id: databaseId },
           properties: {
-            Title: { title: [{ text: { content: item.memory.content?.slice(0, 100) || 'Untitled' } }] },
+            Title: {
+              title: [{ text: { content: item.memory.content?.slice(0, 100) || 'Untitled' } }],
+            },
             Content: { rich_text: [{ text: { content: String(item.memory.content || '') } }] },
             Kind: { select: { name: String(item.memory.kind || 'note') } },
-            Confidence: { number: Number(item.memory.confidence ?? 0.5) }
-          }
-        })
+            Confidence: { number: Number(item.memory.confidence ?? 0.5) },
+          },
+        }),
       });
       pushed++;
     } catch (err) {
@@ -177,7 +190,7 @@ async function pushMemories(databaseId) {
 async function pullMemories(databaseId) {
   const data = await notionFetch(`/databases/${databaseId}/query`, {
     method: 'POST',
-    body: JSON.stringify({ page_size: 50 })
+    body: JSON.stringify({ page_size: 50 }),
   });
 
   const results = Array.isArray(data.results) ? data.results : [];

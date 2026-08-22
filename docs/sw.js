@@ -32,7 +32,7 @@ const STATIC_ASSETS = [
   '/eidovara-wallpaper-light.jpg',
   '/eidovara-wallpaper-dark.jpg',
   '/eidovara-wallpaper-product.jpg',
-  '/manifest.json'
+  '/manifest.json',
 ];
 
 const CACHE_STRATEGIES = {
@@ -41,12 +41,13 @@ const CACHE_STRATEGIES = {
   // HTML pages: network first, cache fallback
   html: 'network-first',
   // API requests: network only, no caching
-  api: 'network-only'
+  api: 'network-only',
 };
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
+    caches
+      .open(CACHE_NAME)
       .then(cache => cache.addAll(STATIC_ASSETS))
       .then(() => self.skipWaiting())
   );
@@ -54,13 +55,14 @@ self.addEventListener('install', event => {
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames
-          .filter(name => name !== CACHE_NAME)
-          .map(name => caches.delete(name))
-      );
-    }).then(() => self.clients.claim())
+    caches
+      .keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.filter(name => name !== CACHE_NAME).map(name => caches.delete(name))
+        );
+      })
+      .then(() => self.clients.claim())
   );
 });
 
@@ -81,7 +83,9 @@ self.addEventListener('fetch', event => {
 
   // Determine strategy based on request type
   const isHTML = request.headers.get('accept')?.includes('text/html');
-  const isStaticAsset = /\.(css|js|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|json|xml)$/i.test(url.pathname);
+  const isStaticAsset = /\.(css|js|png|jpg|jpeg|gif|webp|svg|ico|woff|woff2|json|xml)$/i.test(
+    url.pathname
+  );
 
   let strategy;
   if (isHTML) strategy = CACHE_STRATEGIES.html;
@@ -128,4 +132,3 @@ self.addEventListener('message', event => {
     self.skipWaiting();
   }
 });
-

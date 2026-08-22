@@ -8,9 +8,12 @@ import {
   INSTALLER_SHA256,
   INSTALLER_SIZE_BYTES,
   INSTALLER_LATEST_URL,
-  INSTALLER_PINNED_URL
+  INSTALLER_PINNED_URL,
 } from '../src/core/release.js';
-import { DESKTOP_KNOWLEDGE_VERSION, INSTALLER_NAME as KNOWLEDGE_INSTALLER } from '../src/core/knowledge.js';
+import {
+  DESKTOP_KNOWLEDGE_VERSION,
+  INSTALLER_NAME as KNOWLEDGE_INSTALLER,
+} from '../src/core/knowledge.js';
 import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
@@ -25,8 +28,14 @@ test('source and published Windows installer use one coherent set of release met
   assert.equal(KNOWLEDGE_INSTALLER, INSTALLER_NAME);
   assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
   assert.equal(INSTALLER_SIZE_BYTES, 106691524);
-  assert.equal(INSTALLER_LATEST_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`);
-  assert.equal(INSTALLER_PINNED_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`);
+  assert.equal(
+    INSTALLER_LATEST_URL,
+    `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`
+  );
+  assert.equal(
+    INSTALLER_PINNED_URL,
+    `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`
+  );
 });
 
 test('download page advertises exactly the canonical installer with integrity metadata', () => {

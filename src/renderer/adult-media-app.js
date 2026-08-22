@@ -4,7 +4,12 @@ const $ = s => document.querySelector(s);
 
 function adultOn() {
   const p = window.eidovaraState?.policy || {};
-  return p.mode === 'adult' && p.adultSoulEnabled === true && p.adultStatusConfirmed === true && p.currentConsent === true;
+  return (
+    p.mode === 'adult' &&
+    p.adultSoulEnabled === true &&
+    p.adultStatusConfirmed === true &&
+    p.currentConsent === true
+  );
 }
 
 function cardButton(item, { later = false } = {}) {
@@ -16,7 +21,7 @@ function cardButton(item, { later = false } = {}) {
   const strong = document.createElement('strong');
   strong.textContent = item.title || 'Untitled';
   const small = document.createElement('small');
-  small.textContent = later ? 'Watch later' : (item.type || 'media');
+  small.textContent = later ? 'Watch later' : item.type || 'media';
   b.append(strong, small);
   b.addEventListener('click', () => {
     if (item.playable && item.url && window.eidovaraPlayMedia) {
@@ -24,7 +29,11 @@ function cardButton(item, { later = false } = {}) {
       return;
     }
     if (item.sourceUrl && window.soul?.openExternal) {
-      if (window.confirm(`Open ${item.title} in your system browser? Eidovara does not embed this player.`)) {
+      if (
+        window.confirm(
+          `Open ${item.title} in your system browser? Eidovara does not embed this player.`
+        )
+      ) {
         window.soul.openExternal(item.sourceUrl);
       }
     }
@@ -42,7 +51,7 @@ async function refresh(query = '') {
   try {
     view = await window.soul.adultMediaDesk({
       query,
-      library: window.eidovaraSessionLibrary || []
+      library: window.eidovaraSessionLibrary || [],
     });
   } catch {
     desk.classList.add('hidden');
@@ -59,7 +68,12 @@ async function refresh(query = '') {
       b.className = 'secondary';
       b.textContent = item.title || item.provider;
       b.addEventListener('click', async () => {
-        if (!window.confirm(`Open ${item.provider} in your system browser? Eidovara does not fetch that siteâ€™s HTML or embed its player.`)) return;
+        if (
+          !window.confirm(
+            `Open ${item.provider} in your system browser? Eidovara does not fetch that siteâ€™s HTML or embed its player.`
+          )
+        )
+          return;
         await window.soul.openExternal(item.url);
       });
       chips.append(b);
@@ -75,7 +89,13 @@ async function refresh(query = '') {
       h.textContent = rail.title;
       const row = document.createElement('div');
       row.className = 'adult-rail-row';
-      for (const item of rail.items) row.append(cardButton({ ...item, art: item.art || view.library?.find(x => x.title === item.title)?.art }));
+      for (const item of rail.items)
+        row.append(
+          cardButton({
+            ...item,
+            art: item.art || view.library?.find(x => x.title === item.title)?.art,
+          })
+        );
       wrap.append(h, row);
       rails.append(wrap);
     }
@@ -116,7 +136,8 @@ async function refresh(query = '') {
       b.className = 'secondary';
       b.textContent = item.title;
       b.addEventListener('click', () => {
-        if (window.confirm(`Open ${item.title} in your system browser?`)) window.soul.openExternal(item.url);
+        if (window.confirm(`Open ${item.title} in your system browser?`))
+          window.soul.openExternal(item.url);
       });
       creators.append(b);
     }
@@ -138,7 +159,11 @@ function bind() {
   });
 }
 
-window.eidovaraAdultMedia = { refresh, onShow() { refresh($('#adultMediaQuery')?.value || ''); } };
+window.eidovaraAdultMedia = {
+  refresh,
+  onShow() {
+    refresh($('#adultMediaQuery')?.value || '');
+  },
+};
 bind();
 void refresh();
-

@@ -9,16 +9,16 @@ import { AGE_GATE } from './assist.js';
 // Run all structural legal guards at website load
 try {
   console.log('[STRUCTURAL GUARDS] Initializing website legal guards...');
-  
+
   // Enforce age gate at website level
   AGE_GATE.runAllChecks();
-  
+
   // Consciousness claim prevention
   console.log('[CONSCIOUSNESS GUARD] Consciousness claim prevention active');
-  
+
   // Open source relicensing prevention
   console.log('[RELICENSE GUARD] Open source relicensing prevention active');
-  
+
   console.log('[STRUCTURAL GUARDS] All website legal guards initialized and active');
 } catch (error) {
   console.error('[STRUCTURAL GUARDS] Website guard initialization failed:', error);
@@ -186,7 +186,9 @@ try {
       <span class="toggle-slider"></span>
       <span class="toggle-label">High contrast</span>
     `;
-    label.querySelector('#contrastToggle').addEventListener('change', e => applyContrast(e.target.checked));
+    label
+      .querySelector('#contrastToggle')
+      .addEventListener('change', e => applyContrast(e.target.checked));
     return label;
   }
 
@@ -199,9 +201,14 @@ try {
       { code: 'en', name: 'English' },
       { code: 'es', name: 'Espa????ol' },
       { code: 'fr', name: 'Fran????ais' },
-      { code: 'de', name: 'Deutsch' }
+      { code: 'de', name: 'Deutsch' },
     ];
-    select.innerHTML = langs.map(l => `<option value="${l.code}" ${getStoredLang() === l.code ? 'selected' : ''}>${l.name}</option>`).join('');
+    select.innerHTML = langs
+      .map(
+        l =>
+          `<option value="${l.code}" ${getStoredLang() === l.code ? 'selected' : ''}>${l.name}</option>`
+      )
+      .join('');
     select.addEventListener('change', e => applyLang(e.target.value));
     return select;
   }
@@ -215,7 +222,8 @@ try {
       btn.type = 'button';
       btn.className = 'copy-btn';
       btn.setAttribute('aria-label', 'Copy to clipboard');
-      btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      btn.innerHTML =
+        '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
       btn.addEventListener('click', async () => {
         const text = el.textContent.trim();
         try {
@@ -223,12 +231,18 @@ try {
           btn.textContent = '???????';
           btn.classList.add('copied');
           setTimeout(() => {
-            btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+            btn.innerHTML =
+              '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
             btn.classList.remove('copied');
           }, 2000);
         } catch (e) {
           btn.textContent = '???????';
-          setTimeout(() => btn.innerHTML = '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>', 2000);
+          setTimeout(
+            () =>
+              (btn.innerHTML =
+                '<svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'),
+            2000
+          );
         }
       });
       el.style.position = 'relative';
@@ -253,7 +267,10 @@ try {
         const buffer = await file.arrayBuffer();
         const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
         const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
+        const hashHex = hashArray
+          .map(b => b.toString(16).padStart(2, '0'))
+          .join('')
+          .toUpperCase();
         const match = hashHex === EXPECTED_SHA256;
         resultEl.innerHTML = match
           ? `<span class="verify-ok">??????? Verified</span> SHA-256 matches: <code>${hashHex}</code>`
@@ -285,14 +302,17 @@ try {
   function initScrollAnimations() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('in-view');
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    const observer = new IntersectionObserver(
+      entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+    );
 
     doc.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
   }
@@ -349,22 +369,34 @@ try {
 
   // Expose for testing
   window.Eidovara = {
-    applyTheme, applyFontSize, applyContrast, applyLang,
-    getStoredTheme, getStoredFontSize, getStoredContrast, getStoredLang
+    applyTheme,
+    applyFontSize,
+    applyContrast,
+    applyLang,
+    getStoredTheme,
+    getStoredFontSize,
+    getStoredContrast,
+    getStoredLang,
   };
 
   // --- Status Check (existing) ---
   const OFFICIAL_SERVICE_BASE = 'https://api.eidovara.org';
 
   function readStoredBase() {
-    try { return String(localStorage.getItem('eidovara.serviceBase') || '').trim(); } catch { return ''; }
+    try {
+      return String(localStorage.getItem('eidovara.serviceBase') || '').trim();
+    } catch {
+      return '';
+    }
   }
 
   function writeStoredBase(value) {
     try {
       if (value) localStorage.setItem('eidovara.serviceBase', value);
       else localStorage.removeItem('eidovara.serviceBase');
-    } catch { /* private mode */ }
+    } catch {
+      /* private mode */
+    }
   }
 
   function normalizeBase(value) {
@@ -394,7 +426,9 @@ try {
     const failClosed = message => {
       if (out) out.textContent = message;
     };
-    failClosed('Official default is https://api.eidovara.org. Override with another HTTPS base if you operate one. Check calls /health and /v1/status and keeps polling until you Clear. Conversations are not sent. No workers.dev host is compiled in.');
+    failClosed(
+      'Official default is https://api.eidovara.org. Override with another HTTPS base if you operate one. Check calls /health and /v1/status and keeps polling until you Clear. Conversations are not sent. No workers.dev host is compiled in.'
+    );
 
     let statusPollTimer = 0;
     let statusFailCount = 0;
@@ -404,7 +438,7 @@ try {
         statusPollTimer = 0;
       }
     };
-    const nextPollDelay = (failed) => {
+    const nextPollDelay = failed => {
       if (!failed) return 25000 + Math.floor(Math.random() * 5000);
       let backoff = 4000;
       for (let i = 0; i < statusFailCount; i += 1) {
@@ -427,9 +461,11 @@ try {
       try {
         const base = normalizeBase(input?.value || '');
         writeStoredBase(base);
-        failClosed(base
-          ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent. Ask Eidovara may use this base for /v1/assist.`
-          : 'Cleared. Default https://api.eidovara.org. Ask Eidovara stays on this page until you save a base.');
+        failClosed(
+          base
+            ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent. Ask Eidovara may use this base for /v1/assist.`
+            : 'Cleared. Default https://api.eidovara.org. Ask Eidovara stays on this page until you save a base.'
+        );
       } catch (error) {
         failClosed(error.message || 'Invalid service URL.');
       }
@@ -442,11 +478,15 @@ try {
       statusFailCount = 0;
       if (input) input.value = OFFICIAL_SERVICE_BASE;
       writeStoredBase('');
-      failClosed('Cleared override. Default https://api.eidovara.org. Check to probe /health and /v1/status. Polling stopped. Ask Eidovara stays on this page until you save a base.');
+      failClosed(
+        'Cleared override. Default https://api.eidovara.org. Check to probe /health and /v1/status. Polling stopped. Ask Eidovara stays on this page until you save a base.'
+      );
     });
     const runProbe = async ({ fromPoll } = {}) => {
       let base = '';
-      try { base = normalizeBase(input?.value || readStoredBase() || OFFICIAL_SERVICE_BASE); } catch (error) {
+      try {
+        base = normalizeBase(input?.value || readStoredBase() || OFFICIAL_SERVICE_BASE);
+      } catch (error) {
         stopStatusPoll();
         failClosed(error.message || 'Invalid service URL.');
         return;
@@ -465,16 +505,34 @@ try {
         if (declared > maxBytes) return {};
         const raw = await res.text();
         if (raw.length > maxBytes) return {};
-        try { return JSON.parse(raw); } catch { return {}; }
+        try {
+          return JSON.parse(raw);
+        } catch {
+          return {};
+        }
       };
       try {
         const [healthRes, statusRes] = await Promise.all([
-          fetch(`${base}/health`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } }),
-          fetch(`${base}/v1/status`, { method: 'GET', signal: controller.signal, redirect: 'error', headers: { accept: 'application/json' } })
+          fetch(`${base}/health`, {
+            method: 'GET',
+            signal: controller.signal,
+            redirect: 'error',
+            headers: { accept: 'application/json' },
+          }),
+          fetch(`${base}/v1/status`, {
+            method: 'GET',
+            signal: controller.signal,
+            redirect: 'error',
+            headers: { accept: 'application/json' },
+          }),
         ]);
         const health = await boundedJson(healthRes);
         const status = await boundedJson(statusRes);
-        const online = healthRes.ok && statusRes.ok && (health.status === 'ok' || health.online === true) && (status.status === 'ok' || status.online === true);
+        const online =
+          healthRes.ok &&
+          statusRes.ok &&
+          (health.status === 'ok' || health.online === true) &&
+          (status.status === 'ok' || status.online === true);
         if (online) statusFailCount = 0;
         else statusFailCount += 1;
         const presence = presenceOf(online, !online);
@@ -483,16 +541,22 @@ try {
           `Base: ${base}`,
           `Health HTTP ${healthRes.status}: ${health.service || 'unknown'} ${health.status || ''} ${health.version || ''}`.trim(),
           `Status HTTP ${statusRes.status}: paymentsEnabled=${status.paymentsEnabled === true ? 'true' : 'false'} checkoutEnabled=${status.checkoutEnabled === true ? 'true' : 'false'} conversations=${status.conversations === true ? 'true' : 'false'} conversationsStored=${status.conversationsStored === true ? 'true' : 'false'} localFirst=${status.localFirst !== false ? 'true' : 'false'}`,
-          'This website never sends desktop conversations. v1.0.0 payments stay off. Check keeps polling; Clear stops.'
+          'This website never sends desktop conversations. v1.0.0 payments stay off. Check keeps polling; Clear stops.',
         ];
         failClosed(lines.join('\n'));
         stopStatusPoll();
-        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(!online));
+        statusPollTimer = setTimeout(() => {
+          void runProbe({ fromPoll: true });
+        }, nextPollDelay(!online));
       } catch (error) {
         statusFailCount += 1;
-        failClosed(`Presence: Reconnecting\nUnreachable (${error.name === 'AbortError' ? 'timeout' : (error.message || 'fetch failed')}). Fail closed. Offline Soul and this website still work.`);
+        failClosed(
+          `Presence: Reconnecting\nUnreachable (${error.name === 'AbortError' ? 'timeout' : error.message || 'fetch failed'}). Fail closed. Offline Soul and this website still work.`
+        );
         stopStatusPoll();
-        statusPollTimer = setTimeout(() => { void runProbe({ fromPoll: true }); }, nextPollDelay(true));
+        statusPollTimer = setTimeout(() => {
+          void runProbe({ fromPoll: true });
+        }, nextPollDelay(true));
       } finally {
         clearTimeout(timer);
       }
@@ -510,8 +574,12 @@ try {
     if (declared > maxBytes) return {};
     const raw = await res.text();
     if (raw.length > maxBytes) return {};
-    try { return JSON.parse(raw); } catch { return {}; }
-  };
+    try {
+      return JSON.parse(raw);
+    } catch {
+      return {};
+    }
+  }
 
   function normalizeBase(value) {
     let raw = String(value || '').trim();
@@ -530,21 +598,30 @@ try {
   }
 
   function readStoredBase() {
-    try { return String(localStorage.getItem('eidovara.serviceBase') || '').trim(); } catch { return ''; }
+    try {
+      return String(localStorage.getItem('eidovara.serviceBase') || '').trim();
+    } catch {
+      return '';
+    }
   }
 
   function writeStoredBase(value) {
     try {
       if (value) localStorage.setItem('eidovara.serviceBase', value);
       else localStorage.removeItem('eidovara.serviceBase');
-    } catch { /* private mode */ }
+    } catch {
+      /* private mode */
+    }
   }
 
   function nextPollDelay(failed) {
     if (!failed) return 25000 + Math.floor(Math.random() * 5000);
     let backoff = 4000;
     for (let i = 0; i < statusFailCount; i += 1) {
-      if (backoff >= 64000) { backoff = 64000; break; }
+      if (backoff >= 64000) {
+        backoff = 64000;
+        break;
+      }
       backoff *= 2;
     }
     return backoff + Math.floor(Math.random() * 5000);
@@ -561,9 +638,11 @@ try {
     try {
       const base = normalizeBase(input?.value || '');
       writeStoredBase(base);
-      failClosed(base
-        ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent. Ask Eidovara may use this base for /v1/assist.`
-        : 'Cleared. Default https://api.eidovara.org. Ask Eidovara stays on this page until you save a base.');
+      failClosed(
+        base
+          ? `Saved locally. Click Check service to call ${base}/health and /v1/status. Conversations are not sent. Ask Eidovara may use this base for /v1/assist.`
+          : 'Cleared. Default https://api.eidovara.org. Ask Eidovara stays on this page until you save a base.'
+      );
     } catch (error) {
       failClosed(error.message || 'Invalid service URL.');
     }
@@ -581,6 +660,9 @@ try {
   };
 })();
 
-
 // Service worker registration (moved out of inline HTML to keep CSP script-src 'self').
-if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('sw.js').catch(() => {}); }); }
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}

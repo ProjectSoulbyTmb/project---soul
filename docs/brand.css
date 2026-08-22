@@ -9,10 +9,16 @@
   transition: transform var(--motion-normal) var(--ease-spring);
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .brand:hover .brand-icon { transform: scale(1.08) rotate(-2deg); }
+  .brand:hover .brand-icon {
+    transform: scale(1.08) rotate(-2deg);
+  }
 }
 
-.studio-line { display: flex; align-items: center; gap: 10px; }
+.studio-line {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
 .studio-icon {
   width: 32px;
   height: 32px;
@@ -21,7 +27,9 @@
   transition: transform var(--motion-normal) var(--ease-spring);
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .studio-icon:hover { transform: scale(1.05); }
+  .studio-icon:hover {
+    transform: scale(1.05);
+  }
 }
 
 .hero-mark {
@@ -31,7 +39,9 @@
   object-fit: cover;
   border-radius: 24px;
   box-shadow: var(--shadow-xl), var(--shadow-inner);
-  transition: transform var(--motion-slow) var(--ease-spring), box-shadow var(--motion-slow) var(--ease-out);
+  transition:
+    transform var(--motion-slow) var(--ease-spring),
+    box-shadow var(--motion-slow) var(--ease-out);
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
   .hero-mark:hover {
@@ -50,99 +60,107 @@
   transition: transform var(--motion-normal) var(--ease-spring);
 }
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
-  .studio-mark:hover { transform: scale(1.05); }
+  .studio-mark:hover {
+    transform: scale(1.05);
+  }
 }
 
 .creator .studio-mark,
 .site-footer .studio-mark {
   width: 44px;
   height: 44px;
-  border-radius: 12px.
+  border-radius: 12px;
 }
 
 .download-mark {
   width: 52px;
   height: 52px;
   flex: none;
-  object-fit: cover.
-  border-radius: 16px.
-  box-shadow: var(--shadow-inner).
+  object-fit: cover;
+  border-radius: 16px;
+  box-shadow: var(--shadow-inner);
 }
 
 .hero-lockup {
   display: flex;
-  align-items: flex-start.
-  gap: 24px.
-  margin: 0 0 22px.
+  align-items: flex-start;
+  gap: 24px;
+  margin: 0 0 22px;
 }
-.hero-lockup h1 { margin: 0; }
+.hero-lockup h1 {
+  margin: 0;
+}
 
 .brand-stage {
-  margin: 24px 0 36px.
-  max-width: 100%.
-  border-radius: var(--card-radius).
-  overflow: hidden.
-  border: 1px solid var(--glass-border).
-  background: var(--glass-bg).
-  box-shadow: var(--shadow-xl).
-  backdrop-filter: var(--blur).
-  -webkit-backdrop-filter: var(--blur).
+  margin: 24px 0 36px;
+  max-width: 100%;
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  border: 1px solid var(--glass-border);
+  background: var(--glass-bg);
+  box-shadow: var(--shadow-xl);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
 }
 .brand-stage img {
-  display: block.
-  width: 100%.
-  height: auto.
-  max-height: 400px.
-  object-fit: cover.
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 400px;
+  object-fit: cover;
 }
 
 /* Hero background with wallpaper */
-body.site[data-page="home"],
-body.site[data-page="product"],
-body.site[data-page="download"] {
-  background-color: var(--grouped).
-  background-image: var(--gradient-hero).
-  background-attachment: fixed.
+body.site[data-page='home'],
+body.site[data-page='product'],
+body.site[data-page='download'] {
+  background-color: var(--grouped);
+  background-image: var(--gradient-hero);
+  background-attachment: fixed;
 }
 
 @media (prefers-color-scheme: dark) {
-  body.site[data-page="home"],
-  body.site[data-page="product"],
-  body.site[data-page="download"] {
-    background-image: var(--gradient-hero).
+  body.site[data-page='home'],
+  body.site[data-page='product'],
+  body.site[data-page='download'] {
+    background-image: var(--gradient-hero);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body.site[data-page="home"],
-  body.site[data-page="product"],
-  body.site[data-page="download"] {
-    background-attachment: scroll.
+  body.site[data-page='home'],
+  body.site[data-page='product'],
+  body.site[data-page='download'] {
+    background-attachment: scroll;
   }
 }
 
 /* Logo animation */
 @media (prefers-reduced-motion: no-preference) {
   .brand-icon {
-    animation: logoFloat 6s var(--ease-in-out) infinite.
+    animation: logoFloat 6s var(--ease-in-out) infinite;
   }
   @keyframes logoFloat {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-3px) rotate(1deg); }
+    0%,
+    100% {
+      transform: translateY(0) rotate(0deg);
+    }
+    50% {
+      transform: translateY(-3px) rotate(1deg);
+    }
   }
 }
 
 /* Glass morphism utility */
 .glass {
-  background: var(--glass-bg).
-  backdrop-filter: var(--blur).
-  -webkit-backdrop-filter: var(--blur).
-  border: 1px solid var(--glass-border).
+  background: var(--glass-bg);
+  backdrop-filter: var(--blur);
+  -webkit-backdrop-filter: var(--blur);
+  border: 1px solid var(--glass-border);
 }
 .glass-strong {
-  background: color-mix(in srgb, var(--panel) 85%, transparent).
-  backdrop-filter: var(--blur-strong).
-  -webkit-backdrop-filter: var(--blur-strong).
-  border: 1px solid color-mix(in srgb, var(--separator) 60%, transparent).
+  background: color-mix(in srgb, var(--panel) 85%, transparent);
+  backdrop-filter: var(--blur-strong);
+  -webkit-backdrop-filter: var(--blur-strong);
+  border: 1px solid color-mix(in srgb, var(--separator) 60%, transparent);
 }
-

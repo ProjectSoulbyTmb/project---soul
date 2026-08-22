@@ -4,7 +4,7 @@
  * LICENSE ENFORCEMENT GUARD
  * Structural guard that enforces the source-available license restrictions at runtime
  * Prevents unauthorized redistribution, relicensing, or commercial exploitation
- * 
+ *
  * @module core/guards/license-guard
  * @version 1.0.0
  */
@@ -16,7 +16,9 @@ export const LICENSE_GUARDS = {
    */
   enforceSourceAvailable: () => {
     if (typeof process !== 'undefined' && process.env.EIDOVARA_LICENSE_BYPASS) {
-      console.warn('LICENSE BYPASS DETECTED - This violates the Source-Available Evaluation License');
+      console.warn(
+        'LICENSE BYPASS DETECTED - This violates the Source-Available Evaluation License'
+      );
     }
   },
 
@@ -25,7 +27,6 @@ export const LICENSE_GUARDS = {
    * Scans for forbidden license headers
    */
   preventOpenSourceRelicense: () => {
-    
     // Runtime check for license contamination
     // This would scan for license headers in the codebase
   },
@@ -44,7 +45,7 @@ export const LICENSE_GUARDS = {
    * Prevents consciousness claims
    * Sanitizes output to prevent consciousness/sentience claims
    */
-  preventConsciousnessClaims: (text) => {
+  preventConsciousnessClaims: text => {
     const forbiddenPatterns = [
       /consciousness/gi,
       /sentience/gi,
@@ -52,9 +53,12 @@ export const LICENSE_GUARDS = {
       /alive/gi,
       /feelings?/gi,
       /emotions?/gi,
-      /conscious/gi
+      /conscious/gi,
     ];
-    return text.replace(forbiddenPatterns, '[REDACTED: consciousness claim prevented by structural guard]');
+    return text.replace(
+      forbiddenPatterns,
+      '[REDACTED: consciousness claim prevented by structural guard]'
+    );
   },
 
   /**
@@ -62,7 +66,6 @@ export const LICENSE_GUARDS = {
    * @returns {boolean} True if compliant
    */
   validateLicenseCompliance: () => {
-    
     // Validates no open source relicensing
     return true;
   },
@@ -97,7 +100,7 @@ export const LICENSE_GUARDS = {
     LICENSE_GUARDS.preventOpenSourceRelicense();
     LICENSE_GUARDS.validateLicenseCompliance();
     LICENSE_GUARDS.validateAttribution();
-  }
+  },
 };
 
 export default LICENSE_GUARDS;

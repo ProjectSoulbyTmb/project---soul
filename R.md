@@ -38,6 +38,3 @@
   </main>
   <footer class="site-footer site-end"><div class="site-footer-inner"><span class="studio-line"><img class="studio-mark" src="soul-consciousness-studios-mark.png" alt="">© 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a class="nav-cta" href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a></span></div></footer><script src="site.js" defer></script><script type="module" src="assist.js"></script>
 </body></html>
-
-
-
