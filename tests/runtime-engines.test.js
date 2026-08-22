@@ -81,7 +81,7 @@ test('kernel status exposes the engine catalog', () => {
   assert.match(kernel.engineHonesty, /Soul kernel/);
 });
 
-test('procedural ambient envelopes stay in 0–1 and honor mute', () => {
+test('procedural ambient envelopes stay in 0â€“1 and honor mute', () => {
   const live = ambientLevels(800, { ambient: { heartbeat: true, breath: true, drone: true }, mix: { ambient: 80 }, mute: false }, 0.6);
   assert.ok(live.heartbeat >= 0 && live.heartbeat <= 1);
   assert.ok(live.breath >= 0 && live.breath <= 1);
