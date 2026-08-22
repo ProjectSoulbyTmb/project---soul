@@ -35,7 +35,14 @@ test.describe('Eidovara shell', () => {
   });
 
   test('primary navigation renders workspace entries', async () => {
-    for (const label of ['Dashboard', 'Research', 'Apps & Gaming', 'Entertainment', 'Memory', 'Settings']) {
+    for (const label of [
+      'Dashboard',
+      'Research',
+      'Apps & Gaming',
+      'Entertainment',
+      'Memory',
+      'Settings',
+    ]) {
       await expect(
         page.locator(`.sidebar-footer .nav-btn`, { hasText: label }).first()
       ).toBeVisible({ timeout: 15_000 });
@@ -63,9 +70,9 @@ test.describe('accessibility @a11y', () => {
     })) as { violations: Array<{ id: string; impact: string | null; nodes: unknown[] }> };
 
     const blocking = results.violations.filter(
-      (v) => v.impact === 'critical' || v.impact === 'serious'
+      v => v.impact === 'critical' || v.impact === 'serious'
     );
-    const summary = blocking.map((v) => `${v.id}(${v.nodes.length})`);
+    const summary = blocking.map(v => `${v.id}(${v.nodes.length})`);
     expect(summary, `a11y violations: ${summary.join(', ')}`).toEqual([]);
   });
 });

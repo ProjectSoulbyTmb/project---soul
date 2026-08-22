@@ -131,8 +131,8 @@ test('worker installer facts accept measured deploy-time overrides and reject ma
       LIVE_INSTALLER_SIZE: '-5',
     })
   ).json();
- assert.equal(bad.liveInstallerSha256, LIVE_INSTALLER_SHA256);
- assert.equal(bad.liveInstallerSize, 106820739);
+  assert.equal(bad.liveInstallerSha256, LIVE_INSTALLER_SHA256);
+  assert.equal(bad.liveInstallerSize, 106820739);
   const config = await (
     await worker.fetch(new Request('https://api.test/v1/config'), { LIVE_INSTALLER_SHA256: sha })
   ).json();

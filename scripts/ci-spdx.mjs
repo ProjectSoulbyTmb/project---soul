@@ -16,7 +16,10 @@ const doc = {
   SPDXID: 'SPDXRef-DOCUMENT',
   name: `Eidovara-${pkg.version}`,
   documentNamespace: `https://eidovara.org/spdx/eidovara-${pkg.version}`,
-  creationInfo: { created: new Date().toISOString().replace(/\.\d+Z$/, 'Z'), creators: ['Organization: Soul Consciousness Studios'] },
+  creationInfo: {
+    created: new Date().toISOString().replace(/\.\d+Z$/, 'Z'),
+    creators: ['Organization: Soul Consciousness Studios'],
+  },
   packages: [
     {
       name: pkg.name,
