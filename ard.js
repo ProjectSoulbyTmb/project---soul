@@ -1,79 +1,341 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
-import fs from 'node:fs';
-import path from 'node:path';
-import os from 'node:os';
-import { defaultProfile, migrateProfile } from './schema.js';
-import { migrateAdultSoul } from './adult-soul.js';
-import { migrateAdultEntertainment } from './adult-media.js';
+/**
+ * @module core/telemetry
+ * @description Lightweight observability hooks for performance monitoring
+ * No external dependencies - uses native Performance API
+ */
 
-function hydrateAdult(state) {
-  if (!state || typeof state !== 'object') return state;
-  state.adultSoul = migrateAdultSoul(state.adultSoul);
-  state.entertainment = state.entertainment && typeof state.entertainment === 'object'
-    ? state.entertainment
-    : { favorites: [], history: [], taste: {} };
-  state.entertainment.adult = migrateAdultEntertainment(state.entertainment.adult);
-  return state;
+const metrics = new Map();
+const spans = new Map();
+let enabled = false;
+
+/**
+ * Enable/disable telemetry collection
+ * @param {boolean} state
+ */
+export function setTelemetryEnabled(state) {
+  enabled = Boolean(state);
 }
 
-export class JsonStore {
-  constructor({ dataDir, profileId = 'default', codec } = {}) {
-    this.dataDir = dataDir || path.join(os.homedir(), '.project-soul');
-    this.profileId = sanitize(profileId);
-    this.filePath = path.join(this.dataDir, `${this.profileId}.json`);
-    this.backupDir = path.join(this.dataDir, 'backups');
-    this.codec = codec || { encode: value => value, decode: value => value, encrypted: false };
-  }
-  load() {
-    fs.mkdirSync(this.dataDir, { recursive: true });
-    try { for (const stale of fs.readdirSync(this.dataDir)) if (stale.startsWith(`${this.profileId}.json.`) && stale.endsWith('.tmp')) fs.rmSync(path.join(this.dataDir, stale), { force: true }); } catch {}
-    if (!fs.existsSync(this.filePath)) { const state = hydrateAdult(defaultProfile(this.profileId)); this.save(state); return state; }
-    try {
-      const state = hydrateAdult(migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(this.filePath, 'utf8'))), this.profileId));
-      this.save(state); return state;
-    } catch (err) {
-      const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-      const backup = `${this.filePath}.corrupt-${stamp}.bak`;
-      try { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(backup, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } catch {}
-      const state = hydrateAdult(defaultProfile(this.profileId));
-      state.audit.push({ at: new Date().toISOString(), type: 'storage.recovered_from_corrupt_state', details: { backup: path.basename(backup), error: String(err?.message || err) } });
-      this.save(state); return state;
+/**
+ * Check if telemetry is enabled
+ * @returns {boolean}
+ */
+export function isTelemetryEnabled() {
+  return enabled;
+}
+
+/**
+ * Start a named span for timing
+ * @param {string} name - Span name (e.g., 'provider.call', 'ipc.respond')
+ * @param {Object} [attributes] - Additional attributes
+ * @returns {string} Span ID
+ */
+export function startSpan(name, attributes = {}) {
+  if (!enabled) return '';
+  const spanId = `${name}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+  spans.set(spanId, {
+    name,
+    startTime: performance.now(),
+    attributes: { ...attributes, 'span.type': 'internal' },
+    endTime: null,
+  });
+  return spanId;
+}
+
+/**
+ * End a span and record duration
+ * @param {string} spanId
+ * @param {Object} [extraAttributes]
+ * @returns {number|null} Duration in ms, or null if not found
+ */
+export function endSpan(spanId, extraAttributes = {}) {
+  if (!enabled || !spanId || !spans.has(spanId)) return null;
+  const span = spans.get(spanId);
+  span.endTime = performance.now();
+  span.duration = span.endTime - span.startTime;
+  span.attributes = { ...span.attributes, ...extraAttributes };
+  
+  // Store completed span for aggregation
+  const key = span.name;
+  if (!metrics.has(key)) metrics.set(key, []);
+  metrics.get(key).push({ ...span, timestamp: Date.now() });
+  
+  // Keep only last 1000 per metric
+  const arr = metrics.get(key);
+  if (arr.length > 1000) arr.shift();
+  
+  spans.delete(spanId);
+  return span.duration;
+}
+
+/**
+ * Record a simple metric value
+ * @param {string} name - Metric name
+ * @param {number} value - Numeric value
+ * @param {Object} [attributes]
+ */
+export function recordMetric(name, value, attributes = {}) {
+  if (!enabled) return;
+  const key = `metric.${name}`;
+  if (!metrics.has(key)) metrics.set(key, []);
+  metrics.get(key).push({ value, attributes, timestamp: Date.now() });
+  const arr = metrics.get(key);
+  if (arr.length > 1000) arr.shift();
+}
+
+/**
+ * Record a counter increment
+ * @param {string} name
+ * @param {number} [delta=1]
+ * @param {Object} [attributes]
+ */
+export function incrementCounter(name, delta = 1, attributes = {}) {
+  if (!enabled) return;
+  const key = `counter.${name}`;
+  if (!metrics.has(key)) metrics.set(key, []);
+  metrics.get(key).push({ delta, attributes, timestamp: Date.now() });
+  const arr = metrics.get(key);
+  if (arr.length > 1000) arr.shift();
+}
+
+/**
+ * Get aggregated metrics for a name
+ * @param {string} name
+ * @returns {Object} Aggregated stats
+ */
+export function getMetrics(name) {
+  const key = name.startsWith('metric.') || name.startsWith('counter.') ? name : `metric.${name}`;
+  const data = metrics.get(key) || [];
+  if (!data.length) return { count: 0 };
+  
+  const values = data.map(d => d.value ?? d.delta ?? 0).filter(v => typeof v === 'number');
+  if (!values.length) return { count: data.length };
+  
+  const sorted = [...values].sort((a, b) => a - b);
+  const sum = values.reduce((a, b) => a + b, 0);
+  return {
+    count: values.length,
+    min: sorted[0],
+    max: sorted[sorted.length - 1],
+    mean: sum / values.length,
+    p50: sorted[Math.floor(sorted.length * 0.5)],
+    p95: sorted[Math.floor(sorted.length * 0.95)],
+    p99: sorted[Math.floor(sorted.length * 0.99)],
+    latest: values[values.length - 1],
+  };
+}
+
+/**
+ * Get all metric names
+ * @returns {string[]}
+ */
+export function getMetricNames() {
+  return [...metrics.keys()].filter(k => k.startsWith('metric.') || k.startsWith('counter.'));
+}
+
+/**
+ * Get span statistics for a name
+ * @param {string} name
+ * @returns {Object}
+ */
+export function getSpanStats(name) {
+  const data = metrics.get(name) || [];
+  if (!data.length) return { count: 0 };
+  
+  const durations = data.map(d => d.duration).filter(d => typeof d === 'number');
+  if (!durations.length) return { count: data.length };
+  
+  const sorted = [...durations].sort((a, b) => a - b);
+  const sum = durations.reduce((a, b) => a + b, 0);
+  return {
+    count: durations.length,
+    min: sorted[0],
+    max: sorted[sorted.length - 1],
+    mean: sum / durations.length,
+    p50: sorted[Math.floor(sorted.length * 0.5)],
+    p95: sorted[Math.floor(sorted.length * 0.95)],
+    p99: sorted[Math.floor(sorted.length * 0.99)],
+  };
+}
+
+/**
+ * Get all span names
+ * @returns {string[]}
+ */
+export function getSpanNames() {
+  return [...metrics.keys()].filter(k => !k.startsWith('metric.') && !k.startsWith('counter.'));
+}
+
+/**
+ * Export all metrics as JSON
+ * @returns {Object}
+ */
+export function exportMetrics() {
+  const result = {};
+  for (const [key, data] of metrics.entries()) {
+    if (key.startsWith('metric.') || key.startsWith('counter.')) {
+      result[key] = getMetrics(key);
+    } else {
+      result[key] = getSpanStats(key);
     }
   }
-  save(state) {
-    fs.mkdirSync(this.dataDir, { recursive: true });
-    state.updatedAt = new Date().toISOString();
-    const tmp = `${this.filePath}.${process.pid}.tmp`;
-    fs.writeFileSync(tmp, this.codec.encode(JSON.stringify(state, null, 2)), { encoding: 'utf8', mode: 0o600 });
-    const previous = `${this.filePath}.previous`;
-    try { if (fs.existsSync(this.filePath)) { const raw = fs.readFileSync(this.filePath, 'utf8'); fs.writeFileSync(previous, this.codec.encode(this.codec.decode(raw)), { encoding: 'utf8', mode: 0o600 }); } fs.renameSync(tmp, this.filePath); }
-    catch (err) { try { fs.rmSync(this.filePath, { force: true }); fs.renameSync(tmp, this.filePath); } catch (inner) { if (fs.existsSync(previous)) fs.copyFileSync(previous, this.filePath); throw inner; } }
-  }
-  reset() { const state = hydrateAdult(defaultProfile(this.profileId)); this.save(state); return state; }
-  createBackup(state) {
-    fs.mkdirSync(this.backupDir, { recursive: true });
-    const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const name = `${this.profileId}-${stamp}.${this.codec.encrypted ? 'soulbackup' : 'json'}`;
-    const target = path.join(this.backupDir, name);
-    const payload = hydrateAdult(migrateProfile(state || this.load(), this.profileId));
-    fs.writeFileSync(target, this.codec.encode(JSON.stringify(payload, null, 2)), { encoding: 'utf8', mode: 0o600, flag: 'wx' });
-    return { name, createdAt: payload.updatedAt, bytes: fs.statSync(target).size };
-  }
-  listBackups() {
-    fs.mkdirSync(this.backupDir, { recursive: true });
-    return fs.readdirSync(this.backupDir, { withFileTypes: true })
-      .filter(e => e.isFile() && e.name.startsWith(`${this.profileId}-`) && (e.name.endsWith('.json') || e.name.endsWith('.soulbackup')))
-      .map(e => { const stat = fs.statSync(path.join(this.backupDir, e.name)); return { name: e.name, createdAt: stat.mtime.toISOString(), bytes: stat.size }; })
-      .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
-  }
-  restoreBackup(name) {
-    const safeName = path.basename(String(name || ''));
-    if (safeName !== name || !safeName.startsWith(`${this.profileId}-`) || (!safeName.endsWith('.json') && !safeName.endsWith('.soulbackup'))) throw new Error('Invalid backup name.');
-    const restored = hydrateAdult(migrateProfile(JSON.parse(this.codec.decode(fs.readFileSync(path.join(this.backupDir, safeName), 'utf8'))), this.profileId));
-    restored.audit.push({ at: new Date().toISOString(), type: 'storage.backup_restored', details: { name: safeName } });
-    this.save(restored); return restored;
+  return result;
+}
+
+/**
+ * Clear all metrics
+ */
+export function clearMetrics() {
+  metrics.clear();
+  spans.clear();
+}
+
+/**
+ * Convenience wrapper for timing async functions
+ * @template T
+ * @param {string} name
+ * @param {() => Promise<T>} fn
+ * @param {Object} [attributes]
+ * @returns {Promise<T>}
+ */
+export async function timeAsync(name, fn, attributes = {}) {
+  const spanId = startSpan(name, attributes);
+  try {
+    return await fn();
+  } finally {
+    endSpan(spanId);
   }
 }
-function sanitize(value) { return String(value || 'default').replace(/[^a-zA-Z0-9_-]/g, '_').slice(0, 64) || 'default'; }
 
+/**
+ * Convenience wrapper for timing sync functions
+ * @template T
+ * @param {string} name
+ * @param {() => T} fn
+ * @param {Object} [attributes]
+ * @returns {T}
+ */
+export function timeSync(name, fn, attributes = {}) {
+  const spanId = startSpan(name, attributes);
+  try {
+    return fn();
+  } finally {
+    endSpan(spanId);
+  }
+}
+
+/**
+ * IPC-specific timing helpers
+ */
+export const ipcTelemetry = {
+  /**
+   * @param {string} channel - IPC channel name
+   * @param {() => Promise<any>} handler
+   * @returns {any} synchronous result of fn
+   */
+  async handle(channel, handler) {
+    return timeAsync(`ipc.${channel}`, handler, { 'ipc.channel': channel });
+  },
+  
+  /**
+   * @param {string} channel
+   * @param {number} durationMs
+   * @param {boolean} success
+   */
+  record(channel, durationMs, success = true) {
+    recordMetric(`ipc.${channel}.duration`, durationMs, { 'ipc.channel': channel });
+    incrementCounter(`ipc.${channel}.${success ? 'success' : 'error'}`, 1, { 'ipc.channel': channel });
+  },
+};
+
+/**
+ * Provider-specific timing helpers
+ */
+export const providerTelemetry = {
+  /**
+   * @param {string} provider - Provider name (offline, local, compatible)
+   * @param {() => Promise<string>} call
+   * @returns {Promise<string>}
+   */
+  async call(provider, call) {
+    return timeAsync(`provider.${provider}.call`, call, { 'provider': provider });
+  },
+  
+  /**
+   * @param {string} provider
+   * @param {number} durationMs
+   * @param {boolean} success
+   * @param {number} [tokens]
+   */
+  record(provider, durationMs, success = true, tokens) {
+    recordMetric(`provider.${provider}.latency`, durationMs, { provider });
+    incrementCounter(`provider.${provider}.${success ? 'success' : 'error'}`, 1, { provider });
+    if (tokens) recordMetric(`provider.${provider}.tokens`, tokens, { provider });
+  },
+};
+
+/**
+ * Store operation timing
+ */
+export const storeTelemetry = {
+  /**
+   * Times a synchronous store operation and returns its result.
+   * The engine consumes load()/reset()/restoreBackup() synchronously, so this
+   * wrapper MUST stay synchronous — returning a Promise here silently replaces
+   * engine state with telemetry metadata.
+   * @param {string} op - Operation (load, save, backup, restore)
+   * @param {() => any} fn
+   * @returns {any} the result of fn()
+   */
+  op(op, fn) {
+    const startedAt = Date.now();
+    try {
+      const result = fn();
+      this.record(op, Date.now() - startedAt, true);
+      return result;
+    } catch (error) {
+      this.record(op, Date.now() - startedAt, false);
+      throw error;
+    }
+  },
+  
+  record(op, durationMs, success = true, size) {
+    recordMetric(`store.${op}.latency`, durationMs, { op });
+    incrementCounter(`store.${op}.${success ? 'success' : 'error'}`, 1, { op });
+    if (size) recordMetric(`store.${op}.size`, size, { op });
+  },
+};
+
+/**
+ * Get telemetry snapshot for diagnostics
+ * @returns {Object}
+ */
+export function getTelemetrySnapshot() {
+  return {
+    enabled,
+    spans: getSpanNames().map(name => ({ name, ...getSpanStats(name) })),
+    metrics: getMetricNames().map(name => ({ name, ...getMetrics(name) })),
+    timestamp: Date.now(),
+  };
+}
+
+export default {
+  setTelemetryEnabled,
+  isTelemetryEnabled,
+  startSpan,
+  endSpan,
+  recordMetric,
+  incrementCounter,
+  getMetrics,
+  getSpanStats,
+  exportMetrics,
+  clearMetrics,
+  timeAsync,
+  timeSync,
+  ipcTelemetry,
+  providerTelemetry,
+  storeTelemetry,
+  getTelemetrySnapshot,
+};
