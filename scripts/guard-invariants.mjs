@@ -16,6 +16,9 @@ const checks = [
   ['security.yml wires test:gate', () => fs.readFileSync('.github/workflows/security.yml','utf8').includes('pnpm run test:gate')],
   ['eslint.config.js has caughtErrors policy', () => fs.readFileSync('eslint.config.js','utf8').includes('caughtErrors')],
   ['eslint.config.js has serviceworker globals', () => fs.readFileSync('eslint.config.js','utf8').includes('docs/sw.js')],
+  ['.husky/pre-push present', () => fs.existsSync('.husky/pre-push')],
+  ['pre-push wires quality gate', () => fs.readFileSync('.husky/pre-push','utf8').includes('quality-gate')],
+  ['scripts/module-load-probe.mjs present', () => fs.existsSync('scripts/module-load-probe.mjs')],
 ];
 let bad = 0;
 for (const [label, ok] of checks) {

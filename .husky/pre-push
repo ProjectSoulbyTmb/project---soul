@@ -1,0 +1,28 @@
+#!/bin/sh
+# Failsafe pre-push: structural guards always; full gate when pushing main.
+# Bypass for emergencies: EIDOVARA_SKIP_PREPUSH=1 git push ...
+[ "$EIDOVARA_SKIP_PREPUSH" = "1" ] && { echo "pre-push: skipped"; exit 0; }
+
+NODE=""
+for c in node "/c/Program Files/nodejs/node.exe" "C:/Program Files/nodejs/node.exe"; do
+  command -v "$c" >/dev/null 2>&1 && NODE="$c" && break
+done
+if [ -z "$NODE" ]; then echo "pre-push: node not found; skipping guards"; exit 0; fi
+cd "$(dirname "$0")/.." || exit 1
+
+TARGET_MAIN=0
+while read -r _local _lsha remote _rsha; do
+  case "$remote" in *refs/heads/main*) TARGET_MAIN=1 ;; esac
+done
+
+echo "pre-push: structural guards..."
+"$NODE" scripts/guard-invariants.mjs || exit 1
+"$NODE" scripts/audit-encoding.mjs || exit 1
+"$NODE" scripts/module-load-probe.mjs || exit 1
+
+if [ "$TARGET_MAIN" = "1" ] && [ "${EIDOVARA_PREPUSH_FULL:-1}" != "0" ]; then
+  echo "pre-push: full quality gate (targeting main)..."
+  "$NODE" scripts/quality-gate.mjs || exit 1
+fi
+
+echo 'pre-push: OK'

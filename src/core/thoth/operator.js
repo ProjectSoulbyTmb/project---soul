@@ -19,6 +19,7 @@ const ACTION_TYPES_ALLOWED = Object.freeze([
   'open-updates',
   'open-view',
   'open-legal',
+  'thoth-run-audit',
 ]);
 
 export const OPERATOR_COMMAND_CATALOG = Object.freeze([
@@ -46,6 +47,12 @@ export const OPERATOR_COMMAND_CATALOG = Object.freeze([
     riskClass: 'read',
     label: 'Privacy notice',
     legal: 'privacy',
+  }),
+  Object.freeze({
+    phrase: 'run system audit',
+    actionId: 'thoth-run-audit',
+    riskClass: 'read',
+    label: 'Run system audit',
   }),
 ]);
 

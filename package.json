@@ -41,7 +41,9 @@
     "dist:mac:x64": "electron-packager . 'Eidovara' --platform=darwin --arch=x64 --out=dist-mac --overwrite --asar --prune=true",
     "dist:mac:arm64": "electron-packager . 'Eidovara' --platform=darwin --arch=arm64 --out=dist-mac --overwrite --asar --prune=true",
     "dist:dir": "electron-builder --dir",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "test:gate": "node scripts/quality-gate.mjs",
+    "prepush": "node scripts/prepush-gate.mjs"
   },
   "dependencies": {
     "electron-updater": "6.8.9"
