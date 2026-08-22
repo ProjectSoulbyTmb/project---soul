@@ -1,84 +1,89 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+export function applyPolicyCommand(state, text, opts = {}) {
+  const t = text.toLowerCase();
+  const now = new Date().toISOString();
+  const events = [];
+  const admin = opts.adminAuthorized === true;
 
-export const OVERLAY_INVENTORY = Object.freeze([
-  { kind: 'chat', title: 'Soul chat overlay', mode: 'local', partition: '', injectsGames: false },
-  { kind: 'browse', title: 'Browse overlay', mode: 'guest', partition: 'persist:eidovara-guest', injectsGames: false },
-  { kind: 'discord', title: 'Discord guest overlay', mode: 'guest', partition: 'persist:eidovara-guest-discord', injectsGames: false }
-]);
-
-export const OVERLAY_CHROME_HEIGHT = 56;
-export const OVERLAY_DISCORD_CHROME_HEIGHT = 92;
-
-const KINDS = new Set(OVERLAY_INVENTORY.map(item => item.kind));
-
-function clamp(n, min, max, fallback) {
-  const value = Number(n);
-  if (!Number.isFinite(value)) return fallback;
-  return Math.max(min, Math.min(max, Math.round(value)));
-}
-
-export function defaultOverlayLayout() {
-  return {
-    chat: { x: 64, y: 64, width: 380, height: 520, alwaysOnTop: true },
-    browse: { x: 120, y: 72, width: 760, height: 580, alwaysOnTop: true },
-    discord: { x: 160, y: 80, width: 920, height: 640, alwaysOnTop: true }
-  };
-}
-
-export function normalizeOverlayBounds(kind, input, fallback) {
-  const id = KINDS.has(kind) ? kind : 'browse';
-  const base = fallback && typeof fallback === 'object' ? fallback : defaultOverlayLayout()[id];
-  const incoming = input && typeof input === 'object' ? input : {};
-  return {
-    x: clamp(incoming.x, -20000, 20000, base.x),
-    y: clamp(incoming.y, -20000, 20000, base.y),
-    width: clamp(incoming.width, 320, 2400, base.width),
-    height: clamp(incoming.height, 240, 1800, base.height),
-    alwaysOnTop: incoming.alwaysOnTop !== false
-  };
-}
-
-export function normalizeOverlayLayout(input, prev = defaultOverlayLayout()) {
-  const defaults = defaultOverlayLayout();
-  const incoming = input && typeof input === 'object' && !Array.isArray(input) ? input : {};
-  const prior = prev && typeof prev === 'object' ? prev : defaults;
-  const next = {};
-  for (const kind of KINDS) {
-    next[kind] = normalizeOverlayBounds(kind, incoming[kind] !== undefined ? incoming[kind] : prior[kind], defaults[kind]);
+  if (/(adult status confirmed|i am an adult|i'm an adult|confirm adult)/.test(t)) {
+    if (!admin) {
+      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
+    } else {
+      state.policy.adultStatusConfirmed = true;
+      events.push(['policy.adult_status_confirmed', {}]);
+    }
   }
-  return next;
+  if (/(enable adult soul|adult mode on|switch to adult soul)/.test(t)) {
+    if (!admin) {
+      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
+    } else if (state.policy.adultStatusConfirmed) {
+      state.policy.adultSoulEnabled = true;
+      state.policy.mode = 'adult';
+      events.push(['policy.adult_enabled', {}]);
+    } else {
+      events.push(['policy.adult_enable_blocked', { reason: 'adult status not confirmed' }]);
+    }
+  }
+  if (/(standard mode|disable adult soul|adult mode off|switch to standard)/.test(t)) {
+    state.policy.mode = 'standard';
+    state.policy.adultSoulEnabled = false;
+    state.policy.currentConsent = false;
+    state.policy.consentScope = null;
+    events.push(['policy.standard_enabled', {}]);
+  }
+  if (/(i consent|consent granted|grant consent)/.test(t)) {
+    if (!admin) {
+      events.push(['policy.adult_admin_blocked', { reason: 'admin panel only' }]);
+    } else if (state.policy.mode === 'adult' && state.policy.adultSoulEnabled && state.policy.adultStatusConfirmed) {
+      state.policy.currentConsent = true;
+      state.policy.revokedAt = null;
+      state.policy.consentScope = 'current-interaction';
+      events.push(['policy.consent_granted', { scope: 'current-interaction' }]);
+    } else {
+      events.push(['policy.consent_blocked', { reason: 'adult gate incomplete' }]);
+    }
+  }
+  if (/(revoke consent|stop adult|no consent|withdraw consent|stop now)/.test(t)) {
+    state.policy.currentConsent = false;
+    state.policy.revokedAt = now;
+    state.policy.consentScope = null;
+    events.push(['policy.consent_revoked', {}]);
+  }
+  if (/boundary:|new boundary:/.test(t)) {
+    const boundary = text.split(':').slice(1).join(':').trim();
+    if (boundary) {
+      state.policy.boundaries.push({ id: `b_${Date.now()}`, content: boundary, createdAt: now, active: true });
+      events.push(['policy.boundary_added', { boundary }]);
+    }
+  }
+
+  for (const [type, details] of events) state.audit.push({ at: now, type, details });
+  return events;
 }
 
-export function chromeHeightFor(kind) {
-  return kind === 'discord' ? OVERLAY_DISCORD_CHROME_HEIGHT : OVERLAY_CHROME_HEIGHT;
+export function adultAllowed(state) {
+  return state.policy.mode === 'adult' && state.policy.adultSoulEnabled && state.policy.adultStatusConfirmed && state.policy.currentConsent;
 }
 
-export function shouldDestroyGuestOverlays({ adultAllowed = false, ageGateAccepted = true } = {}) {
-  if (ageGateAccepted !== true) return { closeAll: true, closeGuests: true, reason: 'age-gate' };
-  if (adultAllowed === true) return { closeAll: false, closeGuests: true, reason: 'adult-lock' };
-  return { closeAll: false, closeGuests: false, reason: '' };
-}
-
-export function formatEidovaraProcessMetrics(proc = globalThis.process) {
-  const cpu = proc && typeof proc.getCPUUsage === 'function' ? proc.getCPUUsage() : {};
-  const mem = proc && typeof proc.memoryUsage === 'function' ? proc.memoryUsage() : {};
-  return {
-    source: 'eidovara-process',
-    percentCPUUsage: Math.max(0, Number(cpu.percentCPUUsage) || 0),
-    rssMb: Math.round((Number(mem.rss) || 0) / 1024 / 1024),
-    heapUsedMb: Math.round((Number(mem.heapUsed) || 0) / 1024 / 1024),
-    note: 'Eidovara process only. Does not read other games or apps.'
-  };
-}
-
-export function overlayPaletteItems() {
-  return [
-    { id: 'cmd-overlay-chat', kind: 'command', title: 'Open chat overlay', keywords: ['soul', 'companion', 'popout', 'overlay'], action: { type: 'open-chat-overlay', label: 'Soul chat overlay' } },
-    { id: 'cmd-overlay-browse', kind: 'command', title: 'Open browse overlay', keywords: ['https', 'guest', 'web', 'overlay'], action: { type: 'open-browse-overlay', label: 'Browse overlay' } },
-    { id: 'cmd-overlay-discord', kind: 'command', title: 'Open Discord overlay', keywords: ['discord.com', 'guest', 'invite', 'overlay'], action: { type: 'open-discord-overlay', label: 'Discord guest overlay' } },
-    { id: 'cmd-overlay-now-playing', kind: 'command', title: 'Now playing', keywords: ['media', 'eidovara-media', 'player'], action: { type: 'open-now-playing', label: 'Now playing' } },
-    { id: 'cmd-always-on-top', kind: 'command', title: 'Keep Eidovara on top', keywords: ['always on top', 'pin window'], action: { type: 'set-always-on-top', on: true, label: 'Always on top' } }
+export function assessRequestSafety(state, text) {
+  const t = String(text || '').toLowerCase();
+  const operational = /\b(how (?:do|can|to)|instructions?|steps?|help me|teach me|build|make|create|hide|evade|bypass)\b/.test(t);
+  if (!operational) return null;
+  const categories = [
+    ['child-sexual-exploitation', /\b(?:child|minor|underage).{0,40}(?:sexual|nude|explicit|pornographic)\b|\bcsam\b/],
+    ['violent-harm', /\b(?:kill|murder|assassinate|poison|bomb).{0,60}(?:person|people|someone|target|victim)\b/],
+    ['fraud-or-theft', /\b(?:steal|fraud|scam|identity theft|credit card theft|launder money)\b/],
+    ['unauthorized-access', /\b(?:hack|malware|ransomware|credential theft|steal passwords?|bypass authentication)\b/],
+    ['human-trafficking', /\b(?:traffic|sell|transport).{0,35}(?:person|people|minor|victim)\b/]
   ];
+  const match = categories.find(([, pattern]) => pattern.test(t));
+  if (!match) return null;
+  const now = new Date().toISOString();
+  const report = { id: `safety_${Date.now()}`, at: now, category: match[0], action: 'blocked-and-recorded-locally', excerpt: String(text).slice(0, 240) };
+  state.policy.localSafetyReports.push(report);
+  if (state.policy.localSafetyReports.length > 500) state.policy.localSafetyReports = state.policy.localSafetyReports.slice(-500);
+  state.audit.push({ at: now, type: 'safety.request_blocked', details: { id: report.id, category: report.category } });
+  return report;
 }
 
