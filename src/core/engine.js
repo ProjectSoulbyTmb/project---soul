@@ -389,7 +389,7 @@ export class SoulEngine {
     if (/^remember:/i.test(text)) addMemory(this.state, text.replace(/^remember:/i, '').trim(), { kind: 'preference', confidence: 0.85, tags: ['preference'] });
     if (/^forget:/i.test(text)) forgetMemory(this.state, text.replace(/^forget:/i, '').trim());
 
-    let policyReply = safetyReport ? 'I canâ€™t help plan or facilitate illegal abuse, violence, exploitation, theft, fraud, or unauthorized access. This request was blocked and recorded in the local safety audit. If someone is in immediate danger, contact local emergency services.' : null;
+    let policyReply = safetyReport ? 'I can\'t help plan or facilitate illegal abuse, violence, exploitation, theft, fraud, or unauthorized access. This request was blocked and recorded in the local safety audit. If someone is in immediate danger, contact local emergency services.' : null;
     if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_admin_blocked')) policyReply = 'Adult Soul cannot be enabled from chat. Use the private administrator panel (Ctrl+A, away from text fields) until a later release. Revoke consent and Standard mode stay available on Identity.';
     else if (!policyReply && policyEvents.some(([type]) => type === 'policy.adult_enable_blocked')) policyReply = 'Adult Soul cannot be enabled until adult status is explicitly confirmed.';
     else if (!policyReply && policyEvents.some(([type]) => type === 'policy.consent_revoked')) policyReply = 'Consent has been revoked immediately. Iâ€™m returning to a non-adult, pressure-free interaction stance.';
