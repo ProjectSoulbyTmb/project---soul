@@ -26,7 +26,7 @@
   Cross-Origin-Embedder-Policy: require-corp
 
   # HSTS (Cloudflare handles this automatically with "Always Use HTTPS")
-  # Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Strict-Transport-Security: max-age=63115200; includeSubDomains
 
   # Cache Control for static assets
   /assets/*
