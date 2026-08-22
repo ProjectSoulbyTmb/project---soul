@@ -4,12 +4,10 @@ import { answerAssist, assistMeta, MAX_ASSIST_BODY, ASSIST_VERSION } from './kno
 
 const LIVE_INSTALLER_VERSION = '1.0.0';
 const LIVE_INSTALLER = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
-// No tagged v1.0.0 build exists yet: measured facts stay null until the
-// Release Windows workflow publishes the artifact with SHA256SUMS.txt.
-// The deploy may override both via wrangler vars LIVE_INSTALLER_SHA256 / LIVE_INSTALLER_SIZE.
-// Do not hardcode a placeholder digest here: the previous F29A52F0… value belonged to v0.22.2.
-const FALLBACK_INSTALLER_SHA256 = null;
-const FALLBACK_INSTALLER_SIZE = null;
+// Measured from the published v1.0.0 Release Windows run (2026-08-22).
+// Wrangler vars LIVE_INSTALLER_SHA256 / LIVE_INSTALLER_SIZE override these.
+const FALLBACK_INSTALLER_SHA256 = '344C32F77AB407C9B544EDA05490D3943AFB772CB09970970C5F7DF8801194E4';
+const FALLBACK_INSTALLER_SIZE = 106820739;
 const LIVE_INSTALLER_URL =
   'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe';
 

@@ -28,7 +28,7 @@
     "appId": "com.soulconsciousnessstudios.eidovara",
     "platform": "Windows 10/11 x64",
     "installer": "Eidovara-v1.0.0-Windows-x64-Setup.exe",
-    "sha256": null,
+    "sha256": "344C32F77AB407C9B544EDA05490D3943AFB772CB09970970C5F7DF8801194E4",
     "tag": "v1.0.0",
     "authenticode": "unsigned",
     "age": "18+",

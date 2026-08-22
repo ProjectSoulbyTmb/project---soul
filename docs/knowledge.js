@@ -14,8 +14,8 @@ const INSTALLER =
 const INSTALLER_PINNED =
   'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v1.0.0/Eidovara-v1.0.0-Windows-x64-Setup.exe';
 const INSTALLER_NAME = 'Eidovara-v1.0.0-Windows-x64-Setup.exe';
-const INSTALLER_SHA256 = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675';
-const INSTALLER_SIZE = '106,691,524 bytes (about 101.75 MiB)';
+const INSTALLER_SHA256 = '344C32F77AB407C9B544EDA05490D3943AFB772CB09970970C5F7DF8801194E4';
+const INSTALLER_SIZE = '106,820,739 bytes (about 101.85 MiB)';
 const SOURCE = 'https://github.com/ProjectSoulbyTmb/project---soul';
 const SITE = 'https://eidovara.org/';
 

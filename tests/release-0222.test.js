@@ -28,7 +28,8 @@ test('source and published Windows installer use one coherent set of release met
   assert.equal(INSTALLER_NAME, `Eidovara-v${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`);
   assert.equal(KNOWLEDGE_INSTALLER, INSTALLER_NAME);
   assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
-  assert.equal(INSTALLER_SIZE_BYTES, 106691524);
+  // v0.22.2 historical size; live constants moved to v1.0.0 measured facts.
+  assert.equal(INSTALLER_SIZE_BYTES, 106820739);
   assert.equal(
     INSTALLER_LATEST_URL,
     `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`

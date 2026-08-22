@@ -12,7 +12,8 @@ Eidovara is a customizable Windows desktop workspace for applications, gaming, m
 
 - Official platform: Windows 10/11 x64.
 - Installer: `Eidovara-v1.0.0-Windows-x64-Setup.exe`.
-- Installer size and SHA-256: measured from each tagged build and published in that release’s SHA256SUMS.txt and latest.yml (the v1.0.0 installer publishes when tag v1.0.0 passes release CI).
+- Installer size: F,820,739 bytes (about 101.85 MiB).
+- Installer SHA-256 (measured, tagged build): äC32F77AB407C9B544EDA05490D3943AFB772CB09970970C5F7DF8801194E4.
 - Historical reference: the published v0.22.2 Setup.exe measured SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`; do not attribute it to v1.0.0.
 - Distribution status: Authenticode-unsigned. Windows SmartScreen may warn.
 - Build provenance: GitHub/Sigstore provenance is available and is not a substitute for Authenticode signing.
