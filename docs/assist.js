@@ -157,7 +157,7 @@ function mount() {
     rows: '2',
     maxlength: '800',
     required: true,
-    placeholder: 'Ask about download, 18+, or what Eidovara is…'',
+    placeholder: 'Ask about download, 18+, or what Eidovara is…',
   });
   const send = el('button', { className: 'assist-send', type: 'submit', text: 'Send' });
   const tools = el('details', { className: 'assist-service' });

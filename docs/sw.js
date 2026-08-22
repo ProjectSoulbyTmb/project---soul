@@ -1,3 +1,4 @@
+/* global clients */
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /**
@@ -60,7 +61,6 @@ const CACHE_STRATEGIES = {
 
 const MAX_RUNTIME_ENTRIES = 50;
 const MAX_IMAGE_ENTRIES = 100;
-const CACHE_EXPIRY_DAYS = 30;
 
 // ==========================================================================
 // INSTALL EVENT
@@ -190,7 +190,6 @@ async function fetchAndCache(request, cacheName) {
 
 // Offline fallback
 function offlineFallback(request) {
-  const url = new URL(request.url);
   if (request.mode === 'navigate' || request.destination === 'document') {
     return caches.match(OFFLINE_URL).then(res => res || new Response('Offline', { status: 503, headers: { 'Content-Type': 'text/html' } }));
   }
