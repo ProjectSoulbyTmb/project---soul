@@ -4,7 +4,7 @@ The Eidovara application emblem and Soul Consciousness Studios studio emblem are
 
 The artwork uses black, white, and red treatments and contains no licensed character, stock logo, third-party word mark, or bundled commercial font. Generation and editing records, master PNG files, release history, and the SHA-256 register should be preserved as provenance evidence.
 
-This policy does not guarantee worldwide uniqueness, registration, non-infringement, or exclusive rights in common geometric elements. Before commercial filing, conduct a design-mark clearance search using relevant USPTO design search codes, textual design descriptions, state and international databases, app stores, web image research, and related software/entertainment classes. Use â„¢ until registration issues; do not use Â® prematurely.
+This policy does not guarantee worldwide uniqueness, registration, non-infringement, or exclusive rights in common geometric elements. Before commercial filing, conduct a design-mark clearance search using relevant USPTO design search codes, textual design descriptions, state and international databases, app stores, web image research, and related software/entertainment classes. Use ™ until registration issues; do not use ® prematurely.
 
 Do not publish editable private drafts, source-layer working files, rejected concepts, or unreleased variations. Public releases should include only the approved flattened assets needed to identify the product and publisher.
 
