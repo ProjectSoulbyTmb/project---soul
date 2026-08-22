@@ -1,28 +1,18 @@
-# Premium commerce and entitlement plan
+# Windows application compatibility and third-party use
 
-## Consumer plans
+Eidovara can store a user-selected `.exe` or `.lnk` path and ask Windows to open it. This is a launcher function, not universal integration, certification, control, interoperability, or authorization from the application publisher.
 
-- **Eidovara Free — $0:** unlimited conversations, offline/local models, core memory, companion, built-in research, media, backups, updates, and three linked apps.
-- **Eidovara Premium Monthly — target $7.99/month:** all Premium capabilities with monthly cancellation.
-- **Eidovara Premium Annual — target $59.99/year:** the same entitlement, billed annually. This is the preferred value plan.
+## Technical boundary
 
-Prices are launch targets, not an active offer, until checkout, taxes, refund/cancellation terms, support contact, and entitlement delivery are configured. Do not advertise a fake discount or “lifetime” access while the product has ongoing service costs.
+- Eidovara does not inject code, patch processes, read application memory, bypass access controls, impersonate users, automate anti-cheat systems, embed third-party interfaces, or redistribute another application's files.
+- Adding an application does not give Soul access to that application's private data, account, API, controls, or subscription.
+- Compatibility depends on Windows, file availability, architecture, permissions, publisher policies, account state, drivers, security software, and the target application's own behavior.
+- Applications requiring administrator rights, protected launchers, anti-cheat, enterprise policy, special URI schemes, command-line arguments, or authenticated APIs may not launch or may require separate user-approved integration.
 
-## Required automatic-unlock flow
+## User and publisher rights
 
-1. The app opens an HTTPS provider-hosted checkout page. Eidovara never accepts card details.
-2. The provider sends a signed webhook to the owner-controlled Cloudflare Worker.
-3. The Worker verifies the signature and stores only the minimum subscription/entitlement mapping.
-4. The app exchanges an activation code over HTTPS for a short-lived, signed entitlement token.
-5. The app verifies the token with a pinned public key, stores it with OS secure storage, and enables Premium only while valid.
-6. Cancellation, refund, chargeback, expiration, and replay events update the record; a documented offline grace period handles outages.
+Users must have the right to install, access, and operate each linked application and must follow its license, terms, acceptable-use rules, privacy notice, API policy, platform rules, and applicable law. Eidovara does not grant third-party rights or make prohibited automation lawful.
 
-## Security requirements before sales
+Names and links are used only for factual identification or user-directed handoff. Windows and all named applications, platforms, APIs, and services remain the property of their respective owners. No sponsorship, endorsement, compatibility certification, or partnership is implied.
 
-- Webhook secrets and signing private keys stay in Cloudflare Secrets, never Git, the app, or public variables.
-- Use idempotency, timestamp/replay validation, constant-time verification, rate limits, generic activation errors, audit events, and key rotation.
-- Do not use email alone as proof of purchase or editable local settings as production edition authority.
-- Publish pricing, renewals, cancellation, refunds, support, privacy purpose, retention, and tax handling before checkout.
-- Test payment success/failure, cancellation, refund, chargeback, duplicate webhook, expiration, offline grace, clock skew, and outage.
-
-The current local edition control is for private testing only, not production payment enforcement.
+Before adding deeper automation for a particular application, the project must review its current official developer terms, use an authorized API or documented local interface, request the minimum permission, keep credentials out of the renderer, provide a disconnect/removal control, and test failure and revocation behavior. If the terms prohibit the proposed use or permission cannot be obtained, the integration must not ship.
