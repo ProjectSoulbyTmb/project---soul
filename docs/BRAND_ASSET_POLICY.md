@@ -1,4 +1,4 @@
-﻿# Eidovara brand asset and design-mark policy
+# Eidovara brand asset and design-mark policy
 
 The Eidovara application emblem and Soul Consciousness Studios studio emblem are claimed original first-party brand assets of Soul Consciousness Studios. They may not be copied, modified, redistributed, used as application or company branding, or used to imply affiliation without prior written permission. Factual screenshots and nominative references remain subject to applicable law.
 
