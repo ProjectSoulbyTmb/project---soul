@@ -1,4 +1,4 @@
-﻿// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
+// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 /** Eidovara website helper knowledge pack for the current v1.0.0 release. Same answers for Pages and Worker. */
 export const ASSIST_VERSION = '1.0.0';
