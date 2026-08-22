@@ -10,6 +10,9 @@ on:
   schedule:
     - cron: '0 3 * * *'
 
+permissions:
+  contents: read
+
 concurrency:
   group: windows-ci-${{ github.ref }}
   cancel-in-progress: true
