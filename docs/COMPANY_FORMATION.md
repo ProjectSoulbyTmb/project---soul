@@ -28,4 +28,3 @@ Soul Consciousness Studios is currently described in this repository as Soul Con
 Verify requirements immediately before filing. As of August 20, 2026, FinCEN states that U.S.-created companies and U.S. persons are exempt from federal BOI reporting under its current final rule. State and other federal obligations still apply and can change.
 
 This checklist is general information, not legal or tax advice, and cannot determine the correct state, entity, tax election, trademark class, or ownership transfer without the owner's facts.
-

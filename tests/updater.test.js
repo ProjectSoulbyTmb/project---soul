@@ -10,7 +10,7 @@ import {
   isPrerelease,
   parseLatestYml,
   requireUpdateIntegrity,
-  shouldOfferUpdate
+  shouldOfferUpdate,
 } from '../src/core/updater.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
@@ -27,14 +27,39 @@ test('updater compares semantic release versions including prerelease order', ()
 });
 
 test('updater ignores drafts, ignores prereleases unless current is prerelease, and never downgrades', () => {
-  assert.deepEqual(shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0' }).offer, true);
-  assert.equal(shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.18.3' }).reason, 'not-newer');
-  assert.equal(shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.18.2' }).reason, 'not-newer');
-  assert.equal(shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0', draft: true }).reason, 'draft');
-  assert.equal(shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0-beta.1' }).reason, 'prerelease');
-  assert.equal(shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0', prerelease: true }).reason, 'prerelease');
-  assert.equal(shouldOfferUpdate({ currentVersion: '0.19.0-beta.1', candidateVersion: '0.19.0-beta.2' }).offer, true);
-  assert.equal(shouldOfferUpdate({ currentVersion: '0.19.0-beta.1', candidateVersion: '0.19.0' }).offer, true);
+  assert.deepEqual(
+    shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0' }).offer,
+    true
+  );
+  assert.equal(
+    shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.18.3' }).reason,
+    'not-newer'
+  );
+  assert.equal(
+    shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.18.2' }).reason,
+    'not-newer'
+  );
+  assert.equal(
+    shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0', draft: true }).reason,
+    'draft'
+  );
+  assert.equal(
+    shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0-beta.1' }).reason,
+    'prerelease'
+  );
+  assert.equal(
+    shouldOfferUpdate({ currentVersion: '0.18.3', candidateVersion: '0.19.0', prerelease: true })
+      .reason,
+    'prerelease'
+  );
+  assert.equal(
+    shouldOfferUpdate({ currentVersion: '0.19.0-beta.1', candidateVersion: '0.19.0-beta.2' }).offer,
+    true
+  );
+  assert.equal(
+    shouldOfferUpdate({ currentVersion: '0.19.0-beta.1', candidateVersion: '0.19.0' }).offer,
+    true
+  );
 });
 
 test('auto-check toggle defaults on and can be disabled', () => {
@@ -47,10 +72,20 @@ test('auto-check toggle defaults on and can be disabled', () => {
 test('updater refuses to install without checksum metadata', () => {
   assert.throws(() => requireUpdateIntegrity(null), /metadata is missing/i);
   assert.throws(() => requireUpdateIntegrity({ version: '0.19.0' }), /checksum/i);
-  assert.throws(() => requireUpdateIntegrity({ version: '0.19.0', sha256: 'deadbeef' }), /checksum/i);
-  assert.throws(() => parseLatestYml('version: 0.19.0\npath: Eidovara.exe\n'), /checksum|metadata/i);
+  assert.throws(
+    () => requireUpdateIntegrity({ version: '0.19.0', sha256: 'deadbeef' }),
+    /checksum/i
+  );
+  assert.throws(
+    () => parseLatestYml('version: 0.19.0\npath: Eidovara.exe\n'),
+    /checksum|metadata/i
+  );
   const sha512 = `${'A'.repeat(86)}==`;
-  const ok = requireUpdateIntegrity({ version: '0.19.0', sha512, path: 'Eidovara-0.19.0-Windows-x64-Setup.exe' });
+  const ok = requireUpdateIntegrity({
+    version: '0.19.0',
+    sha512,
+    path: 'Eidovara-0.19.0-Windows-x64-Setup.exe',
+  });
   assert.equal(ok.sha512, sha512);
 });
 
@@ -60,9 +95,15 @@ test('latest.yml parser requires sha512 and evaluateElectronUpdate gates version
   const parsed = parseLatestYml(yml);
   assert.equal(parsed.version, '0.19.0');
   assert.equal(parsed.sha512, sha512);
-  const offered = evaluateElectronUpdate({ version: '0.19.0', sha512, path: parsed.path }, '0.18.3');
+  const offered = evaluateElectronUpdate(
+    { version: '0.19.0', sha512, path: parsed.path },
+    '0.18.3'
+  );
   assert.equal(offered.available, true);
-  const skipped = evaluateElectronUpdate({ version: '0.19.0-beta.1', sha512, path: parsed.path }, '0.18.3');
+  const skipped = evaluateElectronUpdate(
+    { version: '0.19.0-beta.1', sha512, path: parsed.path },
+    '0.18.3'
+  );
   assert.equal(skipped.available, false);
   assert.equal(skipped.reason, 'prerelease');
   assert.throws(() => evaluateElectronUpdate({ version: '0.19.0' }, '0.18.3'), /checksum/i);
@@ -70,38 +111,72 @@ test('latest.yml parser requires sha512 and evaluateElectronUpdate gates version
 
 test('legacy update.json still rejects untrusted URLs and missing hashes', async () => {
   const original = globalThis.fetch;
-  const bad = Buffer.from(JSON.stringify({ version: '9.9.9', url: 'https://evil.example/Eidovara.exe', sha256: 'A'.repeat(64) }));
-  globalThis.fetch = async () => ({ ok: true, url: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json', headers: { get: () => String(bad.length) }, arrayBuffer: async () => bad });
+  const bad = Buffer.from(
+    JSON.stringify({
+      version: '9.9.9',
+      url: 'https://evil.example/Eidovara.exe',
+      sha256: 'A'.repeat(64),
+    })
+  );
+  globalThis.fetch = async () => ({
+    ok: true,
+    url: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json',
+    headers: { get: () => String(bad.length) },
+    arrayBuffer: async () => bad,
+  });
   try {
-    await assert.rejects(() => checkForUpdate({
-      manifestUrl: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json',
-      currentVersion: '0.18.3'
-    }), /official GitHub release channel/i);
-  } finally { globalThis.fetch = original; }
+    await assert.rejects(
+      () =>
+        checkForUpdate({
+          manifestUrl:
+            'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json',
+          currentVersion: '0.18.3',
+        }),
+      /official GitHub release channel/i
+    );
+  } finally {
+    globalThis.fetch = original;
+  }
 });
 
 test('legacy update.json does not offer a prerelease to a stable install', async () => {
   const original = globalThis.fetch;
-  const body = Buffer.from(JSON.stringify({
-    version: '0.19.0-beta.1',
-    url: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.0-beta.1/Eidovara-0.19.0-beta.1-Windows-x64-Setup.exe',
-    sha256: 'A'.repeat(64)
-  }));
-  globalThis.fetch = async () => ({ ok: true, url: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json', headers: { get: () => String(body.length) }, arrayBuffer: async () => body });
+  const body = Buffer.from(
+    JSON.stringify({
+      version: '0.19.0-beta.1',
+      url: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v0.19.0-beta.1/Eidovara-0.19.0-beta.1-Windows-x64-Setup.exe',
+      sha256: 'A'.repeat(64),
+    })
+  );
+  globalThis.fetch = async () => ({
+    ok: true,
+    url: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json',
+    headers: { get: () => String(body.length) },
+    arrayBuffer: async () => body,
+  });
   try {
     const result = await checkForUpdate({
-      manifestUrl: 'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json',
-      currentVersion: '0.18.3'
+      manifestUrl:
+        'https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/update.json',
+      currentVersion: '0.18.3',
     });
     assert.equal(result.available, false);
     assert.equal(result.reason, 'prerelease');
-  } finally { globalThis.fetch = original; }
+  } finally {
+    globalThis.fetch = original;
+  }
 });
 
 test('honest updater errors stay unsigned and fail closed offline', () => {
-  assert.match(honestUpdateError({ message: 'getaddrinfo ENOTFOUND github.com' }), /could not reach GitHub/i);
+  assert.match(
+    honestUpdateError({ message: 'getaddrinfo ENOTFOUND github.com' }),
+    /could not reach GitHub/i
+  );
   assert.match(honestUpdateError({ message: 'sha512 checksum mismatch' }), /refused to install/i);
-  assert.match(honestUpdateError({ message: 'Authenticode publisher mismatch' }), /Authenticode-unsigned/i);
+  assert.match(
+    honestUpdateError({ message: 'Authenticode publisher mismatch' }),
+    /Authenticode-unsigned/i
+  );
   assert.doesNotMatch(honestUpdateError({ message: 'network down' }), /signed update is ready/i);
 });
 
@@ -118,11 +193,17 @@ test('packaging publishes GitHub latest.yml and ships electron-updater', () => {
   assert.match(read('src/electron/main.js'), /attachDesktopUpdater/);
   assert.match(read('src/electron/preload.cjs'), /onUpdateStatus/);
   assert.doesNotMatch(read('src/renderer/index.html'), /media-src [^"]*'self'/);
-  assert.match(read('src/renderer/index.html'), /Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it\. Builds are Authenticode-unsigned\./);
+  assert.match(
+    read('src/renderer/index.html'),
+    /Eidovara can check GitHub for a newer Windows installer, verify its checksum, and apply it\. Builds are Authenticode-unsigned\./
+  );
   assert.match(read('src/renderer/index.html'), /id="autoCheckUpdates"/);
   assert.match(read('src/renderer/index.html'), /id="companionCheckUpdatesBtn"/);
   assert.match(read('src/renderer/index.html'), /data-companion-nav="updates"/);
-  assert.match(read('src/renderer/renderer.js'), /action\.type==='open-updates'\|\|action\.type==='check-updates'/);
+  assert.match(
+    read('src/renderer/renderer.js'),
+    /action\.type==='open-updates'\|\|action\.type==='check-updates'/
+  );
   assert.match(read('src/electron/auto-update.js'), /verifyUpdateCodeSignature/);
   assert.match(read('src/electron/auto-update.js'), /Authenticode-unsigned/);
 });

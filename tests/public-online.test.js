@@ -8,7 +8,7 @@ import {
   INSTALLER_LATEST_URL,
   INSTALLER_PINNED_URL,
   LIVE_INSTALLER_VERSION,
-  SOURCE_VERSION
+  SOURCE_VERSION,
 } from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
@@ -33,14 +33,23 @@ test('primary download CTA points at the published installer and keeps the age g
   assert.equal(JSON.parse(read('package.json')).version, SOURCE_VERSION);
   assert.equal(INSTALLER_NAME, `Eidovara-v${LIVE_INSTALLER_VERSION}-Windows-x64-Setup.exe`);
   assert.match(INSTALLER_SHA256, /^[0-9A-F]{64}$/);
-  assert.equal(INSTALLER_LATEST_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`);
-  assert.equal(INSTALLER_PINNED_URL, `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`);
+  assert.equal(
+    INSTALLER_LATEST_URL,
+    `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/${INSTALLER_NAME}`
+  );
+  assert.equal(
+    INSTALLER_PINNED_URL,
+    `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v${LIVE_INSTALLER_VERSION}/${INSTALLER_NAME}`
+  );
 
   const downloadPage = read('docs/download.html');
   const primary = downloadPage.match(/<a class="primary[^"]*" href="([^"]+)"/);
   assert.ok(primary, 'download page has a primary button');
   assert.equal(primary[1], INSTALLER_LATEST_URL);
-  assert.match(downloadPage, new RegExp(escapeRe(INSTALLER_SIZE_BYTES.toLocaleString('en-US')) + ' bytes'));
+  assert.match(
+    downloadPage,
+    new RegExp(escapeRe(INSTALLER_SIZE_BYTES.toLocaleString('en-US')) + ' bytes')
+  );
   assert.match(downloadPage, /101\.75 MiB/);
   assert.match(downloadPage, /SHA256SUMS\.txt/);
   assert.match(downloadPage, /id="ageConfirm"/);
@@ -82,11 +91,18 @@ test('desktop service remains fail-closed and uses the official HTTPS host', () 
   assert.doesNotMatch(read('src/renderer/renderer.js'), /[a-z0-9.-]+\.workers\.dev/i);
   const html = read('src/renderer/index.html');
   assert.match(html, /placeholder="https:\/\/api\.eidovara\.org"/);
-  assert.match(read('src/core/service.js'), /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
+  assert.match(
+    read('src/core/service.js'),
+    /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/
+  );
 });
 
 test('eidovara.org remains the official site and download routing preserves the age gate', () => {
-  assert.equal(fs.existsSync('docs/CNAME'), false, 'GitHub Pages CNAME would fight the live Cloudflare zone');
+  assert.equal(
+    fs.existsSync('docs/CNAME'),
+    false,
+    'GitHub Pages CNAME would fight the live Cloudflare zone'
+  );
   const redirects = read('docs/_redirects');
   assert.match(redirects, /\/download\/windows\s+\/download\.html\s+302/);
   assert.doesNotMatch(redirects, /\/download\/windows\s+\S+\.exe/);

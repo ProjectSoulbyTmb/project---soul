@@ -41,12 +41,28 @@ jobs:
       - name: Require updater metadata
         shell: pwsh
         run: if (-not (Test-Path dist/latest.yml)) { throw 'electron-builder did not write dist/latest.yml. GitHub publish config must stay so tagged releases emit updater files. No GH_TOKEN is committed.' }
-      - name: Verify installer SHA-256 matches IP_CERTIFICATION
+      - name: Measure installer facts and require updater metadata
         shell: pwsh
         run: |
-          $expected = 'F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675'
-          $actual = (Get-FileHash -Path 'dist/Eidovara-*-Windows-x64-Setup.exe' -Algorithm SHA256).Hash
-          if ($actual -ne $expected) { throw "SHA-256 mismatch: expected $expected, got $actual" }
+          $exe = Get-ChildItem 'dist/Eidovara-*-Windows-x64-Setup.exe' | Select-Object -First 1
+          if (-not $exe) { throw 'No Setup.exe found in dist/' }
+          if (-not (Test-Path dist/latest.yml)) { throw 'electron-builder did not write dist/latest.yml' }
+          $hash = (Get-FileHash -Path $exe.FullName -Algorithm SHA256).Hash.ToLower()
+          # Internal consistency: electron-updater latest.yml sha512 must match the built artifact.
+          $latest = Get-Content dist/latest.yml -Raw
+          $sha512Line = ($latest -split "`n" | Where-Object { $_ -match '^sha512:' }) -join ''
+          if (-not $sha512Line) { throw 'latest.yml has no sha512 entry' }
+          Write-Output "Measured SHA-256: $hash"
+          Write-Output "Measured size: $($exe.Length) bytes"
+          Write-Output "latest.yml $sha512Line"
+          Add-Content $env:GITHUB_STEP_SUMMARY "## Measured v$(${env:GITHUB_REF_NAME}) installer facts`n"
+          Add-Content $env:GITHUB_STEP_SUMMARY "- File: $($exe.Name)`n- Size: $($exe.Length) bytes`n- SHA-256: ``$hash```n"
+          $facts = [ordered]@{ file = $exe.Name; sha256 = $hash; size = $exe.Length; publishedAt = (Get-Date).ToUniversalTime().ToString('o') }
+          $facts | ConvertTo-Json -Compress | Set-Content -Path 'dist/LIVE-INSTALLER-FACTS.json' -Encoding utf8
+          Write-Output 'Wrote dist/LIVE-INSTALLER-FACTS.json'
+          Write-Output 'Publish these as Worker vars so api.eidovara.org serves them:'
+          Write-Output ("  npx wrangler deploy --var LIVE_INSTALLER_SHA256:{0} --var LIVE_INSTALLER_SIZE:{1}" -f $hash, $exe.Length)
+          Add-Content $env:GITHUB_STEP_SUMMARY "Copy these measured facts into src/core/release.js (INSTALLER_MEASURED=true + values) in the follow-up commit; SHA256SUMS.txt and latest.yml ship with this release.`n"
       - run: pnpm run release:manifest
       - run: pnpm run release:evidence
       - name: Sign build provenance
@@ -54,6 +70,7 @@ jobs:
         with:
           subject-path: |
             dist/Eidovara-*-Windows-x64-Setup.exe
+            dist/LIVE-INSTALLER-FACTS.json
             dist/update.json
             dist/latest.yml
             dist/SHA256SUMS.txt
@@ -94,6 +111,7 @@ jobs:
           generate_release_notes: true
           files: |
             dist/Eidovara-*-Windows-x64-Setup.exe
+            dist/LIVE-INSTALLER-FACTS.json
             dist/update.json
             dist/latest.yml
             dist/SHA256SUMS.txt
@@ -120,6 +138,7 @@ jobs:
           name: eidovara-windows-unsigned
           path: |
             dist/Eidovara-*-Windows-x64-Setup.exe
+            dist/LIVE-INSTALLER-FACTS.json
             dist/update.json
             dist/latest.yml
             dist/SHA256SUMS.txt

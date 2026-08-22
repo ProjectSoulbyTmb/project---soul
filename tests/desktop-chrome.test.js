@@ -13,7 +13,7 @@ import {
   RECENTS_KINDS,
   sleepDeadline,
   sleepRemainingMs,
-  sleepShouldStop
+  sleepShouldStop,
 } from '../src/core/desktop-chrome.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
@@ -40,11 +40,18 @@ test('sleep timer remaining and recents kinds stay bounded', () => {
   assert.equal(sleepRemainingMs(until, { now }), 15 * 60_000);
   assert.equal(sleepShouldStop(until, { now: now + 15 * 60_000 }), true);
   assert.equal(sleepDeadline('off', { now }), null);
-  const recent = recentEntry({ id: 'app-1', title: 'Notepad', kind: 'app' }, { at: '2026-08-21T12:00:00.000Z' });
+  const recent = recentEntry(
+    { id: 'app-1', title: 'Notepad', kind: 'app' },
+    { at: '2026-08-21T12:00:00.000Z' }
+  );
   assert.equal(recent.kind, 'app');
   assert.ok(RECENTS_KINDS.includes(recent.kind));
   assert.equal(recentEntry({ title: 'no-id' }), null);
-  const notices = pushNotice([], { title: 'Focus session ended', body: 'Local timer.', kind: 'focus' });
+  const notices = pushNotice([], {
+    title: 'Focus session ended',
+    body: 'Local timer.',
+    kind: 'focus',
+  });
   assert.equal(notices[0].title, 'Focus session ended');
   const chrome = normalizeDesktopChrome({ trayStay: true, pinCompanion: 1, notices });
   assert.equal(chrome.trayStay, true);

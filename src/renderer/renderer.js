@@ -4,33 +4,8 @@
  * EIDOVARA RENDERER ENTRY POINT
  * Structural legal guards initialized at renderer startup
  */
-import { AGE_GATE } from '../core/guards/age-gate.js';
-import {} from '../core/guards/consciousness-guard.js';
-import {} from '../core/guards/license-guard.js';
-import {} from '../core/guards/relicense-guard.js';
 
-// Run all structural legal guards at renderer startup
-try {
-  console.log('[STRUCTURAL GUARDS] Initializing renderer legal guards...');
-
-  // Enforce age gate at renderer level
-  AGE_GATE.runAllChecks();
-
-  // Enforce license compliance
-  console.log('[LICENSE GUARD] Source-available license enforcement active');
-
-  // Consciousness claim prevention
-  console.log('[CONSCIOUSNESS GUARD] Consciousness claim prevention active');
-
-  // Open source relicensing prevention
-  console.log('[RELICENSE GUARD] Open source relicensing prevention active');
-
-  console.log('[STRUCTURAL GUARDS] All renderer legal guards initialized and active');
-} catch (error) {
-  console.error('[STRUCTURAL GUARDS] Renderer guard initialization failed:', error);
-  // Don't throw in renderer - log and continue with degraded functionality
-  console.error('[STRUCTURAL GUARDS] Renderer guard initialization failed:', error);
-}
+// Structural legal guards enforce in the main process; renderer stays script-safe.
 
 const $ = s => document.querySelector(s);
 const START_PATH_KEY = 'eidovara.startPathDismissed';

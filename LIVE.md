@@ -4,14 +4,14 @@ This is an operator note, not a consumer marketing page. It does not claim Authe
 
 ## What is live
 
-| Surface | Status |
-| --- | --- |
-| `main` | Canonical source version is `1.0.0`. The published Windows release is also `1.0.0`. |
-| GitHub Pages | `docs/` from **main only** via `.github/workflows/pages.yml`. Mirror: `https://projectsoulbytmb.github.io/project---soul/`. |
-| Cloudflare Pages | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). `.github/workflows/cloudflare-pages.yml` deploys `docs/` after website changes reach `main` when production credentials are available. |
-| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Health/config/status source version and live installer version are `1.0.0`. |
+| Surface           | Status                                                                                                                                                                                                                                                            |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `main`            | Canonical source version is `1.0.0`. The published Windows release is also `1.0.0`.                                                                                                                                                                               |
+| GitHub Pages      | `docs/` from **main only** via `.github/workflows/pages.yml`. Mirror: `https://projectsoulbytmb.github.io/project---soul/`.                                                                                                                                       |
+| Cloudflare Pages  | Official consumer hostname `https://eidovara.org` (project `eidovara`, same `docs/` folder). `.github/workflows/cloudflare-pages.yml` deploys `docs/` after website changes reach `main` when production credentials are available.                               |
+| Cloudflare Worker | Wrangler name `eidovara-api`. Public GET `/health`, `/v1/config`, `/v1/status`; GET/POST `/v1/assist`. Fail-closed otherwise. Payments stay off. Health/config/status source version and live installer version are `1.0.0`.                                      |
 | Windows installer | Tag `v1.0.0` publishes unsigned `Eidovara-v1.0.0-Windows-x64-Setup.exe` (106,691,524 bytes, about 101.75 MiB). SHA-256 `F29A52F0495AB111A277780706E75ED616B6C236E25C3BDDF36E144ED5326675`. Authenticode-unsigned; GitHub/Sigstore provenance is not Authenticode. |
-| Edition | v1.0.0 is a full free Alpha. Currently implemented features are not blocked by paid entitlement; live checkout/subscription processing remains off. |
+| Edition           | v1.0.0 is a full free Alpha. Currently implemented features are not blocked by paid entitlement; live checkout/subscription processing remains off.                                                                                                               |
 
 Desktop app id stays `com.soulconsciousnessstudios.eidovara`. The official service default is `https://api.eidovara.org` (HTTPS base only). Settings → Eidovara service accepts another HTTPS base as an override. Conversations are not sent automatically.
 
@@ -53,7 +53,7 @@ Never commit Cloudflare credentials. The Cloudflare Pages workflow expects secur
 External credentials or legal filings cannot be manufactured in git. Keep these truthful:
 
 1. Cloudflare deployment credentials must be available to the production workflow, or deployment must be performed from an authenticated owner environment.
-2. Redeploy `server/` when its source contract changes so `api.eidovara.org` does not drift from desktop/site expectations.
+2. Redeploy `server/` when its source contract changes so `api.eidovara.org` does not drift from desktop/site expectations. After each release build, publish the measured installer facts from `dist/LIVE-INSTALLER-FACTS.json` as Worker vars (`LIVE_INSTALLER_SHA256`, `LIVE_INSTALLER_SIZE`) so `/v1/config` stops reporting null checksums; see `server/README.md`. Never hardcode a digest from an older build into the Worker source.
 3. Configure optional `www.eidovara.org` in Cloudflare only if desired.
 4. Official installers remain Authenticode-unsigned until a real code-signing identity exists.
 5. Live payments/company filings remain separate future actions and must not be implied by product copy.

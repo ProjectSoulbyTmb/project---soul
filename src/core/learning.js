@@ -8,10 +8,22 @@ export function processLearning(state, text) {
   const now = new Date().toISOString();
   const learned = [];
 
-  const criticism = /\b(criticism|you were wrong|that was wrong|mistake|flaw|problem|error|bad response)\b/.test(t);
+  const criticism =
+    /\b(criticism|you were wrong|that was wrong|mistake|flaw|problem|error|bad response)\b/.test(t);
   if (criticism) {
-    const memory = addMemory(state, text, { kind: 'criticism', confidence: 0.75, tags: ['criticism'], provenance: { channel: 'conversation', evaluation: 'pending-review' } });
-    state.feedback.push({ id: memory.id, at: now, kind: 'criticism', status: 'examined-not-automatically-accepted', content: text });
+    const memory = addMemory(state, text, {
+      kind: 'criticism',
+      confidence: 0.75,
+      tags: ['criticism'],
+      provenance: { channel: 'conversation', evaluation: 'pending-review' },
+    });
+    state.feedback.push({
+      id: memory.id,
+      at: now,
+      kind: 'criticism',
+      status: 'examined-not-automatically-accepted',
+      content: text,
+    });
     state.personality.humility = clamp01((state.personality.humility ?? 0.7) + 0.03);
     state.personality.directness = clamp01(state.personality.directness + 0.01);
     learned.push('criticism recorded as evidence for review');
@@ -29,4 +41,3 @@ export function processLearning(state, text) {
   }
   return learned;
 }
-

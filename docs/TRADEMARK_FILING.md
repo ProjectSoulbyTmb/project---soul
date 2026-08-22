@@ -8,11 +8,11 @@ Claimant of the unregistered marks: **Soul Consciousness Studios**. Intended pub
 
 ## Marks under consideration (unregistered)
 
-| Mark | How it is used today | Honesty note |
-| --- | --- | --- |
-| Eidovara | Product name for the Windows desktop assistant | Coined product name; still unregistered |
-| Soul | Software self-model **feature** name inside Eidovara | Ordinary English word; likely a narrower and harder claim |
-| Soul Consciousness Studios | Intended publisher / brand-house name | Not a formed company until state formation + assignment |
+| Mark                       | How it is used today                                 | Honesty note                                              |
+| -------------------------- | ---------------------------------------------------- | --------------------------------------------------------- |
+| Eidovara                   | Product name for the Windows desktop assistant       | Coined product name; still unregistered                   |
+| Soul                       | Software self-model **feature** name inside Eidovara | Ordinary English word; likely a narrower and harder claim |
+| Soul Consciousness Studios | Intended publisher / brand-house name                | Not a formed company until state formation + assignment   |
 
 Use: "Eidovara is a trademark of Soul Consciousness Studios (unregistered)." Do not use ®.
 
@@ -29,15 +29,15 @@ Use: "Eidovara is a trademark of Soul Consciousness Studios (unregistered)." Do 
 
 These Nice / USPTO class numbers are **starting points**, not a filing:
 
-| Class | Typical identification theme | Relevance to Eidovara as of v0.19.1 |
-| --- | --- | --- |
-| **9** | Downloadable computer software | Closest fit for the advertised Windows desktop app |
+| Class  | Typical identification theme                                      | Relevance to Eidovara as of v0.19.1                                                                                      |
+| ------ | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **9**  | Downloadable computer software                                    | Closest fit for the advertised Windows desktop app                                                                       |
 | **42** | Software as a service; providing temporary use of online software | **Not** the current product: there is no hosted Soul account; Assist is not Soul; the Worker is optional and fail-closed |
-| **41** | Education / entertainment services | Only if counsel finds a real services offering; do not stretch |
+| **41** | Education / entertainment services                                | Only if counsel finds a real services offering; do not stretch                                                           |
 
 Do **not** copy another company's identification of goods word-for-word. Do **not** claim live payment processing, neural TTS, VRM, or iOS apps that this product does not ship. Overbroad identifications invite refusal or later fraud-on-the-office risk.
 
-"Soul" as a standalone Class 9 mark may face descriptiveness, genericness, or crowded-field objections. Counsel should advise whether to file Soul at all, file it only as a feature used *with* Eidovara, or skip it.
+"Soul" as a standalone Class 9 mark may face descriptiveness, genericness, or crowded-field objections. Counsel should advise whether to file Soul at all, file it only as a feature used _with_ Eidovara, or skip it.
 
 ## What this repository still does not do
 
@@ -50,4 +50,3 @@ Do **not** copy another company's identification of goods word-for-word. Do **no
 - Authorize ®
 
 After a registration **issues** for identified goods/services, ® may be used **for those goods/services**. Until then, ™ only. See [TRADEMARKS.md](../TRADEMARKS.md) and [BRAND_GUIDE.md](BRAND_GUIDE.md).
-

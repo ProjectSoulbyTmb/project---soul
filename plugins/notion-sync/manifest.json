@@ -14,8 +14,19 @@
   "entrypoints": {
     "main": "src/index.js",
     "commands": [
-      { "id": "notion-sync.sync", "name": "Sync with Notion", "description": "Sync memories to/from Notion", "shortcut": "Ctrl+Shift+N", "action": "sync" },
-      { "id": "notion-sync.configure", "name": "Configure Notion Sync", "description": "Set API key and database ID", "action": "configure" }
+      {
+        "id": "notion-sync.sync",
+        "name": "Sync with Notion",
+        "description": "Sync memories to/from Notion",
+        "shortcut": "Ctrl+Shift+N",
+        "action": "sync"
+      },
+      {
+        "id": "notion-sync.configure",
+        "name": "Configure Notion Sync",
+        "description": "Set API key and database ID",
+        "action": "configure"
+      }
     ],
     "hooks": [
       { "name": "memory-created", "event": "memory.created", "handler": "onMemoryCreated" },

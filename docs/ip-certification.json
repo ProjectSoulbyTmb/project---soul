@@ -35,12 +35,7 @@
     "payments": "fail-closed",
     "serviceDefault": "https://api.eidovara.org"
   },
-  "allowedStatuses": [
-    "in-repo",
-    "unsigned-template",
-    "not-filed",
-    "owner-action-required"
-  ],
+  "allowedStatuses": ["in-repo", "unsigned-template", "not-filed", "owner-action-required"],
   "instruments": [
     { "id": "license", "path": "LICENSE", "status": "in-repo" },
     { "id": "eula", "path": "installer/EULA.txt", "status": "in-repo" },
@@ -69,15 +64,27 @@
     { "id": "public-repo-policy", "path": "docs/PUBLIC_REPOSITORY_POLICY.md", "status": "in-repo" },
     { "id": "infringement", "path": "docs/INFRINGEMENT.md", "status": "in-repo" },
     { "id": "cla", "path": "docs/CONTRIBUTOR_ASSIGNMENT.md", "status": "unsigned-template" },
-    { "id": "entity-assignment", "path": "docs/ENTITY_IP_ASSIGNMENT.md", "status": "unsigned-template" },
+    {
+      "id": "entity-assignment",
+      "path": "docs/ENTITY_IP_ASSIGNMENT.md",
+      "status": "unsigned-template"
+    },
     { "id": "company-formation", "path": "docs/COMPANY_FORMATION.md", "status": "not-filed" },
     { "id": "codeowners", "path": ".github/CODEOWNERS", "status": "in-repo" },
     { "id": "security-txt", "path": "docs/.well-known/security.txt", "status": "in-repo" },
     { "id": "dependabot", "path": ".github/dependabot.yml", "status": "in-repo" },
     { "id": "security-workflow", "path": ".github/workflows/security.yml", "status": "in-repo" },
     { "id": "codeql-workflow", "path": ".github/workflows/codeql.yml", "status": "in-repo" },
-    { "id": "scorecards-workflow", "path": ".github/workflows/scorecards.yml", "status": "in-repo" },
-    { "id": "dependency-review-workflow", "path": ".github/workflows/dependency-review.yml", "status": "in-repo" }
+    {
+      "id": "scorecards-workflow",
+      "path": ".github/workflows/scorecards.yml",
+      "status": "in-repo"
+    },
+    {
+      "id": "dependency-review-workflow",
+      "path": ".github/workflows/dependency-review.yml",
+      "status": "in-repo"
+    }
   ],
   "ownerActionRequired": [
     "copyright-office-registration",

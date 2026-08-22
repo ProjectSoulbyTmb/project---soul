@@ -6,14 +6,20 @@ import { createHash } from 'node:crypto';
 import { INSTALLER_SHA256 } from '../src/core/release.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
-const sha256 = file => createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase();
+const sha256 = file =>
+  createHash('sha256').update(fs.readFileSync(file)).digest('hex').toUpperCase();
 
 const MASTERS = {
-  'assets/branding/eidovara-master.png': '5A7212D56125512565A56DCEA0D126AEC411248092A5E5BE53A2C3ED77D2D757',
-  'assets/branding/eidovara-512.png': '3020E06EC0698875577D98B1E17A799608639458B985E7CBE2FFC927CD5584C9',
-  'assets/branding/eidovara.ico': 'BB50C63CF8BBBFF07972742D26328180AF0154E534A39B0D7DF2F8AD8190841C',
-  'assets/branding/soul-consciousness-studios-master.png': 'A5702E3187545FA3BF28CAD544805986D6ED887D60F4161CF67BF462E25E0413',
-  'assets/branding/soul-consciousness-studios-512.png': 'F725D326E091C08D25785F360550A613A356087B07E0D20418741F3D0EB28857'
+  'assets/branding/eidovara-master.png':
+    '5A7212D56125512565A56DCEA0D126AEC411248092A5E5BE53A2C3ED77D2D757',
+  'assets/branding/eidovara-512.png':
+    '3020E06EC0698875577D98B1E17A799608639458B985E7CBE2FFC927CD5584C9',
+  'assets/branding/eidovara.ico':
+    'BB50C63CF8BBBFF07972742D26328180AF0154E534A39B0D7DF2F8AD8190841C',
+  'assets/branding/soul-consciousness-studios-master.png':
+    'A5702E3187545FA3BF28CAD544805986D6ED887D60F4161CF67BF462E25E0413',
+  'assets/branding/soul-consciousness-studios-512.png':
+    'F725D326E091C08D25785F360550A613A356087B07E0D20418741F3D0EB28857',
 };
 
 const WEBSITE = {
@@ -22,7 +28,7 @@ const WEBSITE = {
   'docs/eidovara-wallpaper-dark.jpg': { width: 2560, height: 1440, kind: 'jpeg' },
   'docs/eidovara-wallpaper-light.jpg': { width: 2560, height: 1440, kind: 'jpeg' },
   'docs/eidovara-wallpaper-product.jpg': { width: 2560, height: 1440, kind: 'jpeg' },
-  'docs/eidovara-og.png': { width: 1200, height: 630, kind: 'png' }
+  'docs/eidovara-og.png': { width: 1200, height: 630, kind: 'png' },
 };
 
 function imageSize(file) {
@@ -81,7 +87,7 @@ test('website brand assets exist at required resolution and match the copyright 
     'docs/eidovara-mark.jpg',
     'docs/soul-consciousness-studios-mark.jpg',
     'docs/eidovara-mark-512.png',
-    'docs/soul-consciousness-studios-mark-512.png'
+    'docs/soul-consciousness-studios-mark-512.png',
   ]) {
     assert.equal(fs.existsSync(leftover), false, leftover);
   }
@@ -94,7 +100,10 @@ test('registered application masters and 512 favicon copies stay unchanged', () 
     assert.equal(sha256(file), hash, file);
   }
   assert.equal(sha256('docs/eidovara-icon.png'), MASTERS['assets/branding/eidovara-512.png']);
-  assert.equal(sha256('docs/soul-consciousness-studios-icon.png'), MASTERS['assets/branding/soul-consciousness-studios-512.png']);
+  assert.equal(
+    sha256('docs/soul-consciousness-studios-icon.png'),
+    MASTERS['assets/branding/soul-consciousness-studios-512.png']
+  );
 });
 
 test('public site wires display marks, wallpapers, and OG image without CSP or token drift', () => {
@@ -124,12 +133,23 @@ test('public site wires display marks, wallpapers, and OG image without CSP or t
   assert.match(download, /id="ageConfirm"/);
   assert.match(download, new RegExp(INSTALLER_SHA256));
 
-  const htmlFiles = fs.readdirSync('docs').filter(name => name.endsWith('.html')).map(name => path.join('docs', name));
+  const htmlFiles = fs
+    .readdirSync('docs')
+    .filter(name => name.endsWith('.html'))
+    .map(name => path.join('docs', name));
   assert.ok(htmlFiles.length >= 14, htmlFiles.length);
   for (const file of htmlFiles) {
     const html = read(file);
-    assert.match(html, /property="og:image" content="https:\/\/eidovara\.org\/eidovara-og\.png"/, file);
-    assert.doesNotMatch(html, /property="og:image" content="https:\/\/eidovara\.org\/eidovara-icon\.png"/, file);
+    assert.match(
+      html,
+      /property="og:image" content="https:\/\/eidovara\.org\/eidovara-og\.png"/,
+      file
+    );
+    assert.doesNotMatch(
+      html,
+      /property="og:image" content="https:\/\/eidovara\.org\/eidovara-icon\.png"/,
+      file
+    );
     assert.match(html, /rel="icon"[^>]*href="eidovara-icon\.png"/, file);
     assert.match(html, /img-src 'self'/, file);
     assert.match(html, /script-src 'self'/, file);
@@ -144,7 +164,10 @@ test('public site wires display marks, wallpapers, and OG image without CSP or t
   assert.doesNotMatch(logos, /®/);
   assert.doesNotMatch(read('docs/index.html'), /®/);
   assert.match(read('CHANGELOG.md'), /website display marks/);
-  assert.match(read('CHANGELOG.md'), /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/);
+  assert.match(
+    read('CHANGELOG.md'),
+    /72F4D09ADA17593F0391438A5375ABC9351041DA8ABB252E68271B8FDACCA7D8/
+  );
   assert.doesNotMatch(read('docs/legal.html'), /eidovara-wallpaper-/);
   assert.doesNotMatch(read('docs/index.html'), /Adult Soul/);
 });

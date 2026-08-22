@@ -9,7 +9,7 @@ import {
   evaluateElectronUpdate,
   honestUpdateError,
   isPrerelease,
-  requireUpdateIntegrity
+  requireUpdateIntegrity,
 } from '../core/updater.js';
 import { RELEASE_MANIFEST_URL, GITHUB_PUBLISH } from '../config/release-channel.js';
 
@@ -30,7 +30,7 @@ function snapshot(extra = {}) {
     configured: Boolean(RELEASE_MANIFEST_URL) || Boolean(GITHUB_PUBLISH?.repo),
     unsigned: true,
     authenticodeSigned: false,
-    ...extra
+    ...extra,
   };
 }
 
@@ -45,7 +45,7 @@ export function attachDesktopUpdater({
   publicConfig,
   scanUpdateForMalware,
   shell,
-  log = () => {}
+  log = () => {},
 }) {
   const autoUpdater = loadAutoUpdater();
   let lastStatus = snapshot({ phase: 'idle', available: false, currentVersion: app.getVersion() });
@@ -57,7 +57,9 @@ export function attachDesktopUpdater({
   function emit(status) {
     lastStatus = snapshot({ currentVersion: app.getVersion(), ...lastStatus, ...status });
     const window = getMainWindow();
-    try { window?.webContents?.send('soul:updateStatus', lastStatus); } catch {}
+    try {
+      window?.webContents?.send('soul:updateStatus', lastStatus);
+    } catch {}
     return lastStatus;
   }
 
@@ -68,15 +70,26 @@ export function attachDesktopUpdater({
     autoUpdater.allowDowngrade = false;
     autoUpdater.allowPrerelease = isPrerelease(app.getVersion());
     autoUpdater.disableWebInstaller = true;
-    if (typeof autoUpdater.setFeedURL === 'function' && GITHUB_PUBLISH?.owner && GITHUB_PUBLISH?.repo) {
-      try { autoUpdater.setFeedURL({ ...GITHUB_PUBLISH }); } catch {}
+    if (
+      typeof autoUpdater.setFeedURL === 'function' &&
+      GITHUB_PUBLISH?.owner &&
+      GITHUB_PUBLISH?.repo
+    ) {
+      try {
+        autoUpdater.setFeedURL({ ...GITHUB_PUBLISH });
+      } catch {}
     }
     autoUpdater.verifyUpdateCodeSignature = async () => null;
     return true;
   }
 
   if (autoUpdater) {
-    autoUpdater.logger = { info: message => log(String(message)), warn: message => log(String(message)), error: message => log(String(message)), debug: () => {} };
+    autoUpdater.logger = {
+      info: message => log(String(message)),
+      warn: message => log(String(message)),
+      error: message => log(String(message)),
+      debug: () => {},
+    };
     autoUpdater.on('error', err => {
       log('Updater error', err);
       emit({ phase: 'error', available: false, error: honestUpdateError(err) });
@@ -85,19 +98,27 @@ export function attachDesktopUpdater({
       const percent = Math.max(0, Math.min(100, Math.round(Number(progress?.percent) || 0)));
       emit({ phase: 'downloading', available: true, percent, error: '' });
     });
-    autoUpdater.on('update-downloaded', async (info) => {
+    autoUpdater.on('update-downloaded', async info => {
       try {
         const evaluated = evaluateElectronUpdate(info, app.getVersion());
         if (!evaluated.available) {
           pendingNsis = null;
-          emit({ phase: 'current', available: false, version: evaluated.version, reason: evaluated.reason });
+          emit({
+            phase: 'current',
+            available: false,
+            version: evaluated.version,
+            reason: evaluated.reason,
+          });
           return;
         }
         requireUpdateIntegrity(info);
         const filePath = String(info?.downloadedFile || '');
         if (filePath && typeof scanUpdateForMalware === 'function') {
           const malwareScan = await scanUpdateForMalware(filePath);
-          if (malwareScan?.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not opened.');
+          if (malwareScan?.threatDetected)
+            throw new Error(
+              'Microsoft Defender reported that this update requires security action. The installer was not opened.'
+            );
         }
         pendingNsis = { info, evaluated, filePath };
         emit({
@@ -106,7 +127,7 @@ export function attachDesktopUpdater({
           version: evaluated.version,
           notes: evaluated.notes,
           provider: 'electron-updater',
-          error: ''
+          error: '',
         });
         const window = getMainWindow();
         if (!window) return;
@@ -117,7 +138,8 @@ export function attachDesktopUpdater({
           cancelId: 1,
           title: 'Eidovara update ready',
           message: `Eidovara ${evaluated.version} is ready to install.`,
-          detail: 'The Windows installer was downloaded from GitHub Releases and checksum-verified. Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved.'
+          detail:
+            'The Windows installer was downloaded from GitHub Releases and checksum-verified. Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved.',
         });
         if (answer.response === 0) {
           autoUpdater.autoInstallOnAppQuit = false;
@@ -135,7 +157,14 @@ export function attachDesktopUpdater({
     configureUpdater();
     const result = await autoUpdater.checkForUpdates();
     const info = result?.updateInfo;
-    if (!info) return snapshot({ phase: 'current', available: false, currentVersion, configured: true, provider: 'electron-updater' });
+    if (!info)
+      return snapshot({
+        phase: 'current',
+        available: false,
+        currentVersion,
+        configured: true,
+        provider: 'electron-updater',
+      });
     const evaluated = evaluateElectronUpdate(info, currentVersion);
     if (!evaluated.available) {
       pendingNsis = null;
@@ -146,11 +175,20 @@ export function attachDesktopUpdater({
         version: evaluated.version,
         reason: evaluated.reason,
         configured: true,
-        provider: 'electron-updater'
+        provider: 'electron-updater',
       });
     }
-    emit({ phase: 'downloading', available: true, version: evaluated.version, provider: 'electron-updater', percent: 0, error: '' });
-    void autoUpdater.downloadUpdate().catch(err => emit({ phase: 'error', available: false, error: honestUpdateError(err) }));
+    emit({
+      phase: 'downloading',
+      available: true,
+      version: evaluated.version,
+      provider: 'electron-updater',
+      percent: 0,
+      error: '',
+    });
+    void autoUpdater
+      .downloadUpdate()
+      .catch(err => emit({ phase: 'error', available: false, error: honestUpdateError(err) }));
     return snapshot({
       phase: 'downloading',
       available: true,
@@ -158,7 +196,7 @@ export function attachDesktopUpdater({
       version: evaluated.version,
       notes: evaluated.notes,
       configured: true,
-      provider: 'electron-updater'
+      provider: 'electron-updater',
     });
   }
 
@@ -169,7 +207,7 @@ export function attachDesktopUpdater({
       ...update,
       phase: update.available ? 'available' : 'current',
       provider: 'github-manifest',
-      error: ''
+      error: '',
     });
   }
 
@@ -177,7 +215,13 @@ export function attachDesktopUpdater({
     requireAgeGate();
     const currentVersion = app.getVersion();
     if (!force && !autoCheckEnabled(getConfig())) {
-      return emit({ phase: 'idle', available: lastStatus.available === true, skipped: true, reason: 'auto-check-disabled', currentVersion });
+      return emit({
+        phase: 'idle',
+        available: lastStatus.available === true,
+        skipped: true,
+        reason: 'auto-check-disabled',
+        currentVersion,
+      });
     }
     if (checking) return lastStatus;
     checking = true;
@@ -189,12 +233,19 @@ export function attachDesktopUpdater({
       } catch (err) {
         log('electron-updater check failed; trying GitHub update.json', err);
         const message = honestUpdateError(err);
-        if (/checksum|metadata is missing|refused to install/i.test(message)) return emit({ phase: 'error', available: false, error: message, currentVersion });
+        if (/checksum|metadata is missing|refused to install/i.test(message))
+          return emit({ phase: 'error', available: false, error: message, currentVersion });
       }
       return emit(await checkManifest(currentVersion));
     } catch (err) {
       pendingManifest = null;
-      return emit({ phase: 'error', available: false, error: honestUpdateError(err), currentVersion, configured: Boolean(RELEASE_MANIFEST_URL) });
+      return emit({
+        phase: 'error',
+        available: false,
+        error: honestUpdateError(err),
+        currentVersion,
+        configured: Boolean(RELEASE_MANIFEST_URL),
+      });
     } finally {
       checking = false;
     }
@@ -212,14 +263,19 @@ export function attachDesktopUpdater({
         cancelId: 1,
         title: 'Install Eidovara update',
         message: `Install Eidovara ${version}?`,
-        detail: 'The Windows installer was downloaded from GitHub Releases and checksum-verified (SHA-512 in latest.yml). Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved. Unsaved work in other apps is not closed by this prompt until you confirm.'
+        detail:
+          'The Windows installer was downloaded from GitHub Releases and checksum-verified (SHA-512 in latest.yml). Builds are Authenticode-unsigned; Windows SmartScreen may warn. Eidovara will quit to run the installer. Conversations on this PC are already saved. Unsaved work in other apps is not closed by this prompt until you confirm.',
       });
       if (answer.response !== 0) return { cancelled: true };
       autoUpdater.autoInstallOnAppQuit = false;
       autoUpdater.quitAndInstall(true, true);
       return { restarting: true, provider: 'electron-updater', version, unsigned: true };
     }
-    if (!pendingManifest?.available) pendingManifest = await checkForUpdate({ manifestUrl: RELEASE_MANIFEST_URL, currentVersion: app.getVersion() });
+    if (!pendingManifest?.available)
+      pendingManifest = await checkForUpdate({
+        manifestUrl: RELEASE_MANIFEST_URL,
+        currentVersion: app.getVersion(),
+      });
     if (!pendingManifest?.available) throw new Error('No update is available.');
     requireUpdateIntegrity(pendingManifest);
     const answer = await dialog.showMessageBox(window, {
@@ -229,17 +285,30 @@ export function attachDesktopUpdater({
       cancelId: 1,
       title: 'Install Eidovara update',
       message: `Install Eidovara ${pendingManifest.version}?`,
-      detail: pendingManifest.packageType === 'ready-folder-zip'
-        ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction. Builds are Authenticode-unsigned.'
-        : 'The installer will be downloaded over HTTPS from GitHub Releases, verified with SHA-256, and opened. Builds are Authenticode-unsigned; Windows SmartScreen may warn.'
+      detail:
+        pendingManifest.packageType === 'ready-folder-zip'
+          ? 'The ready-to-run folder will be downloaded over HTTPS, verified with SHA-256, and opened for extraction. Builds are Authenticode-unsigned.'
+          : 'The installer will be downloaded over HTTPS from GitHub Releases, verified with SHA-256, and opened. Builds are Authenticode-unsigned; Windows SmartScreen may warn.',
     });
     if (answer.response !== 0) return { cancelled: true };
-    const downloaded = await downloadUpdate(pendingManifest, path.join(app.getPath('userData'), 'updates'));
+    const downloaded = await downloadUpdate(
+      pendingManifest,
+      path.join(app.getPath('userData'), 'updates')
+    );
     const malwareScan = await scanUpdateForMalware(downloaded.path);
-    if (malwareScan?.threatDetected) throw new Error('Microsoft Defender reported that this update requires security action. The installer was not opened.');
+    if (malwareScan?.threatDetected)
+      throw new Error(
+        'Microsoft Defender reported that this update requires security action. The installer was not opened.'
+      );
     const error = await shell.openPath(downloaded.path);
     if (error) throw new Error(error);
-    return { ...downloaded, malwareScan, launched: true, provider: 'github-manifest', unsigned: true };
+    return {
+      ...downloaded,
+      malwareScan,
+      launched: true,
+      provider: 'github-manifest',
+      unsigned: true,
+    };
   }
 
   function stop() {
@@ -251,10 +320,12 @@ export function attachDesktopUpdater({
     stop();
     if (!autoCheckEnabled(getConfig())) return;
     const startup = setTimeout(() => {
-      if (getConfig()?.ageGateAccepted === true && autoCheckEnabled(getConfig())) check({ force: false }).catch(err => log('Scheduled update check failed', err));
+      if (getConfig()?.ageGateAccepted === true && autoCheckEnabled(getConfig()))
+        check({ force: false }).catch(err => log('Scheduled update check failed', err));
     }, STARTUP_DELAY_MS);
     const interval = setInterval(() => {
-      if (getConfig()?.ageGateAccepted === true && autoCheckEnabled(getConfig())) check({ force: false }).catch(err => log('Interval update check failed', err));
+      if (getConfig()?.ageGateAccepted === true && autoCheckEnabled(getConfig()))
+        check({ force: false }).catch(err => log('Interval update check failed', err));
     }, CHECK_INTERVAL_MS);
     if (typeof interval.unref === 'function') interval.unref();
     if (typeof startup.unref === 'function') startup.unref();
@@ -262,8 +333,11 @@ export function attachDesktopUpdater({
   }
 
   ipcMain.handle('soul:checkForUpdates', async () => {
-    try { return await check({ force: true }); }
-    catch (err) { return emit({ phase: 'error', available: false, error: honestUpdateError(err) }); }
+    try {
+      return await check({ force: true });
+    } catch (err) {
+      return emit({ phase: 'error', available: false, error: honestUpdateError(err) });
+    }
   });
   ipcMain.handle('soul:installUpdate', async () => install());
   ipcMain.handle('soul:setAutoCheckUpdates', (_e, enabled) => {
@@ -279,7 +353,6 @@ export function attachDesktopUpdater({
     schedule,
     stop,
     check,
-    getStatus: () => lastStatus
+    getStatus: () => lastStatus,
   };
 }
-

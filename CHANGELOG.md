@@ -270,4 +270,3 @@
 - Added end-user Windows, macOS, and Linux bootstrap packages that do not require Node.js or npm.
 - Added validated, timestamped profile backup creation, listing, and restore controls.
 - Reconciled all product surfaces and build metadata to v0.14.0.
-

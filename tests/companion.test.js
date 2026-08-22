@@ -6,15 +6,18 @@ import path from 'node:path';
 import { SoulEngine } from '../src/core/engine.js';
 import { JsonStore } from '../src/core/store.js';
 import { OfflineProvider } from '../src/providers/offline.js';
-import {
-  classifyCompanionIntent,
-  soulOverlay,
-  actionsForIntent
-} from '../src/core/companion.js';
+import { classifyCompanionIntent, soulOverlay, actionsForIntent } from '../src/core/companion.js';
 import { shouldUseKnowledgeReply } from '../src/core/knowledge.js';
 
-function tmp() { return fs.mkdtempSync(path.join(os.tmpdir(), 'eidovara-companion-')); }
-function make(dir) { return new SoulEngine({ store: new JsonStore({ dataDir: dir }), provider: new OfflineProvider() }); }
+function tmp() {
+  return fs.mkdtempSync(path.join(os.tmpdir(), 'eidovara-companion-'));
+}
+function make(dir) {
+  return new SoulEngine({
+    store: new JsonStore({ dataDir: dir }),
+    provider: new OfflineProvider(),
+  });
+}
 
 test('companion routing opens workspace surfaces and keeps product facts local', () => {
   assert.equal(classifyCompanionIntent('Open Apps & Gaming'), 'apps');
@@ -25,7 +28,10 @@ test('companion routing opens workspace surfaces and keeps product facts local',
   assert.equal(classifyCompanionIntent('Are live payments on?'), 'payments');
   assert.equal(classifyCompanionIntent('What can this workspace do?'), 'help');
   assert.equal(classifyCompanionIntent('Help me prepare my gaming or streaming setup.'), 'gaming');
-  assert.equal(classifyCompanionIntent('Search the internet for current information I need.'), 'research');
+  assert.equal(
+    classifyCompanionIntent('Search the internet for current information I need.'),
+    'research'
+  );
   assert.equal(classifyCompanionIntent('Hello Soul. Tell me who you are.'), 'identity');
   const apps = actionsForIntent('apps');
   assert.equal(apps[0].type, 'open-view');
@@ -38,7 +44,9 @@ test('companion routing opens workspace surfaces and keeps product facts local',
 
 test('knowledge answers stay honest and never call fetch or /v1/assist', async () => {
   const original = globalThis.fetch;
-  globalThis.fetch = async url => { throw new Error(`network forbidden: ${url}`); };
+  globalThis.fetch = async url => {
+    throw new Error(`network forbidden: ${url}`);
+  };
   try {
     const s = make(tmp());
     const age = await s.respond('Is Eidovara 18+?');
@@ -55,11 +63,17 @@ test('knowledge answers stay honest and never call fetch or /v1/assist', async (
     assert.equal(pay.companion.network, false);
 
     const hosted = await s.respond('Are conversations sent to the website helper /v1/assist?');
-    assert.match(hosted.reply, /never POSTs to Worker \/v1\/assist|not sent|refuses conversation history|Conversations stay on this PC/i);
+    assert.match(
+      hosted.reply,
+      /never POSTs to Worker \/v1\/assist|not sent|refuses conversation history|Conversations stay on this PC/i
+    );
     assert.equal(hosted.companion.workerAssist, false);
 
     const mind = await s.respond('Are you conscious?');
-    assert.match(mind.reply, /does not claim scientific consciousness|not a claim of consciousness|not bundle neural TTS/i);
+    assert.match(
+      mind.reply,
+      /does not claim scientific consciousness|not a claim of consciousness|not bundle neural TTS/i
+    );
     assert.equal(mind.companion.soul.sentience, false);
   } finally {
     globalThis.fetch = original;
@@ -92,17 +106,21 @@ test('workspace starters still use offline Soul, not the knowledge pack', async 
 });
 
 test('desktop companion and send path do not POST chat to the Worker', () => {
-  const files = [
-    'src/core/companion.js',
-    'src/core/knowledge.js',
-    'src/electron/preload.cjs'
-  ].map(file => fs.readFileSync(file, 'utf8'));
+  const files = ['src/core/companion.js', 'src/core/knowledge.js', 'src/electron/preload.cjs'].map(
+    file => fs.readFileSync(file, 'utf8')
+  );
   const joined = files.join('\n');
   assert.doesNotMatch(joined, /postAssistQuery|sendToService/);
   assert.doesNotMatch(fs.readFileSync('src/core/companion.js', 'utf8'), /soulOnline/);
   assert.doesNotMatch(fs.readFileSync('src/core/companion.js', 'utf8'), /method:\s*['"]POST['"]/);
-  assert.match(fs.readFileSync('src/electron/main.js', 'utf8'), /soul:send[\s\S]*ensureEngine\(\)\.respond\(m/);
-  assert.doesNotMatch(fs.readFileSync('src/core/service.js', 'utf8'), /serviceRequestUrl\([^)]*SERVICE_ASSIST_PATH/);
+  assert.match(
+    fs.readFileSync('src/electron/main.js', 'utf8'),
+    /soul:send[\s\S]*ensureEngine\(\)\.respond\(m/
+  );
+  assert.doesNotMatch(
+    fs.readFileSync('src/core/service.js', 'utf8'),
+    /serviceRequestUrl\([^)]*SERVICE_ASSIST_PATH/
+  );
   const html = fs.readFileSync('src/renderer/index.html', 'utf8');
   assert.match(html, /id="companionPanel"/);
   assert.match(html, /id="companionForm"/);

@@ -10,12 +10,14 @@ export function attachPlayerWindows({
   ipcMain,
   getMainWindow,
   requireAgeGate,
-  log = () => {}
+  log = () => {},
 }) {
   let popout = null;
 
   function closePopout() {
-    try { if (popout && !popout.isDestroyed()) popout.close(); } catch {}
+    try {
+      if (popout && !popout.isDestroyed()) popout.close();
+    } catch {}
     popout = null;
   }
 
@@ -31,7 +33,7 @@ export function attachPlayerWindows({
       sandbox: true,
       webSecurity: true,
       allowRunningInsecureContent: false,
-      spellcheck: false
+      spellcheck: false,
     };
   }
 
@@ -55,15 +57,24 @@ export function attachPlayerWindows({
         skipTaskbar: false,
         title: 'Eidovara',
         show: false,
-        webPreferences: glassPrefs()
+        webPreferences: glassPrefs(),
       });
       popout.setMenuBarVisibility(false);
       popout.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
       popout.webContents.on('will-navigate', e => e.preventDefault());
-      popout.on('closed', () => { popout = null; try { getMainWindow()?.webContents.send('soul:playerDocked'); } catch {} });
+      popout.on('closed', () => {
+        popout = null;
+        try {
+          getMainWindow()?.webContents.send('soul:playerDocked');
+        } catch {}
+      });
       await popout.loadFile(path.join(__dirname, '../renderer/player-popout.html'));
     }
-    try { popout.webContents.send('soul:playerPopout', payload); } catch (err) { log(String(err?.message || err)); }
+    try {
+      popout.webContents.send('soul:playerPopout', payload);
+    } catch (err) {
+      log(String(err?.message || err));
+    }
     popout.show();
     return { poppedOut: true, hidden: false };
   });
@@ -79,13 +90,14 @@ export function attachPlayerWindows({
     return {
       available: false,
       devices: [],
-      reason: 'Output picker uses Chromium setSinkId in the player when the OS exposes devices.'
+      reason: 'Output picker uses Chromium setSinkId in the player when the OS exposes devices.',
     };
   });
 
   return {
     closePopout,
-    hideIfAdult(payload) { if (adultHides(payload)) closePopout(); }
+    hideIfAdult(payload) {
+      if (adultHides(payload)) closePopout();
+    },
   };
 }
-

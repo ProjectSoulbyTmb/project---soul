@@ -18,7 +18,7 @@ const MIME = new Map([
   ['.mov', 'video/quicktime'],
   ['.mkv', 'video/x-matroska'],
   ['.vtt', 'text/vtt'],
-  ['.srt', 'application/x-subrip']
+  ['.srt', 'application/x-subrip'],
 ]);
 
 const VIDEO_EXTS = new Set(['.mp4', '.m4v', '.webm', '.mov', '.mkv']);
@@ -59,7 +59,8 @@ export function parseByteRange(header, size) {
     start = m[1] === '' ? 0 : Number(m[1]);
     end = m[2] === '' ? n - 1 : Number(m[2]);
   }
-  if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end >= n || start > end) return null;
+  if (!Number.isInteger(start) || !Number.isInteger(end) || start < 0 || end >= n || start > end)
+    return null;
   return { start, end, size: n, partial: start !== 0 || end !== n - 1, length: end - start + 1 };
 }
 
@@ -69,7 +70,7 @@ export function rangeResponseHeaders(filePath, range) {
     'Content-Type': mime,
     'Accept-Ranges': 'bytes',
     'Cache-Control': 'no-store',
-    'X-Eidovara-Decode': 'native'
+    'X-Eidovara-Decode': 'native',
   };
   if (!range || range.size === 0) {
     headers['Content-Length'] = '0';
@@ -104,4 +105,3 @@ export function downscaleForbidden(params = {}) {
   if (kind === 'video' || kind === 'audio') return width > 0;
   return false;
 }
-

@@ -64,9 +64,9 @@ function _checkMemory() {
 
 function main() {
   console.log('=== Performance Budget Check ===\n');
-  
+
   let allPassed = true;
-  
+
   // Check dist bundle size
   const distPath = path.join(process.cwd(), 'dist');
   if (fs.existsSync(distPath)) {
@@ -75,28 +75,31 @@ function main() {
   } else {
     console.log('SKIP dist/ (not built)');
   }
-  
+
   // Check renderer resources
   const rendererPath = path.join(process.cwd(), 'src', 'renderer');
   if (fs.existsSync(rendererPath)) {
     const rendererSize = getDirSize(rendererPath);
     allPassed = checkBudget('src/renderer/', rendererSize, PERF_BUDGETS.renderer) && allPassed;
   }
-  
+
   // Check node_modules size (warning only)
   const modulesPath = path.join(process.cwd(), 'node_modules');
   if (fs.existsSync(modulesPath)) {
     const modulesSize = getDirSize(modulesPath);
     console.log(`INFO node_modules/: ${formatBytes(modulesSize)}`);
   }
-  
+
   // Check for large files
   console.log('\n=== Large Files (>1MB) ===');
   function findLargeFiles(dir, prefix = '') {
     try {
       for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
         const fullPath = path.join(dir, entry.name);
-        if (entry.isDirectory() && !['node_modules', '.git', 'dist', 'dist-mac', '.wrangler'].includes(entry.name)) {
+        if (
+          entry.isDirectory() &&
+          !['node_modules', '.git', 'dist', 'dist-mac', '.wrangler'].includes(entry.name)
+        ) {
           findLargeFiles(fullPath, prefix + entry.name + '/');
         } else if (entry.isFile()) {
           const size = fs.statSync(fullPath).size;
@@ -108,7 +111,7 @@ function main() {
     } catch {}
   }
   findLargeFiles(process.cwd());
-  
+
   console.log('\n=== Summary ===');
   if (allPassed) {
     console.log('✓ All performance budgets passed');

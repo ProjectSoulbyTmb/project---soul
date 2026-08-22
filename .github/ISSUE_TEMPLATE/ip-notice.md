@@ -1,7 +1,7 @@
 ---
 name: Intellectual property notice
 about: Report suspected copying of Eidovara first-party material, or a third-party rights claim against this repository
-title: "[IP] "
+title: '[IP] '
 labels: []
 ---
 

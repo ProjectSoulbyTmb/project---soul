@@ -39,7 +39,9 @@
   grid-column: span 2;
 }
 @media (max-width: 720px) {
-  .dashboard-card.scratch-tile { grid-column: span 1; }
+  .dashboard-card.scratch-tile {
+    grid-column: span 1;
+  }
 }
 .scratch-tile textarea {
   width: 100%;
@@ -63,12 +65,21 @@
   grid-column: 1 / -1;
   grid-row: 2;
 }
-.focus-quiet-bar strong { font-weight: 650; }
-.focus-quiet-note { color: var(--muted); font-size: 12px; }
+.focus-quiet-bar strong {
+  font-weight: 650;
+}
+.focus-quiet-note {
+  color: var(--muted);
+  font-size: 12px;
+}
 body.focus-quiet .quick-grid,
-body.focus-quiet .starter-grid { opacity: 0.55; }
-body.focus-quiet .soul-presence[data-look="hologram"],
-body.focus-quiet .soul-presence-figure { animation: none !important; }
+body.focus-quiet .starter-grid {
+  opacity: 0.55;
+}
+body.focus-quiet .soul-presence[data-look='hologram'],
+body.focus-quiet .soul-presence-figure {
+  animation: none !important;
+}
 .palette-dialog {
   width: min(640px, 100%);
   max-height: min(72vh, 640px);
@@ -94,7 +105,7 @@ body.focus-quiet .soul-presence-figure { animation: none !important; }
   display: grid;
   gap: 2px;
 }
-.palette-results button[aria-selected="true"],
+.palette-results button[aria-selected='true'],
 .palette-results button:focus {
   background: color-mix(in srgb, var(--accent) 18%, var(--panel));
 }
@@ -115,7 +126,7 @@ body.focus-quiet .soul-presence-figure { animation: none !important; }
 }
 .cheatsheet-list .kv kbd,
 .cheatsheet-row kbd {
-  font-family: ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
+  font-family: ui-monospace, 'Cascadia Mono', 'Segoe UI Mono', Consolas, monospace;
   font-size: 12px;
   background: var(--fill);
   padding: 2px 6px;
@@ -130,7 +141,10 @@ body.focus-quiet .soul-presence-figure { animation: none !important; }
 }
 @media (prefers-reduced-motion: reduce) {
   .palette-dialog,
-  .setup-overlay { transition: none !important; }
-  body.focus-quiet .soul-presence-figure { animation: none !important; }
+  .setup-overlay {
+    transition: none !important;
+  }
+  body.focus-quiet .soul-presence-figure {
+    animation: none !important;
+  }
 }
-

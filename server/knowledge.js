@@ -10,6 +10,5 @@ export {
   classifyAssistInput,
   assistMeta,
   isAbuseQuery,
-  safePublicHref
+  safePublicHref,
 } from '../docs/knowledge.js';
-

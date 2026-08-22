@@ -11,7 +11,10 @@ import { runGuardsForContext } from './core/guards/index.js';
 try {
   runGuardsForContext('cli');
 } catch (error) {
-  console.error('[STRUCTURAL GUARDS] Guard notice:', error && error.message ? error.message : error);
+  console.error(
+    '[STRUCTURAL GUARDS] Guard notice:',
+    error && error.message ? error.message : error
+  );
 }
 console.error('[STRUCTURAL GUARDS] License, consciousness-claim, and relicensing guards active');
 
@@ -31,7 +34,8 @@ function argValue(name) {
   const prefixed = args.find(a => a.startsWith(`${name}=`));
   if (prefixed) return prefixed.slice(name.length + 1);
   const index = args.indexOf(name);
-  if (index >= 0 && args[index + 1] !== undefined && !String(args[index + 1]).startsWith('--')) return args[index + 1];
+  if (index >= 0 && args[index + 1] !== undefined && !String(args[index + 1]).startsWith('--'))
+    return args[index + 1];
   return undefined;
 }
 
@@ -63,17 +67,27 @@ const resolvedDataDir = dataDir || path.join(os.homedir(), '.project-soul');
 const ageGatePath = path.join(resolvedDataDir, 'age-gate.json');
 
 function ageGateAccepted() {
-  try { return JSON.parse(fs.readFileSync(ageGatePath, 'utf8')).accepted === true; } catch { return false; }
+  try {
+    return JSON.parse(fs.readFileSync(ageGatePath, 'utf8')).accepted === true;
+  } catch {
+    return false;
+  }
 }
 
 function persistAgeGate() {
   fs.mkdirSync(resolvedDataDir, { recursive: true });
-  fs.writeFileSync(ageGatePath, `${JSON.stringify({ accepted: true, at: new Date().toISOString(), statement: '18+' }, null, 2)}\n`, { encoding: 'utf8', mode: 0o600 });
+  fs.writeFileSync(
+    ageGatePath,
+    `${JSON.stringify({ accepted: true, at: new Date().toISOString(), statement: '18+' }, null, 2)}\n`,
+    { encoding: 'utf8', mode: 0o600 }
+  );
 }
 
 if (!ageGateAccepted()) {
   if (!args.includes('--i-am-18-or-older')) {
-    console.error('Eidovara is restricted to users age 18 or older. Pass --i-am-18-or-older to confirm you are 18+ and accept TERMS.md, or use --help.');
+    console.error(
+      'Eidovara is restricted to users age 18 or older. Pass --i-am-18-or-older to confirm you are 18+ and accept TERMS.md, or use --help.'
+    );
     process.exit(2);
   }
   persistAgeGate();
@@ -123,4 +137,3 @@ while (true) {
   }
 }
 rl.close();
-

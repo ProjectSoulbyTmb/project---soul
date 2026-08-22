@@ -1,32 +1,52 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import worker, { httpsUrl, LIVE_INSTALLER_VERSION, LIVE_INSTALLER, LIVE_INSTALLER_SHA256 } from '../server/worker.js';
+import worker, {
+  httpsUrl,
+  LIVE_INSTALLER_VERSION,
+  LIVE_INSTALLER,
+  LIVE_INSTALLER_SHA256,
+} from '../server/worker.js';
 import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 test('server accepts only HTTPS public configuration', async () => {
-  const env = { WEBSITE_URL: 'https://example.test/', STRIPE_PAYMENT_URL: 'http://unsafe.test', PAYPAL_PAYMENT_URL: 'https://paypal.test/buy' };
+  const env = {
+    WEBSITE_URL: 'https://example.test/',
+    STRIPE_PAYMENT_URL: 'http://unsafe.test',
+    PAYPAL_PAYMENT_URL: 'https://paypal.test/buy',
+  };
   const res = await worker.fetch(new Request('https://api.example.test/v1/config'), env);
   const body = await res.json();
-  assert.equal(res.status, 200); assert.equal(body.store.stripe, ''); assert.equal(body.store.paypal, 'https://paypal.test/buy');
+  assert.equal(res.status, 200);
+  assert.equal(body.store.stripe, '');
+  assert.equal(body.store.paypal, 'https://paypal.test/buy');
   assert.equal(httpsUrl('javascript:alert(1)'), '');
 });
 
 test('server fails closed for writes and unknown paths', async () => {
-  assert.equal((await worker.fetch(new Request('https://api.test/health', { method: 'POST' }), {})).status, 405);
+  assert.equal(
+    (await worker.fetch(new Request('https://api.test/health', { method: 'POST' }), {})).status,
+    405
+  );
   assert.equal((await worker.fetch(new Request('https://api.test/private'), {})).status, 404);
 });
 
 test('Worker health/status support HEAD, CORS, honesty flags, and private status cache', async () => {
-  const healthHead = await worker.fetch(new Request('https://api.example.test/health', { method: 'HEAD' }), {});
+  const healthHead = await worker.fetch(
+    new Request('https://api.example.test/health', { method: 'HEAD' }),
+    {}
+  );
   assert.equal(healthHead.status, 200);
   assert.equal(await healthHead.text(), '');
   assert.match(healthHead.headers.get('access-control-allow-origin'), /\*/);
   assert.match(healthHead.headers.get('access-control-allow-methods'), /HEAD/);
 
-  const preflight = await worker.fetch(new Request('https://api.example.test/v1/status', {
-    method: 'OPTIONS',
-    headers: { origin: 'https://eidovara.org', 'access-control-request-method': 'GET' }
-  }), {});
+  const preflight = await worker.fetch(
+    new Request('https://api.example.test/v1/status', {
+      method: 'OPTIONS',
+      headers: { origin: 'https://eidovara.org', 'access-control-request-method': 'GET' },
+    }),
+    {}
+  );
   assert.equal(preflight.status, 204);
   assert.equal(preflight.headers.get('access-control-allow-origin'), '*');
   assert.match(preflight.headers.get('access-control-allow-methods'), /GET/);
@@ -55,7 +75,10 @@ test('Worker health/status support HEAD, CORS, honesty flags, and private status
   assert.match(JSON.stringify(status), new RegExp(LIVE_INSTALLER_SHA256));
   assert.doesNotMatch(JSON.stringify(status), /workers\.dev/i);
 
-  const statusHead = await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'HEAD' }), {});
+  const statusHead = await worker.fetch(
+    new Request('https://api.example.test/v1/status', { method: 'HEAD' }),
+    {}
+  );
   assert.equal(statusHead.status, 200);
   assert.equal(await statusHead.text(), '');
 });
@@ -90,4 +113,48 @@ test('server config advertises 18+ source-available Windows alpha with payments 
   assert.equal(body.store.paypal, '');
   assert.equal(body.store.gumroad, '');
   assert.match(body.terms, /18 or older/);
+});
+
+test('worker installer facts accept measured deploy-time overrides and reject malformed values', async () => {
+  const sha = 'A'.repeat(64);
+  const good = await (
+    await worker.fetch(new Request('https://api.test/v1/status'), {
+      LIVE_INSTALLER_SHA256: sha,
+      LIVE_INSTALLER_SIZE: '12345678',
+    })
+  ).json();
+  assert.equal(good.liveInstallerSha256, sha.toLowerCase());
+  assert.equal(good.liveInstallerSize, 12345678);
+  const bad = await (
+    await worker.fetch(new Request('https://api.test/v1/status'), {
+      LIVE_INSTALLER_SHA256: '../../etc/passwd',
+      LIVE_INSTALLER_SIZE: '-5',
+    })
+  ).json();
+  assert.equal(bad.liveInstallerSha256, null);
+  assert.equal(bad.liveInstallerSize, null);
+  const config = await (
+    await worker.fetch(new Request('https://api.test/v1/config'), { LIVE_INSTALLER_SHA256: sha })
+  ).json();
+  assert.equal(config.liveInstallerSha256, sha.toLowerCase());
+});
+
+test('/v1/assist is rate limited per client address', async () => {
+  const ip = '203.0.113.77';
+  let last = null;
+  for (let i = 0; i < 40; i += 1) {
+    last = await worker.fetch(
+      new Request(`https://api.test/v1/assist?q=launch-plan-${i}`, {
+        headers: { 'cf-connecting-ip': ip },
+      }),
+      {}
+    );
+    if (last.status === 429) break;
+  }
+  assert.ok(last, 'expected at least one assist response');
+  assert.equal(last.status, 429, 'expected /v1/assist to return 429 after the per-IP limit');
+  assert.equal(last.headers.get('retry-after'), '60');
+  const body = await last.json();
+  assert.equal(body.error, 'rate_limited');
+  assert.match(body.reply, /Too many requests/);
 });

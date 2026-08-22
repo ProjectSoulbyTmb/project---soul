@@ -7,14 +7,14 @@ import {
   guestNavigateAllowed,
   overlayWindowOptions,
   rememberOverlayRecent,
-  resolveOverlayTarget
+  resolveOverlayTarget,
 } from '../core/guest-overlay.js';
 import {
   chromeHeightFor,
   formatEidovaraProcessMetrics,
   normalizeOverlayBounds,
   normalizeOverlayLayout,
-  shouldDestroyGuestOverlays
+  shouldDestroyGuestOverlays,
 } from '../core/overlays.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -24,7 +24,12 @@ function iconPath() {
 }
 
 function isView(guest) {
-  return guest && typeof guest.setBounds === 'function' && guest.webContents && typeof guest.isDestroyed !== 'function';
+  return (
+    guest &&
+    typeof guest.setBounds === 'function' &&
+    guest.webContents &&
+    typeof guest.isDestroyed !== 'function'
+  );
 }
 
 function guestAlive(guest) {
@@ -50,17 +55,25 @@ export function createGuestOverlayManager({
   setOverlayLayout,
   getAgeGateAccepted,
   getAdultLock,
-  processRef = globalThis.process
+  processRef = globalThis.process,
 } = {}) {
   const overlays = new Map();
   const persistTimers = new Map();
 
   function adultLocked() {
-    try { return getAdultLock?.() === true; } catch { return false; }
+    try {
+      return getAdultLock?.() === true;
+    } catch {
+      return false;
+    }
   }
 
   function ageBlocked() {
-    try { requireAgeGate(); } catch { return true; }
+    try {
+      requireAgeGate();
+    } catch {
+      return true;
+    }
     if (typeof getAgeGateAccepted === 'function' && getAgeGateAccepted() !== true) return true;
     return false;
   }
@@ -68,14 +81,19 @@ export function createGuestOverlayManager({
   function destroyPlan() {
     return shouldDestroyGuestOverlays({
       adultAllowed: adultLocked(),
-      ageGateAccepted: ageBlocked() ? false : true
+      ageGateAccepted: ageBlocked() ? false : true,
     });
   }
 
   function senderKind(event) {
     const wc = event?.sender;
     for (const [kind, entry] of overlays) {
-      if (entry.chrome?.webContents === wc || guestContents(entry.guest) === wc || entry.chat?.webContents === wc) return kind;
+      if (
+        entry.chrome?.webContents === wc ||
+        guestContents(entry.guest) === wc ||
+        entry.chat?.webContents === wc
+      )
+        return kind;
     }
     return '';
   }
@@ -93,10 +111,19 @@ export function createGuestOverlayManager({
         entry.chrome.contentView?.removeChildView?.(entry.guest);
       }
     } catch {}
-    try { if (entry.guest && typeof entry.guest.webContents?.close === 'function') entry.guest.webContents.close(); } catch {}
-    try { if (entry.guest && typeof entry.guest.destroy === 'function') entry.guest.destroy(); } catch {}
-    try { entry.chrome?.destroy(); } catch {}
-    try { entry.chat?.destroy(); } catch {}
+    try {
+      if (entry.guest && typeof entry.guest.webContents?.close === 'function')
+        entry.guest.webContents.close();
+    } catch {}
+    try {
+      if (entry.guest && typeof entry.guest.destroy === 'function') entry.guest.destroy();
+    } catch {}
+    try {
+      entry.chrome?.destroy();
+    } catch {}
+    try {
+      entry.chat?.destroy();
+    } catch {}
   }
 
   function closeGuests() {
@@ -123,23 +150,35 @@ export function createGuestOverlayManager({
   function persistLayout(kind, win) {
     if (!win || win.isDestroyed() || typeof setOverlayLayout !== 'function') return;
     clearTimeout(persistTimers.get(kind));
-    persistTimers.set(kind, setTimeout(() => {
-      const [x, y] = win.getPosition();
-      const [width, height] = win.getSize();
-      const current = normalizeOverlayLayout(getOverlayLayout?.() || {});
-      current[kind] = normalizeOverlayBounds(kind, {
-        x, y, width, height,
-        alwaysOnTop: win.isAlwaysOnTop()
-      }, current[kind]);
-      setOverlayLayout(current);
-    }, 280));
+    persistTimers.set(
+      kind,
+      setTimeout(() => {
+        const [x, y] = win.getPosition();
+        const [width, height] = win.getSize();
+        const current = normalizeOverlayLayout(getOverlayLayout?.() || {});
+        current[kind] = normalizeOverlayBounds(
+          kind,
+          {
+            x,
+            y,
+            width,
+            height,
+            alwaysOnTop: win.isAlwaysOnTop(),
+          },
+          current[kind]
+        );
+        setOverlayLayout(current);
+      }, 280)
+    );
   }
 
   function layoutGuest(chrome, guest, kind) {
     if (!chrome || chrome.isDestroyed() || !guestAlive(guest) || !isView(guest)) return;
     const [w, h] = chrome.getContentSize();
     const y = chromeHeightFor(kind);
-    try { guest.setBounds({ x: 0, y, width: Math.max(320, w), height: Math.max(160, h - y) }); } catch {}
+    try {
+      guest.setBounds({ x: 0, y, width: Math.max(320, w), height: Math.max(160, h - y) });
+    } catch {}
   }
 
   function placeGuest(chrome, guest, kind) {
@@ -147,7 +186,9 @@ export function createGuestOverlayManager({
     const [x, y] = chrome.getPosition();
     const [w] = chrome.getSize();
     const gh = Math.max(280, guest.getSize?.()[1] || 560);
-    try { guest.setBounds({ x, y: y + chromeHeightFor(kind), width: w, height: gh }); } catch {}
+    try {
+      guest.setBounds({ x, y: y + chromeHeightFor(kind), width: w, height: gh });
+    } catch {}
   }
 
   function attachGuestNav(kind, guest) {
@@ -173,7 +214,11 @@ export function createGuestOverlayManager({
       chrome?.webContents.send('overlay:status', publicStatus(kind));
       if (String(url || '').startsWith('https://')) {
         try {
-          const recents = rememberOverlayRecent(loadRecents?.() || [], { url, kind, title: wc.getTitle?.() || '' });
+          const recents = rememberOverlayRecent(loadRecents?.() || [], {
+            url,
+            kind,
+            title: wc.getTitle?.() || '',
+          });
           persistRecents?.(recents);
         } catch {}
       }
@@ -184,7 +229,7 @@ export function createGuestOverlayManager({
         ...publicStatus(kind),
         error: `${code}: ${desc}`,
         failedUrl: url,
-        electronBlocked: kind === 'discord'
+        electronBlocked: kind === 'discord',
       });
     });
   }
@@ -192,7 +237,7 @@ export function createGuestOverlayManager({
   function publicStatus(kind) {
     const entry = entryOf(kind);
     const wc = guestAlive(entry?.guest) ? guestContents(entry.guest) : null;
-    const url = wc && !wc.isDestroyed?.() ? wc.getURL() : (entry?.targetUrl || '');
+    const url = wc && !wc.isDestroyed?.() ? wc.getURL() : entry?.targetUrl || '';
     const win = entry?.chrome || entry?.chat;
     return {
       kind,
@@ -203,7 +248,7 @@ export function createGuestOverlayManager({
       localChat: kind === 'chat',
       partition: overlayWindowOptions(kind).partition || '',
       canGoBack: Boolean(wc?.canGoBack?.()),
-      canGoForward: Boolean(wc?.canGoForward?.())
+      canGoForward: Boolean(wc?.canGoForward?.()),
     };
   }
 
@@ -235,14 +280,16 @@ export function createGuestOverlayManager({
         sandbox: true,
         webSecurity: true,
         allowRunningInsecureContent: false,
-        spellcheck: false
-      }
+        spellcheck: false,
+      },
     });
     chrome.setMenuBarVisibility(false);
     chrome.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
     chrome.webContents.on('will-navigate', e => e.preventDefault());
     chrome.webContents.on('will-attach-webview', e => e.preventDefault());
-    chrome.loadFile(path.join(__dirname, '../renderer/guest-chrome.html'), { query: { kind } }).catch(() => {});
+    chrome
+      .loadFile(path.join(__dirname, '../renderer/guest-chrome.html'), { query: { kind } })
+      .catch(() => {});
     chrome.once('ready-to-show', () => chrome.show());
     chrome.on('move', () => persistLayout(kind, chrome));
     chrome.on('resize', () => persistLayout(kind, chrome));
@@ -260,17 +307,26 @@ export function createGuestOverlayManager({
           sandbox: true,
           webSecurity: true,
           allowRunningInsecureContent: false,
-          spellcheck: kind === 'discord'
-        }
+          spellcheck: kind === 'discord',
+        },
       });
       attachGuestNav(kind, guest);
-      try { chrome.contentView.addChildView(guest); } catch {}
+      try {
+        chrome.contentView.addChildView(guest);
+      } catch {}
       layoutGuest(chrome, guest, kind);
       if (kind === 'browse') {
-        try { guest.webContents.setUserAgent(chromeUserAgent(processRef?.versions?.chrome)); } catch {}
+        try {
+          guest.webContents.setUserAgent(chromeUserAgent(processRef?.versions?.chrome));
+        } catch {}
       }
       guest.webContents.session.setPermissionRequestHandler((_wc, permission, callback) => {
-        callback(kind === 'discord' && ['media', 'microphone', 'audioCapture', 'videoCapture', 'fullscreen'].includes(permission));
+        callback(
+          kind === 'discord' &&
+            ['media', 'microphone', 'audioCapture', 'videoCapture', 'fullscreen'].includes(
+              permission
+            )
+        );
       });
       return guest;
     }
@@ -299,16 +355,21 @@ export function createGuestOverlayManager({
         sandbox: true,
         webSecurity: true,
         allowRunningInsecureContent: false,
-        spellcheck: true
-      }
+        spellcheck: true,
+      },
     });
     guest.setMenuBarVisibility(false);
     attachGuestNav(kind, guest);
     if (kind === 'browse') {
-      try { guest.webContents.setUserAgent(chromeUserAgent(processRef?.versions?.chrome)); } catch {}
+      try {
+        guest.webContents.setUserAgent(chromeUserAgent(processRef?.versions?.chrome));
+      } catch {}
     }
     guest.webContents.session.setPermissionRequestHandler((_wc, permission, callback) => {
-      callback(kind === 'discord' && ['media', 'microphone', 'audioCapture', 'videoCapture', 'fullscreen'].includes(permission));
+      callback(
+        kind === 'discord' &&
+          ['media', 'microphone', 'audioCapture', 'videoCapture', 'fullscreen'].includes(permission)
+      );
     });
     guest.once('ready-to-show', () => guest.show());
     return guest;
@@ -324,7 +385,10 @@ export function createGuestOverlayManager({
     chrome.once('ready-to-show', follow);
     chrome.on('closed', () => closeKind(kind));
     chrome.on('always-on-top-changed', (_e, on) => {
-      try { if (guestAlive(guest) && typeof guest.setAlwaysOnTop === 'function') guest.setAlwaysOnTop(on); } catch {}
+      try {
+        if (guestAlive(guest) && typeof guest.setAlwaysOnTop === 'function')
+          guest.setAlwaysOnTop(on);
+      } catch {}
     });
   }
 
@@ -332,16 +396,17 @@ export function createGuestOverlayManager({
     if (ageBlocked()) throw new Error('Confirm age 18+ before opening overlays.');
     const target = resolveOverlayTarget(kind, requestedUrl);
     if (!target.ok) {
-      const why = {
-        http: 'Overlays only load HTTPS.',
-        'private-host': 'Private, loopback, and link-local hosts are blocked.',
-        'not-discord': 'The Discord overlay only opens discord.com or discord.gg.',
-        file: 'file: URLs are blocked.',
-        credentials: 'URLs with credentials are blocked.',
-        empty: 'Need an HTTPS address.',
-        invalid: 'That is not a usable URL.',
-        kind: 'Unknown overlay.'
-      }[target.reason] || 'That overlay target is not allowed.';
+      const why =
+        {
+          http: 'Overlays only load HTTPS.',
+          'private-host': 'Private, loopback, and link-local hosts are blocked.',
+          'not-discord': 'The Discord overlay only opens discord.com or discord.gg.',
+          file: 'file: URLs are blocked.',
+          credentials: 'URLs with credentials are blocked.',
+          empty: 'Need an HTTPS address.',
+          invalid: 'That is not a usable URL.',
+          kind: 'Unknown overlay.',
+        }[target.reason] || 'That overlay target is not allowed.';
       throw new Error(why);
     }
     if (adultLocked() && target.kind !== 'chat') {
@@ -375,8 +440,8 @@ export function createGuestOverlayManager({
           sandbox: true,
           webSecurity: true,
           allowRunningInsecureContent: false,
-          spellcheck: false
-        }
+          spellcheck: false,
+        },
       });
       chat.setMenuBarVisibility(false);
       chat.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
@@ -390,7 +455,10 @@ export function createGuestOverlayManager({
       overlays.set('chat', { kind: 'chat', chat, targetUrl: '' });
       return publicStatus('chat');
     }
-    const chrome = createChrome(target.kind, target.kind === 'discord' ? 'Eidovara · Discord guest' : 'Eidovara · Browse overlay');
+    const chrome = createChrome(
+      target.kind,
+      target.kind === 'discord' ? 'Eidovara · Discord guest' : 'Eidovara · Browse overlay'
+    );
     const guest = createGuest(target.kind, chrome);
     overlays.set(target.kind, { kind: target.kind, chrome, guest, targetUrl: target.url || '' });
     wirePair(target.kind, chrome, guest);
@@ -408,7 +476,9 @@ export function createGuestOverlayManager({
     if (!guestAlive(entry?.guest)) throw new Error('That overlay is not open.');
     const allowed = guestNavigateAllowed(kind, raw);
     if (!allowed.ok) throw new Error('That address is not allowed in this overlay.');
-    return guestContents(entry.guest).loadURL(allowed.url).then(() => publicStatus(kind));
+    return guestContents(entry.guest)
+      .loadURL(allowed.url)
+      .then(() => publicStatus(kind));
   }
 
   function history(event, dir) {
@@ -428,7 +498,10 @@ export function createGuestOverlayManager({
     if (!win || win.isDestroyed()) return { alwaysOnTop: false };
     const next = !win.isAlwaysOnTop();
     win.setAlwaysOnTop(next);
-    try { if (guestAlive(entry.guest) && typeof entry.guest.setAlwaysOnTop === 'function') entry.guest.setAlwaysOnTop(next); } catch {}
+    try {
+      if (guestAlive(entry.guest) && typeof entry.guest.setAlwaysOnTop === 'function')
+        entry.guest.setAlwaysOnTop(next);
+    } catch {}
     persistLayout(kind, win);
     return { ...publicStatus(kind), alwaysOnTop: next };
   }
@@ -449,18 +522,23 @@ export function createGuestOverlayManager({
     if (ageBlocked()) throw new Error('Confirm age 18+ before opening overlays.');
     const allowed = guestNavigateAllowed(senderKind(event) || 'browse', raw);
     const href = allowed.ok ? allowed.url : '';
-    if (!href || !href.startsWith('https://')) throw new Error('Only HTTPS links can open in the system browser.');
+    if (!href || !href.startsWith('https://'))
+      throw new Error('Only HTTPS links can open in the system browser.');
     const parent = BrowserWindow.fromWebContents?.(event.sender) || getMainWindow?.();
     if (dialog?.showMessageBox) {
-      const answer = await dialog.showMessageBox(parent && !parent.isDestroyed() ? parent : undefined, {
-        type: 'question',
-        buttons: ['Open in browser', 'Cancel'],
-        defaultId: 0,
-        cancelId: 1,
-        title: 'Open outside Eidovara',
-        message: 'Open this HTTPS page in your system browser?',
-        detail: 'Eidovara is not affiliated with that site. This is not an official overlay and does not inject into other apps. No tokens are copied.'
-      });
+      const answer = await dialog.showMessageBox(
+        parent && !parent.isDestroyed() ? parent : undefined,
+        {
+          type: 'question',
+          buttons: ['Open in browser', 'Cancel'],
+          defaultId: 0,
+          cancelId: 1,
+          title: 'Open outside Eidovara',
+          message: 'Open this HTTPS page in your system browser?',
+          detail:
+            'Eidovara is not affiliated with that site. This is not an official overlay and does not inject into other apps. No tokens are copied.',
+        }
+      );
       if (answer.response !== 0) return { cancelled: true };
     }
     if (shell?.openExternal) await shell.openExternal(href);
@@ -482,7 +560,6 @@ export function createGuestOverlayManager({
     openExternal,
     processMetrics: () => formatEidovaraProcessMetrics(processRef),
     overlayState: () => ({ kinds: [...overlays.keys()], recents: loadRecents?.() || [] }),
-    list: () => [...overlays.keys()]
+    list: () => [...overlays.keys()],
   };
 }
-
