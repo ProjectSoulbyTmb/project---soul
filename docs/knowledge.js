@@ -130,7 +130,7 @@ export const ENTRIES = [
   {
     id: 'ownership', modes: ['legal', 'help'], tags: ['owner', 'owns', 'ownership', 'copyright', 'tyler', 'bosworth', 'studios', 'trademark', 'assignment', 'who'],
     title: 'First-party owner',
-    reply: '© 2026 Soul Consciousness Studios. All rights reserved. Qualifying original Eidovara first-party expression is claimed by Soul Consciousness Studios. Soul Consciousness Studios is an intended publisher name. Third-party software, services, models, marks, and media retain their respective rights. Repository records are not government registrations or legal advice.',
+    reply: '© 2026 Soul Consciousness Studios. All rights reserved. Qualifying original Eidovara first-party expression is claimed by Soul Consciousness Studios. Soul Consciousness Studios is an intended publisher name. Third-party software, services, models, marks, and media retain their respective rights. Repository records are not government registrations. This overview is not legal advice.',
     links: [{ href: 'licensing.html', label: 'Licensing' }, { href: 'legal.html', label: 'Legal hub' }]
   },
   {
