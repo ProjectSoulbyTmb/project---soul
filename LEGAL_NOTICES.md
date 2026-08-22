@@ -1,4 +1,4 @@
-﻿# Eidovara legal notices
+# Eidovara legal notices
 
 Last updated: August 21, 2026
 
