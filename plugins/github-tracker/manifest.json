@@ -1,0 +1,24 @@
+{
+  "manifest_version": 1,
+  "id": "com.soul.github-tracker",
+  "name": "GitHub Tracker",
+  "version": "1.0.0",
+  "description": "Track GitHub repositories, PRs, issues, and notifications",
+  "author": "Soul Consciousness Studios",
+  "license": "LicenseRef-Eidovara-Source-Available-1.0",
+  "permissions": {
+    "network": ["api.github.com"],
+    "notifications": true
+  },
+  "entrypoints": {
+    "main": "src/index.js",
+    "commands": [
+      { "id": "github-tracker.watch", "name": "Watch Repository", "description": "Start watching a GitHub repo", "action": "watch" },
+      { "id": "github-tracker.unwatch", "name": "Unwatch Repository", "description": "Stop watching a repo", "action": "unwatch" },
+      { "id": "github-tracker.list", "name": "List Watched Repos", "description": "List watched repos", "action": "list" }
+    ]
+  },
+  "engines": { "eidovara": ">=1.0.0" },
+  "categories": ["development"],
+  "maturity": "beta"
+}

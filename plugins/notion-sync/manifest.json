@@ -1,0 +1,28 @@
+{
+  "manifest_version": 1,
+  "id": "com.soul.notion-sync",
+  "name": "Notion Sync",
+  "version": "1.0.0",
+  "description": "Bidirectional sync between Eidovara memories and Notion pages",
+  "author": "Soul Consciousness Studios",
+  "license": "LicenseRef-Eidovara-Source-Available-1.0",
+  "permissions": {
+    "memory": true,
+    "network": ["api.notion.com"],
+    "notifications": true
+  },
+  "entrypoints": {
+    "main": "src/index.js",
+    "commands": [
+      { "id": "notion-sync.sync", "name": "Sync with Notion", "description": "Sync memories to/from Notion", "shortcut": "Ctrl+Shift+N", "action": "sync" },
+      { "id": "notion-sync.configure", "name": "Configure Notion Sync", "description": "Set API key and database ID", "action": "configure" }
+    ],
+    "hooks": [
+      { "name": "memory-created", "event": "memory.created", "handler": "onMemoryCreated" },
+      { "name": "memory-updated", "event": "memory.updated", "handler": "onMemoryUpdated" }
+    ]
+  },
+  "engines": { "eidovara": ">=1.0.0" },
+  "categories": ["productivity", "sync"],
+  "maturity": "beta"
+}
