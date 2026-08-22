@@ -1,4 +1,4 @@
-﻿# Eidovara
+# Eidovara
 
 ## v1.0.0
 
