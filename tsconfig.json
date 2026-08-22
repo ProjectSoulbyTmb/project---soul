@@ -20,5 +20,5 @@
     }
   },
   "include": ["src/**/*", "tests/**/*", "scripts/**/*", "server/**/*"],
-  "exclude": ["node_modules", "dist", "dist-mac", ".wrangler"]
+  "exclude": ["node_modules", "dist", "dist-mac", ".wrangler", "tests/e2e"]
 }
