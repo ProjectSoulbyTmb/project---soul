@@ -1,4 +1,4 @@
-﻿# Eidovara repository self-attestation
+# Eidovara repository self-attestation
 
 Record date: 21 August 2026  
 Claimant: Soul Consciousness Studios  
