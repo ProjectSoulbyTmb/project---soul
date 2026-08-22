@@ -1,4 +1,4 @@
-﻿# Public repository and development privacy
+# Public repository and development privacy
 
 This repository contains only material intended for public release. Keep unpublished inventions, patent claim drafts, private market research, credentials, certificates with private keys, customer information, payment exports, executed assignments, copyright-office deposits, USPTO correspondence, and internal roadmaps outside this repository.
 
