@@ -1,4 +1,4 @@
-﻿# Copyright notices and U.S. registration (owner checklist)
+# Copyright notices and U.S. registration (owner checklist)
 
 This file tells the owner how to **notice** first-party files and, separately, how to **register** a work at the U.S. Copyright Office. It is **not legal advice**, not a filing, and not a claim that Eidovara is registered.
 
