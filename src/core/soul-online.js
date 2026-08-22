@@ -77,7 +77,7 @@ export async function requestSoulAssist({
       assist: true,
       soul: false,
       conversationsSent: false,
-      warning: 'This is your Worker helper — not Soul, not a cloud mind, and not this conversation.'
+      warning: 'This is your Worker helper â€” not Soul, not a cloud mind, and not this conversation.'
     };
   } catch (err) {
     const timeout = err?.name === 'AbortError';
