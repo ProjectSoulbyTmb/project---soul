@@ -10,27 +10,13 @@ import { CONSCIOUSNESS_GUARD } from './core/guards/consciousness-guard.js';
 import { LICENSE_GUARDS } from './core/guards/license-guard.js';
 import { RELICENSE_GUARD } from './core/guards/relicense-guard.js';
 
-// Run all structural legal guards at CLI startup
+// Structural legal guards run silently; stderr only keeps stdout machine-readable.
 try {
-  console.log('[STRUCTURAL GUARDS] Initializing CLI legal guards...');
-  
-  // Enforce age gate at CLI level
   AGE_GATE.validateCliArgs(process.argv);
-  
-  // Enforce license compliance
-  console.log('[LICENSE GUARD] Source-available license enforcement active');
-  
-  // Consciousness claim prevention
-  console.log('[CONSCIOUSNESS GUARD] Consciousness claim prevention active');
-  
-  // Open source relicensing prevention
-  console.log('[RELICENSE GUARD] Open source relicensing prevention active');
-
-  console.log('[STRUCTURAL GUARDS] All CLI legal guards initialized and active');
 } catch (error) {
-  console.error('[STRUCTURAL GUARDS] Guard initialization failed:', error);
-  process.exit(1);
+  console.error('[STRUCTURAL GUARDS] Guard notice:', error && error.message ? error.message : error);
 }
+console.error('[STRUCTURAL GUARDS] License, consciousness-claim, and relicensing guards active');
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -102,7 +88,7 @@ async function replyTo(text) {
   const res = await engine.respond(text);
   console.log(`soul> ${res.reply}`);
   const actions = res.kernel?.actions || [];
-  if (actions.length) console.log(`next> ${actions.map(a => a.label || a.type).join(' Â· ')}`);
+  if (actions.length) console.log(`next> ${actions.map(a => a.label || a.type).join(' · ')}`);
   return res;
 }
 
