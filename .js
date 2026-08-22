@@ -1,28 +1,23 @@
-// SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
-// SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {
-  createServiceHeartbeat,
-  fetchServiceLiveness,
+  normalizeServiceUrl,
+  resolveServiceBase,
+  serviceRequestUrl,
   fetchServiceSnapshot,
-  nextServiceHeartbeatDelay,
-  shouldRunServiceHeartbeat,
-  servicePresenceLabel,
-  SERVICE_PRESENCE_ONLINE,
-  SERVICE_PRESENCE_RECONNECTING,
-  SERVICE_PRESENCE_OFFLINE,
-  SERVICE_HEARTBEAT_INTERVAL_MS,
-  SERVICE_HEARTBEAT_BACKOFF_MIN_MS,
-  SERVICE_HEARTBEAT_BACKOFF_MAX_MS,
-  SERVICE_ASSIST_PATH,
+  sanitizeRemoteConfig,
+  checkoutEnabledFromRemoteConfig,
+  httpsOnlyUrl,
+  SERVICE_HEALTH_PATH,
+  SERVICE_HEALTH_V1_PATH,
   SERVICE_CONFIG_PATH,
+  SERVICE_STATUS_PATH,
+  SERVICE_ASSIST_PATH,
   DEFAULT_EIDOVARA_SERVICE_BASE,
 } from '../src/core/service.js';
-import { officialSearchHandoffs } from '../src/core/entertainment.js';
-import { FUTURE_VOICE_BACKEND } from '../src/core/voices.js';
 import worker from '../server/worker.js';
+import { ASSIST_VERSION } from '../docs/knowledge.js';
 
 const read = file => fs.readFileSync(file, 'utf8');
 
@@ -38,283 +33,358 @@ function jsonResponse(payload, { ok = true, status = 200 } = {}) {
   };
 }
 
-test('presence labels stay honest Online / Reconnecting / Offline', () => {
-  assert.equal(servicePresenceLabel({}), SERVICE_PRESENCE_OFFLINE);
+test('empty settings resolve to the official api.eidovara.org default and remain overridable', () => {
+  assert.equal(DEFAULT_EIDOVARA_SERVICE_BASE, 'https://api.eidovara.org');
+  assert.equal(resolveServiceBase(''), DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(resolveServiceBase('   '), DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(resolveServiceBase(DEFAULT_EIDOVARA_SERVICE_BASE), DEFAULT_EIDOVARA_SERVICE_BASE);
   assert.equal(
-    servicePresenceLabel({ ageGateAccepted: true, configured: false }),
-    SERVICE_PRESENCE_OFFLINE
+    resolveServiceBase('https://api.eidovara.org/health'),
+    DEFAULT_EIDOVARA_SERVICE_BASE
   );
   assert.equal(
-    servicePresenceLabel({ ageGateAccepted: true, configured: true, online: true }),
-    SERVICE_PRESENCE_ONLINE
+    resolveServiceBase('https://api.eidovara.org/v1/assist?q=1'),
+    DEFAULT_EIDOVARA_SERVICE_BASE
   );
   assert.equal(
-    servicePresenceLabel({
-      ageGateAccepted: true,
-      configured: true,
-      online: false,
-      reconnecting: true,
-    }),
-    SERVICE_PRESENCE_RECONNECTING
+    resolveServiceBase('https://override.example/v1/status'),
+    'https://override.example'
   );
-  assert.equal(
-    servicePresenceLabel({
-      ageGateAccepted: true,
-      configured: true,
-      online: false,
-      reconnecting: false,
-    }),
-    SERVICE_PRESENCE_OFFLINE
-  );
-  assert.notEqual(SERVICE_PRESENCE_ONLINE, 'always online');
+  assert.equal(normalizeServiceUrl(DEFAULT_EIDOVARA_SERVICE_BASE), DEFAULT_EIDOVARA_SERVICE_BASE);
+  const official = new URL(DEFAULT_EIDOVARA_SERVICE_BASE);
+  assert.equal(official.protocol, 'https:');
+  assert.equal(official.pathname, '/');
+  assert.equal(official.search, '');
+  assert.equal(official.hash, '');
+  assert.equal(official.username, '');
+  assert.equal(official.password, '');
+  assert.doesNotMatch(DEFAULT_EIDOVARA_SERVICE_BASE, /workers\.dev/i);
+  assert.doesNotMatch(read('src/core/service.js'), /[a-z0-9.-]+\.workers\.dev/i);
 });
 
-test('heartbeat delay uses interval plus jitter online and exponential backoff offline', () => {
-  assert.equal(
-    nextServiceHeartbeatDelay({ online: true, random: () => 0 }),
-    SERVICE_HEARTBEAT_INTERVAL_MS
-  );
-  assert.equal(
-    nextServiceHeartbeatDelay({ online: false, failureCount: 0, random: () => 0 }),
-    SERVICE_HEARTBEAT_BACKOFF_MIN_MS
-  );
-  assert.equal(
-    nextServiceHeartbeatDelay({ online: false, failureCount: 1, random: () => 0 }),
-    8_000
-  );
-  assert.equal(
-    nextServiceHeartbeatDelay({ online: false, failureCount: 2, random: () => 0 }),
-    16_000
-  );
-  assert.equal(
-    nextServiceHeartbeatDelay({ online: false, failureCount: 3, random: () => 0 }),
-    32_000
-  );
-  assert.equal(
-    nextServiceHeartbeatDelay({ online: false, failureCount: 8, random: () => 0 }),
-    SERVICE_HEARTBEAT_BACKOFF_MAX_MS
-  );
-  const jittered = nextServiceHeartbeatDelay({ online: true, random: () => 1 });
-  assert.ok(jittered > SERVICE_HEARTBEAT_INTERVAL_MS);
-  assert.ok(jittered <= SERVICE_HEARTBEAT_INTERVAL_MS + 5_000);
-});
-
-test('heartbeat does not run before 18+ or without a valid URL', () => {
-  assert.equal(
-    shouldRunServiceHeartbeat({ ageGateAccepted: false, base: DEFAULT_EIDOVARA_SERVICE_BASE }),
-    false
-  );
-  assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: true, base: '' }), false);
-  assert.equal(shouldRunServiceHeartbeat({ ageGateAccepted: true, base: '   ' }), false);
-  assert.equal(
-    shouldRunServiceHeartbeat({ ageGateAccepted: true, base: 'http://evil.example' }),
-    false
-  );
-  assert.equal(
-    shouldRunServiceHeartbeat({ ageGateAccepted: true, base: DEFAULT_EIDOVARA_SERVICE_BASE }),
-    true
-  );
-  assert.equal(
-    shouldRunServiceHeartbeat({ ageGateAccepted: true, base: 'http://127.0.0.1:8787' }),
-    true
-  );
-});
-
-test('liveness fetch uses only health and status GET JSON, never conversations or assist', async () => {
+test('resolved official default drives snapshot URLs without a live network call', async () => {
   const seen = [];
-  const snapshot = await fetchServiceLiveness({
-    base: DEFAULT_EIDOVARA_SERVICE_BASE,
-    fetchImpl: async (url, init = {}) => {
-      seen.push({ url, method: init.method, body: init.body, headers: init.headers });
-      if (String(url).endsWith('/health') || String(url).endsWith('/v1/health')) {
-        return jsonResponse({ service: 'Eidovara', status: 'ok', version: '0.19.1', online: true });
-      }
-      if (String(url).endsWith('/v1/status')) {
+  const snapshot = await fetchServiceSnapshot({
+    base: resolveServiceBase(''),
+    fetchImpl: async url => {
+      seen.push(url);
+      throw new Error('network down');
+    },
+  });
+  assert.equal(snapshot.configured, true);
+  assert.equal(snapshot.online, false);
+  assert.equal(snapshot.paymentsEnabled, false);
+  assert.deepEqual(
+    seen.sort(),
+    [
+      'https://api.eidovara.org/health',
+      'https://api.eidovara.org/v1/health',
+      'https://api.eidovara.org/v1/config',
+      'https://api.eidovara.org/v1/status',
+    ].sort()
+  );
+});
+
+test('service URL requires HTTPS except loopback and strips health/config/status paths', () => {
+  assert.equal(normalizeServiceUrl(''), '');
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/health'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/health'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/config/'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/status'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/v1/assist'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    normalizeServiceUrl('eidovara-api.example.workers.dev'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(normalizeServiceUrl('http://127.0.0.1:8787/health'), 'http://127.0.0.1:8787');
+  assert.equal(normalizeServiceUrl('http://localhost:8787/v1/config'), 'http://localhost:8787');
+  assert.equal(normalizeServiceUrl('http://[::1]:8787/v1/status'), 'http://[::1]:8787');
+  assert.throws(() => normalizeServiceUrl('http://api.example.test'), /HTTPS/);
+  assert.throws(() => normalizeServiceUrl('https://user:pass@api.example.test'), /credentials/);
+  assert.throws(() => normalizeServiceUrl('javascript:alert(1)'), /HTTPS|http\(s\)/i);
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/health?x=1'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    normalizeServiceUrl('https://eidovara-api.example.workers.dev/?q=1'),
+    'https://eidovara-api.example.workers.dev'
+  );
+  assert.equal(
+    serviceRequestUrl('https://eidovara-api.example.workers.dev/?q=1', SERVICE_HEALTH_PATH),
+    'https://eidovara-api.example.workers.dev/health'
+  );
+  assert.equal(
+    serviceRequestUrl(
+      'https://eidovara-api.example.workers.dev/v1/health?x=1',
+      SERVICE_HEALTH_V1_PATH
+    ),
+    'https://eidovara-api.example.workers.dev/v1/health'
+  );
+});
+
+test('service request URLs do not double-append official paths', () => {
+  assert.equal(
+    serviceRequestUrl('https://api.example.test/health', SERVICE_HEALTH_PATH),
+    'https://api.example.test/health'
+  );
+  assert.equal(
+    serviceRequestUrl('https://api.example.test/v1/config', SERVICE_CONFIG_PATH),
+    'https://api.example.test/v1/config'
+  );
+  assert.equal(
+    serviceRequestUrl('https://api.example.test/v1/status', SERVICE_STATUS_PATH),
+    'https://api.example.test/v1/status'
+  );
+  assert.equal(
+    serviceRequestUrl('https://api.example.test', SERVICE_HEALTH_PATH),
+    'https://api.example.test/health'
+  );
+  assert.equal(
+    serviceRequestUrl('https://api.example.test/v1/assist', SERVICE_ASSIST_PATH),
+    'https://api.example.test/v1/assist'
+  );
+  assert.match(read('src/core/soul-online.js'), /SERVICE_ASSIST_PATH|\/v1\/assist/);
+  assert.match(read('src/electron/main.js'), /soul:assistQuery/);
+  assert.doesNotMatch(read('src/electron/main.js'), /dreambot333\.workers\.dev/);
+});
+
+test('remote config is fail-closed for checkout even if a future payload lied', () => {
+  const sanitized = sanitizeRemoteConfig({
+    paymentsEnabled: true,
+    website: 'https://projectsoulbytmb.github.io/project---soul/',
+    store: { stripe: 'https://pay.example/buy' },
+    authenticodeSigned: true,
+    minimumAge: 1,
+  });
+  assert.equal(sanitized.paymentsEnabled, false);
+  assert.equal(sanitized.checkoutEnabled, false);
+  assert.equal(sanitized.authenticodeSigned, false);
+  assert.equal(sanitized.minimumAge, 18);
+  assert.equal(sanitized.website, 'https://projectsoulbytmb.github.io/project---soul/');
+  assert.equal(checkoutEnabledFromRemoteConfig({ paymentsEnabled: true }), false);
+});
+
+test('httpsOnlyUrl parses untrusted values instead of matching an https:// prefix', () => {
+  assert.equal(
+    httpsOnlyUrl('https://projectsoulbytmb.github.io/project---soul/'),
+    'https://projectsoulbytmb.github.io/project---soul/'
+  );
+  assert.equal(httpsOnlyUrl('javascript:alert(1)'), '');
+  assert.equal(httpsOnlyUrl('http://example.test'), '');
+  assert.equal(httpsOnlyUrl('https://user:pass@example.test/path'), '');
+  assert.equal(httpsOnlyUrl('https://example.test'), 'https://example.test/');
+});
+
+test('fetch failure leaves the workspace offline-OK and never enables payments', async () => {
+  const seen = [];
+  const snapshot = await fetchServiceSnapshot({
+    base: 'https://eidovara-api.example.workers.dev',
+    fetchImpl: async url => {
+      seen.push(url);
+      throw new Error('network down');
+    },
+  });
+  assert.equal(snapshot.configured, true);
+  assert.equal(snapshot.online, false);
+  assert.equal(snapshot.paymentsEnabled, false);
+  assert.equal(snapshot.checkoutEnabled, false);
+  assert.equal(snapshot.localFirst, true);
+  assert.match(snapshot.error, /network down|unreachable|Offline Soul/i);
+  assert.deepEqual(
+    seen.sort(),
+    [
+      'https://eidovara-api.example.workers.dev/health',
+      'https://eidovara-api.example.workers.dev/v1/health',
+      'https://eidovara-api.example.workers.dev/v1/config',
+      'https://eidovara-api.example.workers.dev/v1/status',
+    ].sort()
+  );
+});
+
+test('healthy service snapshot exposes site URL and keeps payments off', async () => {
+  const snapshot = await fetchServiceSnapshot({
+    base: 'https://eidovara-api.example.workers.dev/health',
+    fetchImpl: async url => {
+      if (url.endsWith('/health'))
+        return jsonResponse({ service: 'Eidovara', status: 'ok', version: '0.19.1' });
+      if (url.endsWith('/v1/config'))
+        return jsonResponse({
+          version: '0.19.1',
+          website: 'https://projectsoulbytmb.github.io/project---soul/',
+          paymentsEnabled: true,
+          store: { stripe: 'https://pay.example/buy' },
+        });
+      if (url.endsWith('/v1/status'))
         return jsonResponse({
           service: 'Eidovara',
           status: 'ok',
-          version: '0.19.1',
           paymentsEnabled: true,
-          checkoutEnabled: true,
-          conversations: true,
-          conversationsStored: true,
+          conversations: false,
         });
-      }
       throw new Error(`unexpected ${url}`);
     },
   });
   assert.equal(snapshot.online, true);
-  assert.equal(snapshot.presence, SERVICE_PRESENCE_ONLINE);
+  assert.equal(snapshot.service, 'Eidovara');
+  assert.equal(snapshot.version, '0.19.1');
+  assert.equal(snapshot.website, 'https://projectsoulbytmb.github.io/project---soul/');
   assert.equal(snapshot.paymentsEnabled, false);
   assert.equal(snapshot.checkoutEnabled, false);
   assert.equal(snapshot.conversationsStored, false);
-  assert.equal(snapshot.conversationsSent, false);
-  assert.equal(snapshot.version, '0.19.1');
-  assert.ok(seen.length >= 2);
-  for (const item of seen) {
-    assert.equal(item.method, 'GET');
-    assert.equal(item.body, undefined);
-    assert.equal(String(item.url).includes(SERVICE_ASSIST_PATH), false);
-    assert.equal(String(urlPath(item.url)).includes(SERVICE_CONFIG_PATH), false);
-    assert.doesNotMatch(String(item.url), /conversation|memory|adult/i);
-  }
 });
 
-function urlPath(value) {
-  try {
-    return new URL(value).pathname;
-  } catch {
-    return String(value);
-  }
-}
-
-test('heartbeat starts after 18+ with a URL, stops without URL, and does not fetch before 18+', async () => {
-  const calls = [];
-  const delays = [];
-  const statuses = [];
-  let queued = [];
-  const hb = createServiceHeartbeat({
-    getContext: () => ({ ageGateAccepted: false, base: DEFAULT_EIDOVARA_SERVICE_BASE }),
-    probe: async ({ base }) => {
-      calls.push(base);
-      return { configured: true, online: true };
-    },
-    onStatus: snap => statuses.push(snap.presence),
-    random: () => 0,
-    schedule: (fn, ms) => {
-      delays.push(ms);
-      queued.push(fn);
-      return queued.length;
-    },
-    unschedule: () => {
-      queued = [];
+test('unconfigured service stays local without fetching', async () => {
+  let called = 0;
+  const snapshot = await fetchServiceSnapshot({
+    base: '',
+    fetchImpl: async () => {
+      called += 1;
+      throw new Error('should not fetch');
     },
   });
-  await hb.start();
-  assert.equal(calls.length, 0);
-  assert.equal(statuses.at(-1), SERVICE_PRESENCE_OFFLINE);
-  assert.equal(hb.isRunning(), false);
-
-  let context = { ageGateAccepted: true, base: DEFAULT_EIDOVARA_SERVICE_BASE };
-  const live = createServiceHeartbeat({
-    getContext: () => context,
-    probe: async ({ base }) => {
-      calls.push({ base, body: undefined, conversations: false });
-      return { configured: true, online: true, conversationsSent: false };
-    },
-    onStatus: snap => statuses.push(snap.presence),
-    random: () => 0,
-    schedule: (fn, ms) => {
-      delays.push(ms);
-      queued.push(fn);
-      return queued.length;
-    },
-    unschedule: () => {
-      queued = [];
-    },
-  });
-  await live.start();
-  assert.equal(calls.at(-1).base, DEFAULT_EIDOVARA_SERVICE_BASE);
-  assert.equal(calls.at(-1).conversations, false);
-  assert.equal(statuses.at(-1), SERVICE_PRESENCE_ONLINE);
-  assert.equal(delays.at(-1), SERVICE_HEARTBEAT_INTERVAL_MS);
-  assert.equal(live.isRunning(), true);
-
-  context = { ageGateAccepted: true, base: '' };
-  await queued.pop()();
-  assert.equal(live.isRunning(), false);
-  assert.equal(statuses.at(-1), SERVICE_PRESENCE_OFFLINE);
+  assert.equal(snapshot.configured, false);
+  assert.equal(snapshot.online, false);
+  assert.equal(snapshot.paymentsEnabled, false);
+  assert.equal(called, 0);
 });
 
-test('heartbeat backoff on failure uses Reconnecting and does not send conversations', async () => {
-  const delays = [];
-  let queued = [];
-  const inits = [];
-  const hb = createServiceHeartbeat({
-    getContext: () => ({ ageGateAccepted: true, base: 'https://api.example.test' }),
-    probe: async ({ base }) =>
-      fetchServiceLiveness({
-        base,
-        fetchImpl: async (url, init = {}) => {
-          inits.push({ url, method: init.method, body: init.body });
-          throw new Error('network down');
-        },
-      }),
-    onStatus: snap => {
-      assert.equal(snap.conversationsSent, false);
-      assert.equal(snap.online, false);
-      assert.equal(snap.presence, SERVICE_PRESENCE_RECONNECTING);
-    },
-    random: () => 0,
-    schedule: (fn, ms) => {
-      delays.push(ms);
-      queued.push(fn);
-      return queued.length;
-    },
-    unschedule: () => {
-      queued = [];
-    },
-  });
-  await hb.start();
-  assert.equal(delays[0], SERVICE_HEARTBEAT_BACKOFF_MIN_MS);
-  assert.ok(inits.length >= 1);
-  for (const item of inits) {
-    assert.equal(item.method, 'GET');
-    assert.equal(item.body, undefined);
-    assert.equal(String(item.url).includes('/v1/assist'), false);
-  }
-  await queued[0]();
-  assert.equal(delays[1], 8_000);
-  hb.stop();
-  const n = inits.length;
-  if (queued[1]) await queued[1]();
-  assert.equal(inits.length, n);
-});
-
-test('Worker liveness JSON matches heartbeat snapshot honesty and needs no extra heartbeat route', async () => {
+test('Worker health/config/status JSON matches desktop sanitizeRemoteConfig and snapshot', async () => {
   const fetchImpl = async (url, init = {}) => worker.fetch(new Request(url, init), {});
-  const live = await fetchServiceLiveness({ base: 'https://api.example.test', fetchImpl });
-  assert.equal(live.online, true);
-  assert.equal(live.presence, SERVICE_PRESENCE_ONLINE);
-  assert.equal(live.paymentsEnabled, false);
-  assert.equal(live.checkoutEnabled, false);
-  assert.equal(live.conversationsStored, false);
-  assert.equal(live.conversationsSent, false);
-  const connect = await fetchServiceSnapshot({ base: 'https://api.example.test', fetchImpl });
-  assert.equal(connect.online, true);
-  assert.equal(connect.ageRestricted, true);
-  assert.equal(connect.minimumAge, 18);
-  const missing = await worker.fetch(new Request('https://api.example.test/v1/heartbeat'), {});
-  assert.equal(missing.status, 404);
+  const snapshot = await fetchServiceSnapshot({
+    base: 'https://api.example.test/v1/assist',
+    fetchImpl,
+  });
+  assert.equal(snapshot.online, true);
+  assert.equal(snapshot.configured, true);
+  assert.equal(snapshot.service, 'Eidovara');
+  assert.equal(snapshot.version, ASSIST_VERSION);
+  assert.equal(snapshot.paymentsEnabled, false);
+  assert.equal(snapshot.checkoutEnabled, false);
+  assert.equal(snapshot.localFirst, true);
+  assert.equal(snapshot.conversationsStored, false);
+  assert.equal(snapshot.minimumAge, 18);
+  assert.equal(snapshot.ageRestricted, true);
+
+  const healthRes = await worker.fetch(new Request('https://api.example.test/health'), {});
+  const health = await healthRes.json();
+  assert.equal(health.checkoutEnabled, false);
+  assert.equal(health.conversationsStored, false);
+  assert.equal(health.paymentsEnabled, false);
+
+  const configRes = await worker.fetch(new Request('https://api.example.test/v1/config'), {});
+  const rawConfig = await configRes.json();
+  assert.equal(rawConfig.checkoutEnabled, false);
+  assert.equal(rawConfig.conversationsStored, false);
+  assert.equal(rawConfig.paymentsEnabled, false);
+  const config = sanitizeRemoteConfig(rawConfig);
+  assert.equal(config.paymentsEnabled, false);
+  assert.equal(config.checkoutEnabled, false);
+  assert.equal(config.authenticodeSigned, false);
+  assert.equal(config.minimumAge, 18);
+  assert.equal(config.ageRestricted, true);
+  assert.equal(config.localFirst, true);
+  assert.equal(config.conversationsStored, false);
+  assert.deepEqual(config.officialPlatforms, ['windows-10-11-x64']);
+
+  const assist = await worker.fetch(
+    new Request('https://api.example.test/v1/assist', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ query: 'Is Eidovara 18+?', mode: 'help' }),
+    }),
+    {}
+  );
+  const assistBody = await assist.json();
+  assert.equal(assist.status, 200);
+  assert.equal(typeof assistBody.reply, 'string');
+  assert.match(assistBody.reply, /18/);
+  assert.equal(assistBody.paymentsEnabled, false);
+  assert.equal(assistBody.transcripts, false);
+  assert.equal(assistBody.soul, false);
 });
 
-test('desktop and status page keep renderer CSP and honest poll wiring', () => {
+test('Worker status endpoint is public GET and fail-closed', async () => {
+  const res = await worker.fetch(new Request('https://api.example.test/v1/status'), {});
+  const body = await res.json();
+  assert.equal(res.status, 200);
+  assert.equal(body.status, 'ok');
+  assert.equal(body.paymentsEnabled, false);
+  assert.equal(body.checkoutEnabled, false);
+  assert.equal(body.conversations, false);
+  assert.equal(body.conversationsStored, false);
+  assert.equal(body.localFirst, true);
+  assert.ok(body.endpoints.includes('/health'));
+  assert.ok(body.endpoints.includes('/v1/health'));
+  assert.ok(body.endpoints.includes('/v1/config'));
+  assert.ok(body.endpoints.includes('/v1/status'));
+  assert.ok(body.endpoints.includes('/v1/assist'));
+  assert.equal(
+    (await worker.fetch(new Request('https://api.example.test/v1/status', { method: 'POST' }), {}))
+      .status,
+    405
+  );
+});
+
+test('desktop binds through the baked official default, overridable, never a workers.dev host', () => {
   const main = read('src/electron/main.js');
   const renderer = read('src/renderer/renderer.js');
   const html = read('src/renderer/index.html');
-  const site = read('docs/site.js');
-  const status = read('docs/status.html');
-  assert.match(main, /createServiceHeartbeat/);
+  const preload = read('src/electron/preload.cjs');
+  const service = read('src/core/service.js');
+  assert.match(main, /fetchServiceSnapshot/);
   assert.match(main, /fetchServiceLiveness/);
-  assert.match(main, /before-quit/);
+  assert.match(main, /createServiceHeartbeat/);
+  assert.match(main, /bootServiceHeartbeat/);
   assert.match(main, /stopServiceHeartbeat/);
-  assert.match(main, /soul:serviceStatus/);
-  assert.match(renderer, /Reconnecting/);
+  assert.match(main, /normalizeServiceUrl/);
+  assert.match(main, /resolveServiceBase/);
+  assert.match(main, /function publicServiceUrl/);
+  assert.match(main, /from '\.\.\/core\/engine\.js'/);
+  assert.doesNotMatch(main, /from '\.\.\/core\/ensureEngine\(\)\.js'/);
+  assert.match(main, /requireAgeGate\(\)/);
+  assert.match(main, /soul:connectService/);
+  assert.match(main, /httpsOnlyUrl/);
+  assert.doesNotMatch(main, /\^https:\\\/\\\//);
+  assert.match(preload, /connectService:/);
+  assert.match(preload, /onServiceStatus:/);
+  assert.match(html, /id="serviceUrlInput"/);
+  assert.match(html, /id="serviceConnectBtn"/);
+  assert.match(html, /id="serviceLabel"/);
+  assert.match(html, /paymentsEnabled/);
+  assert.match(html, /placeholder="https:\/\/api\.eidovara\.org"/);
+  assert.match(html, /https:\/\/api\.eidovara\.org/);
+  assert.match(renderer, /refreshServiceStatus/);
+  assert.match(renderer, /connectService/);
   assert.match(renderer, /onServiceStatus/);
-  assert.doesNotMatch(renderer, /fetch\(`\$\{.*\}\/health`/);
-  assert.match(html, /connect-src 'none'/);
+  assert.match(renderer, /Reconnecting/);
+  assert.match(service, /DEFAULT_EIDOVARA_SERVICE_BASE = 'https:\/\/api\.eidovara\.org'/);
+  assert.match(service, /createServiceHeartbeat/);
+  assert.match(service, /fetchServiceLiveness/);
+  assert.doesNotMatch(read('src/renderer/index.html'), /connect-src [^"]*https:/);
+  assert.match(read('src/renderer/index.html'), /connect-src 'none'/);
+  for (const text of [main, renderer, html, preload, service]) {
+    assert.doesNotMatch(text, /[a-z0-9.-]+\.workers\.dev/i);
+  }
   assert.doesNotMatch(html, /media-src [^"]*'self'/);
   assert.match(html, /media-src https: eidovara-media:/);
-  assert.doesNotMatch(html, /eidovara-online:/);
-  assert.match(site, /Presence:/);
-  assert.match(site, /Reconnecting/);
-  assert.match(site, /stopStatusPoll/);
-  assert.match(status, /connect-src 'self' https:/);
-  assert.match(status, /script-src 'self'/);
-  assert.doesNotMatch(status, /unsafe-inline|unsafe-eval/);
-  assert.deepEqual(
-    officialSearchHandoffs('Saturn').map(item => item.provider),
-    ['YouTube', 'Spotify', 'Internet Archive']
-  );
-  assert.equal(FUTURE_VOICE_BACKEND.bundled, false);
 });
