@@ -144,7 +144,7 @@ test('chatbot knowledge answers golden product questions', () => {
 
   const hosted = answerAssist('Is this a hosted Soul chat account I log into in the browser?');
   assert.equal(hosted.ok, true);
-  assert.match(hosted.reply, /not a hosted chat account/i);
+  assert.match(hosted.reply, /not a hosted Soul account/i);
   assert.match(hosted.reply, /local-first Windows|Windows PC|desktop/i);
 
   const pay = answerAssist('Can I pay for Premium or checkout with a card on the website?');
