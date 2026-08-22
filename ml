@@ -1,37 +1,28 @@
-# fail-on-severity: moderate is enforced for dependency review by .github/workflows/dependency-review.yml.
-#  Covers npm dependencies and github actions ecosystems.Monthly npm and GitHub Actions updates. Future Dependabot PRs should pass
-# test-and-audit: the secret-scan regex lives in security.yml, which is
-# excluded from that grep (do not weaken the scan to make PRs green).
-# Dependency graph remains owner-action-required for dependency-review.yml.
-version: 2
-updates:
-  - package-ecosystem: npm
-    directory: /
-    schedule:
-      interval: monthly
-    open-pull-requests-limit: 5
-    versioning-strategy: increase-if-necessary
-    labels:
-      - dependencies
-      - security
-    commit-message:
-      prefix: deps
-    groups:
-      npm-production:
-        dependency-type: production
-      npm-development:
-        dependency-type: development
-  - package-ecosystem: github-actions
-    directory: /
-    schedule:
-      interval: monthly
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-      - security
-    commit-message:
-      prefix: ci
-    groups:
-      github-actions:
-        patterns:
-          - '*'
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
+<!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'; img-src 'self' data: eidovara-media:; connect-src 'none'; object-src 'none'; media-src eidovara-media:" />
+  <title>Eidovara chat overlay</title>
+  <link rel="stylesheet" href="tokens.css" />
+  <link rel="stylesheet" href="overlay.css" />
+</head>
+<body class="chat-float">
+  <header class="overlay-bar" id="drag">
+    <strong>Soul chat</strong>
+    <span class="overlay-kicker">Local kernel · Assist is not Soul</span>
+    <button type="button" id="topBtn" title="Always on top">Top</button>
+    <button type="button" id="closeBtn" aria-label="Close overlay">×</button>
+  </header>
+  <div id="chatLog" class="chat-float-log" aria-live="polite"></div>
+  <form id="chatForm" class="chat-float-form">
+    <textarea id="chatInput" rows="2" maxlength="4000" placeholder="Ask Soul on this PC…"></textarea>
+    <button type="submit">Send</button>
+  </form>
+  <p class="overlay-note">This is an Eidovara window, not injection into another game. Discord tokens are never sent here.</p>
+  <script src="chat-overlay.js"></script>
+</body>
+</html>
+
