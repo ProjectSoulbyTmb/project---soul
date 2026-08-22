@@ -8,63 +8,68 @@
   <meta name="referrer" content="no-referrer">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="light dark">
-  <meta name="description" content="Eidovara v1.0.0 legal overview: source-available license, 18+ restrictions, terms, privacy, security, intellectual property, and ownership boundaries.">
-  <meta property="og:title" content="Legal · Eidovara">
-  <meta property="og:description" content="Eidovara v1.0.0 legal: source-available LicenseRef-Eidovara-Source-Available-1.0, 18+ age gate, Terms, Privacy, Security, Intellectual Property, and Ownership.">
+  <meta name="theme-color" content="#f2f2f7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Eidovara ownership and third-party boundaries. Source-available license. Unregistered marks. Not an Apple product.">
+  <meta property="og:title" content="Rights & Licensing · Eidovara">
+  <meta property="og:description" content="Eidovara ownership and third-party boundaries. Source-available license. Unregistered marks. Not an Apple product.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://eidovara.org/legal.html">
+  <meta property="og:url" content="https://eidovara.org/licensing.html">
   <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
-  <link rel="canonical" href="https://eidovara.org/legal.html">
-  <title>Legal · Eidovara</title>
+  <link rel="canonical" href="https://eidovara.org/licensing.html">
+  <title>Rights & Licensing · Eidovara</title>
   <link rel="stylesheet" href="tokens.css">
   <link rel="stylesheet" href="site.css">
   <link rel="stylesheet" href="brand.css">
   <link rel="icon" type="image/png" href="eidovara-icon.png">
+  <link rel="apple-touch-icon" href="eidovara-mark.png">
 </head>
 <body class="site" data-page="legal">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header site-chrome"><div class="site-header-inner"><a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button><nav id="site-nav" aria-label="Primary"><a href="./" data-nav="home">Home</a><a class="nav-cta" href="download.html" data-nav="download">Download</a><a href="product.html" data-nav="product">Product</a><a href="assist.html" data-nav="assist">Assist</a><a href="faq.html" data-nav="faq">FAQ</a><a href="terms.html" data-nav="terms">Terms</a><a href="status.html" data-nav="status">Status</a><details class="nav-legal"><summary>Legal</summary><div class="nav-legal-menu"><a href="legal.html">Overview</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="help.html">Help</a><a href="security.html">Security</a></div></nav><div class="header-controls"></div></div></header>
+  <header class="site-header site-chrome">
+    <div class="site-header-inner">
+      <a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button>
+      <nav id="site-nav" aria-label="Primary">
+        <a href="./" data-nav="home">Home</a>
+        <a href="product.html" data-nav="product">Product</a>
+        <a href="assist.html" data-nav="assist">Assist</a>
+        <a href="help.html" data-nav="help">Help</a>
+        <a href="faq.html" data-nav="faq">FAQ</a>
+        <details class="nav-legal">
+          <summary>Legal</summary>
+          <div class="nav-legal-menu">
+            <a href="legal.html">Overview</a>
+            <a href="terms.html">Terms</a>
+            <a href="privacy.html">Privacy</a>
+            <a href="age.html">Age 18+</a>
+            <a href="licensing.html">Licensing</a>
+            <a href="security.html">Security</a>
+          </div>
+        </details>
+        <a href="status.html" data-nav="status">Status</a>
+        <a class="nav-cta" href="download.html" data-nav="download">Download</a>
+      </nav>
+    </div>
+  </header>
   <main id="main" class="site-main">
-    <p class="eyebrow download-studio-line"><img class="download-mark" src="eidovara-mark.png" width="48" height="48" alt="">Windows 10/11 x64 · v1.0.0 Stable Alpha · 18+</p>
-    <h1 class="section-title">Legal overview</h1>
-    <section class="legal-category">
-      <h2>Source-Available License</h2>
-      <p>Eidovara v1.0.0 is published under LicenseRef-Eidovara-Source-Available-1.0. This is a source-available evaluation license, not an open-source license. Key terms:</p>
-      <ul>
-        <li>Source code is available for viewing and study</li>
-        <li>Redistribution, modification, and commercial use are restricted</li>
-        <li>Open-source relicensing (MIT, Apache, GPL, BSD, CC) is prohibited</li>
-        <li>18+ age gate is a non-removable boundary</li>
-        <li>Soul Consciousness Studios is the intended publisher</li>
-        <li>Soul Consciousness Studios is the qualifying original first-party material creator and owner</li>
-      </ul>
-      <p>See the LICENSE file for the full license text.</p>
-    </section>
-    <section class="legal-category">
-      <h2>18+ Age Restriction</h2>
-      <p>Eidovara is restricted to users 18 years or older. This gate is enforced across all touchpoints: desktop UI, CLI, kernel integration, and web presence. The age restriction is a fundamental boundary of the source-available framework and cannot be removed without owner involvement.</p>
-      <p>Documents enforcing 18+: LICENSE, TERMS.md, AGE.md</p>
-    </section>
-    <section class="legal-category">
-      <h2>Intellectual Property</h2>
-      <p>Eidovara's qualifying original first-party material is identified as created and owned by Soul Consciousness Studios and published under the intended business name Soul Consciousness Studios. Third-party software, services, models, marks, and media retain their respective ownership and licenses.</p>
-      <p>IP certification is provided in IP_CERTIFICATION.md <a href="COPYRIGHT.md">COPYRIGHT.md</a> with dated self-attestation of ownership and boundaries. Suspected infringement is handled per <a href="INFRINGEMENT.md">INFRINGEMENT.md</a>.</p>
-    </section>
-    <section class="legal-category">
-      <h2>Trademarks</h2>
-      <p>Eidovara name and marks are owned by Soul Consciousness Studios/Soul Consciousness Studios. Third-party trademarks retain their respective owners. See TRADEMARK_CLEARANCE_LOG.md and TRADEMARK_FILING.md for details.</p>
-    </section>
-    <section class="legal-category">
-      <h2>Privacy</h2>
-      <p>Eidovara's privacy practices are documented in PRIVACY.md. Key principles: local-first storage, visible permissions, HTTPS handoffs for research only, fail-closed network handling. What stays local vs what can leave is clearly documented.</p>
-    </section>
-    <section class="legal-category">
-      <h2>Security</h2>
-      <p>Eidovara's security architecture is documented in SECURITY.md. Key practices: Authenticode-unsigned Windows builds, GitHub/Sigstore provenance records, SHA-256 file verification, SBOM generation, dependency review, code scanning, and fail-closed network handling.</p>
-    </section>
+    <p class="eyebrow">Rights center · source v1.0.0 · live installer v1.0.0</p>
+    <h1>Ownership and third-party boundaries.</h1>
+    <div class="legal-card"><h2>First-party record</h2><p>© 2026 Soul Consciousness Studios. All rights reserved. Source-available; use governed by LICENSE + TERMS. Third-party stays third-party. Soul Consciousness Studios is identified as Eidovara's owner, creator, product director, and claimant for qualifying original first-party material. Soul Consciousness Studios is an intended publishing business name, not a formed entity that owns this IP unless a signed assignment exists. This site is not an Apple product and is not community OSI open source. No patent, registered-mark, or copyright-office registration is claimed in this repository. These pages are not legal advice or a court judgment.</p></div>
+    <div class="legal-card"><h2>License</h2><p>The source repository uses the Eidovara Source-Available Evaluation License (<code>LicenseRef-Eidovara-Source-Available-1.0</code>). That is not an OSI open-source license and is not MIT, Apache, or GPL. Installation, viewing, or forking does not transfer ownership, grant a patent or trademark license, or let anyone relicense first-party material as open source. Adults 18+ only. Read the exact LICENSE, TERMS, NOTICE, OWNERSHIP, TRADEMARKS, and AGE statement included with each release before use or redistribution. Eidovara is a trademark of Soul Consciousness Studios™ (unregistered).</p></div>
+    <div class="legal-card"><h2>Repository self-attestation</h2><p>A dated inventory of every license, notice, unsigned template, and owner-only leftover is published as <a href="IP_CERTIFICATION.md">IP_CERTIFICATION.md</a>. That file certifies what is in git. It is not a U.S. Copyright Office registration, USPTO filing, patent, Authenticode certificate, or executed assignment.</p></div>
+    <div class="legal-card"><h2>What Eidovara does not own</h2><p>Electron, Chromium, Node.js, Microsoft Windows, Wikipedia/Wikimedia content, user-created files, and other third-party software, services, models, marks, and media remain their owners' property. Overbroad claims would weaken the first-party record. A GitHub commit is not a court judgment. GitHub's terms still allow viewing and forking through GitHub. Users own their own content.</p></div>
+    <div class="legal-card"><h2>Marks and third parties</h2><p>Eidovara is a trademark of Soul Consciousness Studios™ (unregistered). Soul, used as the software self-model feature name, and Soul Consciousness Studios, the intended publisher name, are likewise unregistered marks of Soul Consciousness Studios. Do not use a registered-mark symbol unless registration issues. This site does not file a USPTO application. Enhancement of trademark protection requires a trademark attorney and a USPTO filing; knockout internet search is not clearance. Eidovara is not affiliated with Marvel, Disney, Apple, Microsoft, or Electron and is not Jarvis, Iron Man, iOS, or iPhone. Electron, Chromium, Node.js, Windows, GitHub, OBS, Twitch, Spotify, YouTube, DirectX, NVIDIA, Cloudflare, Apple, Wikipedia/Wikimedia, and payment-provider names belong to their respective owners. Reference does not imply sponsorship or affiliation. Eidovara is not an iOS, iPhone, or Apple product and does not require licensed SF Pro or SF Mono fonts. Microsoft Windows is the official advertised platform; Microsoft does not sponsor Eidovara. Eidovara, Soul, and the Soul kernel are not Jarvis, Iron Man, Marvel, Disney, Stark, FRIDAY, Siri, Alexa, Google Assistant, Copilot, Cortana, ChatGPT, Claude, Raycast, Alfred, Spotlight, Clippy, Replika, Character.AI, Xbox, or Game Bar.</p></div>
+    <div class="legal-card"><h2>Inbound code</h2><p>Pull requests are not accepted until a privately executed written assignment. A PR does not make the submitter a joint author or trademark owner. The contributor-assignment file in the repository is an unsigned template only. Publishing that template does not mean unknown contributors have assigned rights.</p></div>
+    <div class="legal-card"><h2>Models, voices, avatars, and media</h2><p>Source v1.0.0 does not bundle neural TTS, VRM, or MakeHuman assets. The live installer remains v1.0.0. Playback uses voices already installed in Windows. User-selected local media and Wikipedia/Wikimedia sources remain under their own licenses. YouTube and Spotify buttons open official HTTPS searches and do not rip streams. Every imported model and asset would require its own license review. Voice cloning requires the speaker's permission; celebrity likenesses, protected characters, and unlicensed media are not supplied.</p></div>
+    <div class="legal-card"><h2>What this license may enhance vs what stays off</h2><p>The source-available evaluation license plus third-party notices cover the current Windows alpha: Electron/Chromium notices, explicit Wikipedia/Wikimedia research, pasted HTTPS providers, Premium Brave with a user key, GitHub update checks, optional Worker <code>/health</code>, <code>/v1/config</code>, <code>/v1/status</code>, and website-helper <code>/v1/assist</code>, and Spotify/YouTube search links. They do not grant rights to enable neural TTS, VRM, OBS websocket control, or live payments. Official installers remain Authenticode-unsigned (<code>Eidovara-v1.0.0-Windows-x64-Setup.exe</code>). Payments stay fail-closed. No patent, registered-mark, or PCI-DSS certification is claimed. Adults 18+.</p></div>
   </main>
-  <footer class="site-footer site-end"><div class="site-footer-inner"><span class="studio-line"><img class="studio-mark" src="soul-consciousness-studios-mark.png" alt="">© 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. 18+.</span><span><a href="download.html">Download</a> · <a href="product.html">Product</a> · <a href="assist.html">Assist</a> · <a href="faq.html">FAQ</a> · <a href="terms.html">Terms</a> · <a href="age.html">Age 18+</a></span></div></footer><script src="site.js" defer></script>
-<script type="module" src="assist.js"></script></body></html>
+  <footer class="site-footer site-end"><div class="site-footer-inner"><span>© 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. Adults 18+.</span><span><a href="faq.html">FAQ</a> · <a href="help.html">Help</a> · <a href="assist.html">Assist</a> · <a href="download.html">Download</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a> · <a href="privacy.html">Privacy</a> · <a href="age.html">Age 18+</a> · <a href="security.html">Security</a> · <a href="licensing.html">Licensing</a> · <a href="terms.html">Terms</a> · <a href="https://github.com/ProjectSoulbyTmb/project---soul">GitHub</a></span></div></footer>
+  <script src="site.js" defer></script>
+  <script type="module" src="assist.js"></script>
+</body>
+</html>
+
 
 
 
