@@ -13,8 +13,8 @@ Eidovara is a trademark of Soul Consciousness Studios (unregistered). Soul (feat
 
 ## Marks and symbols
 
-- Unregistered claim: â„¢ is optional in running text; if used, it means unregistered.
-- Never use Â® unless a registration covering that mark and those goods/services has issued.
+- Unregistered claim: ™ is optional in running text; if used, it means unregistered.
+- Never use ® unless a registration covering that mark and those goods/services has issued.
 - Never invent a USPTO number.
 
 ## Fonts and look
