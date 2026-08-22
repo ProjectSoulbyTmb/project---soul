@@ -114,3 +114,47 @@ test('server config advertises 18+ source-available Windows alpha with payments 
   assert.equal(body.store.gumroad, '');
   assert.match(body.terms, /18 or older/);
 });
+
+test('worker installer facts accept measured deploy-time overrides and reject malformed values', async () => {
+  const sha = 'A'.repeat(64);
+  const good = await (
+    await worker.fetch(new Request('https://api.test/v1/status'), {
+      LIVE_INSTALLER_SHA256: sha,
+      LIVE_INSTALLER_SIZE: '12345678',
+    })
+  ).json();
+  assert.equal(good.liveInstallerSha256, sha.toLowerCase());
+  assert.equal(good.liveInstallerSize, 12345678);
+  const bad = await (
+    await worker.fetch(new Request('https://api.test/v1/status'), {
+      LIVE_INSTALLER_SHA256: '../../etc/passwd',
+      LIVE_INSTALLER_SIZE: '-5',
+    })
+  ).json();
+  assert.equal(bad.liveInstallerSha256, null);
+  assert.equal(bad.liveInstallerSize, null);
+  const config = await (
+    await worker.fetch(new Request('https://api.test/v1/config'), { LIVE_INSTALLER_SHA256: sha })
+  ).json();
+  assert.equal(config.liveInstallerSha256, sha.toLowerCase());
+});
+
+test('/v1/assist is rate limited per client address', async () => {
+  const ip = '203.0.113.77';
+  let last = null;
+  for (let i = 0; i < 40; i += 1) {
+    last = await worker.fetch(
+      new Request(`https://api.test/v1/assist?q=launch-plan-${i}`, {
+        headers: { 'cf-connecting-ip': ip },
+      }),
+      {}
+    );
+    if (last.status === 429) break;
+  }
+  assert.ok(last, 'expected at least one assist response');
+  assert.equal(last.status, 429, 'expected /v1/assist to return 429 after the per-IP limit');
+  assert.equal(last.headers.get('retry-after'), '60');
+  const body = await last.json();
+  assert.equal(body.error, 'rate_limited');
+  assert.match(body.reply, /Too many requests/);
+});

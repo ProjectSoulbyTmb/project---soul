@@ -1,5 +1,7 @@
 // SPDX-FileCopyrightText: 2026 Soul Consciousness Studios
 // SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0
+import { readBoundedBody } from './bounded-read.js';
+
 function trimSlash(s) {
   return String(s || '').replace(/\/+$/, '');
 }
@@ -94,7 +96,8 @@ export function sanitizeRemoteConfig(body) {
 async function boundedJson(res, maxBytes = 32_768) {
   const declared = Number(res.headers.get?.('content-length') || 0);
   if (declared > maxBytes) throw new Error('Service response is too large.');
-  const bytes = Buffer.from(await res.arrayBuffer());
+  const streamed = await readBoundedBody(res, maxBytes, 'Service response is too large.');
+  const bytes = streamed || Buffer.from(await res.arrayBuffer());
   if (bytes.length > maxBytes) throw new Error('Service response is too large.');
   try {
     return JSON.parse(bytes.toString('utf8'));

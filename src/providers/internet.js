@@ -3,6 +3,7 @@
 import { isExplicitInternetRequest } from '../core/workspace.js';
 import { officialSearchHandoffs } from '../core/entertainment.js';
 import { SOURCE_VERSION } from '../core/release.js';
+import { readBoundedBody } from '../core/bounded-read.js';
 
 const AGENT = `Eidovara/${SOURCE_VERSION} (desktop research client)`;
 export const PAGE_BYTE_LIMIT = 512 * 1024;
@@ -277,6 +278,7 @@ function extractHtmlTitle(html) {
 function collapsePlainText(value, max) {
   return String(value || '')
     .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+    .replace(/[\u200B-\u200F\u202A-\u202E\u2066-\u2069\uFEFF]/g, '')
     .replace(/\s+/g, ' ')
     .trim()
     .slice(0, max);
@@ -346,10 +348,17 @@ export function isBlockedResearchHost(value) {
       host.endsWith('.lan')
     )
       return true;
-    if (host === '::1' || host === '0.0.0.0' || host === 'metadata.google.internal') return true;
+    if (
+      host === '::' ||
+      host === '::1' ||
+      host === '0.0.0.0' ||
+      host === 'metadata.google.internal'
+    )
+      return true;
+    if (/(^|:)ffff(:|$)/i.test(host)) return true;
     if (
       host.includes(':') &&
-      (host === '::1' || host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd'))
+      (host.startsWith('fe80:') || host.startsWith('fc') || host.startsWith('fd'))
     )
       return true;
     if (isPrivateIPv4(host)) return true;
@@ -425,7 +434,10 @@ export function classifyLookupError(err) {
   }
   if (/redirect/i.test(message))
     return new Error('That page redirected and was not opened. The workspace is still available.');
-  return err instanceof Error ? err : new Error(message);
+  if (/^(Internet |That page |Only credential-free|YouTube and Spotify)/.test(message)) {
+    return err instanceof Error ? err : new Error(message);
+  }
+  return new Error('The internet lookup could not be completed. The workspace is still available.');
 }
 
 async function json(url, timeoutMs = 15000, headers = {}, fetchImpl = globalThis.fetch) {
@@ -449,6 +461,8 @@ async function json(url, timeoutMs = 15000, headers = {}, fetchImpl = globalThis
     const limit = 5 * 1024 * 1024;
     const declared = Number(res.headers?.get?.('content-length') || 0);
     if (declared > limit) throw new Error('Internet response is too large.');
+    const streamed = await readBoundedBody(res, limit, 'Internet response is too large.');
+    if (streamed) return JSON.parse(streamed.toString('utf8'));
     if (typeof res.arrayBuffer !== 'function') return await res.json();
     const bytes = Buffer.from(await res.arrayBuffer());
     if (bytes.length > limit) throw new Error('Internet response is too large.');
@@ -699,7 +713,10 @@ export async function fetchPublicPage(
     const declared = Number(res.headers?.get?.('content-length') || 0);
     if (declared > PAGE_BYTE_LIMIT) throw new Error('Internet response is too large.');
     let raw = '';
-    if (typeof res.arrayBuffer === 'function') {
+    const streamed = await readBoundedBody(res, PAGE_BYTE_LIMIT, 'Internet response is too large.');
+    if (streamed) {
+      raw = streamed.toString('utf8');
+    } else if (typeof res.arrayBuffer === 'function') {
       const bytes = Buffer.from(await res.arrayBuffer());
       if (bytes.length > PAGE_BYTE_LIMIT) throw new Error('Internet response is too large.');
       raw = bytes.toString('utf8');
@@ -852,11 +869,13 @@ export async function researchInternet(input, { searchApiKey = '', fetchImpl } =
     }
   }
   const context = [
+    '<<<UNTRUSTED_WEB_RESEARCH>>>',
     ...sources.map(
       (s, i) =>
         `[${i + 1}] ${s.title}${s.hostname ? ` (${s.hostname})` : ''}: ${s.description}\n${s.url}`
     ),
     ...handoffs.map(item => `${item.provider} search (browser handoff): ${item.url}`),
+    '<<<END_UNTRUSTED_WEB_RESEARCH>>>',
   ].join('\n\n');
   return {
     query,

@@ -30,3 +30,17 @@ Official baked default: `https://api.eidovara.org`. Operator `workers.dev` examp
 For production, enable Cloudflare account two-factor authentication, keep Wrangler tokens out of source control, deploy from a protected GitHub environment, monitor `/health`, and configure more than one owner-controlled recovery method. The public service is deliberately stateless, so an outage cannot corrupt user conversations or payment records.
 
 Endpoints: `GET`/`HEAD /health`, `GET`/`HEAD /v1/health`, `GET`/`HEAD /v1/config`, `GET`/`HEAD /v1/status`, and `GET`/`POST /v1/assist`. OPTIONS is CORS-preflight (`GET, HEAD, POST`). `/health`, `/v1/config`, and `/v1/status` report `paymentsEnabled: false`, `checkoutEnabled: false`, `localFirst: true`, `conversationsStored: false`, 18+, and unsigned Windows. `/v1/status` uses `Cache-Control: private, no-store`. There is no `/v1/heartbeat` route; desktop liveness reuses `/health` and `/v1/status`. `/v1/assist` answers from the same allowlisted knowledge pack as `docs/knowledge.js`, refuses empty/oversized/abuse-shaped input, does not store transcripts, and does not accept desktop conversation history. Store URLs stay empty unless you later add provider-hosted checkout links. Live payments stay off in v1.0.0. The live launcher and desktop installer are `Eidovara-v1.0.0-Windows-x64-Setup.exe`. The desktop app ignores checkout even if a future config lied. All other methods and paths fail closed.
+
+## Publishing measured installer facts
+
+The Release Windows workflow measures the built Setup.exe and writes `dist/LIVE-INSTALLER-FACTS.json` (attached to the GitHub Release and covered by build-provenance attestation). To make `api.eidovara.org` serve those measured values, deploy the Worker with the two supported vars — no code edit required:
+
+```
+npx wrangler deploy --var LIVE_INSTALLER_SHA256:<64-hex-from-facts-file> --var LIVE_INSTALLER_SIZE:<bytes>
+```
+
+Both values are validated by the Worker: the SHA must be exactly 64 hex characters and the size a positive integer; anything else falls back to `null` (honest "unmeasured" state). Until they are published, `/health`, `/v1/config`, and `/v1/status` correctly report `liveInstallerSha256: null` / `liveInstallerSize: null`. Never hardcode a digest from an older build into the Worker source.
+
+## Abuse controls on /v1/assist
+
+The Worker keeps a best-effort per-client sliding window (30 requests per minute keyed by `cf-connecting-ip`, returning `429` with `Retry-After: 60`). This limiter lives inside a single Worker isolate, so it is not a global cap; pair it with a Cloudflare WAF rate-limiting rule for guaranteed protection at scale.

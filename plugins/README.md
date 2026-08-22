@@ -2,24 +2,43 @@
 
 Source-available plugin architecture for Eidovara v1.0.0+.
 
+## Status: experimental — not loaded by the app
+
+The example plugins in this folder are **not loaded by any shipping build** of
+Eidovara, and no runtime currently executes them. The permission model below is
+a design target, not an enforced guarantee: there is no sandbox in the shipped
+application that enforces these permissions today.
+
+Do not distribute or install plugins from this folder with the expectation that
+permissions are enforced, that storage is isolated per plugin, or that network
+access is restricted to declared hosts. Those guarantees require the future
+runtime (process-level isolation, deny-by-default networking, and per-plugin
+credential brokering) and are tracked on the roadmap.
+
+Until that runtime ships, treat everything here as reference material for the
+planned architecture.
+
 ## Overview
 
-The plugin system lets developers extend Eidovara without modifying core source code. Plugins run in a sandboxed environment with explicit, user-approved permissions.
+The planned plugin system lets developers extend Eidovara without modifying core source code. The design goal is a sandboxed environment with explicit, user-approved permissions enforced by the main process. This enforcement does **not** exist yet.
+
+A previous revision of this document described `src/core/plugins/*.ts` as the plugin runtime. Those files were non-compiling stubs (their sandbox failed open on empty network allowlists, shared one storage namespace across all plugins, and never passed strict type checks). They are preserved for reference at `archive/plugin-sandbox-stubs/` and are not part of the build.
 
 ## Structure
 
 ```
 plugins/
-├── notion-sync/          # Sync memories ↔ Notion
-├── github-tracker/       # Watch repos, PRs, issues
-└── pomodoro/             # Pomodoro timer + break reminders
+├── notion-sync/          # Example plugin (not loaded by the app)
+│   ├── manifest.json     # Plugin metadata & intended permissions
+│   └── src/index.js      # Main entry point
+├── github-tracker/       # Example plugin (not loaded by the app)
+│   ├── manifest.json
+│   └── src/index.js
+└── pomodoro/             # Example plugin (not loaded by the app)
+    ├── manifest.json
+    └── src/index.js
 
-src/core/plugins/         # Plugin runtime (core)
-├── index.ts              # Public exports
-├── plugin-manifest.ts    # Types + validation schema
-├── plugin-sandbox.ts     # Sandboxed execution context
-├── plugin-loader.ts      # Load / validate / init plugins
-└── plugin-registry.ts    # Discovery + lifecycle management
+archive/plugin-sandbox-stubs/   # Historical non-compiling stubs, kept for reference only
 ```
 
 ## Writing a Plugin
@@ -76,6 +95,8 @@ export default {
 | `shell`         | `string[]`                | Allowed executable names         |
 | `notifications` | `boolean`                 | Desktop notifications            |
 | `clipboard`     | `"read"\|"write"\|"both"` | Clipboard access                 |
+
+Permissions are intended to be declared up front and presented to the user before activation. **No enforcement exists yet** — the shipped app neither loads plugins nor checks these declarations.
 
 ### Hooks
 
