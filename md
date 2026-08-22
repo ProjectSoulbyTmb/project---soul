@@ -1,71 +1,90 @@
-# Eidovara GitHub release setup
+<!doctype html>
+<!-- SPDX-FileCopyrightText: 2026 Soul Consciousness Studios -->
+<!-- SPDX-License-Identifier: LicenseRef-Eidovara-Source-Available-1.0 -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; connect-src 'self' https:; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="referrer" content="no-referrer">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Eidovara v1.0.0 help: installation, usage, 18+ age gate, Soul layer, features, and troubleshooting guide.">
+  <meta property="og:title" content="Help · Eidovara">
+  <meta property="og:description" content="Eidovara v1.0.0 help: installation guide, 18+ age gate, feature usage, Soul layer, and troubleshooting.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://eidovara.org/help.html">
+  <meta property="og:image" content="https://eidovara.org/eidovara-og.png">
+  <link rel="canonical" href="https://eidovara.org/help.html">
+  <title>Help · Eidovara</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="site.css">
+  <link rel="stylesheet" href="brand.css">
+  <link rel="icon" type="image/png" href="eidovara-icon.png">
+</head>
+<body class="site" data-page="help">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header site-chrome"><div class="site-header-inner"><a class="brand" href="./"><img class="brand-icon" src="eidovara-icon.png" alt="">Eidovara</a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" id="navToggle">Menu</button><nav id="site-nav" aria-label="Primary"><a href="./" data-nav="home">Home</a><a class="nav-cta" href="download.html" data-nav="download">Download</a><a href="product.html" data-nav="product">Product</a><a href="assist.html" data-nav="assist">Assist</a><a href="faq.html" data-nav="faq">FAQ</a><a href="status.html" data-nav="status">Status</a><details class="nav-legal"><summary>Legal</summary><div class="nav-legal-menu"><a href="legal.html">Overview</a><a href="terms.html">Terms</a><a href="privacy.html">Privacy</a><a href="age.html">Age 18+</a><a href="licensing.html">Licensing</a><a href="security.html">Security</a></div></nav><div class="header-controls"></div></div></header>
+  <main id="main" class="site-main">
+    <p class="eyebrow download-studio-line"><img class="download-mark" src="eidovara-mark.png" width="48" height="48" alt="">Windows 10/11 x64 · v1.0.0 Stable Alpha · 18+</p>
+    <h1 class="section-title">Help and guidance</h1>
+    <section class="help-section">
+      <h2>Getting started</h2>
+      <ol>
+        <li>Confirm you are 18 or older (age gate on download page)</li>
+        <li>Download Eidovara-v1.0.0-Windows-x64-Setup.exe from GitHub Releases</li>
+        <li>Verify the SHA-256 checksum against the release’s <a href="https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/SHA256SUMS.txt">SHA256SUMS.txt</a></li>
+        <li>Run the installer</li>
+        <li>Launch Eidovara from the Start menu or desktop shortcut</li>
+      </ol>
+    </section>
+    <section class="help-section">
+      <h2>18+ age gate</h2>
+      <p>Eidovara requires users to be 18 or older. The age gate appears at:</p>
+      <ul>
+        <li>Download page (age.html)</li>
+        <li>First launch — confirmation required</li>
+        <li>Soul feature activation — triple gate (age + enablement + consent)</li>
+        <li>Research and media features — 18+ filtered</li>
+      </ul>
+      <p>Local confirmation is not independent identity verification.</p>
+    </section>
+    <section class="help-section">
+      <h2>Soul layer</h2>
+      <p>Soul is an optional assistant layer. To enable Soul:</p>
+      <ol>
+        <li>Be 18 or older (age gate satisfied)</li>
+        <li>Explicitly enable Soul in settings</li>
+        <li>Acknowledge consent for Soul features</li>
+      </ol>
+      <p>Soul provides: configurable personality, persistent continuity, voice/presence, research, media, and tool support. Soul is software, not a consciousness claim.</p>
+    </section>
+    <section class="help-section">
+      <h2>Features</h2>
+      <ul>
+        <li>Local Windows workspace — apps, tools, backups, settings stay on your PC</li>
+        <li>Media playback — user-selected, properly sourced content</li>
+        <li>Internet research — cited public sources only, 18+ filtered</li>
+        <li>Custom themes — RGB and visual customization</li>
+        <li>Gaming mode — optimized for gaming sessions</li>
+        <li>Persistent continuity — memory, backups, provider context persist</li>
+        <li>Linked applications — trusted launch controls</li>
+      </ul>
+    </section>
+    <section class="help-section">
+      <h2>Troubleshooting</h2>
+      <dl>
+        <dt>Windows SmartScreen warning</dt>
+        <dd>The installer is Authenticode-unsigned. This is expected. Click "More info" → "Run anyway" to proceed.</dd>
+        <dt>SHA-256 mismatch</dt>
+        <dd>Redownload from GitHub Releases and verify the checksum against that release’s SHA256SUMS.txt.</dd>
+        <dt>Soul features unavailable</dt>
+        <dd>Ensure you are 18+, have explicitly enabled Soul, and have acknowledged consent. Check the triple-gate requirements.</dd>
+      </dl>
+    </section>
+  </main>
+  <footer class="site-footer site-end"><div class="site-footer-inner"><span class="studio-line"><img class="studio-mark" src="soul-consciousness-studios-mark.png" alt="">© 2026 Soul Consciousness Studios. All rights reserved. Source-available, not open source. Soul Consciousness Studios is the intended publisher only. 18+.</span><span><a href="download.html">Download</a> · <a href="product.html">Product</a> · <a href="assist.html">Assist</a> · <a href="faq.html">FAQ</a> · <a href="status.html">Status</a> · <a href="legal.html">Legal</a></span></div></footer><script src="site.js" defer></script>
+<script type="module" src="assist.js"></script></body></html>
 
-Repository: `https://github.com/ProjectSoulbyTmb/project---soul`
 
-Official advertised distribution is an **Authenticode-unsigned** Windows 10/11 x64 NSIS installer for users **18+**. GitHub Actions on `windows-latest` builds the installer and publishes checksums, updater metadata, an SPDX SBOM, `CODE-SIGNING-STATUS.txt`, and GitHub/Sigstore build provenance. That provenance is **not** Authenticode. CI cannot create an Authenticode-signed Setup.exe until a code-signing identity exists outside this repository.
 
-## Current published release
 
-- Version/tag: `v1.0.0`
-- Installer: `Eidovara-v1.0.0-Windows-x64-Setup.exe`
-- Size: measured from the tagged build; see the release’s SHA256SUMS.txt
-- SHA-256: measured from the tagged build; see the release’s SHA256SUMS.txt
-- Latest asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest/download/Eidovara-v1.0.0-Windows-x64-Setup.exe`
-- Pinned asset: `https://github.com/ProjectSoulbyTmb/project---soul/releases/download/v1.0.0/Eidovara-v1.0.0-Windows-x64-Setup.exe`
-- Signing: Authenticode-unsigned; Windows SmartScreen may warn.
-- Provenance: GitHub/Sigstore build provenance is available and is not Authenticode signing.
-- Edition: full free v1.0.0 Alpha; no paid entitlement is required for currently implemented features.
-
-## Tag release procedure
-
-1. Set `package.json` `version` to the intended new release and merge the tested source to `main`.
-2. Create a new matching `v*` tag. Never move or reuse a published release tag after changing files.
-3. The `Release Windows` workflow runs tests/checks/smoke tests, builds the NSIS installer on `windows-latest`, creates updater metadata and release evidence, computes checksums, and publishes the matching release artifacts.
-4. After publication, update the public website, helper knowledge pack, Worker/service release payload, README, release runbook, and live-state record to the measured installer filename, size, and checksum.
-5. Keep `https://github.com/ProjectSoulbyTmb/project---soul/releases/latest` as the release-notes/checksum destination and make the actual Setup.exe the primary Windows download.
-
-Example for the next release (replace the version before using):
-
-```powershell
-git checkout main
-git pull origin main
-git tag vNEXT
-git push origin vNEXT
-```
-
-Do not reuse `v1.0.0` or any earlier published tag for changed release bytes.
-
-## Manual dispatch
-
-`workflow_dispatch` on `.github/workflows/release-windows.yml` can build unsigned Windows artifacts for verification. A branch build must not be presented as a published release unless the matching tag/release is actually created and its files are measured.
-
-Windows NSIS must be built on Windows (`windows-latest` or a supported local Windows 10/11 x64 machine). Linux/macOS packaging scripts in `package.json` are development targets, not official products.
-
-## Local Windows build if Actions cannot run
-
-```powershell
-npm install
-npm test
-npm run check
-npm run smoke
-npm run dist:win:installer
-npm run release:manifest
-npm run release:evidence
-```
-
-Attach the matching `dist/Eidovara-*-Windows-x64-Setup.exe`, `dist/latest.yml`, `dist/update.json`, `dist/SHA256SUMS.txt`, `dist/SBOM.spdx.json`, and `dist/CODE-SIGNING-STATUS.txt` to the matching GitHub Release. Never upload a private signing key. Installed copies can check GitHub Releases, verify update metadata/checksums, and prompt before applying an update.
-
-## Publication consistency rule
-
-A release is not considered fully promoted until these surfaces agree on the same measured release facts:
-
-- `package.json`
-- GitHub Release/tag and assets
-- `README.md`
-- `LIVE.md`
-- `docs/index.html`, `docs/product.html`, `docs/download.html`, `docs/help.html`, `docs/faq.html`, `docs/status.html`
-- `docs/knowledge.js` and the website helper
-- `server/worker.js` `/health`, `/v1/config`, and `/v1/status` payloads
-- release/update metadata and checksums
-
-Historical changelog entries can retain older-version history, but current-release statements must identify the actual live release as v1.0.0 until a later version is formally published.
