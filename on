@@ -1,265 +1,131 @@
+# Eidovara Plugin System
+
+Source-available plugin architecture for Eidovara v1.0.0+.
+
+## Status: experimental — not loaded by the app
+
+The example plugins in this folder are **not loaded by any shipping build** of
+Eidovara, and no runtime currently executes them. The permission model below is
+a design target, not an enforced guarantee: there is no sandbox in the shipped
+application that enforces these permissions today.
+
+Do not distribute or install plugins from this folder with the expectation that
+permissions are enforced, that storage is isolated per plugin, or that network
+access is restricted to declared hosts. Those guarantees require the future
+runtime (process-level isolation, deny-by-default networking, and per-plugin
+credential brokering) and are tracked on the roadmap.
+
+Until that runtime ships, treat everything here as reference material for the
+planned architecture.
+
+## Overview
+
+The planned plugin system lets developers extend Eidovara without modifying core source code. The design goal is a sandboxed environment with explicit, user-approved permissions enforced by the main process. This enforcement does **not** exist yet.
+
+A previous revision of this document described `src/core/plugins/*.ts` as the plugin runtime. Those files were non-compiling stubs (their sandbox failed open on empty network allowlists, shared one storage namespace across all plugins, and never passed strict type checks). They are preserved for reference at `archive/plugin-sandbox-stubs/` and are not part of the build.
+
+## Structure
+
+```
+plugins/
+├── notion-sync/          # Example plugin (not loaded by the app)
+│   ├── manifest.json     # Plugin metadata & intended permissions
+│   └── src/index.js      # Main entry point
+├── github-tracker/       # Example plugin (not loaded by the app)
+│   ├── manifest.json
+│   └── src/index.js
+└── pomodoro/             # Example plugin (not loaded by the app)
+    ├── manifest.json
+    └── src/index.js
+
+archive/plugin-sandbox-stubs/   # Historical non-compiling stubs, kept for reference only
+```
+
+## Writing a Plugin
+
+### 1. Create `manifest.json`
+
+```json
 {
   "manifest_version": 1,
-  "id": "com.soul.pomodoro",
-  "name": "Pomodoro Timer",
+  "id": "com.yourname.your-plugin",
+  "name": "Your Plugin",
   "version": "1.0.0",
-  "description": "Pomodoro timer with ambient sounds, session tracking, and break reminders",
-  "author": "Soul Consciousness Studios",
-  "license": "LicenseRef-Eidovara-Source-Available-1.0",
-  "keywords": ["pomodoro", "timer", "focus", "productivity", "timer", "ambient"],
-  "homepage": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro",
-  "repository": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro",
-  "funding": "https://github.com/sponsors/ProjectSoulbyTmb",
+  "description": "What it does",
+  "author": "Your Name",
+  "license": "MIT",
   "permissions": {
     "memory": true,
-    "network": [],
-    "filesystem": [],
-    "shell": [],
-    "notifications": true,
-    "clipboard": "read",
-    "idle": true,
-    "power": false,
-    "idleDetection": false
+    "network": ["api.example.com"],
+    "notifications": true
   },
   "entrypoints": {
     "main": "src/index.js",
-    "ui": "ui/pomodoro.html",
     "commands": [
       {
-        "id": "pomodoro.start",
-        "name": "Start Pomodoro",
-        "description": "Start a new pomodoro session",
-        "shortcut": "Ctrl+Shift+P",
-        "category": "pomodoro",
-        "action": "start",
-        "params": [
-          {
-            "name": "duration",
-            "type": "number",
-            "description": "Session duration in minutes",
-            "required": false,
-            "default": 25,
-            "validation": "^([1-9]|[1-5][0-9]|60)$"
-          },
-          {
-            "name": "type",
-            "type": "select",
-            "description": "Session type",
-            "required": false,
-            "default": "focus",
-            "options": [
-              { "value": "focus", "label": "Focus (25 min)" },
-              { "value": "short-break", "label": "Short Break (5 min)" },
-              { "value": "long-break", "label": "Long Break (15 min)" },
-              { "value": "custom", "label": "Custom Duration" }
-            ]
-          },
-          {
-            "name": "ambient",
-            "type": "select",
-            "description": "Ambient sound",
-            "required": false,
-            "default": "none",
-            "options": [
-              { "value": "none", "label": "None" },
-              { "value": "rain", "label": "Rain" },
-              { "value": "fireplace", "label": "Fireplace" },
-              { "value": "coffee-shop", "label": "Coffee Shop" },
-              { "value": "white-noise", "label": "White Noise" },
-              { "value": "forest", "label": "Forest" },
-              { "value": "ocean", "label": "Ocean Waves" }
-            ]
-          }
-        ]
-      },
-      {
-        "id": "pomodoro.pause",
-        "name": "Pause Timer",
-        "description": "Pause the current pomodoro",
-        "shortcut": "Ctrl+Shift+Space",
-        "category": "pomodoro",
-        "action": "pause",
-        "params": []
-      },
-      {
-        "id": "pomodoro.resume",
-        "name": "Resume Timer",
-        "description": "Resume paused pomodoro",
-        "shortcut": "Ctrl+Shift+R",
-        "category": "pomodoro",
-        "action": "resume",
-        "params": []
-      },
-      {
-        "id": "pomodoro.stop",
-        "name": "Stop Timer",
-        "description": "Stop the current pomodoro",
-        "shortcut": "Ctrl+Shift+X",
-        "category": "pomodoro",
-        "action": "stop",
-        "params": []
-      },
-      {
-        "id": "pomodoro.settings",
-        "name": "Pomodoro Settings",
-        "description": "Configure pomodoro settings",
-        "shortcut": "Ctrl+Shift+Alt+P",
-        "category": "settings",
-        "action": "settings",
-        "params": [
-          {
-            "name": "focusDuration",
-            "type": "number",
-            "description": "Focus duration in minutes",
-            "required": false,
-            "default": 25,
-            "validation": "^([1-9]|[1-5][0-9]|60)$"
-          },
-          {
-            "name": "shortBreakDuration",
-            "type": "number",
-            "description": "Short break duration in minutes",
-            "required": false,
-            "default": 5,
-            "validation": "^([1-9]|[1-5][0-9]|60)$"
-          },
-          {
-            "name": "longBreakDuration",
-            "type": "number",
-            "description": "Long break duration in minutes",
-            "required": false,
-            "default": 15,
-            "validation": "^([1-9]|[1-5][0-9]|60)$"
-          },
-          {
-            "name": "sessionsUntilLongBreak",
-            "type": "number",
-            "description": "Sessions before long break",
-            "required": false,
-            "default": 4,
-            "validation": "^([2-9]|1[0-9]|20)$"
-          },
-          {
-            "name": "autoStartBreaks",
-            "type": "boolean",
-            "description": "Auto-start breaks",
-            "required": false,
-            "default": true
-          },
-          {
-            "name": "autoStartFocus",
-            "type": "boolean",
-            "description": "Auto-start focus sessions",
-            "required": false,
-            "default": false
-          },
-          {
-            "name": "soundEnabled",
-            "type": "boolean",
-            "description": "Play notification sounds",
-            "required": false,
-            "default": true
-          },
-          {
-            "name": "ambientVolume",
-            "type": "number",
-            "description": "Ambient sound volume (0-100)",
-            "required": false,
-            "default": 30,
-            "validation": "^(100|[1-9]?[0-9])$"
-          }
-        ]
-      },
-      {
-        "id": "pomodoro.stats",
-        "name": "Pomodoro Stats",
-        "description": "View pomodoro statistics",
-        "shortcut": "Ctrl+Shift+S",
-        "category": "stats",
-        "action": "stats",
-        "params": []
-      },
-      {
-        "id": "pomodoro.reset",
-        "name": "Reset Today's Stats",
-        "description": "Reset today's pomodoro statistics",
-        "shortcut": "Ctrl+Shift+Alt+R",
-        "category": "stats",
-        "action": "reset-stats",
-        "params": [
-          {
-            "name": "confirm",
-            "type": "boolean",
-            "description": "Confirm reset",
-            "required": true,
-            "default": false
-          }
-        ]
-      }
-    ],
-    "hooks": [
-      {
-        "name": "session-completed",
-        "event": "pomodoro.session.completed",
-        "handler": "onSessionCompleted",
-        "priority": 10,
-        "async": true
-      },
-      {
-        "name": "break-started",
-        "event": "pomodoro.break.started",
-        "handler": "onBreakStarted",
-        "priority": 10,
-        "async": true
-      },
-      {
-        "name": "session-paused",
-        "event": "pomodoro.session.paused",
-        "handler": "onSessionPaused",
-        "priority": 10,
-        "async": true
-      },
-      {
-        "name": "session-resumed",
-        "event": "pomodoro.session.resumed",
-        "handler": "onSessionResumed",
-        "priority": 10,
-        "async": true
-      },
-      {
-        "name": "long-break-due",
-        "event": "pomodoro.long-break.due",
-        "handler": "onLongBreakDue",
-        "priority": 15,
-        "async": true
-      },
-      {
-        "name": "idle-detected",
-        "event": "system.idle",
-        "handler": "onIdleDetected",
-        "priority": 5,
-        "async": true,
-        "filter": "pomodoro.running"
+        "id": "your-plugin.action",
+        "name": "Do Something",
+        "description": "Description shown in palette",
+        "shortcut": "Ctrl+Shift+Y",
+        "action": "action"
       }
     ]
-  },
-  "dependencies": {},
-  "engines": {
-    "eidovara": ">=1.0.0",
-    "node": ">=18.0.0"
-  },
-  "categories": ["productivity", "timer", "wellness", "focus"],
-  "screenshots": [],
-  "icon": "icon.png",
-  "minEidovaraVersion": "1.0.0",
-  "platform": ["windows"],
-  "languages": ["en", "es", "fr", "de"],
-  "maturity": "stable",
-  "publisher": "Soul Consciousness Studios",
-  "license": "LicenseRef-Eidovara-Source-Available-1.0",
-  "privacyPolicy": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/blob/main/PRIVACY.md",
-  "supportUrl": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/issues",
-  "contributionGuide": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/blob/main/CONTRIBUTING.md",
-  "changelog": "https://github.com/ProjectSoulbyTmb/eidovara-pomodoro/blob/main/CHANGELOG.md",
-  "tags": ["pomodoro", "timer", "focus", "productivity", "wellness", "ambient"]
+  }
 }
+```
+
+### 2. Implement `src/index.js`
+
+```javascript
+export default {
+  name: 'Your Plugin',
+  version: '1.0.0',
+
+  async init() {
+    // Called when plugin is loaded
+  },
+
+  async cleanup() {
+    // Called when plugin is unloaded or app quits
+  },
+
+  async action(params) {
+    // Called when user runs your command from the palette
+    return { result: 'done' };
+  }
+};
+```
+
+### Permissions
+
+| Permission | Type | Description |
+|------------|------|-------------|
+| `memory` | `boolean` | Read/write Soul durable memories |
+| `filesystem` | `string[]` | Glob patterns for allowed paths |
+| `network` | `string[]` | Allowed hostnames |
+| `shell` | `string[]` | Allowed executable names |
+| `notifications` | `boolean` | Desktop notifications |
+| `clipboard` | `"read"\|"write"\|"both"` | Clipboard access |
+
+All permissions must be explicitly declared and are intended to be presented to the user before activation. **No enforcement exists yet** — the shipped app neither loads plugins nor checks these declarations.
+
+### Hooks
+
+Plugins can subscribe to kernel events:
+
+| Event | Payload |
+|-------|---------|
+| `memory.created` | The new memory object |
+| `memory.updated` | The updated memory object |
+| `memory.deleted` | The deleted memory ID |
+| `pomodoro.session.completed` | Session stats |
+| `github.pr.opened` | PR payload |
+| `system.idle` | Idle duration in ms |
+
+## License
+
+Plugin system is part of Eidovara and carries the same source-available license (`LicenseRef-Eidovara-Source-Available-1.0`). Individual plugins may use their own licenses.
+
+## Third-party plugins
+
+Third-party plugins are **not** covered by the Eidovara license. Each plugin author chooses their own license. The marketplace (when launched) will require a permissive license for listed plugins.
